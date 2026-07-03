@@ -1317,7 +1317,7 @@ function goScreen(id, isBack = false) {
   document.getElementById('bottom-nav').classList.remove('hidden');
   updateBackBtn();
   initHeaderScroll(s);
-  if (id === 'screen-props') { renderFilterChips(); renderProps(); }
+  if (id === 'screen-props') { renderProps(); }
   if (id === 'screen-academia') renderAcademia();
 }
 
@@ -1480,23 +1480,8 @@ function goToAchievement() {
   showAchievement(1);
 }
 
-function renderFilterChips() {
-  const zonas = [...new Set(PROPS.map(p=>p.zona))];
-  const chips = document.getElementById('filter-chips');
-  chips.innerHTML = `
-    <button class="filter-chip${!activeFilters.tipo?' active':''}" onclick="toggleFilter('tipo',null)">Todos</button>
-    <button class="filter-chip${activeFilters.tipo==='Departamento'?' active':''}" onclick="toggleFilter('tipo','Departamento')">Departamento</button>
-    <button class="filter-chip${activeFilters.tipo==='Casa'?' active':''}" onclick="toggleFilter('tipo','Casa')">Casa</button>
-    <button class="filter-chip${activeFilters.rec===1?' active':''}" onclick="toggleFilter('rec',1)">1 rec</button>
-    <button class="filter-chip${activeFilters.rec===2?' active':''}" onclick="toggleFilter('rec',2)">2 rec</button>
-    <button class="filter-chip${activeFilters.rec===3?' active':''}" onclick="toggleFilter('rec',3)">3+ rec</button>
-    ${zonas.map(z=>`<button class="filter-chip${activeFilters.zona===z?' active':''}" onclick="toggleFilter('zona','${z}')">${z}</button>`).join('')}
-  `;
-}
-
 function toggleFilter(key, val){
   activeFilters[key] = activeFilters[key]===val ? null : val;
-  renderFilterChips();
   renderProps();
 }
 
