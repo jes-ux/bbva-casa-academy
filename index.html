@@ -879,11 +879,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
             <button class="filter-icon-btn" style="background:white;flex-shrink:0" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
             <button class="filter-icon-btn" style="background:white;flex-shrink:0" onclick="openSheet('sheet-ordenar')"><i class="ti ti-arrows-sort" style="font-size:18px"></i></button>
-            <button onclick="switchView('list')" style="background:var(--text-primary);color:var(--surface-2);border:none;border-radius:20px;padding:0 14px;height:44px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:var(--font-sans);flex-shrink:0;white-space:nowrap">Cerrar mapa <i class="ti ti-x" style="font-size:13px"></i></button>
+            <button onclick="switchView('list')" class="filter-icon-btn" style="background:var(--text-primary);color:var(--surface-2);flex-shrink:0"><i class="ti ti-x" style="font-size:18px"></i></button>
           </div>
           <!-- carrusel sticky bottom -->
           <div style="position:absolute;bottom:0;left:0;right:0;z-index:1000;padding:12px 0 16px;background:linear-gradient(to top,rgba(255,255,255,1) 60%,transparent)">
-            <div id="map-carousel" style="display:flex;gap:10px;overflow-x:auto;padding:4px 16px 4px 20px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory">
+            <div id="map-carousel" style="display:flex;gap:10px;overflow-x:auto;padding:4px 16px 4px 0;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory">
               <!-- cards se renderizan por JS -->
             </div>
           </div>
@@ -1601,7 +1601,7 @@ function makePriceIcon(p, selected){
 
 function renderMapCarousel(props){
   const track = document.getElementById('map-carousel');
-  track.innerHTML = props.map(p => `
+  track.innerHTML = '<div style="flex-shrink:0;width:20px"></div>' + props.map(p => `
     <div id="mcard-${p.id}" onclick="selectMapPin(${p.id})" style="flex-shrink:0;width:200px;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2);cursor:pointer;scroll-snap-align:start;transition:box-shadow .2s">
       <div style="height:100px;background:var(--surface-1);display:flex;align-items:center;justify-content:center">
         <i class="ti ti-building" style="font-size:32px;color:var(--border)"></i>
