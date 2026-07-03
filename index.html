@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BBVA Casa Academy</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --text-primary:#1a1a18;
+  --text-secondary:#5f5e5a;
+  --text-muted:#888780;
+  --surface-0:#f1efe8;
+  --surface-1:#f7f6f2;
+  --surface-2:#ffffff;
+  --border:rgba(0,0,0,.12);
+  --border-strong:rgba(0,0,0,.22);
+  --border-stronger:rgba(0,0,0,.36);
+  --border-warning:#c87a00;
+  --border-success:#3b6d11;
+  --border-danger:#a32d2d;
+  --bg-warning:#faeeda;
+  --bg-success:#eaf3de;
+  --bg-danger:#fcebeb;
+  --text-warning:#854f0b;
+  --text-success:#3b6d11;
+  --text-danger:#a32d2d;
+  --radius:8px;
+  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --text-primary:#f0ede6;
+    --text-secondary:#b4b2a9;
+    --text-muted:#888780;
+    --surface-0:#1c1b18;
+    --surface-1:#252420;
+    --surface-2:#2e2d29;
+    --border:rgba(255,255,255,.1);
+    --border-strong:rgba(255,255,255,.2);
+    --border-stronger:rgba(255,255,255,.35);
+    --bg-warning:#3d2800;
+    --bg-success:#152900;
+    --bg-danger:#3d0f0f;
+    --text-warning:#f0a840;
+    --text-success:#8ccf50;
+    --text-danger:#f09595;
+  }
+}
+html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
+#app{max-width:430px;margin:0 auto;min-height:100dvh;background:var(--surface-2);display:flex;flex-direction:column}
+.screen{display:none;flex-direction:column;height:100dvh;overflow-y:auto;padding-top:52px}
+.screen.active{display:flex}
+.content{flex:1;padding:24px 20px 80px;display:flex;flex-direction:column;gap:20px}
+.app-header{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:20;background:var(--surface-2);border-bottom:0.5px solid var(--border);padding:10px 16px;padding-top:max(10px,env(safe-area-inset-top));display:flex;align-items:center;justify-content:space-between;transition:transform .3s ease}
+.app-header.hidden{transform:translateX(-50%) translateY(-110%)}
+.app-header-brand{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--text-primary)}
+.app-header-brand i{font-size:16px;color:var(--text-secondary)}
+.app-header-avatar{width:34px;height:34px;border-radius:50%;background:var(--surface-1);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;flex-shrink:0}
+.hero{display:flex;flex-direction:column;gap:8px}
+.hero h1{font-size:24px;font-weight:600;color:var(--text-primary);line-height:1.25}
+.hero p{font-size:15px;color:var(--text-secondary);line-height:1.6}
+.moment-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em}
+.moments{display:flex;flex-direction:column;gap:10px}
+.moment-card{border:0.5px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:border-color .15s,background .15s;background:var(--surface-2);-webkit-tap-highlight-color:transparent;user-select:none}
+.moment-card:active,.moment-card.selected{border-color:var(--border-stronger);background:var(--surface-1)}
+.moment-icon{width:42px;height:42px;border:0.5px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px}
+.moment-text{flex:1}
+.moment-text strong{font-size:14px;font-weight:600;color:var(--text-primary);display:block;margin-bottom:2px}
+.moment-text span{font-size:13px;color:var(--text-secondary)}
+.route-preview{border:0.5px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.route-preview-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em}
+.route-steps{display:flex;align-items:flex-start}
+.route-step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+.route-step-dot{width:30px;height:30px;border:0.5px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--text-muted);background:var(--surface-2);flex-shrink:0}
+.route-step-dot.active{border-color:var(--border-stronger);background:var(--surface-1);color:var(--text-primary);font-weight:600}
+.route-step-dot.skipped{background:var(--surface-1);color:var(--text-muted)}
+.route-step-name{font-size:11px;color:var(--text-muted);text-align:center;line-height:1.3}
+.route-step-time{font-size:10px;color:var(--text-muted);text-align:center;opacity:.7}
+.route-step-name.active{color:var(--text-primary);font-weight:500}
+.route-connector{flex:1;max-width:28px;height:0.5px;background:var(--border);margin-top:15px}
+.route-meta{display:flex;gap:16px;border-top:0.5px solid var(--border);padding-top:12px}
+.route-meta-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-muted)}
+.cta-area{padding:12px 20px 16px;position:sticky;bottom:56px;z-index:10;background:var(--surface-2);border-top:0.5px solid var(--border)}
+#toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(20px);max-width:390px;width:calc(100% - 40px);font-size:13px;font-weight:500;padding:12px 16px;border-radius:12px;z-index:200;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;display:flex;align-items:center;gap:10px}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.toast-success{background:#1a7a2e;color:#fff}
+#toast.toast-default{background:var(--text-primary);color:var(--surface-2)}
+.btn-primary{width:100%;padding:15px;border:none;border-radius:var(--radius);background:var(--text-primary);color:var(--surface-2);font-size:16px;font-weight:600;cursor:pointer;font-family:var(--font-sans);transition:opacity .15s;-webkit-tap-highlight-color:transparent}
+.btn-primary:active{opacity:.8}
+.btn-primary:disabled{opacity:.35;cursor:default}
+
+.progress-bar-container{padding:16px 20px 12px;border-bottom:0.5px solid var(--border)}
+
+.edu-section{display:flex;flex-direction:column;gap:16px}
+.edu-section h2{font-size:20px;font-weight:600;color:var(--text-primary);line-height:1.25}
+.edu-section .bajada{font-size:14px;color:var(--text-secondary);line-height:1.65;margin-top:4px}
+
+.concept-card{border:0.5px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .15s}
+.concept-card:active{border-color:var(--border-stronger)}
+.concept-header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.concept-title{font-size:14px;font-weight:600;color:var(--text-primary)}
+.concept-pill{font-size:10px;padding:3px 8px;border:0.5px solid var(--border);border-radius:20px;color:var(--text-muted);white-space:nowrap;flex-shrink:0}
+.concept-body{font-size:13px;color:var(--text-secondary);line-height:1.65;display:none}
+.concept-body.open{display:block}
+.tt{display:inline;border-bottom:1px dashed var(--border-stronger);cursor:help;color:var(--text-primary);position:relative}
+
+.tasa-grid{display:flex;flex-direction:column;gap:8px}
+.tasa-item{padding:12px;border:0.5px solid var(--border);border-radius:var(--radius)}
+.tasa-item-name{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:3px}
+.tasa-item-desc{font-size:12px;color:var(--text-secondary);line-height:1.5}
+
+.mini-check{border:0.5px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.mini-check h3{font-size:15px;font-weight:600;color:var(--text-primary)}
+.question{display:flex;flex-direction:column;gap:10px}
+.question p{font-size:14px;color:var(--text-primary);line-height:1.5}
+.options{display:flex;flex-direction:column;gap:8px}
+.option{border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;cursor:pointer;font-size:14px;color:var(--text-secondary);transition:all .15s;display:flex;align-items:center;gap:10px;-webkit-tap-highlight-color:transparent;user-select:none}
+.option:active{background:var(--surface-1)}
+.option.correct{border-color:var(--border-success);background:var(--bg-success);color:var(--text-success)}
+.option.wrong{border-color:var(--border-danger);background:var(--bg-danger);color:var(--text-danger)}
+.option i{font-size:15px;flex-shrink:0}
+
+.achievement{text-align:center;padding:32px 20px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.achievement-icon{width:72px;height:72px;border:0.5px solid var(--border-stronger);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:4px}
+.achievement h2{font-size:22px;font-weight:600;color:var(--text-primary)}
+.achievement .achievement-body{font-size:14px;color:var(--text-secondary);line-height:1.65;max-width:280px}
+.achievement-bar-wrap{width:100%}
+.achievement-bar-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:8px}
+.achievement-bar{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.achievement-bar-fill{height:100%;background:var(--text-primary);border-radius:3px;width:0;transition:width 1s ease}
+.module-progress-pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.mod-pill{padding:5px 12px;border-radius:20px;font-size:12px;border:0.5px solid var(--border);color:var(--text-muted)}
+.mod-pill.done{border-color:var(--border-stronger);color:var(--text-primary);font-weight:500}
+.transition-note{font-size:13px;color:var(--text-secondary);line-height:1.65;border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;background:var(--surface-1);max-width:100%}
+
+.sim-section{display:flex;flex-direction:column;gap:20px}
+.sim-section h2{font-size:20px;font-weight:600;color:var(--text-primary);line-height:1.25}
+.sim-section .bajada{font-size:14px;color:var(--text-secondary);line-height:1.65;margin-top:4px}
+.sim-form{display:flex;flex-direction:column;gap:16px}
+.sim-field label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.sim-field input{width:100%;padding:13px 14px;border:0.5px solid var(--border);border-radius:var(--radius);font-size:17px;font-weight:500;color:var(--text-primary);background:var(--surface-2);font-family:var(--font-sans);-webkit-appearance:none}
+.sim-field input:focus{outline:none;border-color:var(--border-stronger)}
+.sim-helper{font-size:11px;color:var(--text-muted);margin-top:5px}
+.plazo-options{display:flex;gap:8px}
+.plazo-btn{flex:1;padding:11px 4px;border:0.5px solid var(--border);border-radius:var(--radius);background:none;cursor:pointer;font-size:13px;color:var(--text-secondary);font-family:var(--font-sans);transition:all .15s;-webkit-tap-highlight-color:transparent}
+.plazo-btn.selected{border-color:var(--border-stronger);background:var(--surface-1);color:var(--text-primary);font-weight:600}
+
+.sim-result{border:0.5px solid var(--border-stronger);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px;background:var(--surface-1)}
+.sim-result-main{text-align:center}
+.sim-result-label{font-size:12px;color:var(--text-muted);margin-bottom:5px}
+.sim-result-amount{font-size:34px;font-weight:600;color:var(--text-primary)}
+.sim-result-sub{font-size:12px;color:var(--text-secondary);margin-top:6px;line-height:1.5}
+.sim-divider{height:0.5px;background:var(--border)}
+.sim-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sim-stat-label{font-size:11px;color:var(--text-muted);margin-bottom:3px}
+.sim-stat-val{font-size:16px;font-weight:600;color:var(--text-primary)}
+.sim-stat-val.warning-val{color:var(--text-warning)}
+
+.warning-box{border:0.5px solid var(--border-warning);border-radius:var(--radius);background:var(--bg-warning);padding:14px;font-size:13px;color:var(--text-warning);display:flex;gap:9px;align-items:flex-start;line-height:1.6}
+.disclaimer{font-size:11px;color:var(--text-muted);text-align:center;line-height:1.6;padding:0 4px}
+
+.comparison-box{border:0.5px solid var(--border);border-radius:12px;padding:16px}
+.comparison-box-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.compare-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--border)}
+.compare-row:last-child{border-bottom:none}
+.compare-plazo{font-size:13px;color:var(--text-secondary)}
+.compare-cuota{font-size:14px;font-weight:500;color:var(--text-primary)}
+.compare-cuota.alt{font-weight:400;color:var(--text-muted)}
+
+.perfil-resumen{border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;background:var(--surface-1);font-size:13px;color:var(--text-secondary);line-height:1.5}
+.perfil-resumen strong{font-weight:600;color:var(--text-primary)}
+
+.props-section{display:flex;flex-direction:column;gap:16px}
+.props-section h2{font-size:20px;font-weight:600;color:var(--text-primary)}
+.props-section .bajada{font-size:13px;color:var(--text-muted);margin-top:4px}
+.props-profile{display:flex;gap:6px;flex-wrap:wrap}
+.profile-pill{padding:5px 12px;border:0.5px solid var(--border-stronger);border-radius:20px;font-size:12px;font-weight:500;color:var(--text-primary);background:var(--surface-1)}
+.props-grid{display:flex;flex-direction:column;gap:12px;flex:1}
+.prop-card{border:0.5px solid var(--border);border-radius:12px;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.prop-img{height:120px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;border-bottom:0.5px solid var(--border)}
+.prop-info{padding:14px}
+.prop-price{font-size:19px;font-weight:600;color:var(--text-primary)}
+.prop-details{font-size:12px;color:var(--text-muted);margin:3px 0 10px;line-height:1.5}
+.prop-tags{display:flex;gap:6px;flex-wrap:wrap}
+.prop-tag{font-size:10px;padding:3px 9px;border:0.5px solid var(--border);border-radius:20px;color:var(--text-secondary)}
+
+.phase2-banner{border:0.5px solid var(--border-stronger);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px;background:var(--surface-1)}
+.phase2-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em}
+.phase2-banner h3{font-size:16px;font-weight:600;color:var(--text-primary);line-height:1.35}
+.phase2-banner p{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.btn-outline{width:100%;padding:13px;border:0.5px solid var(--border-stronger);border-radius:var(--radius);background:none;color:var(--text-primary);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-sans);-webkit-tap-highlight-color:transparent;margin-top:2px}
+.btn-outline:active{background:var(--surface-0)}
+.filter-chip{padding:7px 12px;border:0.5px solid var(--border);border-radius:20px;font-size:12px;color:var(--text-secondary);background:none;cursor:pointer;font-family:var(--font-sans);-webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:5px;transition:all .15s}
+.filter-chip.active{border-color:var(--border-stronger);background:var(--surface-1);color:var(--text-primary);font-weight:500}
+.filter-chip:active{opacity:.7}
+
+.search-bar{display:flex;align-items:center;gap:8px;border:0.5px solid var(--border-strong);border-radius:var(--radius);padding:10px 12px;background:var(--surface-2)}
+.search-bar i{font-size:16px;color:var(--text-muted);flex-shrink:0}
+.search-bar input{flex:1;border:none;background:none;font-size:14px;color:var(--text-primary);font-family:var(--font-sans);outline:none}
+.search-bar input::placeholder{color:var(--text-muted)}
+
+.view-toggle{display:flex;border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;flex-shrink:0}
+.view-btn{flex:1;padding:8px 14px;border:none;background:none;font-size:13px;color:var(--text-muted);cursor:pointer;font-family:var(--font-sans);display:flex;align-items:center;justify-content:center;gap:5px;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.view-btn.active{background:var(--surface-1);color:var(--text-primary);font-weight:500}
+.view-btn+.view-btn{border-left:0.5px solid var(--border)}
+
+#map-container{border-radius:12px;overflow:hidden;border:0.5px solid var(--border);height:400px;display:none}
+.leaflet-container{background:var(--surface-1)}
+
+/* ── Property detail ── */
+.prop-detail-hero{height:240px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border-bottom:0.5px solid var(--border)}
+.detail-breadcrumb{display:flex;align-items:center;gap:4px;padding:10px 20px;font-size:11px;color:var(--text-muted);flex-shrink:0;flex-wrap:wrap}
+.detail-breadcrumb i{font-size:10px}
+.detail-top-block{padding:16px 20px 0;display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.detail-tipo-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:4px;background:var(--text-primary);color:var(--surface-2);width:fit-content}
+.detail-title{font-size:22px;font-weight:700;color:var(--text-primary);line-height:1.25;margin:0}
+.detail-address{font-size:13px;color:var(--text-muted);line-height:1.5}
+.detail-actions{display:flex;align-items:center;gap:8px;margin-top:4px}
+.detail-action-btn{width:38px;height:38px;border-radius:8px;border:0.5px solid var(--border);background:var(--surface-2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;color:var(--text-primary)}
+.detail-cta-btn{flex:1;height:38px;border-radius:8px;border:none;background:var(--text-primary);color:var(--surface-2);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.detail-price-card{margin:16px 20px 0;border:0.5px solid var(--border);border-radius:12px;padding:16px;flex-shrink:0}
+.detail-big-price{font-size:26px;font-weight:700;color:var(--text-primary);line-height:1.15}
+.detail-price-m2{font-size:13px;color:var(--text-muted);margin-top:2px}
+.detail-price-location{font-size:13px;color:var(--text-muted);margin-top:6px;line-height:1.4}
+.btn-outline{display:flex;align-items:center;justify-content:center;gap:6px;height:40px;border-radius:8px;border:0.5px solid var(--text-primary);background:transparent;color:var(--text-primary);font-size:14px;font-weight:500;cursor:pointer}
+.detail-section{padding:20px 20px 0;flex-shrink:0}
+.detail-section-title{font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:14px}
+.detail-attrs{display:flex;flex-direction:column;gap:0}
+.detail-attr{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:0.5px solid var(--border);font-size:14px;color:var(--text-primary)}
+.detail-attr i{font-size:18px;color:var(--text-muted);width:22px;text-align:center}
+.detail-desc-text{font-size:14px;color:var(--text-secondary);line-height:1.7;margin:0}
+.detail-extra-card{border:0.5px solid var(--border);border-radius:12px;padding:16px}
+.detail-extra-icon{width:44px;height:44px;border-radius:10px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-secondary)}
+.detail-related-scroll{overflow-x:auto;padding:12px 20px 0;-webkit-overflow-scrolling:touch;flex-shrink:0}
+.detail-related-scroll::-webkit-scrollbar{display:none}
+.detail-related-inner{display:flex;gap:12px;width:max-content}
+.detail-related-card{width:160px;border:0.5px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;flex-shrink:0}
+.detail-related-img{height:90px;background:var(--surface-1);display:flex;align-items:center;justify-content:center}
+.detail-related-body{padding:10px}
+.detail-related-badge{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:4px;background:var(--text-primary);color:var(--surface-2);display:inline-block;margin-bottom:6px}
+.detail-related-price{font-size:13px;font-weight:700;color:var(--text-primary)}
+.detail-related-meta{font-size:11px;color:var(--text-muted);margin-top:2px;line-height:1.4}
+
+
+.section-screen{display:flex;flex-direction:column;gap:0}
+.section-screen h2{font-size:20px;font-weight:600;color:var(--text-primary)}
+
+.profile-avatar-lg{width:72px;height:72px;border-radius:50%;background:var(--surface-1);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:32px}
+.profile-field{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:0.5px solid var(--border)}
+.profile-field:last-child{border-bottom:none}
+.profile-field-label{font-size:12px;color:var(--text-muted);margin-bottom:2px}
+.profile-field-value{font-size:14px;color:var(--text-primary);font-weight:500}
+.profile-field-edit{font-size:12px;color:var(--text-secondary)}
+
+.list-card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+.list-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:0.5px solid var(--border);-webkit-tap-highlight-color:transparent;cursor:pointer}
+.list-item:last-child{border-bottom:none}
+.list-item:active{background:var(--surface-1)}
+.list-item-icon{width:36px;height:36px;border-radius:var(--radius);background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;color:var(--text-secondary)}
+.list-item-body{flex:1;min-width:0}
+.list-item-title{font-size:14px;font-weight:500;color:var(--text-primary);margin-bottom:2px}
+.list-item-sub{font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list-item-meta{font-size:11px;color:var(--text-muted);flex-shrink:0;text-align:right}
+
+.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--text-primary);flex-shrink:0}
+
+.sim-history-card{border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+.sim-history-header{padding:14px 16px;background:var(--surface-1);display:flex;justify-content:space-between;align-items:flex-start;border-bottom:0.5px solid var(--border)}
+.sim-history-amount{font-size:20px;font-weight:600;color:var(--text-primary)}
+.sim-history-meta{font-size:12px;color:var(--text-muted);margin-top:2px}
+.sim-history-props{padding:10px 0}
+.sim-history-prop{display:flex;align-items:center;gap:10px;padding:8px 16px}
+.sim-history-prop:active{background:var(--surface-1)}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:0.5px solid var(--border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-label{font-size:14px;color:var(--text-primary)}
+.toggle-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
+.toggle{width:44px;height:26px;border-radius:13px;background:var(--border-stronger);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;-webkit-tap-highlight-color:transparent}
+.toggle.on{background:var(--text-primary)}
+.toggle::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s}
+.toggle.on::after{left:21px}
+
+.opp-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--text-primary);color:var(--surface-2)}
+
+.empty-state{text-align:center;padding:48px 20px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty-state i{font-size:36px;color:var(--text-muted)}
+.empty-state p{font-size:14px;color:var(--text-muted);line-height:1.6}
+
+.tooltip-popup{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:350px;background:var(--text-primary);color:var(--surface-2);font-size:13px;line-height:1.6;padding:14px 16px;border-radius:10px;z-index:100;pointer-events:none;opacity:0;transition:opacity .2s}
+.tooltip-popup.visible{opacity:1}
+
+#bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(56px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--surface-2);border-top:0.5px solid var(--border);display:flex;z-index:50;transition:transform .25s ease}
+#bottom-nav.hidden{transform:translateX(-50%) translateY(100%)}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;border:none;background:none;color:var(--text-muted);font-family:var(--font-sans);padding-top:6px}
+.nav-tab.active{color:var(--text-primary)}
+.nav-tab i{font-size:20px}
+.nav-tab span{font-size:10px;font-weight:500}
+
+#drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:60;opacity:0;pointer-events:none;transition:opacity .25s}
+#drawer-overlay.open{opacity:1;pointer-events:all}
+#drawer{position:fixed;top:0;right:0;width:min(300px,88vw);height:100dvh;background:var(--surface-2);z-index:70;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column;overflow-y:auto}
+#drawer.open{transform:translateX(0)}
+.drawer-header{padding:max(20px,env(safe-area-inset-top)) 20px 20px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:12px}
+.drawer-avatar{width:44px;height:44px;border-radius:50%;background:var(--surface-1);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.drawer-username{font-size:16px;font-weight:600;color:var(--text-primary)}
+.drawer-close{margin-left:auto;width:32px;height:32px;border:none;background:none;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.drawer-section{padding:12px 0}
+.drawer-item{display:flex;align-items:center;gap:14px;padding:13px 20px;cursor:pointer;-webkit-tap-highlight-color:transparent;font-size:15px;color:var(--text-primary);font-weight:400;border:none;background:none;width:100%;font-family:var(--font-sans);text-align:left}
+.drawer-item:active{background:var(--surface-1)}
+.drawer-item i{font-size:18px;color:var(--text-muted);flex-shrink:0;width:22px}
+.drawer-item.highlight{color:var(--text-primary);font-weight:500}
+.drawer-item.highlight i{color:var(--text-primary)}
+.drawer-item.danger{color:var(--text-danger)}
+.drawer-item.danger i{color:var(--text-danger)}
+.drawer-sep{height:0.5px;background:var(--border);margin:4px 0}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Tooltip flotante -->
+  <div class="tooltip-popup" id="tooltip-popup"></div>
+
+  <!-- Bottom nav -->
+  <div id="bottom-nav">
+    <button class="nav-tab active" id="nav-inicio" onclick="navTo('screen-0','nav-inicio')">
+      <i class="ti ti-home"></i><span>Inicio</span>
+    </button>
+    <button class="nav-tab" id="nav-props" onclick="navTo('screen-props','nav-props')">
+      <i class="ti ti-building"></i><span>Propiedades</span>
+    </button>
+    <button class="nav-tab" id="nav-sim" onclick="navTo('screen-sim','nav-sim')">
+      <i class="ti ti-calculator"></i><span>Simular</span>
+    </button>
+    <button class="nav-tab" id="nav-menu" onclick="openDrawer()">
+      <i class="ti ti-menu-2"></i><span>Menú</span>
+    </button>
+  </div>
+
+  <!-- Drawer overlay -->
+  <div id="drawer-overlay" onclick="closeDrawer()"></div>
+
+  <!-- Drawer -->
+  <div id="drawer">
+    <div class="drawer-header">
+      <div class="drawer-avatar">👤</div>
+      <div>
+        <div class="drawer-username">Natalia</div>
+        <div style="font-size:12px;color:var(--text-muted)">natalia@email.com</div>
+      </div>
+      <button class="drawer-close" onclick="closeDrawer()"><i class="ti ti-x" style="font-size:18px"></i></button>
+    </div>
+    <div class="drawer-section">
+      <button class="drawer-item" onclick="closeDrawer();goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
+      <button class="drawer-item" onclick="closeDrawer();renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="drawer-item" onclick="closeDrawer();renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="drawer-item" onclick="closeDrawer();goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
+      <button class="drawer-item" onclick="closeDrawer();goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
+    </div>
+    <div class="drawer-sep"></div>
+    <div class="drawer-section">
+      <button class="drawer-item highlight" onclick="closeDrawer();renderAcademia();goScreen('screen-academia')"><i class="ti ti-school"></i> Casa Academy</button>
+      <button class="drawer-item highlight" onclick="closeDrawer();renderOpps();goScreen('screen-oportunidades')"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="drawer-item highlight" onclick="closeDrawer();navTo('screen-sim','nav-sim')"><i class="ti ti-calculator"></i> Simula tu crédito</button>
+    </div>
+    <div class="drawer-sep"></div>
+    <div class="drawer-section" style="margin-top:auto">
+      <button class="drawer-item danger" onclick="closeDrawer()"><i class="ti ti-logout"></i> Cerrar sesión</button>
+    </div>
+    <div style="padding:20px;font-size:10px;color:var(--text-muted);line-height:1.6;margin-top:auto">
+      © 2024 BBVA México, S.A., Institución de Banca Múltiple, Grupo Financiero BBVA México.
+    </div>
+  </div>
+
+  <!-- PERFIL -->
+  <div id="screen-perfil" class="screen">
+    <div class="progress-bar-container" style="border-bottom:none;padding-bottom:0">
+      <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Mi perfil</div>
+    </div>
+    <div class="content">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="profile-avatar-lg">👤</div>
+        <div>
+          <div style="font-size:18px;font-weight:600;color:var(--text-primary)">Natalia García</div>
+          <div style="font-size:13px;color:var(--text-muted);margin-top:2px">natalia@email.com</div>
+        </div>
+      </div>
+      <div class="section-screen">
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Datos personales</div>
+        <div class="list-card">
+          <div class="profile-field" style="padding:13px 16px"><div><div class="profile-field-label">Nombre completo</div><div class="profile-field-value">Natalia García Molina</div></div><span class="profile-field-edit"><i class="ti ti-edit" style="font-size:15px;color:var(--text-muted)"></i></span></div>
+          <div class="profile-field" style="padding:13px 16px"><div><div class="profile-field-label">Teléfono</div><div class="profile-field-value">+52 55 1234 5678</div></div><span class="profile-field-edit"><i class="ti ti-edit" style="font-size:15px;color:var(--text-muted)"></i></span></div>
+          <div class="profile-field" style="padding:13px 16px"><div><div class="profile-field-label">CURP</div><div class="profile-field-value">GAMN900312MDFRCX04</div></div><span class="profile-field-edit"><i class="ti ti-edit" style="font-size:15px;color:var(--text-muted)"></i></span></div>
+          <div class="profile-field" style="padding:13px 16px;border-bottom:none"><div><div class="profile-field-label">RFC</div><div class="profile-field-value">GAMN900312AB3</div></div><span class="profile-field-edit"><i class="ti ti-edit" style="font-size:15px;color:var(--text-muted)"></i></span></div>
+        </div>
+      </div>
+      <div class="section-screen">
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Dirección actual</div>
+        <div class="list-card">
+          <div class="profile-field" style="padding:13px 16px"><div><div class="profile-field-label">Calle y número</div><div class="profile-field-value">Ámsterdam 145, Int. 3</div></div><span class="profile-field-edit"><i class="ti ti-edit" style="font-size:15px;color:var(--text-muted)"></i></span></div>
+          <div class="profile-field" style="padding:13px 16px"><div><div class="profile-field-label">Colonia</div><div class="profile-field-value">Hipódromo Condesa</div></div></div>
+          <div class="profile-field" style="padding:13px 16px;border-bottom:none"><div><div class="profile-field-label">Ciudad</div><div class="profile-field-value">Ciudad de México, CDMX</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAVORITOS -->
+  <div id="screen-favoritos" class="screen">
+    <div class="progress-bar-container" style="border-bottom:none;padding-bottom:0">
+      <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Favoritos</div>
+    </div>
+    <div class="content">
+      <div class="props-grid" id="favs-grid"></div>
+    </div>
+  </div>
+
+  <!-- SIMULACIONES -->
+  <div id="screen-simulaciones" class="screen">
+    <div class="progress-bar-container" style="border-bottom:none;padding-bottom:0">
+      <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Mis simulaciones</div>
+    </div>
+    <div class="content" id="sims-content"></div>
+  </div>
+
+  <!-- NOTIFICACIONES -->
+  <div id="screen-notificaciones" class="screen">
+    <div class="progress-bar-container" style="border-bottom:none;padding-bottom:0">
+      <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Notificaciones</div>
+    </div>
+    <div class="content">
+      <div class="list-card">
+        <div class="list-item">
+          <div class="list-item-icon" style="background:var(--bg-success)"><i class="ti ti-circle-check" style="color:var(--text-success)"></i></div>
+          <div class="list-item-body"><div class="list-item-title">Simulación guardada</div><div class="list-item-sub">Tu simulación de $2,300,000 quedó registrada</div></div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div class="list-item-meta">Hoy</div><div class="notif-dot"></div></div>
+        </div>
+        <div class="list-item">
+          <div class="list-item-icon" style="background:var(--bg-warning)"><i class="ti ti-sparkles" style="color:var(--text-warning)"></i></div>
+          <div class="list-item-body"><div class="list-item-title">Nueva oportunidad</div><div class="list-item-sub">Una propiedad en Narvarte hace match con tu simulación</div></div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div class="list-item-meta">Hoy</div><div class="notif-dot"></div></div>
+        </div>
+        <div class="list-item">
+          <div class="list-item-icon"><i class="ti ti-building"></i></div>
+          <div class="list-item-body"><div class="list-item-title">Propiedad actualizada</div><div class="list-item-sub">Ámsterdam 145 en Del Valle bajó de precio</div></div>
+          <div class="list-item-meta">Ayer</div>
+        </div>
+        <div class="list-item">
+          <div class="list-item-icon"><i class="ti ti-file-text"></i></div>
+          <div class="list-item-body"><div class="list-item-title">Módulo completado</div><div class="list-item-sub">Completaste el módulo de Educación financiera</div></div>
+          <div class="list-item-meta">Lun</div>
+        </div>
+        <div class="list-item">
+          <div class="list-item-icon"><i class="ti ti-bell"></i></div>
+          <div class="list-item-body"><div class="list-item-title">Bienvenida a Casa Academy</div><div class="list-item-sub">Empezá tu camino hacia tu propiedad</div></div>
+          <div class="list-item-meta">Mar 28</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIGURACIÓN -->
+  <div id="screen-configuracion" class="screen">
+    <div class="progress-bar-container" style="border-bottom:none;padding-bottom:0">
+      <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Configuración</div>
+    </div>
+    <div class="content">
+      <div class="section-screen">
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Notificaciones</div>
+        <div class="list-card" style="padding:0 16px">
+          <div class="toggle-row"><div><div class="toggle-label">Notificaciones push</div><div class="toggle-sub">Oportunidades y alertas de propiedades</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="toggle-row"><div><div class="toggle-label">Emails de novedades</div><div class="toggle-sub">Resumen semanal de propiedades</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="toggle-row"><div><div class="toggle-label">Alertas de precio</div><div class="toggle-sub">Cuando una propiedad favorita cambia de precio</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+        </div>
+      </div>
+      <div class="section-screen">
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Privacidad</div>
+        <div class="list-card">
+          <div class="list-item"><div class="list-item-body"><div class="list-item-title">Términos y condiciones</div></div><i class="ti ti-chevron-right" style="font-size:14px;color:var(--text-muted)"></i></div>
+          <div class="list-item"><div class="list-item-body"><div class="list-item-title">Política de privacidad</div></div><i class="ti ti-chevron-right" style="font-size:14px;color:var(--text-muted)"></i></div>
+          <div class="list-item"><div class="list-item-body"><div class="list-item-title">Eliminar cuenta</div><div class="list-item-sub">Esta acción es irreversible</div></div><i class="ti ti-chevron-right" style="font-size:14px;color:var(--text-muted)"></i></div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);text-align:center;line-height:1.6">BBVA Casa Academy v1.0.0 — Prototipo<br>© 2024 BBVA México</div>
+    </div>
+  </div>
+
+  <!-- OPORTUNIDADES -->
+  <div id="screen-oportunidades" class="screen">
+    <div class="progress-bar-container" style="border-bottom:none;padding-bottom:0">
+      <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Oportunidades</div>
+    </div>
+    <div class="content">
+      <p style="font-size:14px;color:var(--text-secondary);line-height:1.6">Propiedades nuevas que hacen match con tus simulaciones.</p>
+      <div class="props-grid" id="opp-grid"></div>
+    </div>
+  </div>
+
+  <!-- ACADEMIA -->
+  <div id="screen-academia" class="screen">
+    <div class="content">
+      <div>
+        <div style="font-size:22px;font-weight:700;color:var(--text-primary)">Casa Academy</div>
+        <div style="font-size:14px;color:var(--text-muted);margin-top:4px">Tu camino para acceder a tu propiedad.</div>
+      </div>
+      <!-- progreso global -->
+      <div style="background:var(--surface-1);border-radius:12px;padding:16px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:12px;color:var(--text-muted)">Tu progreso</span>
+          <span style="font-size:12px;color:var(--text-muted)" id="acad-counter">0 de 3 módulos</span>
+        </div>
+        <div style="height:4px;background:var(--border);border-radius:4px;overflow:hidden">
+          <div id="acad-bar" style="height:100%;background:var(--text-primary);border-radius:4px;transition:width .5s ease;width:0%"></div>
+        </div>
+      </div>
+      <!-- módulos -->
+      <div style="display:flex;flex-direction:column;gap:12px" id="acad-modules"></div>
+    </div>
+  </div>
+
+  <!-- Header global -->
+  <div class="app-header" id="app-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button id="header-back" style="display:none;width:32px;height:32px;border:none;background:none;cursor:pointer;color:var(--text-primary);padding:0;-webkit-tap-highlight-color:transparent;flex-shrink:0;align-items:center;justify-content:center" onclick="headerBack()">
+        <i class="ti ti-arrow-left" style="font-size:18px"></i>
+      </button>
+      <div class="app-header-brand">
+        <i class="ti ti-building-bank" aria-hidden="true"></i> BBVA Casa Academy
+      </div>
+    </div>
+    <div class="app-header-avatar" onclick="openDrawer()">👤</div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- PASO 0 -->
+  <div id="screen-0" class="screen active">
+    <div class="content">
+      <div class="hero">
+        <h1>¿Qué tan cerca estás de acceder a tu propiedad?</h1>
+        <p>Te llevamos directo al módulo que más te sirve ahora.</p>
+      </div>
+      <div class="moment-label">Elegí desde dónde arrancás</div>
+      <div class="moments">
+        <div class="moment-card" onclick="goMoment(1)">
+          <div class="moment-icon">🤔</div>
+          <div class="moment-text">
+            <strong>Estoy empezando a informarme</strong>
+            <span>Quiero entender cómo funciona un crédito hipotecario</span>
+          </div>
+          <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
+        </div>
+        <div class="moment-card" onclick="goMoment(2)">
+          <div class="moment-icon">🧮</div>
+          <div class="moment-text">
+            <strong>Ya sé lo que quiero, quiero simular</strong>
+            <span>Tengo idea de mi ingreso y quiero ver números</span>
+          </div>
+          <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
+        </div>
+        <div class="moment-card" onclick="goMoment(3)">
+          <div class="moment-icon">🏡</div>
+          <div class="moment-text">
+            <strong>Ya simulé, quiero ver propiedades</strong>
+            <span>Tengo mi rango y quiero buscar opciones reales</span>
+          </div>
+          <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MÓDULO 1 — EDUCACIÓN -->
+  <div id="screen-edu" class="screen">
+    <div class="content">
+      <div class="edu-section">
+        <div>
+          <h2>Antes de elegir, entendé qué estás firmando.</h2>
+          <p class="bajada">Un crédito hipotecario es el compromiso financiero más grande que vas a asumir. Queremos que lo entiendas de principio a fin, no que confíes a ciegas.</p>
+        </div>
+
+        <!-- CAT -->
+        <div class="concept-card" onclick="toggleConcept('cat')">
+          <div class="concept-header">
+            <div class="concept-title">CAT — Costo Anual Total</div>
+            <span class="concept-pill">Esencial</span>
+          </div>
+          <div class="concept-body" id="cat">
+            El <span class="tt" onclick="showTooltip(event,'Costo Anual Total. El indicador oficial que mide cuánto te cuesta realmente un crédito al año.')">CAT</span> te dice el costo real de tu crédito, no solo la tasa de interés. Incluye comisiones, seguros y todos los cargos.<br><br>
+            Siempre comparé por CAT, no por tasa.
+          </div>
+        </div>
+
+        <!-- Tipos de tasa -->
+        <div class="concept-card" onclick="toggleConcept('tasa')">
+          <div class="concept-header">
+            <div class="concept-title">Tipos de tasa</div>
+            <span class="concept-pill">Importante</span>
+          </div>
+          <div class="concept-body" id="tasa">
+            <div class="tasa-grid" onclick="event.stopPropagation()">
+              <div class="tasa-item">
+                <div class="tasa-item-name">Tasa fija</div>
+                <div class="tasa-item-desc">Tu cuota no cambia nunca. Más previsibilidad, cuota inicial más alta.</div>
+              </div>
+              <div class="tasa-item">
+                <div class="tasa-item-name">Tasa variable</div>
+                <div class="tasa-item-desc">Empieza más baja, pero puede subir con la inflación. Más riesgo.</div>
+              </div>
+              <div class="tasa-item">
+                <div class="tasa-item-name">Tasa creciente</div>
+                <div class="tasa-item-desc">Arranca baja y sube gradualmente — ideal si esperás que tu ingreso crezca.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enganche -->
+        <div class="concept-card" onclick="toggleConcept('enganche')">
+          <div class="concept-header">
+            <div class="concept-title">Enganche</div>
+            <span class="concept-pill">Básico</span>
+          </div>
+          <div class="concept-body" id="enganche">
+            El <span class="tt" onclick="showTooltip(event,'El pago inicial antes de que arranque el crédito. Generalmente entre el 10% y el 20% del valor de la propiedad.')">enganche</span> es lo que pagás de tu bolsillo antes de que arranque el crédito. A mayor enganche, menos intereses pagás en total.
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini-check -->
+      <div class="mini-check">
+        <h3>Mini check — 3 preguntas</h3>
+        <p style="font-size:12px;color:var(--text-muted)">No es un examen, es confirmación de avance.</p>
+        <div id="quiz-container">
+          <div class="question" id="q1">
+            <p>¿Qué mide el CAT?</p>
+            <div class="options">
+              <div class="option" onclick="answer(1,'wrong',this)"><i class="ti ti-circle"></i> Solo la tasa de interés del crédito</div>
+              <div class="option" onclick="answer(1,'correct',this)"><i class="ti ti-circle"></i> El costo real del crédito al año, incluyendo todos los cargos</div>
+              <div class="option" onclick="answer(1,'wrong',this)"><i class="ti ti-circle"></i> El plazo máximo del crédito</div>
+            </div>
+          </div>
+          <div class="question" id="q2" style="display:none">
+            <p>¿Cuál tipo de tasa tiene cuota siempre igual?</p>
+            <div class="options">
+              <div class="option" onclick="answer(2,'wrong',this)"><i class="ti ti-circle"></i> Tasa variable</div>
+              <div class="option" onclick="answer(2,'wrong',this)"><i class="ti ti-circle"></i> Tasa creciente</div>
+              <div class="option" onclick="answer(2,'correct',this)"><i class="ti ti-circle"></i> Tasa fija</div>
+            </div>
+          </div>
+          <div class="question" id="q3" style="display:none">
+            <p>¿Qué es el enganche?</p>
+            <div class="options">
+              <div class="option" onclick="answer(3,'wrong',this)"><i class="ti ti-circle"></i> La primera cuota mensual del crédito</div>
+              <div class="option" onclick="answer(3,'correct',this)"><i class="ti ti-circle"></i> El pago inicial que ponés de tu bolsillo antes de arrancar</div>
+              <div class="option" onclick="answer(3,'wrong',this)"><i class="ti ti-circle"></i> El seguro de vida del crédito</div>
+            </div>
+          </div>
+          <div id="quiz-done" style="display:none;text-align:center;padding:10px 0;font-size:14px;color:var(--text-secondary)">
+            Entendiste los conceptos clave. Ya podés simular tu capacidad.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGRO (reutilizable) -->
+  <div id="screen-achievement" class="screen">
+    <div class="content" style="justify-content:center">
+      <div class="achievement">
+        <div class="achievement-icon" id="ach-icon"></div>
+        <h2 id="ach-title"></h2>
+        <p class="achievement-body" id="ach-body"></p>
+        <div class="achievement-bar-wrap">
+          <div class="achievement-bar-meta">
+            <span>Tu progreso</span><span id="ach-counter"></span>
+          </div>
+          <div class="achievement-bar"><div class="achievement-bar-fill" id="ach-bar" style="width:0%"></div></div>
+        </div>
+        <div class="module-progress-pills" id="ach-pills"></div>
+        <div class="transition-note" id="ach-note"></div>
+      </div>
+    </div>
+    <div class="cta-area">
+      <button class="btn-primary" id="ach-cta"></button>
+    </div>
+  </div>
+
+  <!-- MÓDULO 2 — SIMULACIÓN -->
+  <div id="screen-sim" class="screen">
+    <div class="content">
+      <div class="sim-section">
+        <div>
+          <h2>¿Cuánto podés pagar sin que duela?</h2>
+          <p class="bajada">Una regla general — tu cuota no debería superar el 30% de tu ingreso mensual. Acá calculamos si eso aplica para vos.</p>
+        </div>
+        <div class="sim-form">
+          <div class="sim-field">
+            <label>
+              ¿Cuánto ganás al mes?
+              <span class="tt" onclick="showTooltip(event,'Ingreso neto — lo que cae a tu cuenta después de impuestos y deducciones.')">
+                <i class="ti ti-info-circle" style="font-size:14px;color:var(--text-muted)"></i>
+              </span>
+            </label>
+            <input type="number" id="ingreso" placeholder="25000" inputmode="numeric" oninput="simular()">
+            <div class="sim-helper">Ingreso neto mensual</div>
+          </div>
+          <div class="sim-field">
+            <label>
+              ¿Cuánto tenés ahorrado para el enganche?
+              <span class="tt" onclick="showTooltip(event,'El pago inicial. Generalmente entre el 10% y el 20% del valor de la propiedad.')">
+                <i class="ti ti-info-circle" style="font-size:14px;color:var(--text-muted)"></i>
+              </span>
+            </label>
+            <input type="number" id="enganche-input" placeholder="300000" inputmode="numeric" oninput="simular()">
+            <div class="sim-helper">Tu ahorro disponible para el pago inicial</div>
+          </div>
+          <div class="sim-field">
+            <label>¿En cuántos años querés pagarlo?</label>
+            <div class="plazo-options">
+              <button class="plazo-btn selected" onclick="selectPlazo(this,10)">10 años</button>
+              <button class="plazo-btn" onclick="selectPlazo(this,15)">15 años</button>
+              <button class="plazo-btn" onclick="selectPlazo(this,20)">20 años</button>
+              <button class="plazo-btn" onclick="selectPlazo(this,25)">25 años</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="sim-result-area" style="display:none;flex-direction:column;gap:12px">
+          <div class="sim-result">
+            <div class="sim-result-main">
+              <div class="sim-result-label">Podés considerar propiedades de hasta</div>
+              <div class="sim-result-amount" id="res-prop">$0</div>
+              <div class="sim-result-sub" id="res-sub">Tu cuota mensual estimada sería de <strong id="res-cuota-inline">$0</strong></div>
+            </div>
+            <div class="sim-divider"></div>
+            <div class="sim-stats">
+              <div>
+                <div class="sim-stat-label">Cuota mensual est.</div>
+                <div class="sim-stat-val" id="res-cuota">$0</div>
+              </div>
+              <div>
+                <div class="sim-stat-label">% de tu ingreso</div>
+                <div class="sim-stat-val" id="res-pct">0%</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="warning-cuota" class="warning-box" style="display:none">
+            <i class="ti ti-alert-triangle" style="font-size:17px;flex-shrink:0;margin-top:1px"></i>
+            <div>
+              Esta cuota representa el <strong id="warn-pct">0%</strong> de tu ingreso. Es posible, pero ajustado.<br>
+              <span style="font-size:12px;opacity:.85">¿Querés ver qué pasa si extendés el plazo?</span>
+            </div>
+          </div>
+
+          <div class="comparison-box">
+            <div class="comparison-box-label">Comparación de plazos</div>
+            <div id="comparison-table"></div>
+          </div>
+
+          <div class="disclaimer">Esta simulación se basa en los datos que declarás. No es una pre-aprobación bancaria ni garantiza que BBVA apruebe tu solicitud.</div>
+
+          <div class="perfil-resumen" id="perfil-resumen" style="display:none">
+            <strong>Tu perfil:</strong> <span id="perfil-texto"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="cta-area">
+      <button class="btn-primary" onclick="completeModule2()">Ver propiedades en mi rango →</button>
+    </div>
+  </div>
+
+  <!-- MÓDULO 3 — PROPIEDADES -->
+  <div id="screen-props" class="screen">
+    <div class="content">
+      <div class="props-section">
+        <div>
+          <h2>Propiedades en tu rango.</h2>
+          <p class="bajada">Resultados filtrados según tu simulación. Los precios son referenciales.</p>
+        </div>
+        <div class="props-profile" id="profile-pills">
+          <span class="profile-pill" id="pill-monto">Hasta $3,000,000</span>
+          <span class="profile-pill" id="pill-enganche">Enganche $300,000</span>
+          <span class="profile-pill" id="pill-plazo">20 años</span>
+        </div>
+        <div class="search-bar">
+          <i class="ti ti-search"></i>
+          <input type="text" placeholder="Buscar por colonia, zona..." oninput="onSearch(this.value)" id="props-search">
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">Filtrar</div>
+          <div class="view-toggle">
+            <button class="view-btn active" id="btn-list" onclick="switchView('list')"><i class="ti ti-list" style="font-size:14px"></i> Lista</button>
+            <button class="view-btn" id="btn-map" onclick="switchView('map')"><i class="ti ti-map-pin" style="font-size:14px"></i> Mapa</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="filter-chips"></div>
+        <div id="props-count" style="font-size:12px;color:var(--text-muted)"></div>
+        <div class="props-grid" id="props-grid"></div>
+        <div id="map-container"></div>
+        <div class="phase2-banner">
+          <div class="phase2-label">Próximamente — Fase 2</div>
+          <h3>Pre-aprobación real con match bancario</h3>
+          <p>¿Te interesa una de estas propiedades? En una próxima versión podrás pre-aprobar tu crédito directamente con BBVA y hacer match con la propiedad elegida.</p>
+          <button class="btn-outline" onclick="alert('Un asesor BBVA se pondrá en contacto con vos.')">Hablar con un asesor</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETALLE DE PROPIEDAD -->
+  <div id="screen-prop-detail" class="screen">
+    <!-- Hero imagen -->
+    <div class="prop-detail-hero">
+      <i class="ti ti-building" style="font-size:64px;color:var(--text-muted)"></i>
+    </div>
+    <!-- Breadcrumb -->
+    <div class="detail-breadcrumb">
+      <span>Inicio</span><i class="ti ti-chevron-right"></i>
+      <span>Casas y Departamentos</span><i class="ti ti-chevron-right"></i>
+      <span id="detail-breadcrumb-zona"></span>
+    </div>
+    <!-- Tipo badge + título + dirección + acciones -->
+    <div class="detail-top-block">
+      <div id="detail-tipo-badge" class="detail-tipo-badge"></div>
+      <h1 class="detail-title" id="detail-title"></h1>
+      <div class="detail-address" id="detail-address"></div>
+      <div class="detail-actions">
+        <button class="detail-action-btn" onclick="alert('Guardado en favoritos')"><i class="ti ti-heart"></i></button>
+        <button class="detail-action-btn" onclick="alert('Compartir propiedad')"><i class="ti ti-share"></i></button>
+        <button class="detail-cta-btn" onclick="goScreen('screen-sim')"><i class="ti ti-calculator"></i> Simula tu Crédito</button>
+        <button class="detail-action-btn" onclick="alert('Agendar visita')"><i class="ti ti-calendar"></i></button>
+      </div>
+    </div>
+    <!-- Tarjeta de precio -->
+    <div class="detail-price-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div>
+          <div id="detail-price-badge" class="detail-tipo-badge" style="margin-bottom:8px"></div>
+          <div class="detail-big-price" id="detail-price"></div>
+          <div class="detail-price-m2" id="detail-price-m2"></div>
+          <div class="detail-price-location" id="detail-location"></div>
+        </div>
+        <button class="detail-action-btn"><i class="ti ti-heart"></i></button>
+      </div>
+      <button class="btn-outline" style="margin-top:14px;width:100%" onclick="alert('Un asesor BBVA se pondrá en contacto con vos.')">
+        <i class="ti ti-headset"></i> Contacta al asesor
+      </button>
+    </div>
+    <!-- Descubre la propiedad -->
+    <div class="detail-section">
+      <div class="detail-section-title">Descubre la propiedad</div>
+      <div class="detail-attrs" id="detail-attrs"></div>
+    </div>
+    <!-- Ver en el mapa -->
+    <div class="detail-section">
+      <div class="detail-section-title">Ver en el mapa</div>
+      <div id="detail-map" style="height:160px;border-radius:10px;overflow:hidden;border:0.5px solid var(--border)"></div>
+    </div>
+    <!-- Reseña -->
+    <div class="detail-section">
+      <div class="detail-section-title">Reseña</div>
+      <p class="detail-desc-text" id="detail-desc"></p>
+    </div>
+    <!-- Extras -->
+    <div class="detail-section">
+      <div class="detail-extra-card">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="detail-extra-icon"><i class="ti ti-3d-cube-sphere" style="font-size:22px"></i></div>
+          <div><div style="font-size:14px;font-weight:500;color:var(--text-primary)">Visualización 3D</div><div style="font-size:12px;color:var(--text-muted)">Recorrée el proyecto completo</div></div>
+        </div>
+        <button class="btn-outline" style="margin-top:12px;width:100%" onclick="alert('Próximamente')">Ampliar</button>
+      </div>
+      <div class="detail-extra-card" style="margin-top:12px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="detail-extra-icon"><i class="ti ti-certificate" style="font-size:22px"></i></div>
+          <div><div style="font-size:14px;font-weight:500;color:var(--text-primary)">Desarrollador certificado</div><div style="font-size:12px;color:var(--text-muted)">Accedé a toda la documentación</div></div>
+        </div>
+        <button class="btn-outline" style="margin-top:12px;width:100%" onclick="alert('Próximamente')">Ampliar</button>
+      </div>
+    </div>
+    <!-- Tu perfil / match -->
+    <div class="detail-section" id="detail-profile-section">
+      <div class="detail-section-title">Tu simulación</div>
+      <div class="props-profile" id="detail-profile-pills"></div>
+      <div class="disclaimer" id="detail-disclaimer" style="display:none;margin-top:8px">Esta simulación se basa en los datos que declarás. No es una pre-aprobación bancaria.</div>
+    </div>
+    <!-- Propiedades relacionadas -->
+    <div class="detail-section" style="padding-bottom:0">
+      <div class="detail-section-title">Propiedades que te interesaron</div>
+    </div>
+    <div class="detail-related-scroll">
+      <div id="detail-related"></div>
+    </div>
+    <div style="height:80px"></div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+let selectedMoment = 0;
+let selectedPlazo = 10;
+let entryPoint = 1;
+let simData = {ingreso:0, enganche:0, plazo:10, propMax:0, cuotaReal:0, pct:0};
+
+const PROPS = [
+  {id:1,price:2800000,area:65,rec:2,ban:1,zona:'Narvarte',tipo:'Departamento',tags:['Bien conectado','Metro Insurgentes'],lat:19.4043,lng:-99.1663,desc:'Departamento luminoso con acabados modernos. A dos cuadras del metro Insurgentes y con excelente acceso a transporte público. Edificio con seguridad 24h y áreas comunes.'},
+  {id:2,price:3100000,area:72,rec:2,ban:2,zona:'Del Valle',tipo:'Departamento',tags:['Amplio','Estacionamiento'],lat:19.3837,lng:-99.1680,desc:'Amplio departamento en una de las colonias más cotizadas de la ciudad. Incluye lugar de estacionamiento cubierto y bodega. Acceso a parques y mercados locales.'},
+  {id:3,price:3400000,area:85,rec:3,ban:2,zona:'Coyoacán',tipo:'Departamento',tags:['Familiar','Jardín compartido'],lat:19.3467,lng:-99.1617,desc:'Ideal para familia. Cuenta con jardín compartido arbolado y terraza privada. Colonia tranquila con alta calidad de vida y comercios a pie.'},
+  {id:4,price:3600000,area:90,rec:3,ban:2,zona:'Benito Juárez',tipo:'Departamento',tags:['Premium','Roof garden'],lat:19.3984,lng:-99.1664,desc:'Departamento de lujo con acceso a roof garden compartido con vista panorámica. Acabados de primer nivel, cocina integral y cajón de estacionamiento.'},
+  {id:5,price:2700000,area:50,rec:1,ban:1,zona:'Narvarte',tipo:'Departamento',tags:['Ideal para invertir','Estudio'],lat:19.4021,lng:-99.1645,desc:'Estudio moderno y funcional, ideal como inversión o para vivir solo. Excelente plusvalía en la zona. Edificio nuevo con elevador y seguridad.'},
+  {id:6,price:2950000,area:68,rec:2,ban:1,zona:'Portales',tipo:'Departamento',tags:['Tranquilo','Planta baja'],lat:19.3765,lng:-99.1568,desc:'Departamento en planta baja con salida a patio privado. Colonia Portales en plena consolidación, con excelente conectividad y ambiente de barrio.'},
+  {id:7,price:3200000,area:115,rec:3,ban:2,zona:'Coyoacán',tipo:'Casa',tags:['Con jardín','Privada'],lat:19.3490,lng:-99.1650,desc:'Casa en privada con vigilancia. Jardín propio de 30 m², cochera cubierta y cuarto de servicio. A dos cuadras del centro de Coyoacán.'},
+  {id:8,price:3500000,area:130,rec:3,ban:3,zona:'Del Valle',tipo:'Casa',tags:['Amplia','Cochera doble'],lat:19.3815,lng:-99.1700,desc:'Casa amplia con cochera para dos autos. Tres recámaras con baño completo, sala de estar y terraza. Remodelada en 2024 con materiales de alta calidad.'},
+  {id:9,price:3150000,area:78,rec:2,ban:2,zona:'Benito Juárez',tipo:'Departamento',tags:['Nuevo','Vista al parque'],lat:19.3965,lng:-99.1640,desc:'Departamento estreno con vista al Parque Hundido. Cocina abierta, ventanas de piso a techo y dos cajones de estacionamiento.'},
+  {id:10,price:2600000,area:55,rec:1,ban:1,zona:'Portales',tipo:'Departamento',tags:['Luminoso','Balcón'],lat:19.3748,lng:-99.1582,desc:'Departamento luminoso con balcón al jardín interior. Piso 3 de 6, elevador. Colonia segura y con excelente transporte público.'},
+];
+let activeFilters = {zona:null, tipo:null, rec:null};
+let searchQuery = '';
+let currentView = 'list';
+let leafletMap = null;
+let currentPropId = null;
+
+const TASA_ANUAL = 0.105;
+
+function navTo(screenId, tabId) {
+  goScreen(screenId);
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+}
+
+const FAVS_IDS = [1, 3, 5];
+const SIM_HISTORY = [
+  { id:'S001', fecha:'12 jun 2026', ingreso:35000, enganche:200000, plazo:20, propMax:2300000, cuota:22800, props:[1,2,3] },
+  { id:'S002', fecha:'28 may 2026', ingreso:28000, enganche:150000, plazo:15, propMax:1750000, cuota:19400, props:[4,5] },
+];
+
+function propCardHTML(p) {
+  return `<div class="prop-card" style="cursor:pointer" onclick="openPropDetail(${p.id})">
+    <div class="prop-img"><i class="ti ti-building" style="font-size:40px;color:var(--text-muted)"></i></div>
+    <div class="prop-info">
+      <div class="prop-price">${fmt(p.price)}</div>
+      <div class="prop-details">${p.rec} rec · ${p.ban} baño${p.ban>1?'s':''} · ${p.area} m² — ${p.zona}, CDMX</div>
+      <div class="prop-tags"><span class="prop-tag">${p.tipo}</span>${p.tags.map(t=>`<span class="prop-tag">${t}</span>`).join('')}</div>
+    </div></div>`;
+}
+
+function renderFavs() {
+  const favProps = PROPS.filter(p => FAVS_IDS.includes(p.id));
+  const grid = document.getElementById('favs-grid');
+  if (!favProps.length) { grid.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:12px">🤍</div><div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:6px">Sin favoritos aún</div><div style="font-size:13px;color:var(--text-muted)">Guardá propiedades desde el buscador</div></div>'; return; }
+  grid.innerHTML = favProps.map(p => propCardHTML(p)).join('');
+}
+
+function renderSims() {
+  const container = document.getElementById('sims-content');
+  container.innerHTML = SIM_HISTORY.map(s => {
+    const simProps = PROPS.filter(p => s.props.includes(p.id));
+    return `<div class="sim-history-card" style="margin-bottom:16px">
+      <div style="padding:14px 16px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text-primary)">Hasta ${fmt(s.propMax)}</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Cuota ~${fmt(s.cuota)}/mes · ${s.plazo} años</div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted)">${s.fecha}</div>
+      </div>
+      <div style="padding:10px 16px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:0.5px solid var(--border)">
+        <span style="font-size:11px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--text-secondary)">Ingreso ${fmt(s.ingreso)}</span>
+        <span style="font-size:11px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--text-secondary)">Enganche ${fmt(s.enganche)}</span>
+      </div>
+      <div style="padding:12px 16px">
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Propiedades en rango</div>
+        ${simProps.map(p => `<div class="list-item" style="padding:10px 0;border-bottom:0.5px solid var(--border);cursor:pointer" onclick="showPropDetail(${p.id})">
+          <div class="list-item-body"><div class="list-item-title">${fmt(p.price)}</div><div class="list-item-sub">${p.zona} · ${p.rec} rec · ${p.ban} baños · ${p.area}m²</div></div>
+          <i class="ti ti-chevron-right" style="font-size:14px;color:var(--text-muted)"></i>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderOpps() {
+  const oppProps = PROPS.filter(p => p.tags && (p.tags.includes('Nueva') || p.tags.includes('Nuevo')));
+  const grid = document.getElementById('opp-grid');
+  if (!oppProps.length) { grid.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:12px">✨</div><div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:6px">Sin oportunidades por ahora</div><div style="font-size:13px;color:var(--text-muted)">Completá una simulación para ver matches</div></div>'; return; }
+  grid.innerHTML = oppProps.map(p => propCardHTML(p)).join('');
+}
+
+function openDrawer() {
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+
+function goMoment(n) {
+  entryPoint = n;
+  if (n === 1) goScreen('screen-edu');
+  else if (n === 2) goScreen('screen-sim');
+  else goScreen('screen-props');
+}
+
+function backFromSim() {
+  if (entryPoint >= 2) goScreen('screen-0');
+  else goScreen('screen-achievement');
+}
+
+let lastScrollY = 0;
+let activeScrollListener = null;
+
+function initHeaderScroll(screen) {
+  if (activeScrollListener) activeScrollListener();
+  const handler = () => {
+    const header = document.getElementById('app-header');
+    const nav = document.getElementById('bottom-nav');
+    const current = screen.scrollTop;
+    const scrollingDown = current > lastScrollY && current > 60;
+    if (header) header.classList.toggle('hidden', scrollingDown);
+    if (nav) nav.classList.toggle('hidden', !scrollingDown && current > 60);
+    lastScrollY = current;
+  };
+  screen.addEventListener('scroll', handler, {passive:true});
+  activeScrollListener = () => screen.removeEventListener('scroll', handler);
+}
+
+const backMap = {
+  'screen-edu': null,
+  'screen-achievement': () => { if(moduleDone[3]) goScreen('screen-props'); else if(moduleDone[2]) goScreen('screen-sim'); else goScreen('screen-edu'); },
+  'screen-sim': () => entryPoint >= 2 ? goScreen('screen-0') : goScreen('screen-achievement'),
+  'screen-props': () => goScreen('screen-sim'),
+  'screen-prop-detail': () => goScreen('screen-props'),
+  'screen-perfil': () => goScreen('screen-0'),
+  'screen-favoritos': () => goScreen('screen-0'),
+  'screen-simulaciones': () => goScreen('screen-0'),
+  'screen-notificaciones': () => goScreen('screen-0'),
+  'screen-configuracion': () => goScreen('screen-0'),
+  'screen-oportunidades': () => goScreen('screen-0'),
+  'screen-academia': null,
+};
+
+let headerBackFn = null;
+function setHeaderBack(fn) {
+  headerBackFn = fn;
+  const btn = document.getElementById('header-back');
+  btn.style.display = fn ? 'inline-flex' : 'none';
+}
+
+function headerBack() {
+  if (headerBackFn) headerBackFn();
+}
+
+// módulos completados
+const moduleDone = { 1: false, 2: false, 3: false };
+
+let toastTimer = null;
+function showToast(icon, msg, type='default') {
+  const t = document.getElementById('toast');
+  t.className = `toast-${type}`;
+  t.innerHTML = `<i class="ti ${icon}" style="font-size:18px;flex-shrink:0"></i><span>${msg}</span>`;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function renderAcademia() {
+  const done = Object.values(moduleDone).filter(Boolean).length;
+  document.getElementById('acad-counter').textContent = `${done} de 3 módulos`;
+  document.getElementById('acad-bar').style.width = Math.round(done / 3 * 100) + '%';
+
+  const modules = [
+    { n:1, title:'Entendé cómo funciona', sub:'CAT, tipos de tasa y enganche', time:'5 min', screen:'screen-edu', cta:'Empezar módulo', ctaDone:'Repasar' },
+    { n:2, title:'Simulá tu capacidad', sub:'Calculá cuánto podés pagar', time:'5 min', screen:'screen-sim', cta:'Empezar módulo', ctaDone:'Simular de nuevo' },
+    { n:3, title:'Buscá propiedades', sub:'Propiedades en tu rango', time:'3 min', screen:'screen-props', cta:'Ver propiedades', ctaDone:'Ver propiedades' },
+  ];
+
+  document.getElementById('acad-modules').innerHTML = modules.map(m => {
+    const isDone = moduleDone[m.n];
+    const isLocked = m.n > 1 && !moduleDone[m.n - 1] && !isDone;
+    return `<div style="border:0.5px solid var(--border);border-radius:12px;overflow:hidden;${isDone ? 'opacity:1' : ''}">
+      <div style="padding:16px;display:flex;gap:14px;align-items:flex-start">
+        <div style="width:40px;height:40px;border-radius:10px;background:${isDone ? 'var(--text-primary)' : 'var(--surface-1)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="ti ${isDone ? 'ti-check' : isLocked ? 'ti-lock' : 'ti-book'}" style="font-size:18px;color:${isDone ? 'var(--surface-2)' : 'var(--text-muted)'}"></i>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">Módulo ${m.n}</span>
+            ${isDone ? '<span style="font-size:10px;font-weight:600;color:var(--text-primary);background:var(--bg-success);padding:2px 8px;border-radius:20px">Completado ✓</span>' : ''}
+          </div>
+          <div style="font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:3px">${m.title}</div>
+          <div style="font-size:13px;color:var(--text-muted)">${m.sub}</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;display:flex;align-items:center;gap:4px"><i class="ti ti-clock" style="font-size:12px"></i> ${m.time}</div>
+        </div>
+      </div>
+      ${!isLocked ? `<div style="padding:0 16px 16px"><button class="btn-primary" style="font-size:14px;padding:12px" onclick="navTo('${m.screen}','nav-inicio')">${isDone ? m.ctaDone : m.cta}</button></div>` : `<div style="padding:0 16px 16px"><button class="btn-primary" style="font-size:14px;padding:12px;opacity:.3" disabled>Completá el módulo anterior</button></div>`}
+    </div>`;
+  }).join('');
+}
+
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const s = document.getElementById(id);
+  s.classList.add('active');
+  lastScrollY = 0;
+  s.scrollTop = 0;
+  document.getElementById('app-header').classList.remove('hidden');
+  document.getElementById('bottom-nav').classList.remove('hidden');
+  setHeaderBack(backMap[id] || null);
+  initHeaderScroll(s);
+  if (id === 'screen-props') { renderFilterChips(); renderProps(); }
+  if (id === 'screen-academia') renderAcademia();
+}
+
+function toggleConcept(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+let tooltipTimer = null;
+function showTooltip(e, text) {
+  e.stopPropagation();
+  const popup = document.getElementById('tooltip-popup');
+  popup.textContent = text;
+  popup.classList.add('visible');
+  clearTimeout(tooltipTimer);
+  tooltipTimer = setTimeout(() => popup.classList.remove('visible'), 3500);
+}
+
+function answer(q, type, el) {
+  if (type === 'wrong') {
+    el.classList.add('wrong');
+    el.querySelector('i').className = 'ti ti-circle-x';
+    el.style.pointerEvents = 'none';
+    return;
+  }
+  const opts = el.parentElement.querySelectorAll('.option');
+  opts.forEach(o => o.style.pointerEvents = 'none');
+  el.classList.add('correct');
+  el.querySelector('i').className = 'ti ti-circle-check';
+  setTimeout(() => {
+    if (q < 3) {
+      document.getElementById('q' + q).style.display = 'none';
+      document.getElementById('q' + (q + 1)).style.display = 'flex';
+    } else {
+      document.getElementById('q3').style.display = 'none';
+      document.getElementById('quiz-done').style.display = 'block';
+      setTimeout(goToAchievement, 1200);
+    }
+  }, 700);
+}
+
+function selectPlazo(btn, p) {
+  document.querySelectorAll('.plazo-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedPlazo = p;
+  simular();
+}
+
+function fmt(v) { return '$' + Math.round(v).toLocaleString('es-MX'); }
+
+function simular() {
+  const ingreso = parseFloat(document.getElementById('ingreso').value) || 0;
+  const enganche = parseFloat(document.getElementById('enganche-input').value) || 0;
+  const ra = document.getElementById('sim-result-area');
+  if (!ingreso || !enganche) { ra.style.display = 'none'; return; }
+
+  const r = TASA_ANUAL / 12;
+  const n = selectedPlazo * 12;
+  const maxCuota = ingreso * 0.30;
+  const credito = maxCuota * (1 - Math.pow(1 + r, -n)) / r;
+  const propMax = credito + enganche;
+  const cuotaReal = credito * r / (1 - Math.pow(1 + r, -n));
+  const pct = Math.round(cuotaReal / ingreso * 100);
+
+  simData = { ingreso, enganche, plazo: selectedPlazo, propMax: Math.round(propMax), cuotaReal: Math.round(cuotaReal), pct };
+
+  document.getElementById('res-prop').textContent = fmt(propMax);
+  document.getElementById('res-sub').innerHTML = 'Tu cuota mensual estimada sería de <strong>' + fmt(cuotaReal) + '</strong>';
+  document.getElementById('res-cuota').textContent = fmt(cuotaReal);
+  const pctEl = document.getElementById('res-pct');
+  pctEl.textContent = pct + '%';
+  pctEl.className = 'sim-stat-val' + (pct > 30 ? ' warning-val' : '');
+
+  const warn = document.getElementById('warning-cuota');
+  warn.style.display = pct > 30 ? 'flex' : 'none';
+  document.getElementById('warn-pct').textContent = pct + '%';
+
+  const table = document.getElementById('comparison-table');
+  table.innerHTML = '';
+  [10, 15, 20, 25].forEach(p => {
+    const nn = p * 12;
+    const c = credito * r / (1 - Math.pow(1 + r, -nn));
+    const isCur = p === selectedPlazo;
+    const row = document.createElement('div');
+    row.className = 'compare-row';
+    row.innerHTML = `<span class="compare-plazo">${p} años${isCur ? ' <span style="font-size:10px;color:var(--text-muted)">(elegido)</span>' : ''}</span><span class="compare-cuota${isCur ? '' : ' alt'}">${fmt(c)}/mes</span>`;
+    table.appendChild(row);
+  });
+
+  const perfilEl = document.getElementById('perfil-resumen');
+  document.getElementById('perfil-texto').textContent =
+    `${fmt(ingreso)} de ingreso · ${fmt(enganche)} de enganche · ${selectedPlazo} años · hasta ${fmt(propMax)}`;
+  perfilEl.style.display = 'block';
+
+  document.getElementById('pill-monto').textContent = 'Hasta ' + fmt(propMax);
+  document.getElementById('pill-enganche').textContent = 'Enganche ' + fmt(enganche);
+  document.getElementById('pill-plazo').textContent = selectedPlazo + ' años';
+
+  ra.style.display = 'flex';
+}
+
+const ACH_DATA = {
+  1: {
+    icon: '🎓',
+    title: 'Módulo 1 completado',
+    body: 'Ya entendés qué es el CAT, cómo funcionan las tasas y para qué sirve el enganche. Eso te pone por delante del 70% de los compradores de primera vez.',
+    note: 'Elegiste comparar por CAT. Lo vamos a usar cuando veamos tus opciones.',
+    pct: 33, counter: '1 de 3 módulos',
+    pills: ['done','pending','pending'],
+    ctaLabel: 'Simular mi capacidad →', ctaFn: () => goScreen('screen-sim'),
+  },
+  2: {
+    icon: '📊',
+    title: 'Módulo 2 completado',
+    body: 'Ya sabés cuánto podés pagar sin que duela. Tu simulación está lista — ahora veamos qué propiedades entran en tu rango.',
+    note: 'Tu cuota estimada y el monto máximo van a aparecer en cada propiedad.',
+    pct: 66, counter: '2 de 3 módulos',
+    pills: ['done','done','pending'],
+    ctaLabel: 'Ver propiedades en mi rango →', ctaFn: () => goScreen('screen-props'),
+  },
+  3: {
+    icon: '🏠',
+    title: '¡Todo listo!',
+    body: 'Recorriste los tres módulos. Ya tenés los conceptos, la simulación y un panorama real de propiedades en tu rango.',
+    note: 'Cuando quieras dar el siguiente paso, un asesor BBVA puede acompañarte.',
+    pct: 100, counter: '3 de 3 módulos',
+    pills: ['done','done','done'],
+    ctaLabel: 'Ver detalles de la propiedad →', ctaFn: () => {},
+  },
+};
+
+const PILL_LABELS = ['Entendé','Simulá','Buscá'];
+
+function showAchievement(n) {
+  moduleDone[n] = true;
+  const d = ACH_DATA[n];
+  document.getElementById('ach-icon').textContent = d.icon;
+  document.getElementById('ach-title').textContent = d.title;
+  document.getElementById('ach-body').textContent = d.body;
+  document.getElementById('ach-note').textContent = d.note;
+  document.getElementById('ach-counter').textContent = d.counter;
+  document.getElementById('ach-pills').innerHTML = d.pills.map((s,i) =>
+    `<div class="mod-pill${s==='done'?' done':''}">${PILL_LABELS[i]}${s==='done'?' ✓':''}</div>`
+  ).join('');
+  const btn = document.getElementById('ach-cta');
+  btn.textContent = d.ctaLabel;
+  btn.onclick = d.ctaFn;
+  goScreen('screen-achievement');
+  setTimeout(() => { document.getElementById('ach-bar').style.width = d.pct + '%'; }, 200);
+}
+
+function goToPropDetail(id) {
+  openPropDetail(id);
+}
+
+function completeModule2() {
+  showAchievement(2);
+}
+
+function goToAchievement() {
+  showAchievement(1);
+}
+
+function renderFilterChips() {
+  const zonas = [...new Set(PROPS.map(p=>p.zona))];
+  const chips = document.getElementById('filter-chips');
+  chips.innerHTML = `
+    <button class="filter-chip${!activeFilters.tipo?' active':''}" onclick="toggleFilter('tipo',null)">Todos</button>
+    <button class="filter-chip${activeFilters.tipo==='Departamento'?' active':''}" onclick="toggleFilter('tipo','Departamento')">Departamento</button>
+    <button class="filter-chip${activeFilters.tipo==='Casa'?' active':''}" onclick="toggleFilter('tipo','Casa')">Casa</button>
+    <button class="filter-chip${activeFilters.rec===1?' active':''}" onclick="toggleFilter('rec',1)">1 rec</button>
+    <button class="filter-chip${activeFilters.rec===2?' active':''}" onclick="toggleFilter('rec',2)">2 rec</button>
+    <button class="filter-chip${activeFilters.rec===3?' active':''}" onclick="toggleFilter('rec',3)">3+ rec</button>
+    ${zonas.map(z=>`<button class="filter-chip${activeFilters.zona===z?' active':''}" onclick="toggleFilter('zona','${z}')">${z}</button>`).join('')}
+  `;
+}
+
+function toggleFilter(key, val){
+  activeFilters[key] = activeFilters[key]===val ? null : val;
+  renderFilterChips();
+  renderProps();
+}
+
+function onSearch(q){
+  searchQuery = q.toLowerCase();
+  renderProps();
+}
+
+function switchView(view){
+  currentView = view;
+  document.getElementById('btn-list').classList.toggle('active', view==='list');
+  document.getElementById('btn-map').classList.toggle('active', view==='map');
+  document.getElementById('props-grid').style.display = view==='list' ? 'flex' : 'none';
+  const mapEl = document.getElementById('map-container');
+  mapEl.style.display = view==='map' ? 'block' : 'none';
+  if(view==='map') renderMap(getFilteredProps());
+}
+
+function getFilteredProps(){
+  const max = simData.propMax || 3600000;
+  let show = PROPS.filter(p => p.price <= max * 1.1);
+  if(searchQuery) show = show.filter(p=>p.zona.toLowerCase().includes(searchQuery)||p.tipo.toLowerCase().includes(searchQuery)||p.desc.toLowerCase().includes(searchQuery));
+  if(activeFilters.zona) show = show.filter(p=>p.zona===activeFilters.zona);
+  if(activeFilters.tipo) show = show.filter(p=>p.tipo===activeFilters.tipo);
+  if(activeFilters.rec) show = activeFilters.rec===3 ? show.filter(p=>p.rec>=3) : show.filter(p=>p.rec===activeFilters.rec);
+  return show.length ? show : PROPS.slice(0,3);
+}
+
+function renderProps() {
+  const show = getFilteredProps();
+  document.getElementById('props-count').textContent = `${show.length} propiedad${show.length!==1?'es':''} encontrada${show.length!==1?'s':''}`;
+  if(currentView==='list'){
+    const grid = document.getElementById('props-grid');
+    grid.innerHTML = '';
+    show.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'prop-card';
+      card.style.cursor = 'pointer';
+      card.onclick = () => openPropDetail(p.id);
+      card.innerHTML = `
+        <div class="prop-img"><i class="ti ti-building" style="font-size:40px;color:var(--text-muted)"></i></div>
+        <div class="prop-info">
+          <div class="prop-price">${fmt(p.price)}</div>
+          <div class="prop-details">${p.rec} rec · ${p.ban} baño${p.ban>1?'s':''} · ${p.area} m² — ${p.zona}, CDMX</div>
+          <div class="prop-tags"><span class="prop-tag">${p.tipo}</span>${p.tags.map(t=>`<span class="prop-tag">${t}</span>`).join('')}</div>
+        </div>`;
+      grid.appendChild(card);
+    });
+  } else {
+    renderMap(show);
+  }
+}
+
+function renderMap(props){
+  const container = document.getElementById('map-container');
+  if(!leafletMap){
+    leafletMap = L.map('map-container',{zoomControl:true}).setView([19.39,-99.165],13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'© OpenStreetMap',maxZoom:18
+    }).addTo(leafletMap);
+  }
+  leafletMap.eachLayer(l=>{if(l instanceof L.Marker) leafletMap.removeLayer(l);});
+  props.forEach(p=>{
+    const marker = L.marker([p.lat,p.lng]).addTo(leafletMap);
+    marker.bindPopup(`<strong>${fmt(p.price)}</strong><br>${p.rec} rec · ${p.area} m²<br>${p.zona}<br><a href="#" onclick="openPropDetail(${p.id});return false;" style="font-size:12px">Ver ficha →</a>`);
+  });
+  if(props.length) {
+    const bounds = L.latLngBounds(props.map(p=>[p.lat,p.lng]));
+    leafletMap.fitBounds(bounds,{padding:[40,40]});
+  }
+  setTimeout(()=>leafletMap.invalidateSize(),100);
+}
+
+let detailMap = null;
+
+function openPropDetail(id){
+  currentPropId = id;
+  const p = PROPS.find(x=>x.id===id);
+  if(!p) return;
+  if(!moduleDone[3]){
+    ACH_DATA[3].ctaFn = () => goToPropDetail(id);
+    showAchievement(3);
+    return;
+  }
+
+  // breadcrumb
+  document.getElementById('detail-breadcrumb-zona').textContent = p.zona;
+
+  // tipo badge (duplicated in price card too)
+  document.getElementById('detail-tipo-badge').textContent = p.tipo;
+  document.getElementById('detail-price-badge').textContent = p.tipo;
+
+  // title & address
+  document.getElementById('detail-title').textContent = p.desc.split('.')[0];
+  document.getElementById('detail-address').textContent = `${p.zona}, Ciudad de México, CDMX`;
+
+  // price block
+  document.getElementById('detail-price').textContent = fmt(p.price);
+  document.getElementById('detail-price-m2').textContent = `${fmt(Math.round(p.price/p.area))} / m²`;
+  document.getElementById('detail-location').textContent = `${p.zona}, Ciudad de México`;
+
+  // attributes
+  const attrDefs = [
+    {icon:'ti-ruler-2', label:`${p.area} m²`},
+    {icon:'ti-car', label:`Estacionamientos (1)`},
+    {icon:'ti-bed', label:`Recámaras (${p.rec})`},
+    {icon:'ti-bath', label:`Baños (${p.ban})`},
+    {icon:'ti-shield-check', label:'Seguridad'},
+  ];
+  document.getElementById('detail-attrs').innerHTML = attrDefs.map(a =>
+    `<div class="detail-attr"><i class="ti ${a.icon}"></i><span>${a.label}</span></div>`
+  ).join('');
+
+  // description
+  document.getElementById('detail-desc').textContent = p.desc;
+
+  // mini map
+  setTimeout(() => {
+    const mapEl = document.getElementById('detail-map');
+    if(!detailMap){
+      detailMap = L.map('detail-map',{zoomControl:false,dragging:false,scrollWheelZoom:false}).setView([p.lat,p.lng],15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(detailMap);
+    } else {
+      detailMap.setView([p.lat,p.lng],15);
+      detailMap.eachLayer(l=>{if(l instanceof L.Marker) detailMap.removeLayer(l);});
+    }
+    L.marker([p.lat,p.lng]).addTo(detailMap);
+    detailMap.invalidateSize();
+  }, 100);
+
+  // simulación pill
+  const pills = document.getElementById('detail-profile-pills');
+  if(simData.propMax){
+    pills.innerHTML = `
+      <span class="profile-pill">Hasta ${fmt(simData.propMax)}</span>
+      <span class="profile-pill">Enganche ${fmt(simData.enganche)}</span>
+      <span class="profile-pill">${simData.plazo} años</span>
+    `;
+    document.getElementById('detail-disclaimer').style.display='block';
+  } else {
+    pills.innerHTML='<span style="font-size:13px;color:var(--text-muted)">Simulá tu capacidad para ver si esta propiedad entra en tu rango.</span>';
+  }
+
+  // propiedades relacionadas
+  const related = PROPS.filter(x=>x.id!==id).slice(0,5);
+  document.getElementById('detail-related').outerHTML =
+    `<div class="detail-related-inner" id="detail-related">${related.map(r=>`
+      <div class="detail-related-card" onclick="openPropDetail(${r.id})">
+        <div class="detail-related-img"><i class="ti ti-building" style="font-size:28px;color:var(--text-muted)"></i></div>
+        <div class="detail-related-body">
+          <span class="detail-related-badge">${r.tipo}</span>
+          <div class="detail-related-price">${fmt(r.price)}</div>
+          <div class="detail-related-meta">${fmt(Math.round(r.price/r.area))} / m²<br>${r.rec} rec · ${r.ban} baños<br>${r.zona}</div>
+        </div>
+      </div>`).join('')}</div>`;
+
+  goScreen('screen-prop-detail');
+}
+
+document.addEventListener('click', function(e) {
+  const popup = document.getElementById('tooltip-popup');
+  if (!e.target.closest('.tt')) popup.classList.remove('visible');
+});
+
+initHeaderScroll(document.getElementById('screen-0'));
+setHeaderBack(null);
+</script>
+</body>
+</html>

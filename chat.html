@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BBVA Casa Academy — Chat</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --text-primary:#1a1a18;
+  --text-secondary:#5f5e5a;
+  --text-muted:#888780;
+  --surface-0:#f1efe8;
+  --surface-1:#f0ede6;
+  --surface-2:#ffffff;
+  --border:rgba(0,0,0,.12);
+  --border-strong:rgba(0,0,0,.22);
+  --border-stronger:rgba(0,0,0,.36);
+  --border-warning:#c87a00;
+  --border-success:#3b6d11;
+  --border-danger:#a32d2d;
+  --bg-warning:#faeeda;
+  --bg-success:#eaf3de;
+  --bg-danger:#fcebeb;
+  --text-warning:#854f0b;
+  --text-success:#3b6d11;
+  --text-danger:#a32d2d;
+  --radius:8px;
+  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --text-primary:#f0ede6;
+    --text-secondary:#b4b2a9;
+    --text-muted:#888780;
+    --surface-0:#1c1b18;
+    --surface-1:#252420;
+    --surface-2:#2e2d29;
+    --border:rgba(255,255,255,.1);
+    --border-strong:rgba(255,255,255,.2);
+    --border-stronger:rgba(255,255,255,.35);
+    --bg-warning:#3d2800;--bg-success:#152900;--bg-danger:#3d0f0f;
+    --text-warning:#f0a840;--text-success:#8ccf50;--text-danger:#f09595;
+  }
+}
+html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
+#app{max-width:430px;margin:0 auto;height:100dvh;background:var(--surface-2);display:flex;flex-direction:column}
+
+/* Topbar */
+#topbar{padding:max(14px,env(safe-area-inset-top)) 20px 12px;border-bottom:0.5px solid var(--border);display:flex;flex-direction:column;gap:8px;background:var(--surface-2);flex-shrink:0}
+.topbar-row{display:flex;align-items:center;justify-content:space-between}
+.topbar-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:var(--text-secondary);border:0.5px solid var(--border);padding:3px 9px;border-radius:20px}
+.topbar-status{font-size:11px;color:var(--text-muted)}
+.progress-bar{height:2px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--text-primary);border-radius:2px;transition:width .6s ease;width:0%}
+
+/* Chat */
+#chat{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+
+/* Bubbles */
+.msg-row{display:flex;flex-direction:column;gap:4px}
+.msg-row.bot{align-items:flex-start}
+.msg-row.user{align-items:flex-end}
+.bubble{max-width:82%;padding:11px 14px;font-size:14px;line-height:1.6;border:0.5px solid var(--border)}
+.bot .bubble{background:var(--surface-1);color:var(--text-primary);border-radius:4px 16px 16px 16px}
+.user .bubble{background:var(--text-primary);color:var(--surface-2);border-radius:16px 4px 16px 16px;border-color:transparent}
+.bot-avatar{width:28px;height:28px;border:0.5px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--surface-1);flex-shrink:0;margin-bottom:2px}
+
+/* Typing indicator */
+.typing{display:flex;gap:4px;align-items:center;padding:12px 14px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:4px 16px 16px 16px;width:fit-content}
+.typing span{width:6px;height:6px;background:var(--text-muted);border-radius:50%;animation:blink 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+
+/* Rich cards in chat */
+.chat-card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;max-width:100%;width:100%}
+.chat-card-header{padding:14px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.chat-card-title{font-size:14px;font-weight:600;color:var(--text-primary)}
+.chat-card-pill{font-size:10px;padding:3px 8px;border:0.5px solid var(--border);border-radius:20px;color:var(--text-muted)}
+.chat-card-body{padding:14px 16px;font-size:13px;color:var(--text-secondary);line-height:1.65;display:none}
+.chat-card-body.open{display:block}
+.tasa-item{padding:10px 12px;border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:7px}
+.tasa-item:last-child{margin-bottom:0}
+.tasa-item-name{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px}
+.tasa-item-desc{font-size:12px;color:var(--text-secondary);line-height:1.5}
+
+.result-card{background:var(--surface-1);border:0.5px solid var(--border-stronger);border-radius:12px;padding:18px;width:100%}
+.result-main{text-align:center;margin-bottom:14px}
+.result-label{font-size:11px;color:var(--text-muted);margin-bottom:4px}
+.result-amount{font-size:30px;font-weight:600;color:var(--text-primary)}
+.result-sub{font-size:12px;color:var(--text-secondary);margin-top:4px}
+.result-divider{height:0.5px;background:var(--border);margin:12px 0}
+.result-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.result-stat-label{font-size:10px;color:var(--text-muted);margin-bottom:2px}
+.result-stat-val{font-size:15px;font-weight:600;color:var(--text-primary)}
+.result-stat-val.warn{color:var(--text-warning)}
+.result-compare{display:flex;flex-direction:column;gap:0}
+.result-compare-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.compare-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:13px}
+.compare-row:last-child{border-bottom:none}
+.compare-row span:first-child{color:var(--text-secondary)}
+.compare-row span:last-child{font-weight:500;color:var(--text-primary)}
+.compare-row.current span{font-weight:600}
+.warning-inline{border:0.5px solid var(--border-warning);border-radius:var(--radius);background:var(--bg-warning);padding:11px 13px;font-size:12px;color:var(--text-warning);display:flex;gap:8px;align-items:flex-start;line-height:1.55;margin-top:12px}
+.disclaimer-inline{font-size:10px;color:var(--text-muted);text-align:center;line-height:1.6;margin-top:10px;padding:0 4px}
+
+.prop-chat-card{border:0.5px solid var(--border);border-radius:12px;overflow:hidden;width:100%;margin-bottom:8px}
+.prop-chat-card:last-child{margin-bottom:0}
+.prop-img{height:90px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;border-bottom:0.5px solid var(--border)}
+.prop-info{padding:12px 14px}
+.prop-price{font-size:17px;font-weight:600;color:var(--text-primary)}
+.prop-details{font-size:12px;color:var(--text-muted);margin:3px 0 8px;line-height:1.4}
+.prop-tags{display:flex;gap:5px;flex-wrap:wrap}
+.prop-tag{font-size:10px;padding:2px 8px;border:0.5px solid var(--border);border-radius:20px;color:var(--text-secondary)}
+
+.phase2-chat{border:0.5px solid var(--border-stronger);border-radius:12px;padding:16px;background:var(--surface-1);width:100%}
+.phase2-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.phase2-chat h3{font-size:14px;font-weight:600;color:var(--text-primary);line-height:1.35;margin-bottom:6px}
+.phase2-chat p{font-size:12px;color:var(--text-secondary);line-height:1.6}
+
+.achievement-chat{text-align:center;padding:16px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:12px;width:100%}
+.achievement-chat .icon{font-size:28px;margin-bottom:8px}
+.achievement-chat h3{font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:6px}
+.achievement-chat p{font-size:13px;color:var(--text-secondary);line-height:1.55}
+.ach-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:12px}
+.ach-bar-fill{height:100%;background:var(--text-primary);border-radius:2px;width:0;transition:width 1s ease}
+
+.profile-pills-row{display:flex;gap:6px;flex-wrap:wrap;width:100%}
+.profile-pill{padding:4px 11px;border:0.5px solid var(--border-stronger);border-radius:20px;font-size:11px;font-weight:500;color:var(--text-primary);background:var(--surface-1)}
+
+/* Quick replies */
+#replies{padding:10px 16px;padding-bottom:max(16px,env(safe-area-inset-bottom));border-top:0.5px solid var(--border);background:var(--surface-2);display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.reply-chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:10px 14px;border:0.5px solid var(--border-stronger);border-radius:20px;font-size:14px;color:var(--text-primary);background:none;cursor:pointer;font-family:var(--font-sans);transition:background .15s;-webkit-tap-highlight-color:transparent;text-align:left;line-height:1.4}
+.chip:active{background:var(--surface-1)}
+.chip.full{width:100%}
+
+/* Text input */
+.input-row{display:flex;gap:8px;align-items:center}
+.input-row input{flex:1;padding:11px 14px;border:0.5px solid var(--border-stronger);border-radius:20px;font-size:15px;color:var(--text-primary);background:var(--surface-2);font-family:var(--font-sans);-webkit-appearance:none}
+.input-row input:focus{outline:none;border-color:var(--text-primary)}
+.input-row input::placeholder{color:var(--text-muted)}
+.send-btn{width:40px;height:40px;border-radius:50%;background:var(--text-primary);border:none;color:var(--surface-2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.send-btn:active{opacity:.8}
+.input-hint{font-size:11px;color:var(--text-muted);padding:0 4px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <div class="topbar-row">
+      <div class="topbar-badge"><i class="ti ti-building-bank" style="font-size:11px"></i> BBVA Casa Academy</div>
+      <div class="topbar-status" id="topbar-status">Paso 0 de 3</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+  <div id="chat"></div>
+  <div id="replies"></div>
+</div>
+
+<script>
+const TASA = 0.105;
+let simData = {ingreso:0, enganche:0, plazo:20};
+let prefData = {zona:null, tipo:null, rec:null};
+let currentInputStep = null;
+
+function fmt(v){return '$'+Math.round(v).toLocaleString('es-MX')}
+
+function calcSim(ingreso, enganche, plazo){
+  const r = TASA/12, n = plazo*12;
+  const cuotaMax = ingreso*0.30;
+  const credito = cuotaMax*(1-Math.pow(1+r,-n))/r;
+  const propMax = credito+enganche;
+  const cuota = credito*r/(1-Math.pow(1+r,-n));
+  const pct = Math.round(cuota/ingreso*100);
+  return {credito:Math.round(credito), propMax:Math.round(propMax), cuota:Math.round(cuota), pct};
+}
+
+const PROPS = [
+  {price:2800000,area:65,rec:2,ban:1,zona:'Narvarte',tipo:'Departamento',tags:['Bien conectado','Metro Insurgentes']},
+  {price:3100000,area:72,rec:2,ban:2,zona:'Del Valle',tipo:'Departamento',tags:['Amplio','Estacionamiento']},
+  {price:3400000,area:85,rec:3,ban:2,zona:'Coyoacán',tipo:'Departamento',tags:['Familiar','Jardín compartido']},
+  {price:3600000,area:90,rec:3,ban:2,zona:'Benito Juárez',tipo:'Departamento',tags:['Premium','Roof garden']},
+  {price:2700000,area:50,rec:1,ban:1,zona:'Narvarte',tipo:'Departamento',tags:['Ideal para invertir','Estudio']},
+  {price:2950000,area:68,rec:2,ban:1,zona:'Portales',tipo:'Departamento',tags:['Tranquilo','Planta baja']},
+  {price:3200000,area:115,rec:3,ban:2,zona:'Coyoacán',tipo:'Casa',tags:['Con jardín','Privada']},
+  {price:3500000,area:130,rec:3,ban:3,zona:'Del Valle',tipo:'Casa',tags:['Amplia','Cochera doble']},
+  {price:3150000,area:78,rec:2,ban:2,zona:'Benito Juárez',tipo:'Departamento',tags:['Nuevo','Vista al parque']},
+  {price:2600000,area:55,rec:1,ban:1,zona:'Portales',tipo:'Departamento',tags:['Luminoso','Balcón']},
+];
+
+let msgQueue = [];
+let isTyping = false;
+
+function setProgress(pct, status){
+  document.getElementById('progress-fill').style.width = pct+'%';
+  document.getElementById('topbar-status').textContent = status;
+}
+
+function scrollChat(){
+  const c = document.getElementById('chat');
+  c.scrollTop = c.scrollHeight;
+}
+
+function showTyping(){
+  removeTyping();
+  const row = document.createElement('div');
+  row.className='msg-row bot';
+  row.id='typing-indicator';
+  row.innerHTML=`<div class="bot-avatar">🏠</div><div class="typing"><span></span><span></span><span></span></div>`;
+  document.getElementById('chat').appendChild(row);
+  scrollChat();
+}
+
+function removeTyping(){
+  const el = document.getElementById('typing-indicator');
+  if(el) el.remove();
+}
+
+function addBotBubble(text){
+  const chat = document.getElementById('chat');
+  const row = document.createElement('div');
+  row.className='msg-row bot';
+  row.innerHTML=`<div class="bot-avatar">🏠</div><div class="bubble">${text}</div>`;
+  chat.appendChild(row);
+  scrollChat();
+}
+
+function addUserBubble(text){
+  const chat = document.getElementById('chat');
+  const row = document.createElement('div');
+  row.className='msg-row user';
+  row.innerHTML=`<div class="bubble">${text}</div>`;
+  chat.appendChild(row);
+  scrollChat();
+}
+
+function addCard(html){
+  const chat = document.getElementById('chat');
+  const row = document.createElement('div');
+  row.className='msg-row bot';
+  row.innerHTML=`<div class="bot-avatar">🏠</div><div style="flex:1;max-width:calc(100% - 40px)">${html}</div>`;
+  chat.appendChild(row);
+  scrollChat();
+}
+
+function addWideCard(html){
+  const chat = document.getElementById('chat');
+  const row = document.createElement('div');
+  row.className='msg-row bot';
+  row.style.paddingLeft='0';
+  row.innerHTML=`<div style="width:100%">${html}</div>`;
+  chat.appendChild(row);
+  scrollChat();
+}
+
+function setReplies(html){
+  document.getElementById('replies').innerHTML = html;
+}
+
+function clearReplies(){
+  document.getElementById('replies').innerHTML = '';
+}
+
+function queue(fn, delay){
+  return new Promise(resolve=>{
+    setTimeout(()=>{fn();resolve();},delay);
+  });
+}
+
+async function botSay(msgs, delayBetween=600){
+  for(let i=0;i<msgs.length;i++){
+    showTyping();
+    const d = Math.min(msgs[i].length*18, 1200);
+    await queue(()=>{removeTyping();addBotBubble(msgs[i]);}, d);
+    if(i<msgs.length-1) await queue(()=>{},delayBetween);
+  }
+}
+
+async function startFlow(){
+  clearReplies();
+  await botSay([
+    'Hola 👋 Soy Casa Academy, el módulo educativo de BBVA Mi Casa.',
+    '¿Qué tan cerca estás de acceder a tu propiedad?'
+  ]);
+  setReplies(`
+    <div class="reply-chips" style="flex-direction:column">
+      <button class="chip full" onclick="onMoment(1)">🤔 Estoy empezando a informarme</button>
+      <button class="chip full" onclick="onMoment(2)">🧮 Ya sé lo básico, quiero simular</button>
+      <button class="chip full" onclick="onMoment(3)">🏡 Ya simulé, quiero ver propiedades</button>
+    </div>
+  `);
+}
+
+async function onMoment(n){
+  clearReplies();
+  const labels = ['','Estoy empezando a informarme','Ya sé lo básico, quiero simular','Ya simulé, quiero ver propiedades'];
+  addUserBubble(labels[n]);
+  if(n===1) await startEdu();
+  else if(n===2) await startSim();
+  else await startProps();
+}
+
+async function startEdu(){
+  setProgress(10,'Módulo 1 — Educación');
+  await botSay([
+    'Perfecto. Antes de elegir, es importante que entiendas qué estás firmando.',
+    'Te explico los 3 conceptos clave de una hipoteca. Tocá cada uno para expandirlo.'
+  ]);
+  await queue(()=>{
+    addCard(`
+      <div class="chat-card">
+        <div class="chat-card-header" onclick="toggleCard('cat-body')">
+          <span class="chat-card-title">CAT — Costo Anual Total</span>
+          <span class="chat-card-pill">Esencial</span>
+        </div>
+        <div class="chat-card-body" id="cat-body">
+          El CAT te dice el costo real de tu crédito, no solo la tasa de interés. Incluye comisiones, seguros y todos los cargos.<br><br>
+          Siempre comparé por CAT, no por tasa.
+        </div>
+      </div>
+    `);
+  }, 400);
+  await queue(()=>{
+    addCard(`
+      <div class="chat-card">
+        <div class="chat-card-header" onclick="toggleCard('tasa-body')">
+          <span class="chat-card-title">Tipos de tasa</span>
+          <span class="chat-card-pill">Importante</span>
+        </div>
+        <div class="chat-card-body" id="tasa-body">
+          <div class="tasa-item"><div class="tasa-item-name">Tasa fija</div><div class="tasa-item-desc">Tu cuota no cambia nunca. Más previsibilidad, cuota inicial más alta.</div></div>
+          <div class="tasa-item"><div class="tasa-item-name">Tasa variable</div><div class="tasa-item-desc">Empieza más baja, pero puede subir con la inflación.</div></div>
+          <div class="tasa-item"><div class="tasa-item-name">Tasa creciente</div><div class="tasa-item-desc">Arranca baja y sube gradualmente — ideal si esperás que tu ingreso crezca.</div></div>
+        </div>
+      </div>
+    `);
+  }, 300);
+  await queue(()=>{
+    addCard(`
+      <div class="chat-card">
+        <div class="chat-card-header" onclick="toggleCard('eng-body')">
+          <span class="chat-card-title">Enganche</span>
+          <span class="chat-card-pill">Básico</span>
+        </div>
+        <div class="chat-card-body" id="eng-body">
+          El enganche es lo que pagás de tu bolsillo antes de que arranque el crédito. A mayor enganche, menos intereses pagás en total.<br><br>
+          Generalmente entre el 10% y el 20% del valor de la propiedad.
+        </div>
+      </div>
+    `);
+  }, 300);
+  await queue(()=>{}, 500);
+  await botSay(['¿Listo para el mini check? Son 3 preguntas rápidas.'], 0);
+  setReplies(`<div class="reply-chips"><button class="chip" onclick="startQuiz()">Sí, adelante 👍</button></div>`);
+}
+
+let quizQ = 0;
+const QUIZ = [
+  {
+    q:'¿Qué mide el CAT?',
+    opts:['Solo la tasa de interés','El costo real del crédito al año, incluyendo todos los cargos','El plazo máximo del crédito'],
+    correct:1
+  },
+  {
+    q:'¿Cuál tipo de tasa tiene cuota siempre igual?',
+    opts:['Tasa variable','Tasa creciente','Tasa fija'],
+    correct:2
+  },
+  {
+    q:'¿Qué es el enganche?',
+    opts:['La primera cuota mensual','El pago inicial que ponés de tu bolsillo antes de arrancar','El seguro de vida del crédito'],
+    correct:1
+  }
+];
+
+async function startQuiz(){
+  clearReplies();
+  quizQ = 0;
+  setProgress(25,'Módulo 1 — Mini check');
+  await askQuiz();
+}
+
+async function askQuiz(){
+  const q = QUIZ[quizQ];
+  showTyping();
+  await queue(()=>{
+    removeTyping();
+    addBotBubble(`Pregunta ${quizQ+1} de 3 — ${q.q}`);
+    const chips = q.opts.map((o,i)=>`<button class="chip full" onclick="answerQuiz(${i})">${o}</button>`).join('');
+    setReplies(`<div class="reply-chips" style="flex-direction:column">${chips}</div>`);
+  }, 800);
+}
+
+async function answerQuiz(i){
+  clearReplies();
+  const q = QUIZ[quizQ];
+  if(i === q.correct){
+    addUserBubble(q.opts[i]);
+    quizQ++;
+    if(quizQ < QUIZ.length){
+      showTyping();
+      await queue(()=>{removeTyping(); addBotBubble('Correcto ✓');}, 600);
+      await queue(()=>{}, 400);
+      await askQuiz();
+    } else {
+      showTyping();
+      await queue(()=>{removeTyping(); addBotBubble('¡3 de 3! Entendiste los conceptos clave.');}, 600);
+      await queue(()=>{showAchievement();}, 400);
+    }
+  } else {
+    addUserBubble(q.opts[i]);
+    showTyping();
+    await queue(()=>{
+      removeTyping();
+      addBotBubble('Esa no es. Intentá de nuevo.');
+      const q2 = QUIZ[quizQ];
+      const chips = q2.opts.map((o,idx)=>`<button class="chip full" onclick="answerQuiz(${idx})">${o}</button>`).join('');
+      setReplies(`<div class="reply-chips" style="flex-direction:column">${chips}</div>`);
+    }, 700);
+  }
+}
+
+async function showAchievement(){
+  setProgress(33,'Módulo 1 completado');
+  await queue(()=>{
+    addCard(`
+      <div class="achievement-chat">
+        <div class="icon">🎓</div>
+        <h3>Módulo 1 completado</h3>
+        <p>Ya entendés CAT, tasas y enganche. Elegiste comparar por CAT — lo vamos a usar cuando veamos tus opciones.</p>
+        <div class="ach-bar"><div class="ach-bar-fill" id="ach-fill"></div></div>
+      </div>
+    `);
+    setTimeout(()=>{const el=document.getElementById('ach-fill');if(el)el.style.width='33%';},200);
+  }, 300);
+  await queue(()=>{}, 600);
+  await botSay(['¿Arrancamos con la simulación?'], 0);
+  setReplies(`<div class="reply-chips"><button class="chip" onclick="startSim()">Simular mi capacidad →</button></div>`);
+}
+
+async function startSim(){
+  clearReplies();
+  setProgress(50,'Módulo 2 — Simulación');
+  await botSay([
+    '¿Cuánto podés pagar sin que duela?',
+    'Te voy a hacer 3 preguntas y calculamos tu capacidad. Primero: ¿cuánto ganás al mes (neto, lo que cae a tu cuenta)?'
+  ]);
+  currentInputStep = 'ingreso';
+  setReplies(`
+    <div class="input-hint">Ingresá tu ingreso neto mensual en pesos</div>
+    <div class="input-row">
+      <input type="number" id="chat-input" inputmode="numeric" placeholder="Ej: 25000" onkeydown="if(event.key==='Enter')submitInput()">
+      <button class="send-btn" onclick="submitInput()"><i class="ti ti-arrow-up" style="font-size:16px"></i></button>
+    </div>
+  `);
+  setTimeout(()=>{const el=document.getElementById('chat-input');if(el)el.focus();},300);
+}
+
+async function submitInput(){
+  const el = document.getElementById('chat-input');
+  if(!el) return;
+  const val = parseFloat(el.value);
+  if(!val || val<=0) {el.style.border='0.5px solid var(--border-danger)';return;}
+  clearReplies();
+
+  if(currentInputStep==='ingreso'){
+    simData.ingreso = val;
+    addUserBubble(fmt(val)+' al mes');
+    setProgress(58,'Módulo 2 — Simulación');
+    await botSay(['Bien. ¿Cuánto tenés ahorrado para el enganche?'], 0);
+    currentInputStep = 'enganche';
+    setReplies(`
+      <div class="input-hint">El pago inicial — generalmente 10–20% del valor de la propiedad</div>
+      <div class="input-row">
+        <input type="number" id="chat-input" inputmode="numeric" placeholder="Ej: 300000" onkeydown="if(event.key==='Enter')submitInput()">
+        <button class="send-btn" onclick="submitInput()"><i class="ti ti-arrow-up" style="font-size:16px"></i></button>
+      </div>
+    `);
+    setTimeout(()=>{const ei=document.getElementById('chat-input');if(ei)ei.focus();},300);
+
+  } else if(currentInputStep==='enganche'){
+    simData.enganche = val;
+    addUserBubble(fmt(val)+' de enganche');
+    setProgress(65,'Módulo 2 — Simulación');
+    currentInputStep = null;
+    await botSay(['¿En cuántos años querés pagarlo?'], 0);
+    setReplies(`
+      <div class="reply-chips">
+        <button class="chip" onclick="onPlazo(10)">10 años</button>
+        <button class="chip" onclick="onPlazo(15)">15 años</button>
+        <button class="chip" onclick="onPlazo(20)">20 años</button>
+        <button class="chip" onclick="onPlazo(25)">25 años</button>
+      </div>
+    `);
+  }
+}
+
+async function onPlazo(p){
+  clearReplies();
+  simData.plazo = p;
+  addUserBubble(p+' años');
+  setProgress(75,'Módulo 2 — Calculando');
+  const r = calcSim(simData.ingreso, simData.enganche, p);
+  showTyping();
+  await queue(()=>{
+    removeTyping();
+    addBotBubble(`Con estos datos, podés considerar propiedades de hasta <strong>${fmt(r.propMax)}</strong>.`);
+  }, 1200);
+  await queue(()=>{}, 300);
+  await queue(()=>{
+    const comparisons = [10,15,20,25].map(pp=>{
+      const rr = calcSim(simData.ingreso, simData.enganche, pp);
+      return `<div class="compare-row${pp===p?' current':''}">
+        <span>${pp} años${pp===p?' (elegido)':''}</span>
+        <span>${fmt(rr.cuota)}/mes</span>
+      </div>`;
+    }).join('');
+
+    const warnHtml = r.pct > 30 ? `
+      <div class="warning-inline">
+        <i class="ti ti-alert-triangle" style="font-size:16px;flex-shrink:0;margin-top:1px"></i>
+        <div>Esta cuota representa el <strong>${r.pct}%</strong> de tu ingreso. Es posible, pero ajustado. ¿Querés ver qué pasa si extendés el plazo?</div>
+      </div>` : '';
+
+    addCard(`
+      <div class="result-card">
+        <div class="result-main">
+          <div class="result-label">Propiedad máxima estimada</div>
+          <div class="result-amount">${fmt(r.propMax)}</div>
+          <div class="result-sub">Tu cuota mensual estimada sería de <strong>${fmt(r.cuota)}</strong></div>
+        </div>
+        <div class="result-divider"></div>
+        <div class="result-stats">
+          <div><div class="result-stat-label">Cuota mensual</div><div class="result-stat-val${r.pct>30?' warn':''}">${fmt(r.cuota)}</div></div>
+          <div><div class="result-stat-label">% de tu ingreso</div><div class="result-stat-val${r.pct>30?' warn':''}">${r.pct}%</div></div>
+        </div>
+        ${warnHtml}
+        <div class="result-divider"></div>
+        <div class="result-compare">
+          <div class="result-compare-label">Comparación de plazos</div>
+          ${comparisons}
+        </div>
+        <div class="disclaimer-inline">Esta simulación se basa en los datos que declarás. No es una pre-aprobación bancaria ni garantiza que BBVA apruebe tu solicitud.</div>
+      </div>
+    `);
+    scrollChat();
+  }, 400);
+  await queue(()=>{}, 600);
+  await queue(()=>{
+    addCard(`
+      <div class="profile-pills-row">
+        <span class="profile-pill">Hasta ${fmt(r.propMax)}</span>
+        <span class="profile-pill">Enganche ${fmt(simData.enganche)}</span>
+        <span class="profile-pill">${p} años</span>
+      </div>
+    `);
+  }, 200);
+  await queue(()=>{}, 500);
+  await botSay(['¿Querés ver propiedades en ese rango?'], 0);
+  setReplies(`<div class="reply-chips"><button class="chip" onclick="askZona()">Ver propiedades →</button></div>`);
+}
+
+async function askZona(){
+  clearReplies();
+  addUserBubble('Ver propiedades →');
+  await botSay(['Perfecto. Unas preguntas rápidas para afinar los resultados.','¿En qué zona te interesa buscar?'], 0);
+  setReplies(`
+    <div class="reply-chips" style="flex-wrap:wrap">
+      <button class="chip" onclick="onZona('Narvarte')">Narvarte</button>
+      <button class="chip" onclick="onZona('Del Valle')">Del Valle</button>
+      <button class="chip" onclick="onZona('Coyoacán')">Coyoacán</button>
+      <button class="chip" onclick="onZona('Benito Juárez')">Benito Juárez</button>
+      <button class="chip" onclick="onZona('Portales')">Portales</button>
+      <button class="chip" onclick="onZona(null)">Sin preferencia</button>
+    </div>
+  `);
+}
+
+async function onZona(z){
+  clearReplies();
+  prefData.zona = z;
+  addUserBubble(z || 'Sin preferencia de zona');
+  await botSay(['¿Departamento, casa, o te da igual?'], 0);
+  setReplies(`
+    <div class="reply-chips">
+      <button class="chip" onclick="onTipo('Departamento')">Departamento</button>
+      <button class="chip" onclick="onTipo('Casa')">Casa</button>
+      <button class="chip" onclick="onTipo(null)">Me da igual</button>
+    </div>
+  `);
+}
+
+async function onTipo(t){
+  clearReplies();
+  prefData.tipo = t;
+  addUserBubble(t || 'Me da igual');
+  await botSay(['¿Cuántas recámaras necesitás?'], 0);
+  setReplies(`
+    <div class="reply-chips">
+      <button class="chip" onclick="onRec(1)">1 recámara</button>
+      <button class="chip" onclick="onRec(2)">2 recámaras</button>
+      <button class="chip" onclick="onRec(3)">3 o más</button>
+      <button class="chip" onclick="onRec(null)">Sin preferencia</button>
+    </div>
+  `);
+}
+
+async function onRec(r){
+  clearReplies();
+  prefData.rec = r;
+  addUserBubble(r ? (r===3 ? '3 o más recámaras' : r+' recámara'+(r>1?'s':'')) : 'Sin preferencia');
+  await startProps();
+}
+
+function filterProps(){
+  const max = simData.ingreso ? calcSim(simData.ingreso, simData.enganche, simData.plazo).propMax : 3600000;
+  let list = PROPS.filter(p => p.price <= max * 1.1);
+  if(prefData.zona) list = list.filter(p => p.zona === prefData.zona);
+  if(prefData.tipo) list = list.filter(p => p.tipo === prefData.tipo);
+  if(prefData.rec) list = prefData.rec === 3 ? list.filter(p => p.rec >= 3) : list.filter(p => p.rec === prefData.rec);
+  return list.length ? list : PROPS.slice(0,3);
+}
+
+function renderPropCards(list){
+  return list.map(p=>`
+    <div class="prop-chat-card">
+      <div class="prop-img"><i class="ti ti-building" style="font-size:36px;color:var(--text-muted)"></i></div>
+      <div class="prop-info">
+        <div class="prop-price">${fmt(p.price)}</div>
+        <div class="prop-details">${p.rec} rec · ${p.ban} baño${p.ban>1?'s':''} · ${p.area} m² — ${p.zona}, CDMX</div>
+        <div class="prop-tags"><span class="prop-tag">${p.tipo}</span>${p.tags.map(t=>`<span class="prop-tag">${t}</span>`).join('')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function startProps(){
+  clearReplies();
+  setProgress(90,'Módulo 3 — Propiedades');
+  const show = filterProps();
+  const zonaLabel = prefData.zona || 'todas las zonas';
+  const tipoLabel = prefData.tipo || 'cualquier tipo';
+  const recLabel = prefData.rec ? (prefData.rec===3?'3+ rec':prefData.rec+' rec') : 'cualquier tamaño';
+  await botSay([`Encontré ${show.length} propiedad${show.length!==1?'es':''} en ${zonaLabel} · ${tipoLabel} · ${recLabel}. Los precios son referenciales.`], 0);
+  await queue(()=>{
+    addCard(`<div id="prop-list">${renderPropCards(show)}</div>`);
+    scrollChat();
+  }, 600);
+  await queue(()=>{}, 600);
+  await botSay(['¿Te interesa alguna? En la próxima versión podrás pre-aprobar el crédito directamente desde acá.'], 0);
+  await queue(()=>{
+    addCard(`
+      <div class="phase2-chat">
+        <div class="phase2-label">Próximamente — Fase 2</div>
+        <h3>Pre-aprobación real con match bancario</h3>
+        <p>Conectamos tu perfil con BBVA y bancos aliados para una pre-aprobación en menos de 24 h, con la propiedad que elegiste.</p>
+      </div>
+    `);
+    scrollChat();
+  }, 400);
+  setProgress(100,'Módulo 3 completado');
+  await queue(()=>{}, 400);
+  await botSay(['Por ahora, un asesor puede ayudarte a continuar.'], 0);
+  setReplies(`
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:11px;color:var(--text-muted);padding:0 4px">Ajustar filtros</div>
+      <div class="reply-chips" style="flex-wrap:wrap">
+        <button class="chip" onclick="refilterZona()">📍 Zona</button>
+        <button class="chip" onclick="refilterTipo()">🏢 Tipo</button>
+        <button class="chip" onclick="refilterRec()">🛏 Recámaras</button>
+      </div>
+      <div class="reply-chips">
+        <button class="chip" onclick="alert('Un asesor BBVA se pondrá en contacto con vos.')">Hablar con un asesor</button>
+        <button class="chip" onclick="restartFlow()">Empezar de nuevo</button>
+      </div>
+    </div>
+  `);
+}
+
+function toggleCard(id){
+  document.getElementById(id).classList.toggle('open');
+  scrollChat();
+}
+
+async function refilterZona(){
+  clearReplies();
+  await botSay(['¿Cambiamos la zona?'], 0);
+  setReplies(`
+    <div class="reply-chips" style="flex-wrap:wrap">
+      <button class="chip" onclick="reApplyFilter('zona','Narvarte')">Narvarte</button>
+      <button class="chip" onclick="reApplyFilter('zona','Del Valle')">Del Valle</button>
+      <button class="chip" onclick="reApplyFilter('zona','Coyoacán')">Coyoacán</button>
+      <button class="chip" onclick="reApplyFilter('zona','Benito Juárez')">Benito Juárez</button>
+      <button class="chip" onclick="reApplyFilter('zona','Portales')">Portales</button>
+      <button class="chip" onclick="reApplyFilter('zona',null)">Sin preferencia</button>
+    </div>
+  `);
+}
+
+async function refilterTipo(){
+  clearReplies();
+  await botSay(['¿Cambiamos el tipo de propiedad?'], 0);
+  setReplies(`
+    <div class="reply-chips">
+      <button class="chip" onclick="reApplyFilter('tipo','Departamento')">Departamento</button>
+      <button class="chip" onclick="reApplyFilter('tipo','Casa')">Casa</button>
+      <button class="chip" onclick="reApplyFilter('tipo',null)">Me da igual</button>
+    </div>
+  `);
+}
+
+async function refilterRec(){
+  clearReplies();
+  await botSay(['¿Cambiamos la cantidad de recámaras?'], 0);
+  setReplies(`
+    <div class="reply-chips">
+      <button class="chip" onclick="reApplyFilter('rec',1)">1 recámara</button>
+      <button class="chip" onclick="reApplyFilter('rec',2)">2 recámaras</button>
+      <button class="chip" onclick="reApplyFilter('rec',3)">3 o más</button>
+      <button class="chip" onclick="reApplyFilter('rec',null)">Sin preferencia</button>
+    </div>
+  `);
+}
+
+async function reApplyFilter(key, val){
+  clearReplies();
+  prefData[key] = val;
+  const labelMap = {zona: val||'todas las zonas', tipo: val||'cualquier tipo', rec: val?(val===3?'3+ rec':val+' rec'):'cualquier tamaño'};
+  addUserBubble(labelMap[key]);
+  const show = filterProps();
+  showTyping();
+  await queue(()=>{
+    removeTyping();
+    addBotBubble(`${show.length} propiedad${show.length!==1?'es':''} con ese filtro.`);
+    const list = document.getElementById('prop-list');
+    if(list){ list.innerHTML = renderPropCards(show); scrollChat(); }
+    else { addCard(`<div id="prop-list">${renderPropCards(show)}</div>`); scrollChat(); }
+  }, 700);
+  setReplies(`
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:11px;color:var(--text-muted);padding:0 4px">Ajustar filtros</div>
+      <div class="reply-chips" style="flex-wrap:wrap">
+        <button class="chip" onclick="refilterZona()">📍 Zona</button>
+        <button class="chip" onclick="refilterTipo()">🏢 Tipo</button>
+        <button class="chip" onclick="refilterRec()">🛏 Recámaras</button>
+      </div>
+      <div class="reply-chips">
+        <button class="chip" onclick="alert('Un asesor BBVA se pondrá en contacto con vos.')">Hablar con un asesor</button>
+        <button class="chip" onclick="restartFlow()">Empezar de nuevo</button>
+      </div>
+    </div>
+  `);
+}
+
+async function restartFlow(){
+  clearReplies();
+  document.getElementById('chat').innerHTML='';
+  simData={ingreso:0,enganche:0,plazo:20};
+  prefData={zona:null,tipo:null,rec:null};
+  quizQ=0;
+  currentInputStep=null;
+  setProgress(0,'Paso 0 de 3');
+  await startFlow();
+}
+
+startFlow();
+</script>
+</body>
+</html>
