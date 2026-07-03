@@ -84,6 +84,18 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .route-meta{display:flex;gap:16px;border-top:0.5px solid var(--border);padding-top:12px}
 .route-meta-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-muted)}
 .cta-area{padding:12px 20px 16px;position:sticky;bottom:56px;z-index:10;background:var(--surface-2);border-top:0.5px solid var(--border)}
+.home-hero{padding:28px 20px 24px;background:var(--surface-1);border-bottom:0.5px solid var(--border);flex-shrink:0}
+.home-hero-title{font-size:26px;font-weight:700;line-height:1.2;color:var(--text-primary);margin:0 0 20px}
+.home-hero-title em{font-style:italic}
+.home-tabs{display:flex;gap:8px;margin-bottom:16px}
+.home-tab{padding:6px 14px;border-radius:20px;border:0.5px solid var(--border);background:var(--surface-2);font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;font-family:var(--font-sans)}
+.home-tab.active{background:var(--text-primary);color:var(--surface-2);border-color:var(--text-primary)}
+.home-search-block{display:flex;flex-direction:column;gap:10px}
+.home-select{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:0.5px solid var(--border);border-radius:10px;background:var(--surface-2);cursor:pointer;font-size:15px;color:var(--text-primary)}
+.home-input input{width:100%;padding:14px 16px;border:0.5px solid var(--border);border-radius:10px;background:var(--surface-2);font-size:15px;color:var(--text-primary);font-family:var(--font-sans);box-sizing:border-box}
+.home-input input::placeholder{color:var(--text-muted)}
+.home-input input:focus{outline:none;border-color:var(--text-primary)}
+.home-search-btn{width:100%;padding:15px;border:none;border-radius:10px;background:var(--text-primary);color:var(--surface-2);font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-sans)}
 #toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(20px);max-width:390px;width:calc(100% - 40px);font-size:13px;font-weight:500;padding:12px 16px;border-radius:12px;z-index:200;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;display:flex;align-items:center;gap:10px}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast.toast-success{background:#1a7a2e;color:#fff}
@@ -540,12 +552,31 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   <!-- PASO 0 -->
   <div id="screen-0" class="screen active">
-    <div class="content">
-      <div class="hero">
-        <h1>¿Qué tan cerca estás de acceder a tu propiedad?</h1>
-        <p>Te llevamos directo al módulo que más te sirve ahora.</p>
+    <div class="home-hero">
+      <h1 class="home-hero-title">La <em>mejor opción</em> para acceder a tu próxima <em>propiedad</em></h1>
+      <div class="home-tabs">
+        <button class="home-tab active" onclick="setHomeTab(this)">Compra</button>
+        <button class="home-tab" onclick="setHomeTab(this)">Desarrollos</button>
+        <button class="home-tab" onclick="setHomeTab(this)">Oportunidades</button>
       </div>
-      <div class="moment-label">Elegí desde dónde arrancás</div>
+      <div class="home-search-block">
+        <div class="home-select">
+          <span>Departamentos</span>
+          <i class="ti ti-chevron-down" style="font-size:16px;color:var(--text-muted)"></i>
+        </div>
+        <div class="home-input">
+          <input type="text" placeholder="¿Dónde querés buscar?">
+        </div>
+        <button class="home-search-btn" onclick="navTo('screen-props','nav-props')">
+          Buscar propiedad <i class="ti ti-search"></i>
+        </button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="hero" style="padding-top:0">
+        <h1>¿Qué tan cerca estás de acceder a tu propiedad?</h1>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin:0 0 4px">Te acompañamos en el proceso de uno de los proyectos más importantes de tu vida.</p>
       <div class="moments">
         <div class="moment-card" onclick="goMoment(1)">
           <div class="moment-icon">🤔</div>
@@ -932,9 +963,10 @@ let currentPropId = null;
 const TASA_ANUAL = 0.105;
 
 function navTo(screenId, tabId) {
+  navHistory = []; // bottom nav = nueva raíz, limpia el historial
   goScreen(screenId);
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active');
+  document.getElementById(tabId) && document.getElementById(tabId).classList.add('active');
 }
 
 const FAVS_IDS = [1, 3, 5];
@@ -994,6 +1026,11 @@ function renderOpps() {
   grid.innerHTML = oppProps.map(p => propCardHTML(p)).join('');
 }
 
+function setHomeTab(btn) {
+  document.querySelectorAll('.home-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
 function openDrawer() {
   document.getElementById('drawer').classList.add('open');
   document.getElementById('drawer-overlay').classList.add('open');
@@ -1011,10 +1048,6 @@ function goMoment(n) {
   else goScreen('screen-props');
 }
 
-function backFromSim() {
-  if (entryPoint >= 2) goScreen('screen-0');
-  else goScreen('screen-achievement');
-}
 
 let lastScrollY = 0;
 let activeScrollListener = null;
@@ -1034,30 +1067,23 @@ function initHeaderScroll(screen) {
   activeScrollListener = () => screen.removeEventListener('scroll', handler);
 }
 
-const backMap = {
-  'screen-edu': null,
-  'screen-achievement': () => { if(moduleDone[3]) goScreen('screen-props'); else if(moduleDone[2]) goScreen('screen-sim'); else goScreen('screen-edu'); },
-  'screen-sim': () => entryPoint >= 2 ? goScreen('screen-0') : goScreen('screen-achievement'),
-  'screen-props': () => goScreen('screen-sim'),
-  'screen-prop-detail': () => goScreen('screen-props'),
-  'screen-perfil': () => goScreen('screen-0'),
-  'screen-favoritos': () => goScreen('screen-0'),
-  'screen-simulaciones': () => goScreen('screen-0'),
-  'screen-notificaciones': () => goScreen('screen-0'),
-  'screen-configuracion': () => goScreen('screen-0'),
-  'screen-oportunidades': () => goScreen('screen-0'),
-  'screen-academia': null,
-};
+// pantallas que nunca muestran el botón back (raíces de navegación)
+const ROOT_SCREENS = new Set(['screen-0','screen-academia']);
 
-let headerBackFn = null;
-function setHeaderBack(fn) {
-  headerBackFn = fn;
-  const btn = document.getElementById('header-back');
-  btn.style.display = fn ? 'inline-flex' : 'none';
-}
+let navHistory = [];
 
 function headerBack() {
-  if (headerBackFn) headerBackFn();
+  if (navHistory.length > 0) {
+    const prev = navHistory.pop();
+    goScreen(prev, true); // true = es un back, no empuja al historial
+  }
+}
+
+function updateBackBtn() {
+  const btn = document.getElementById('header-back');
+  const currentId = document.querySelector('.screen.active')?.id;
+  const show = navHistory.length > 0 && !ROOT_SCREENS.has(currentId);
+  btn.style.display = show ? 'inline-flex' : 'none';
 }
 
 // módulos completados
@@ -1107,7 +1133,11 @@ function renderAcademia() {
   }).join('');
 }
 
-function goScreen(id) {
+function goScreen(id, isBack = false) {
+  const current = document.querySelector('.screen.active')?.id;
+  if (!isBack && current && current !== id) {
+    navHistory.push(current);
+  }
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const s = document.getElementById(id);
   s.classList.add('active');
@@ -1115,7 +1145,7 @@ function goScreen(id) {
   s.scrollTop = 0;
   document.getElementById('app-header').classList.remove('hidden');
   document.getElementById('bottom-nav').classList.remove('hidden');
-  setHeaderBack(backMap[id] || null);
+  updateBackBtn();
   initHeaderScroll(s);
   if (id === 'screen-props') { renderFilterChips(); renderProps(); }
   if (id === 'screen-academia') renderAcademia();
@@ -1462,7 +1492,6 @@ document.addEventListener('click', function(e) {
 });
 
 initHeaderScroll(document.getElementById('screen-0'));
-setHeaderBack(null);
 </script>
 </body>
 </html>
