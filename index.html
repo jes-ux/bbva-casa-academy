@@ -190,14 +190,18 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .props-section .bajada{font-size:13px;color:var(--text-muted);margin-top:4px}
 .props-profile{display:flex;gap:6px;flex-wrap:wrap}
 .profile-pill{padding:5px 12px;border:0.5px solid var(--border-stronger);border-radius:20px;font-size:12px;font-weight:500;color:var(--text-primary);background:var(--surface-1)}
-.props-grid{display:flex;flex-direction:column;gap:12px;flex:1}
-.prop-card{border:0.5px solid var(--border);border-radius:12px;overflow:hidden;-webkit-tap-highlight-color:transparent}
-.prop-img{height:120px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;border-bottom:0.5px solid var(--border)}
-.prop-info{padding:14px}
-.prop-price{font-size:19px;font-weight:600;color:var(--text-primary)}
-.prop-details{font-size:12px;color:var(--text-muted);margin:3px 0 10px;line-height:1.5}
-.prop-tags{display:flex;gap:6px;flex-wrap:wrap}
-.prop-tag{font-size:10px;padding:3px 9px;border:0.5px solid var(--border);border-radius:20px;color:var(--text-secondary)}
+.props-grid{columns:2;column-gap:10px;flex:1}
+.prop-card{break-inside:avoid;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;-webkit-tap-highlight-color:transparent;margin-bottom:10px;display:inline-block;width:100%;position:relative}
+.prop-img{background:var(--surface-1);display:flex;align-items:flex-end;justify-content:flex-start;border-bottom:0.5px solid var(--border);position:relative;padding:10px}
+.prop-img-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%)}
+.prop-badge{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:var(--text-primary);color:var(--surface-2);position:absolute;top:8px;left:8px}
+.prop-fav{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:var(--surface-2);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.prop-info{padding:10px}
+.prop-price{font-size:14px;font-weight:700;color:var(--text-primary);line-height:1.2}
+.prop-price-m2{font-size:10px;color:var(--text-muted);margin-top:1px}
+.prop-details{font-size:11px;color:var(--text-muted);margin:5px 0 7px;line-height:1.5}
+.prop-tags{display:flex;gap:4px;flex-wrap:wrap}
+.prop-tag{font-size:9px;padding:2px 7px;border:0.5px solid var(--border);border-radius:20px;color:var(--text-secondary)}
 
 .phase2-banner{border:0.5px solid var(--border-stronger);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px;background:var(--surface-1)}
 .phase2-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em}
@@ -213,6 +217,32 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .search-bar i{font-size:16px;color:var(--text-muted);flex-shrink:0}
 .search-bar input{flex:1;border:none;background:none;font-size:14px;color:var(--text-primary);font-family:var(--font-sans);outline:none}
 .search-bar input::placeholder{color:var(--text-muted)}
+.filter-icon-btn{width:44px;height:44px;border:0.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface-2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:var(--text-primary)}
+.sheet-link{background:none;border:none;font-size:13px;font-weight:500;color:var(--text-primary);cursor:pointer;display:flex;align-items:center;gap:5px;padding:4px 0;font-family:var(--font-sans)}
+/* Bottom sheets */
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;opacity:0;pointer-events:none;transition:opacity .25s}
+.sheet-overlay.open{opacity:1;pointer-events:all}
+.bottom-sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:430px;background:var(--surface-2);border-radius:20px 20px 0 0;z-index:101;transition:transform .3s ease;max-height:90dvh;display:flex;flex-direction:column}
+.bottom-sheet.open{transform:translateX(-50%) translateY(0)}
+.sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border-strong);margin:12px auto 0}
+.sheet-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:0.5px solid var(--border)}
+.sheet-title{font-size:17px;font-weight:600;color:var(--text-primary)}
+.sheet-close{width:30px;height:30px;border-radius:50%;border:none;background:var(--surface-1);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted)}
+.sheet-body{flex:1;overflow-y:auto;padding:20px}
+.sheet-section{margin-bottom:22px}
+.sheet-section-title{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:12px}
+.sheet-chips{display:flex;gap:8px;flex-wrap:wrap}
+.sheet-chip{padding:7px 14px;border-radius:20px;border:0.5px solid var(--border);background:var(--surface-2);font-size:13px;color:var(--text-primary);cursor:pointer;font-family:var(--font-sans)}
+.sheet-chip.active{background:var(--text-primary);color:var(--surface-2);border-color:var(--text-primary)}
+.sheet-row-price{display:flex;gap:8px;margin-top:10px}
+.sheet-price-input{flex:1;padding:10px 12px;border:0.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface-2);color:var(--text-primary);font-family:var(--font-sans)}
+.sheet-radio-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:0.5px solid var(--border);cursor:pointer}
+.sheet-radio-label{font-size:15px;color:var(--text-primary)}
+.sheet-radio{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sheet-radio.selected::after{content:'';width:10px;height:10px;border-radius:50%;background:var(--text-primary);display:block}
+.sheet-footer{padding:16px 20px;border-top:0.5px solid var(--border);display:flex;gap:10px}
+.sheet-footer .btn-secondary{flex:1;padding:13px;border:0.5px solid var(--text-primary);border-radius:10px;background:transparent;color:var(--text-primary);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-sans)}
+.sheet-footer .btn-primary{flex:1;padding:13px;border:none;border-radius:10px;background:var(--text-primary);color:var(--surface-2);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-sans)}
 
 .view-toggle{display:flex;border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;flex-shrink:0}
 .view-btn{flex:1;padding:8px 14px;border:none;background:none;font-size:13px;color:var(--text-muted);cursor:pointer;font-family:var(--font-sans);display:flex;align-items:center;justify-content:center;gap:5px;-webkit-tap-highlight-color:transparent;transition:all .15s}
@@ -821,18 +851,18 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <span class="profile-pill" id="pill-enganche">Enganche $300,000</span>
           <span class="profile-pill" id="pill-plazo">20 años</span>
         </div>
-        <div class="search-bar">
-          <i class="ti ti-search"></i>
-          <input type="text" placeholder="Buscar por colonia, zona..." oninput="onSearch(this.value)" id="props-search">
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-          <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">Filtrar</div>
-          <div class="view-toggle">
-            <button class="view-btn active" id="btn-list" onclick="switchView('list')"><i class="ti ti-list" style="font-size:14px"></i> Lista</button>
-            <button class="view-btn" id="btn-map" onclick="switchView('map')"><i class="ti ti-map-pin" style="font-size:14px"></i> Mapa</button>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="search-bar" style="flex:1;margin:0">
+            <i class="ti ti-search" style="flex-shrink:0"></i>
+            <input type="text" placeholder="Buscar zona, colonia..." oninput="onSearch(this.value)" id="props-search">
+            <button id="search-clear" onclick="clearSearch()" style="display:none;background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;line-height:1"><i class="ti ti-x" style="font-size:14px"></i></button>
           </div>
+          <button class="filter-icon-btn" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap" id="filter-chips"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <button class="sheet-link" onclick="openSheet('sheet-ordenar')"><i class="ti ti-arrows-sort" style="font-size:13px"></i> Ordenar</button>
+          <button class="sheet-link" onclick="switchView(currentView==='map'?'list':'map')" id="map-toggle-btn"><i class="ti ti-map-pin" style="font-size:13px"></i> Ver en mapa</button>
+        </div>
         <div id="props-count" style="font-size:12px;color:var(--text-muted)"></div>
         <div class="props-grid" id="props-grid"></div>
         <div id="map-container"></div>
@@ -933,6 +963,102 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div style="height:80px"></div>
   </div>
 
+<!-- Sheet overlay -->
+<div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
+
+<!-- FILTROS -->
+<div class="bottom-sheet" id="sheet-filtros">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Filtros</span>
+    <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
+  </div>
+  <div class="sheet-body">
+    <div class="sheet-section">
+      <div class="sheet-section-title">Tipo de operación</div>
+      <div class="sheet-chips">
+        <button class="sheet-chip active" onclick="toggleChip(this)">Compra</button>
+        <button class="sheet-chip" onclick="toggleChip(this)">Renta</button>
+        <button class="sheet-chip" onclick="toggleChip(this)">Preventa</button>
+      </div>
+    </div>
+    <div class="sheet-section">
+      <div class="sheet-section-title">Tipo de propiedad</div>
+      <div class="sheet-chips">
+        <button class="sheet-chip active" onclick="toggleChip(this)">Departamento</button>
+        <button class="sheet-chip active" onclick="toggleChip(this)">Casa</button>
+        <button class="sheet-chip" onclick="toggleChip(this)">Local comercial</button>
+        <button class="sheet-chip" onclick="toggleChip(this)">Terreno</button>
+        <button class="sheet-chip" onclick="toggleChip(this)">Oficina</button>
+      </div>
+    </div>
+    <div class="sheet-section">
+      <div class="sheet-section-title">Valor del inmueble</div>
+      <div class="sheet-chips">
+        <button class="sheet-chip" onclick="toggleChip(this)">Hasta $1M</button>
+        <button class="sheet-chip active" onclick="toggleChip(this)">$1M a $3M</button>
+        <button class="sheet-chip" onclick="toggleChip(this)">$3M a $5M</button>
+        <button class="sheet-chip" onclick="toggleChip(this)">Más de $5M</button>
+      </div>
+      <div class="sheet-row-price">
+        <input class="sheet-price-input" placeholder="$ Mín">
+        <input class="sheet-price-input" placeholder="$ Máx">
+      </div>
+    </div>
+    <div class="sheet-section">
+      <div class="sheet-section-title">Recámaras</div>
+      <div class="sheet-chips">
+        <button class="sheet-chip" onclick="toggleChip(this)">1+</button>
+        <button class="sheet-chip active" onclick="toggleChip(this)">2+</button>
+        <button class="sheet-chip" onclick="toggleChip(this)">3+</button>
+        <button class="sheet-chip" onclick="toggleChip(this)">4+</button>
+        <button class="sheet-chip" onclick="toggleChip(this)">5+</button>
+      </div>
+    </div>
+    <div class="sheet-section">
+      <div class="sheet-section-title">Baños</div>
+      <div class="sheet-chips">
+        <button class="sheet-chip" onclick="toggleChip(this)">1+</button>
+        <button class="sheet-chip" onclick="toggleChip(this)">2+</button>
+        <button class="sheet-chip" onclick="toggleChip(this)">3+</button>
+      </div>
+    </div>
+    <div class="sheet-section">
+      <div class="sheet-section-title">Superficie</div>
+      <div class="sheet-row-price">
+        <input class="sheet-price-input" placeholder="m² Mín">
+        <input class="sheet-price-input" placeholder="m² Máx">
+      </div>
+    </div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn-secondary" onclick="closeSheet()">Eliminar filtros</button>
+    <button class="btn-primary" style="width:auto;padding:13px 24px" onclick="closeSheet()">Ver resultados</button>
+  </div>
+</div>
+
+<!-- ORDENAR -->
+<div class="bottom-sheet" id="sheet-ordenar">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Ordenar</span>
+    <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
+  </div>
+  <div class="sheet-body" style="padding:0 20px">
+    <div onclick="selectOrder(this)" class="sheet-radio-row"><span class="sheet-radio-label">Relevantes</span><div class="sheet-radio selected"></div></div>
+    <div onclick="selectOrder(this)" class="sheet-radio-row"><span class="sheet-radio-label">Menor precio</span><div class="sheet-radio"></div></div>
+    <div onclick="selectOrder(this)" class="sheet-radio-row"><span class="sheet-radio-label">Recientes</span><div class="sheet-radio"></div></div>
+    <div onclick="selectOrder(this)" class="sheet-radio-row"><span class="sheet-radio-label">Mayor precio</span><div class="sheet-radio"></div></div>
+    <div onclick="selectOrder(this)" class="sheet-radio-row"><span class="sheet-radio-label">Más vistos</span><div class="sheet-radio"></div></div>
+    <div onclick="selectOrder(this)" class="sheet-radio-row"><span class="sheet-radio-label">Bajaron de precio</span><div class="sheet-radio"></div></div>
+    <div onclick="selectOrder(this)" class="sheet-radio-row" style="border-bottom:none"><span class="sheet-radio-label">Mejores anunciantes</span><div class="sheet-radio"></div></div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn-secondary" onclick="closeSheet()">Eliminar filtros</button>
+    <button class="btn-primary" style="width:auto;padding:13px 24px" onclick="closeSheet()">Ver resultados</button>
+  </div>
+</div>
+
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -975,13 +1101,38 @@ const SIM_HISTORY = [
   { id:'S002', fecha:'28 may 2026', ingreso:28000, enganche:150000, plazo:15, propMax:1750000, cuota:19400, props:[4,5] },
 ];
 
+// Cada propiedad tiene perfil visual propio: altura de imagen + amenidades + descripción corta
+const CARD_PROFILES = [
+  { h:160, amenities:['Elevador','Seguridad 24h','Roof garden'], shortDesc:'A dos cuadras del metro. Vista despejada desde piso 8.' },
+  { h:100, amenities:['Cochera','Bodega'], shortDesc:'Planta baja con salida directa al jardín.' },
+  { h:140, amenities:['Jardín propio','Pet friendly','Cuarto de servicio'], shortDesc:'Casa en privada, vigilancia las 24h. Ideal para familia.' },
+  { h:120, amenities:['Roof garden compartido','2 cajones','Gimnasio'], shortDesc:'Acabados premium. Edificio boutique en zona de alta plusvalía.' },
+  { h:90,  amenities:['Estudio compacto'], shortDesc:'Ideal para invertir. Alta demanda de renta en la zona.' },
+  { h:150, amenities:['Patio privado','BBQ','Sin vecinos arriba'], shortDesc:'Último piso. Terraza propia de 25 m² con vista al parque.' },
+  { h:110, amenities:['Cocina integral','Ventanas de piso a techo'], shortDesc:'Remodelado 2024. Listo para habitar sin inversión extra.' },
+  { h:130, amenities:['Cochera doble','Jardín 30m²','Cuarto de TV'], shortDesc:'Casa amplia con tres baños completos. Espacio para crecer.' },
+  { h:95,  amenities:['Vista al Parque Hundido','Estreno'], shortDesc:'Nunca habitado. Entrega inmediata con escrituras listas.' },
+  { h:145, amenities:['Balcón','Edificio 2023','Ciclovia enfrente'], shortDesc:'Colonia segura y bien conectada. A 5 min de Insurgentes.' },
+];
+
 function propCardHTML(p) {
+  const prof = CARD_PROFILES[(p.id - 1) % CARD_PROFILES.length];
+  const isNew = p.tags.includes('Nuevo') || p.tags.includes('Nueva');
+  const priceM2 = fmt(Math.round(p.price / p.area));
+  const amenHtml = prof.amenities.map(a => `<span class="prop-tag">${a}</span>`).join('');
   return `<div class="prop-card" style="cursor:pointer" onclick="openPropDetail(${p.id})">
-    <div class="prop-img"><i class="ti ti-building" style="font-size:40px;color:var(--text-muted)"></i></div>
+    <div class="prop-img" style="height:${prof.h}px">
+      <div class="prop-img-icon"><i class="ti ti-building" style="font-size:32px;color:var(--border)"></i></div>
+      ${isNew ? '<span class="prop-badge">Nuevo</span>' : ''}
+      <div class="prop-fav" onclick="event.stopPropagation()"><i class="ti ti-heart" style="font-size:13px;color:var(--text-muted)"></i></div>
+    </div>
     <div class="prop-info">
+      <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px">${p.zona} · ${p.tipo}</div>
       <div class="prop-price">${fmt(p.price)}</div>
-      <div class="prop-details">${p.rec} rec · ${p.ban} baño${p.ban>1?'s':''} · ${p.area} m² — ${p.zona}, CDMX</div>
-      <div class="prop-tags"><span class="prop-tag">${p.tipo}</span>${p.tags.map(t=>`<span class="prop-tag">${t}</span>`).join('')}</div>
+      <div class="prop-price-m2">${priceM2} / m²</div>
+      <div class="prop-details">${p.rec} rec · ${p.ban} baño${p.ban>1?'s':''} · ${p.area} m²</div>
+      <div style="font-size:10px;color:var(--text-muted);line-height:1.5;margin-bottom:8px">${prof.shortDesc}</div>
+      <div class="prop-tags">${amenHtml}</div>
     </div></div>`;
 }
 
@@ -1029,6 +1180,25 @@ function renderOpps() {
 function setHomeTab(btn) {
   document.querySelectorAll('.home-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
+}
+
+function openSheet(id) {
+  document.getElementById(id).classList.add('open');
+  document.getElementById('sheet-overlay').classList.add('open');
+}
+function closeSheet() {
+  document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open'));
+  document.getElementById('sheet-overlay').classList.remove('open');
+}
+function toggleChip(el) { el.classList.toggle('active'); }
+function selectOrder(row) {
+  row.closest('.sheet-body').querySelectorAll('.sheet-radio').forEach(r => r.classList.remove('selected'));
+  row.querySelector('.sheet-radio').classList.add('selected');
+}
+function clearSearch() {
+  document.getElementById('props-search').value = '';
+  document.getElementById('search-clear').style.display = 'none';
+  onSearch('');
 }
 
 function openDrawer() {
@@ -1332,16 +1502,19 @@ function toggleFilter(key, val){
 
 function onSearch(q){
   searchQuery = q.toLowerCase();
+  document.getElementById('search-clear').style.display = q ? 'block' : 'none';
   renderProps();
 }
 
 function switchView(view){
   currentView = view;
-  document.getElementById('btn-list').classList.toggle('active', view==='list');
-  document.getElementById('btn-map').classList.toggle('active', view==='map');
-  document.getElementById('props-grid').style.display = view==='list' ? 'flex' : 'none';
+  document.getElementById('props-grid').style.display = view==='list' ? 'block' : 'none';
   const mapEl = document.getElementById('map-container');
   mapEl.style.display = view==='map' ? 'block' : 'none';
+  const btn = document.getElementById('map-toggle-btn');
+  if(btn) btn.innerHTML = view==='map'
+    ? '<i class="ti ti-layout-grid" style="font-size:13px"></i> Ver lista'
+    : '<i class="ti ti-map-pin" style="font-size:13px"></i> Ver en mapa';
   if(view==='map') renderMap(getFilteredProps());
 }
 
@@ -1361,20 +1534,7 @@ function renderProps() {
   if(currentView==='list'){
     const grid = document.getElementById('props-grid');
     grid.innerHTML = '';
-    show.forEach(p => {
-      const card = document.createElement('div');
-      card.className = 'prop-card';
-      card.style.cursor = 'pointer';
-      card.onclick = () => openPropDetail(p.id);
-      card.innerHTML = `
-        <div class="prop-img"><i class="ti ti-building" style="font-size:40px;color:var(--text-muted)"></i></div>
-        <div class="prop-info">
-          <div class="prop-price">${fmt(p.price)}</div>
-          <div class="prop-details">${p.rec} rec · ${p.ban} baño${p.ban>1?'s':''} · ${p.area} m² — ${p.zona}, CDMX</div>
-          <div class="prop-tags"><span class="prop-tag">${p.tipo}</span>${p.tags.map(t=>`<span class="prop-tag">${t}</span>`).join('')}</div>
-        </div>`;
-      grid.appendChild(card);
-    });
+    grid.innerHTML = show.map(p => propCardHTML(p)).join('');
   } else {
     renderMap(show);
   }
