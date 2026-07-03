@@ -249,24 +249,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .view-btn.active{background:var(--surface-1);color:var(--text-primary);font-weight:500}
 .view-btn+.view-btn{border-left:0.5px solid var(--border)}
 
-/* Map fullscreen */
-#map-fullscreen{position:fixed;inset:0;z-index:60;display:none;flex-direction:column}
-#map-fullscreen.open{display:flex}
-#map-fs-map{flex:1}
-#map-fs-topbar{position:absolute;top:0;left:0;right:0;z-index:10;padding:10px 12px;display:flex;gap:8px;background:linear-gradient(to bottom,rgba(255,255,255,.95) 70%,transparent)}
-#map-fs-carousel{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:12px 0 20px;background:linear-gradient(to top,rgba(255,255,255,.98) 60%,transparent)}
-.map-carousel-track{display:flex;gap:10px;overflow-x:auto;padding:0 16px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
-.map-carousel-track::-webkit-scrollbar{display:none}
-.map-prop-card{flex-shrink:0;width:220px;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2);cursor:pointer;scroll-snap-align:start;transition:box-shadow .2s}
-.map-prop-card.selected{box-shadow:0 0 0 2px var(--text-primary)}
-.map-prop-img{height:110px;background:var(--surface-1);display:flex;align-items:center;justify-content:center}
-.map-prop-info{padding:10px}
-.map-prop-price{font-size:14px;font-weight:700;color:var(--text-primary)}
-.map-prop-meta{font-size:11px;color:var(--text-muted);margin-top:3px;line-height:1.4}
-/* Price marker */
-.price-marker{background:var(--text-primary);color:var(--surface-2);font-size:11px;font-weight:600;padding:4px 8px;border-radius:20px;white-space:nowrap;border:2px solid var(--surface-2);box-shadow:0 1px 4px rgba(0,0,0,.2)}
-.price-marker.selected{background:var(--surface-2);color:var(--text-primary);border-color:var(--text-primary)}
-#map-container{display:none}
+#map-container{border-radius:12px;overflow:hidden;border:0.5px solid var(--border);height:400px;display:none}
 .leaflet-container{background:var(--surface-1)}
 
 /* ── Property detail ── */
@@ -981,23 +964,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   </div>
 
 <!-- Sheet overlay -->
-<!-- Map fullscreen overlay -->
-<div id="map-fullscreen">
-  <div id="map-fs-map"></div>
-  <div id="map-fs-topbar">
-    <div class="search-bar" style="flex:1;margin:0">
-      <i class="ti ti-search" style="flex-shrink:0"></i>
-      <input type="text" placeholder="Buscar zona, colonia..." oninput="onSearchMap(this.value)" id="map-search-input">
-    </div>
-    <button class="filter-icon-btn" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
-    <button class="filter-icon-btn" onclick="openSheet('sheet-ordenar')"><i class="ti ti-arrows-sort" style="font-size:18px"></i></button>
-    <button class="filter-icon-btn" onclick="switchView('list')" title="Cerrar mapa"><i class="ti ti-x" style="font-size:18px"></i></button>
-  </div>
-  <div id="map-fs-carousel">
-    <div class="map-carousel-track" id="map-carousel-track"></div>
-  </div>
-</div>
-
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
 
 <!-- FILTROS -->
@@ -1528,20 +1494,13 @@ function onSearch(q){
 function switchView(view){
   currentView = view;
   document.getElementById('props-grid').style.display = view==='list' ? 'block' : 'none';
-  const fsEl = document.getElementById('map-fullscreen');
+  const mapEl = document.getElementById('map-container');
+  mapEl.style.display = view==='map' ? 'block' : 'none';
   const btn = document.getElementById('map-toggle-btn');
-  if(view==='map'){
-    fsEl.classList.add('open');
-    document.getElementById('app-header').style.display = 'none';
-    document.getElementById('bottom-nav').style.display = 'none';
-    if(btn) btn.innerHTML = '<i class="ti ti-layout-grid" style="font-size:13px"></i> Ver lista';
-    renderMap(getFilteredProps());
-  } else {
-    fsEl.classList.remove('open');
-    document.getElementById('app-header').style.display = '';
-    document.getElementById('bottom-nav').style.display = '';
-    if(btn) btn.innerHTML = '<i class="ti ti-map-pin" style="font-size:13px"></i> Ver en mapa';
-  }
+  if(btn) btn.innerHTML = view==='map'
+    ? '<i class="ti ti-layout-grid" style="font-size:13px"></i> Ver lista'
+    : '<i class="ti ti-map-pin" style="font-size:13px"></i> Ver en mapa';
+  if(view==='map') renderMap(getFilteredProps());
 }
 
 function getFilteredProps(){
@@ -1566,74 +1525,24 @@ function renderProps() {
   }
 }
 
-let mapMarkers = [];
-let selectedMapPropId = null;
-
 function renderMap(props){
+  const container = document.getElementById('map-container');
   if(!leafletMap){
-    leafletMap = L.map('map-fs-map',{zoomControl:false}).setView([19.39,-99.165],13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(leafletMap);
-    L.control.zoom({position:'bottomright'}).addTo(leafletMap);
+    leafletMap = L.map('map-container',{zoomControl:true}).setView([19.39,-99.165],13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'© OpenStreetMap',maxZoom:18
+    }).addTo(leafletMap);
   }
-  mapMarkers.forEach(m=>leafletMap.removeLayer(m));
-  mapMarkers = [];
-
+  leafletMap.eachLayer(l=>{if(l instanceof L.Marker) leafletMap.removeLayer(l);});
   props.forEach(p=>{
-    const icon = L.divIcon({
-      className:'',
-      html:`<div class="price-marker" id="pm-${p.id}">${fmt(p.price)}</div>`,
-      iconAnchor:[0,0]
-    });
-    const marker = L.marker([p.lat,p.lng],{icon}).addTo(leafletMap);
-    marker.on('click',()=>selectMapProp(p.id, props));
-    mapMarkers.push(marker);
+    const marker = L.marker([p.lat,p.lng]).addTo(leafletMap);
+    marker.bindPopup(`<strong>${fmt(p.price)}</strong><br>${p.rec} rec · ${p.area} m²<br>${p.zona}<br><a href="#" onclick="openPropDetail(${p.id});return false;" style="font-size:12px">Ver ficha →</a>`);
   });
-
-  if(props.length){
+  if(props.length) {
     const bounds = L.latLngBounds(props.map(p=>[p.lat,p.lng]));
-    leafletMap.fitBounds(bounds,{padding:[60,60]});
+    leafletMap.fitBounds(bounds,{padding:[40,40]});
   }
-
-  renderMapCarousel(props);
-  setTimeout(()=>leafletMap.invalidateSize(),150);
-}
-
-function renderMapCarousel(props){
-  const track = document.getElementById('map-carousel-track');
-  track.innerHTML = props.map(p=>`
-    <div class="map-prop-card" id="mc-${p.id}" onclick="selectMapProp(${p.id}, null)">
-      <div class="map-prop-img" style="height:110px;background:var(--surface-1);display:flex;align-items:center;justify-content:center">
-        <i class="ti ti-building" style="font-size:36px;color:var(--border)"></i>
-      </div>
-      <div class="map-prop-info">
-        <div class="map-prop-price">${fmt(p.price)}</div>
-        <div class="map-prop-meta">${p.rec} rec · ${p.area} m² · ${p.tipo}<br><span style="color:var(--text-secondary)">${p.zona}</span></div>
-        <button onclick="event.stopPropagation();openPropDetail(${p.id})" style="margin-top:8px;font-size:11px;font-weight:600;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:8px;padding:6px 12px;cursor:pointer;width:100%">Ver ficha →</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function selectMapProp(id, props){
-  if(selectedMapPropId){
-    const prevPm = document.getElementById(`pm-${selectedMapPropId}`);
-    if(prevPm) prevPm.classList.remove('selected');
-    const prevCard = document.getElementById(`mc-${selectedMapPropId}`);
-    if(prevCard) prevCard.classList.remove('selected');
-  }
-  selectedMapPropId = id;
-  const pm = document.getElementById(`pm-${id}`);
-  if(pm) pm.classList.add('selected');
-  const card = document.getElementById(`mc-${id}`);
-  if(card){
-    card.classList.add('selected');
-    card.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
-  }
-}
-
-function onSearchMap(q){
-  searchQuery = q.toLowerCase();
-  renderMap(getFilteredProps());
+  setTimeout(()=>leafletMap.invalidateSize(),100);
 }
 
 let detailMap = null;
