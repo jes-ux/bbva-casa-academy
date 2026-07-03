@@ -249,7 +249,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .view-btn.active{background:var(--surface-1);color:var(--text-primary);font-weight:500}
 .view-btn+.view-btn{border-left:0.5px solid var(--border)}
 
-#map-container{height:45vh;min-height:280px}
+#map-container{position:absolute;inset:0}
+#map-wrap .leaflet-container{height:100%}
 .leaflet-container{background:var(--surface-1)}
 
 /* ── Property detail ── */
@@ -866,16 +867,23 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <button class="sheet-link" onclick="switchView('map')" id="map-toggle-btn"><i class="ti ti-map-pin" style="font-size:13px"></i> Ver en mapa</button>
           </div>
         </div>
-        <!-- mapa con controles flotantes encima (se muestra en modo mapa) -->
-        <div id="map-wrap" style="display:none;position:relative;margin:0 -20px">
-          <div id="map-container"></div>
-          <div style="position:absolute;top:12px;left:12px;right:12px;z-index:500;display:flex;gap:8px;align-items:center">
+        <!-- mapa fullscreen entre header y bottom nav -->
+        <div id="map-wrap" style="display:none;position:fixed;top:52px;left:50%;transform:translateX(-50%);width:100%;max-width:430px;bottom:56px;z-index:50">
+          <div id="map-container" style="position:absolute;inset:0"></div>
+          <!-- barra flotante top -->
+          <div style="position:absolute;top:12px;left:12px;right:12px;z-index:10;display:flex;gap:8px;align-items:center">
             <div class="search-bar" style="flex:1;margin:0;background:white">
               <i class="ti ti-search" style="flex-shrink:0"></i>
               <input type="text" placeholder="Buscar zona, colonia..." oninput="onSearch(this.value)" id="map-search">
             </div>
             <button class="filter-icon-btn" style="background:white;flex-shrink:0" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
             <button onclick="switchView('list')" style="background:var(--text-primary);color:var(--surface-2);border:none;border-radius:20px;padding:0 14px;height:44px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:var(--font-sans);flex-shrink:0;white-space:nowrap">Cerrar mapa <i class="ti ti-x" style="font-size:13px"></i></button>
+          </div>
+          <!-- carrusel sticky bottom -->
+          <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:12px 0 16px;background:linear-gradient(to top,rgba(255,255,255,1) 60%,transparent)">
+            <div id="map-carousel" style="display:flex;gap:10px;overflow-x:auto;padding:0 16px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory">
+              <!-- cards se renderizan por JS -->
+            </div>
           </div>
         </div>
         <div id="props-count" style="font-size:12px;color:var(--text-muted)"></div>
@@ -1505,16 +1513,28 @@ function onSearch(q){
   renderProps();
 }
 
+const MAP_HIDE_IDS = ['list-controls','props-count','props-grid','profile-pills'];
+
 function switchView(view){
   currentView = view;
   const isMap = view === 'map';
-  document.getElementById('list-controls').style.display = isMap ? 'none' : '';
+  MAP_HIDE_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = isMap ? 'none' : '';
+  });
+  // título y bajada
+  const titleEl = document.querySelector('#screen-props .props-section > div:first-child');
+  if(titleEl) titleEl.style.display = isMap ? 'none' : '';
+
   document.getElementById('map-wrap').style.display = isMap ? 'block' : 'none';
-  // sincronizar búsqueda entre ambos inputs
-  if(isMap) document.getElementById('map-search').value = document.getElementById('props-search').value;
-  else document.getElementById('props-search').value = document.getElementById('map-search').value;
-  if(isMap) renderMap(getFilteredProps());
-  else renderProps();
+
+  if(isMap){
+    document.getElementById('map-search').value = document.getElementById('props-search').value;
+    renderMap(getFilteredProps());
+  } else {
+    document.getElementById('props-search').value = document.getElementById('map-search').value;
+    renderProps();
+  }
 }
 
 function getFilteredProps(){
@@ -1539,24 +1559,81 @@ function renderProps() {
   }
 }
 
+let mapPropMarkers = {};
+let selectedMapId = null;
+
 function renderMap(props){
-  const container = document.getElementById('map-container');
   if(!leafletMap){
-    leafletMap = L.map('map-container',{zoomControl:true}).setView([19.39,-99.165],13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-      attribution:'© OpenStreetMap',maxZoom:18
-    }).addTo(leafletMap);
+    leafletMap = L.map('map-container',{zoomControl:false}).setView([19.39,-99.165],13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(leafletMap);
+    L.control.zoom({position:'bottomright'}).addTo(leafletMap);
   }
-  leafletMap.eachLayer(l=>{if(l instanceof L.Marker) leafletMap.removeLayer(l);});
-  props.forEach(p=>{
-    const marker = L.marker([p.lat,p.lng]).addTo(leafletMap);
-    marker.bindPopup(`<strong>${fmt(p.price)}</strong><br>${p.rec} rec · ${p.area} m²<br>${p.zona}<br><a href="#" onclick="openPropDetail(${p.id});return false;" style="font-size:12px">Ver ficha →</a>`);
+  // limpiar markers anteriores
+  Object.values(mapPropMarkers).forEach(m => leafletMap.removeLayer(m));
+  mapPropMarkers = {};
+  selectedMapId = null;
+
+  props.forEach(p => {
+    const icon = makePriceIcon(p, false);
+    const marker = L.marker([p.lat, p.lng], {icon}).addTo(leafletMap);
+    marker.on('click', () => selectMapPin(p.id));
+    mapPropMarkers[p.id] = marker;
   });
-  if(props.length) {
-    const bounds = L.latLngBounds(props.map(p=>[p.lat,p.lng]));
-    leafletMap.fitBounds(bounds,{padding:[40,40]});
+
+  if(props.length){
+    leafletMap.fitBounds(L.latLngBounds(props.map(p=>[p.lat,p.lng])), {padding:[60,60]});
   }
-  setTimeout(()=>leafletMap.invalidateSize(),100);
+
+  renderMapCarousel(props);
+  setTimeout(() => leafletMap.invalidateSize(), 150);
+}
+
+function makePriceIcon(p, selected){
+  return L.divIcon({
+    className: '',
+    html: `<div style="background:${selected?'white':'#1a1a1a'};color:${selected?'#1a1a1a':'white'};font-size:11px;font-weight:700;padding:5px 9px;border-radius:20px;white-space:nowrap;border:2px solid ${selected?'#1a1a1a':'white'};box-shadow:0 2px 6px rgba(0,0,0,.25);font-family:-apple-system,sans-serif">${fmt(p.price)}</div>`,
+    iconAnchor: [0, 0]
+  });
+}
+
+function renderMapCarousel(props){
+  const track = document.getElementById('map-carousel');
+  track.innerHTML = props.map(p => `
+    <div id="mcard-${p.id}" onclick="selectMapPin(${p.id})" style="flex-shrink:0;width:200px;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2);cursor:pointer;scroll-snap-align:start;transition:box-shadow .2s">
+      <div style="height:100px;background:var(--surface-1);display:flex;align-items:center;justify-content:center">
+        <i class="ti ti-building" style="font-size:32px;color:var(--border)"></i>
+      </div>
+      <div style="padding:10px">
+        <div style="font-size:13px;font-weight:700">${fmt(p.price)}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px">${p.rec} rec · ${p.area} m² · ${p.tipo}</div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-top:2px">${p.zona}</div>
+        <button onclick="event.stopPropagation();openPropDetail(${p.id})" style="margin-top:8px;width:100%;font-size:11px;font-weight:600;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:8px;padding:6px;cursor:pointer;font-family:var(--font-sans)">Ver ficha →</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectMapPin(id){
+  const props = getFilteredProps();
+  const p = props.find(x => x.id === id);
+  if(!p) return;
+
+  // resetear pin anterior
+  if(selectedMapId && mapPropMarkers[selectedMapId]){
+    const prev = props.find(x => x.id === selectedMapId);
+    if(prev) mapPropMarkers[selectedMapId].setIcon(makePriceIcon(prev, false));
+    const prevCard = document.getElementById(`mcard-${selectedMapId}`);
+    if(prevCard) prevCard.style.boxShadow = '';
+  }
+
+  selectedMapId = id;
+  mapPropMarkers[id].setIcon(makePriceIcon(p, true));
+
+  const card = document.getElementById(`mcard-${id}`);
+  if(card){
+    card.style.boxShadow = '0 0 0 2px var(--text-primary)';
+    card.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+  }
 }
 
 let detailMap = null;
