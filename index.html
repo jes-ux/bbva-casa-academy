@@ -249,7 +249,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .view-btn.active{background:var(--surface-1);color:var(--text-primary);font-weight:500}
 .view-btn+.view-btn{border-left:0.5px solid var(--border)}
 
-#map-container{border-radius:12px;overflow:hidden;border:0.5px solid var(--border);height:400px;display:none}
+#map-container{height:45vh;min-height:280px}
 .leaflet-container{background:var(--surface-1)}
 
 /* ── Property detail ── */
@@ -851,21 +851,35 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <span class="profile-pill" id="pill-enganche">Enganche $300,000</span>
           <span class="profile-pill" id="pill-plazo">20 años</span>
         </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div class="search-bar" style="flex:1;margin:0">
-            <i class="ti ti-search" style="flex-shrink:0"></i>
-            <input type="text" placeholder="Buscar zona, colonia..." oninput="onSearch(this.value)" id="props-search">
-            <button id="search-clear" onclick="clearSearch()" style="display:none;background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;line-height:1"><i class="ti ti-x" style="font-size:14px"></i></button>
+        <!-- controles lista (se ocultan en modo mapa) -->
+        <div id="list-controls">
+          <div style="display:flex;gap:8px;align-items:center">
+            <div class="search-bar" style="flex:1;margin:0">
+              <i class="ti ti-search" style="flex-shrink:0"></i>
+              <input type="text" placeholder="Buscar zona, colonia..." oninput="onSearch(this.value)" id="props-search">
+              <button id="search-clear" onclick="clearSearch()" style="display:none;background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;line-height:1"><i class="ti ti-x" style="font-size:14px"></i></button>
+            </div>
+            <button class="filter-icon-btn" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
           </div>
-          <button class="filter-icon-btn" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <button class="sheet-link" onclick="openSheet('sheet-ordenar')"><i class="ti ti-arrows-sort" style="font-size:13px"></i> Ordenar</button>
+            <button class="sheet-link" onclick="switchView('map')" id="map-toggle-btn"><i class="ti ti-map-pin" style="font-size:13px"></i> Ver en mapa</button>
+          </div>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <button class="sheet-link" onclick="openSheet('sheet-ordenar')"><i class="ti ti-arrows-sort" style="font-size:13px"></i> Ordenar</button>
-          <button class="sheet-link" onclick="switchView(currentView==='map'?'list':'map')" id="map-toggle-btn"><i class="ti ti-map-pin" style="font-size:13px"></i> Ver en mapa</button>
+        <!-- mapa con controles flotantes encima (se muestra en modo mapa) -->
+        <div id="map-wrap" style="display:none;position:relative;margin:0 -20px">
+          <div id="map-container"></div>
+          <div style="position:absolute;top:12px;left:12px;right:12px;z-index:500;display:flex;gap:8px;align-items:center">
+            <div class="search-bar" style="flex:1;margin:0;background:white">
+              <i class="ti ti-search" style="flex-shrink:0"></i>
+              <input type="text" placeholder="Buscar zona, colonia..." oninput="onSearch(this.value)" id="map-search">
+            </div>
+            <button class="filter-icon-btn" style="background:white;flex-shrink:0" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
+            <button onclick="switchView('list')" style="background:var(--text-primary);color:var(--surface-2);border:none;border-radius:20px;padding:0 14px;height:44px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:var(--font-sans);flex-shrink:0;white-space:nowrap">Cerrar mapa <i class="ti ti-x" style="font-size:13px"></i></button>
+          </div>
         </div>
         <div id="props-count" style="font-size:12px;color:var(--text-muted)"></div>
         <div class="props-grid" id="props-grid"></div>
-        <div id="map-container" style="display:none"></div>
         <div class="phase2-banner">
           <div class="phase2-label">Próximamente — Fase 2</div>
           <h3>Pre-aprobación real con match bancario</h3>
@@ -1493,14 +1507,14 @@ function onSearch(q){
 
 function switchView(view){
   currentView = view;
-  document.getElementById('props-grid').style.display = view==='list' ? 'block' : 'none';
-  const mapEl = document.getElementById('map-container');
-  mapEl.style.display = view==='map' ? 'block' : 'none';
-  const btn = document.getElementById('map-toggle-btn');
-  if(btn) btn.innerHTML = view==='map'
-    ? '<i class="ti ti-layout-grid" style="font-size:13px"></i> Ver lista'
-    : '<i class="ti ti-map-pin" style="font-size:13px"></i> Ver en mapa';
-  if(view==='map') renderMap(getFilteredProps());
+  const isMap = view === 'map';
+  document.getElementById('list-controls').style.display = isMap ? 'none' : '';
+  document.getElementById('map-wrap').style.display = isMap ? 'block' : 'none';
+  // sincronizar búsqueda entre ambos inputs
+  if(isMap) document.getElementById('map-search').value = document.getElementById('props-search').value;
+  else document.getElementById('props-search').value = document.getElementById('map-search').value;
+  if(isMap) renderMap(getFilteredProps());
+  else renderProps();
 }
 
 function getFilteredProps(){
