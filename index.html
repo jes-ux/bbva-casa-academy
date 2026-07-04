@@ -195,7 +195,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .profile-pill{padding:5px 12px;border:none;border-radius:20px;font-size:13px;font-weight:500;color:var(--surface-2);background:var(--text-primary)}
 .props-grid{columns:2;column-gap:10px;flex:1}
 .prop-card{break-inside:avoid;border:none;border-radius:12px;overflow:hidden;-webkit-tap-highlight-color:transparent;margin-bottom:10px;display:inline-block;width:100%;position:relative;box-shadow:var(--card-shadow);background:var(--surface-2)}
-.prop-img{background:var(--surface-0);display:flex;align-items:flex-end;justify-content:flex-start;border-bottom:0.5px solid var(--border);position:relative;padding:10px}
+.prop-img{background:var(--surface-1);display:flex;align-items:flex-end;justify-content:flex-start;border-bottom:0.5px solid var(--border);position:relative;padding:10px}
 .prop-img-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%)}
 .prop-badge{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:var(--text-primary);color:var(--surface-2);position:absolute;top:8px;left:8px}
 .prop-fav{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:var(--surface-2);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -258,7 +258,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .leaflet-container{background:var(--surface-1)}
 
 /* ── Property detail ── */
-.prop-detail-hero{height:240px;background:var(--surface-0);display:flex;align-items:center;justify-content:center;flex-shrink:0;border-bottom:0.5px solid var(--border)}
+.prop-detail-hero{height:240px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border-bottom:0.5px solid var(--border)}
 .detail-breadcrumb{display:flex;align-items:center;gap:4px;padding:10px 20px;font-size:11px;color:var(--text-muted);flex-shrink:0;flex-wrap:wrap}
 .detail-breadcrumb i{font-size:10px}
 .detail-top-block{padding:16px 20px 0;display:flex;flex-direction:column;gap:8px;flex-shrink:0}
@@ -280,12 +280,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .detail-attr i{font-size:18px;color:var(--text-muted);width:22px;text-align:center}
 .detail-desc-text{font-size:14px;color:var(--text-secondary);line-height:1.7;margin:0}
 .detail-extra-card{border:0.5px solid var(--border);border-radius:12px;padding:16px}
-.detail-extra-icon{width:44px;height:44px;border-radius:10px;background:var(--surface-0);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-secondary)}
+.detail-extra-icon{width:44px;height:44px;border-radius:10px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-secondary)}
 .detail-related-scroll{overflow-x:auto;padding:12px 20px 0;-webkit-overflow-scrolling:touch;flex-shrink:0}
 .detail-related-scroll::-webkit-scrollbar{display:none}
 .detail-related-inner{display:flex;gap:12px;width:max-content}
 .detail-related-card{width:160px;border:0.5px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;flex-shrink:0}
-.detail-related-img{height:90px;background:var(--surface-0);display:flex;align-items:center;justify-content:center}
+.detail-related-img{height:90px;background:var(--surface-1);display:flex;align-items:center;justify-content:center}
 .detail-related-body{padding:10px}
 .detail-related-badge{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:4px;background:var(--text-primary);color:var(--surface-2);display:inline-block;margin-bottom:6px}
 .detail-related-price{font-size:13px;font-weight:700;color:var(--text-primary)}
@@ -306,7 +306,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .list-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:0.5px solid var(--border);-webkit-tap-highlight-color:transparent;cursor:pointer}
 .list-item:last-child{border-bottom:none}
 .list-item:active{background:var(--surface-1)}
-.list-item-icon{width:36px;height:36px;border-radius:var(--radius);background:var(--surface-0);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;color:var(--text-secondary)}
+.list-item-icon{width:36px;height:36px;border-radius:var(--radius);background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;color:var(--text-secondary)}
 .list-item-body{flex:1;min-width:0}
 .list-item-title{font-size:14px;font-weight:500;color:var(--text-primary);margin-bottom:2px}
 .list-item-sub{font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1609,7 +1609,7 @@ function renderMapCarousel(props){
   const track = document.getElementById('map-carousel');
   track.innerHTML = '<div style="flex-shrink:0;width:20px"></div>' + props.map(p => `
     <div id="mcard-${p.id}" onclick="selectMapPin(${p.id})" style="flex-shrink:0;width:200px;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2);cursor:pointer;scroll-snap-align:start;transition:box-shadow .2s">
-      <div style="height:100px;background:var(--surface-0);display:flex;align-items:center;justify-content:center">
+      <div style="height:100px;background:var(--surface-1);display:flex;align-items:center;justify-content:center">
         <i class="ti ti-building" style="font-size:32px;color:var(--border)"></i>
       </div>
       <div style="padding:10px">
