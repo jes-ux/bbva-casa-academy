@@ -1281,7 +1281,8 @@ function updateBackBtn() {
 }
 
 // módulos completados
-const moduleDone = { 1: false, 2: false, 3: false };
+const _savedModules = JSON.parse(localStorage.getItem('bbva_modules') || '{}');
+const moduleDone = { 1: !!_savedModules[1], 2: !!_savedModules[2], 3: !!_savedModules[3] };
 
 let toastTimer = null;
 function showToast(icon, msg, type='default') {
@@ -1476,6 +1477,7 @@ const PILL_LABELS = ['Entendé','Simulá','Buscá'];
 
 function showAchievement(n) {
   moduleDone[n] = true;
+  localStorage.setItem('bbva_modules', JSON.stringify(moduleDone));
   const d = ACH_DATA[n];
   document.getElementById('ach-icon').textContent = d.icon;
   document.getElementById('ach-title').textContent = d.title;
