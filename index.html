@@ -186,10 +186,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .perfil-resumen strong{font-weight:600;color:var(--text-primary)}
 
 .props-section{display:flex;flex-direction:column;gap:16px}
-.props-section h2{font-size:20px;font-weight:600;color:var(--text-primary)}
-.props-section .bajada{font-size:13px;color:var(--text-muted);margin-top:4px}
+.props-section h2{font-size:22px;font-weight:600;color:var(--text-primary)}
+.props-section .bajada{font-size:14px;color:var(--text-muted);margin-top:4px}
 .props-profile{display:flex;gap:6px;flex-wrap:wrap}
-.profile-pill{padding:5px 12px;border:0.5px solid var(--border-stronger);border-radius:20px;font-size:12px;font-weight:500;color:var(--text-primary);background:var(--surface-1)}
+.profile-pill{padding:5px 12px;border:0.5px solid var(--border-stronger);border-radius:20px;font-size:13px;font-weight:500;color:var(--text-primary);background:var(--surface-1)}
 .props-grid{columns:2;column-gap:10px;flex:1}
 .prop-card{break-inside:avoid;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;-webkit-tap-highlight-color:transparent;margin-bottom:10px;display:inline-block;width:100%;position:relative}
 .prop-img{background:var(--surface-1);display:flex;align-items:flex-end;justify-content:flex-start;border-bottom:0.5px solid var(--border);position:relative;padding:10px}
@@ -197,9 +197,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .prop-badge{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:var(--text-primary);color:var(--surface-2);position:absolute;top:8px;left:8px}
 .prop-fav{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:var(--surface-2);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer}
 .prop-info{padding:10px}
-.prop-price{font-size:14px;font-weight:700;color:var(--text-primary);line-height:1.2}
+.prop-price{font-size:16px;font-weight:700;color:var(--text-primary);line-height:1.2}
 .prop-price-m2{font-size:10px;color:var(--text-muted);margin-top:1px}
-.prop-details{font-size:11px;color:var(--text-muted);margin:5px 0 7px;line-height:1.5}
+.prop-details{font-size:13px;color:var(--text-muted);margin:5px 0 7px;line-height:1.5}
 .prop-tags{display:flex;gap:4px;flex-wrap:wrap}
 .prop-tag{font-size:9px;padding:2px 7px;border:0.5px solid var(--border);border-radius:20px;color:var(--text-secondary)}
 
@@ -215,10 +215,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
 .search-bar{display:flex;align-items:center;gap:8px;border:0.5px solid var(--border-strong);border-radius:var(--radius);padding:10px 12px;background:var(--surface-2)}
 .search-bar i{font-size:16px;color:var(--text-muted);flex-shrink:0}
-.search-bar input{flex:1;border:none;background:none;font-size:14px;color:var(--text-primary);font-family:var(--font-sans);outline:none}
+.search-bar input{flex:1;border:none;background:none;font-size:16px;color:var(--text-primary);font-family:var(--font-sans);outline:none}
 .search-bar input::placeholder{color:var(--text-muted)}
 .filter-icon-btn{width:44px;height:44px;border:0.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface-2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:var(--text-primary)}
-.sheet-link{background:none;border:none;font-size:13px;font-weight:500;color:var(--text-primary);cursor:pointer;display:flex;align-items:center;gap:5px;padding:4px 0;font-family:var(--font-sans)}
+.sheet-link{background:none;border:none;font-size:15px;font-weight:500;color:var(--text-primary);cursor:pointer;display:flex;align-items:center;gap:5px;padding:4px 0;font-family:var(--font-sans)}
 /* Bottom sheets */
 .sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:600;opacity:0;pointer-events:none;transition:opacity .25s}
 .sheet-overlay.open{opacity:1;pointer-events:all}
@@ -854,7 +854,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <span class="profile-pill" id="pill-plazo">20 años</span>
         </div>
         <!-- controles lista (se ocultan en modo mapa) -->
-        <div id="list-controls">
+        <div id="list-controls" style="display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;gap:8px;align-items:center">
             <div class="search-bar" style="flex:1;margin:0">
               <i class="ti ti-search" style="flex-shrink:0"></i>
