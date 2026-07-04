@@ -186,6 +186,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .perfil-resumen strong{font-weight:600;color:var(--text-primary)}
 
 .props-section{display:flex;flex-direction:column;gap:16px}
+#list-controls{display:flex;flex-direction:column;gap:12px}
 .props-section h2{font-size:22px;font-weight:600;color:var(--text-primary)}
 .props-section .bajada{font-size:14px;color:var(--text-muted);margin-top:4px}
 .props-profile{display:flex;gap:6px;flex-wrap:wrap}
@@ -853,7 +854,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <span class="profile-pill" id="pill-plazo">20 años</span>
         </div>
         <!-- controles lista (se ocultan en modo mapa) -->
-        <div id="list-controls" style="display:flex;flex-direction:column;gap:12px">
+        <div id="list-controls">
           <div style="display:flex;gap:8px;align-items:center">
             <div class="search-bar" style="flex:1;margin:0">
               <i class="ti ti-search" style="flex-shrink:0"></i>
@@ -1523,7 +1524,9 @@ function switchView(view){
   const isMap = view === 'map';
   MAP_HIDE_IDS.forEach(id => {
     const el = document.getElementById(id);
-    if(el) el.style.display = isMap ? 'none' : '';
+    if(!el) return;
+    if(isMap){ el.style.display = 'none'; }
+    else { el.style.display = id === 'list-controls' ? 'flex' : ''; }
   });
   // título y bajada
   const titleEl = document.querySelector('#screen-props .props-section > div:first-child');
