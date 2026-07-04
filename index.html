@@ -33,14 +33,14 @@
 @media(prefers-color-scheme:dark){
   :root{
     --text-primary:#f0ede6;
-    --text-secondary:#b4b2a9;
-    --text-muted:#888780;
+    --text-secondary:#c8c6be;
+    --text-muted:#a8a6a0;
     --surface-0:#1c1b18;
     --surface-1:#252420;
     --surface-2:#2e2d29;
-    --border:rgba(255,255,255,.1);
-    --border-strong:rgba(255,255,255,.2);
-    --border-stronger:rgba(255,255,255,.35);
+    --border:rgba(255,255,255,.12);
+    --border-strong:rgba(255,255,255,.24);
+    --border-stronger:rgba(255,255,255,.4);
     --bg-warning:#3d2800;
     --bg-success:#152900;
     --bg-danger:#3d0f0f;
@@ -873,16 +873,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div id="map-container" style="position:absolute;inset:0"></div>
           <!-- barra flotante top -->
           <div style="position:absolute;top:12px;left:12px;right:12px;z-index:1000;display:flex;gap:8px;align-items:center">
-            <div class="search-bar" style="flex:1;margin:0;background:white">
+            <div class="search-bar" style="flex:1;margin:0;background:var(--surface-2)">
               <i class="ti ti-search" style="flex-shrink:0"></i>
               <input type="text" placeholder="Buscar zona, colonia..." oninput="onSearch(this.value)" id="map-search">
             </div>
-            <button class="filter-icon-btn" style="background:white;flex-shrink:0" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
-            <button class="filter-icon-btn" style="background:white;flex-shrink:0" onclick="openSheet('sheet-ordenar')"><i class="ti ti-arrows-sort" style="font-size:18px"></i></button>
+            <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
+            <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openSheet('sheet-ordenar')"><i class="ti ti-arrows-sort" style="font-size:18px"></i></button>
             <button onclick="switchView('list')" class="filter-icon-btn" style="background:var(--text-primary);color:var(--surface-2);flex-shrink:0"><i class="ti ti-x" style="font-size:18px"></i></button>
           </div>
           <!-- carrusel sticky bottom -->
-          <div style="position:absolute;bottom:0;left:0;right:0;z-index:1000;padding:12px 0 16px;background:linear-gradient(to top,rgba(255,255,255,1) 60%,transparent)">
+          <div style="position:absolute;bottom:0;left:0;right:0;z-index:1000;padding:12px 0 16px;background:linear-gradient(to top,var(--surface-2) 55%,transparent)">
             <div id="map-carousel" style="display:flex;gap:10px;overflow-x:auto;padding:4px 16px 4px 0;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scroll-padding-left:20px">
               <!-- cards se renderizan por JS -->
             </div>
