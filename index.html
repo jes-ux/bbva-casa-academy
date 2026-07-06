@@ -428,6 +428,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   #screen-props .content{max-width:none;padding:0}
   .props-section{display:flex;flex-direction:column;gap:0}
 
+  /* title wrapper (first child of props-section) */
+  .props-section > div:first-child{padding:28px 40px 20px}
+
   /* filter bar + profile pills → sticky top bar */
   #list-controls{
     position:sticky;top:64px;z-index:50;
@@ -444,11 +447,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     border-radius:12px;
   }
   .prop-img{
-    width:220px;min-width:220px;height:160px!important;
+    width:220px;min-width:220px;height:auto!important;align-self:stretch;min-height:140px;
     border-bottom:none;border-right:0.5px solid var(--border);
     border-radius:0;flex-shrink:0;
   }
   .prop-info{flex:1;padding:16px 20px;display:flex;flex-direction:column;justify-content:space-between}
+
+  /* ── MAP (desktop: full width below sticky header) ── */
+  #map-wrap{
+    top:64px!important;left:0!important;transform:none!important;
+    max-width:none!important;width:100%!important;bottom:0!important;
+  }
 
   /* ── SIMULATOR ── */
   #screen-sim .content{max-width:680px}
