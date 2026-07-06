@@ -347,6 +347,166 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .drawer-item.danger{color:var(--text-danger)}
 .drawer-item.danger i{color:var(--text-danger)}
 .drawer-sep{height:0.5px;background:var(--border);margin:4px 0}
+
+/* ═══════════════════════════════════════
+   DESKTOP — ≥900px
+   Mobile styles remain untouched above
+   ═══════════════════════════════════════ */
+.dt-nav,.dt-user,.dt-detail-sidebar{display:none}
+.mobile-only{display:flex}
+
+@media(min-width:900px){
+  /* ── Shell ── */
+  html,body{height:auto}
+  #app{max-width:none}
+
+  /* ── Header ── */
+  .app-header{
+    position:sticky;top:0;left:0;transform:none;max-width:none;
+    height:64px;padding:0 40px;z-index:100;
+    display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;
+  }
+  .app-header.hidden{transform:none} /* disable mobile hide on desktop */
+  #header-back{display:none!important}
+  .mobile-only{display:none!important}
+
+  /* desktop nav */
+  .dt-nav{display:flex;align-items:center;gap:6px;justify-content:center}
+  .dt-nav-btn{
+    background:none;border:none;font-size:14px;font-weight:500;
+    color:var(--text-secondary);cursor:pointer;font-family:var(--font-sans);
+    padding:6px 14px;border-radius:8px;transition:color .15s,background .15s;
+  }
+  .dt-nav-btn:hover{color:var(--text-primary);background:var(--surface-1)}
+  .dt-nav-btn.active{color:var(--text-primary);font-weight:600}
+
+  /* desktop user */
+  .dt-user{display:flex;align-items:center;gap:4px;justify-content:flex-end}
+  .dt-user-link{
+    background:none;border:none;font-size:13px;font-weight:500;
+    color:var(--text-secondary);cursor:pointer;font-family:var(--font-sans);
+    display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;
+    transition:color .15s,background .15s;
+  }
+  .dt-user-link:hover{color:var(--text-primary);background:var(--surface-1)}
+  .dt-user-btn{
+    background:none;border:none;font-size:13px;font-weight:500;
+    color:var(--text-primary);cursor:pointer;font-family:var(--font-sans);
+    display:flex;align-items:center;gap:6px;padding:5px 10px 5px 6px;
+    border-radius:8px;border:0.5px solid var(--border);transition:background .15s;
+  }
+  .dt-user-btn:hover{background:var(--surface-1)}
+
+  /* ── Bottom nav hidden ── */
+  #bottom-nav{display:none!important}
+
+  /* ── Screens ── */
+  .screen{height:auto;min-height:calc(100dvh - 64px);overflow:visible;padding-top:0}
+  .content{padding:40px;max-width:900px;width:100%;margin:0 auto}
+
+  /* ── HOME ── */
+  .home-hero{
+    padding:56px 40px 48px;border-radius:0;
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+  }
+  .home-hero-title{font-size:48px;line-height:1.15;max-width:680px}
+  .home-tabs{justify-content:center;gap:8px}
+  .home-search-block{
+    display:grid;grid-template-columns:180px 1fr auto;gap:12px;
+    max-width:700px;width:100%;
+  }
+  .home-select{border-radius:var(--radius)}
+  .home-input input{border-radius:var(--radius)}
+  .home-search-btn{border-radius:var(--radius);padding:0 28px;white-space:nowrap}
+
+  /* moment cards → row of 3 on desktop */
+  .moments{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .moment-card{flex-direction:column;align-items:flex-start;padding:24px 20px;gap:14px}
+  .moment-card .ti-chevron-right{display:none}
+
+  /* ── PROPS LIST ── */
+  #screen-props .content{max-width:none;padding:0}
+  .props-section{display:flex;flex-direction:column;gap:0}
+
+  /* filter bar + profile pills → sticky top bar */
+  #list-controls{
+    position:sticky;top:64px;z-index:50;
+    background:var(--surface-0);border-bottom:0.5px solid var(--border);
+    padding:14px 40px;
+  }
+  #profile-pills{padding:10px 40px 0}
+  #props-count{padding:12px 40px 0;font-size:13px}
+
+  /* props grid → 1-column horizontal list */
+  .props-grid{columns:1;padding:16px 40px 40px}
+  .prop-card{
+    display:flex;flex-direction:row;margin-bottom:12px;
+    border-radius:12px;
+  }
+  .prop-img{
+    width:220px;min-width:220px;height:160px!important;
+    border-bottom:none;border-right:0.5px solid var(--border);
+    border-radius:0;flex-shrink:0;
+  }
+  .prop-info{flex:1;padding:16px 20px;display:flex;flex-direction:column;justify-content:space-between}
+
+  /* ── SIMULATOR ── */
+  #screen-sim .content{max-width:680px}
+  .comparison-box{max-width:560px}
+
+  /* ── EDUCATION ── */
+  #screen-edu .content{max-width:720px}
+
+  /* ── ACADEMIA ── */
+  #screen-academia .content{max-width:760px}
+  #acad-modules{display:grid;grid-template-columns:1fr;gap:12px}
+
+  /* ── PROPERTY DETAIL ── */
+  #screen-prop-detail .screen-scroll-inner{
+    max-width:1100px;margin:0 auto;padding:20px 40px 60px;
+    display:grid;grid-template-columns:1fr 300px;gap:32px;align-items:start;
+  }
+  .prop-detail-hero{height:300px;border-radius:12px 12px 0 0}
+  .detail-breadcrumb,.detail-top-block,.detail-section,.detail-related-scroll{
+    padding-left:0;padding-right:0;
+  }
+
+  /* detail sidebar */
+  .dt-detail-sidebar{display:block}
+  .dt-detail-main{min-width:0}
+  .dt-mobile-price{display:none!important}
+
+  /* screen-scroll-inner becomes grid container */
+  .screen-scroll-inner{
+    max-width:1100px;margin:0 auto;padding:20px 40px 60px;
+    display:grid;grid-template-columns:1fr 300px;gap:32px;align-items:start;
+  }
+
+  /* ── PROFILE SCREEN ── */
+  #screen-perfil .content{max-width:760px}
+
+  /* ── MISC SCREENS ── */
+  #screen-simulaciones .content,
+  #screen-favoritos .content,
+  #screen-oportunidades .content,
+  #screen-notificaciones .content,
+  #screen-configuracion .content{max-width:860px}
+
+  /* ── MAP SCREEN ── */
+  #screen-mapa .screen{padding-top:0}
+
+  /* ── CTA AREA ── */
+  .cta-area{
+    position:static;border-top:none;background:none;
+    padding:0;margin-top:8px;
+  }
+
+  /* ── DRAWER as sidebar overlay still works ── */
+  #drawer{width:320px}
+
+  /* ── Wider bottom sheets ── */
+  .bottom-sheet{max-width:480px}
+}
 </style>
 </head>
 <body>
@@ -558,11 +718,23 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button id="header-back" style="display:none;width:32px;height:32px;border:none;background:none;cursor:pointer;color:var(--text-primary);padding:0;-webkit-tap-highlight-color:transparent;flex-shrink:0;align-items:center;justify-content:center" onclick="headerBack()">
         <i class="ti ti-arrow-left" style="font-size:18px"></i>
       </button>
-      <div class="app-header-brand">
-        <i class="ti ti-building-bank" aria-hidden="true"></i> BBVA Casa Academy
-      </div>
+      <div class="app-header-brand"><i class="ti ti-building-bank" aria-hidden="true"></i> BBVA Casa Academy</div>
     </div>
-    <div class="app-header-avatar" onclick="openDrawer()">👤</div>
+    <!-- desktop nav: hidden on mobile via CSS -->
+    <nav class="dt-nav" id="dt-nav">
+      <button class="dt-nav-btn" id="dtnav-inicio" onclick="navTo('screen-0','nav-inicio')">Inicio</button>
+      <button class="dt-nav-btn" id="dtnav-props" onclick="navTo('screen-props','nav-props')">Propiedades</button>
+      <button class="dt-nav-btn" id="dtnav-sim" onclick="navTo('screen-sim','nav-sim')">Simula tu Crédito</button>
+      <button class="dt-nav-btn" id="dtnav-opps" onclick="renderOpps();goScreen('screen-oportunidades')">Oportunidades</button>
+    </nav>
+    <!-- desktop user actions: hidden on mobile -->
+    <div class="dt-user">
+      <button class="dt-user-link" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-user-link" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-user-btn" onclick="openDrawer()"><div class="app-header-avatar" style="width:30px;height:30px;font-size:13px">👤</div> Natalia <i class="ti ti-chevron-down" style="font-size:12px"></i></button>
+    </div>
+    <!-- mobile: avatar only -->
+    <div class="app-header-avatar mobile-only" onclick="openDrawer()">👤</div>
   </div>
 
   <!-- Toast -->
@@ -891,84 +1063,105 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="prop-detail-hero">
       <i class="ti ti-building" style="font-size:64px;color:var(--text-muted)"></i>
     </div>
-    <!-- Breadcrumb -->
-    <div class="detail-breadcrumb">
-      <span>Inicio</span><i class="ti ti-chevron-right"></i>
-      <span>Casas y Departamentos</span><i class="ti ti-chevron-right"></i>
-      <span id="detail-breadcrumb-zona"></span>
-    </div>
-    <!-- Tipo badge + título + dirección + acciones -->
-    <div class="detail-top-block">
-      <div id="detail-tipo-badge" class="detail-tipo-badge"></div>
-      <h1 class="detail-title" id="detail-title"></h1>
-      <div class="detail-address" id="detail-address"></div>
-      <div class="detail-actions">
-        <button class="detail-action-btn" onclick="alert('Guardado en favoritos')"><i class="ti ti-heart"></i></button>
-        <button class="detail-action-btn" onclick="alert('Compartir propiedad')"><i class="ti ti-share"></i></button>
-        <button class="detail-cta-btn" onclick="goScreen('screen-sim')"><i class="ti ti-calculator"></i> Simula tu Crédito</button>
-        <button class="detail-action-btn" onclick="alert('Agendar visita')"><i class="ti ti-calendar"></i></button>
-      </div>
-    </div>
-    <!-- Tarjeta de precio -->
-    <div class="detail-price-card">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between">
-        <div>
-          <div id="detail-price-badge" class="detail-tipo-badge" style="margin-bottom:8px"></div>
-          <div class="detail-big-price" id="detail-price"></div>
-          <div class="detail-price-m2" id="detail-price-m2"></div>
-          <div class="detail-price-location" id="detail-location"></div>
+    <div class="screen-scroll-inner">
+      <div class="dt-detail-main">
+        <!-- Breadcrumb -->
+        <div class="detail-breadcrumb">
+          <span>Inicio</span><i class="ti ti-chevron-right"></i>
+          <span>Casas y Departamentos</span><i class="ti ti-chevron-right"></i>
+          <span id="detail-breadcrumb-zona"></span>
         </div>
-        <button class="detail-action-btn"><i class="ti ti-heart"></i></button>
-      </div>
-      <button class="btn-outline" style="margin-top:14px;width:100%" onclick="alert('Un asesor BBVA se pondrá en contacto con vos.')">
-        <i class="ti ti-headset"></i> Contacta al asesor
-      </button>
-    </div>
-    <!-- Descubre la propiedad -->
-    <div class="detail-section">
-      <div class="detail-section-title">Descubre la propiedad</div>
-      <div class="detail-attrs" id="detail-attrs"></div>
-    </div>
-    <!-- Ver en el mapa -->
-    <div class="detail-section">
-      <div class="detail-section-title">Ver en el mapa</div>
-      <div id="detail-map" style="height:160px;border-radius:10px;overflow:hidden;border:0.5px solid var(--border)"></div>
-    </div>
-    <!-- Reseña -->
-    <div class="detail-section">
-      <div class="detail-section-title">Reseña</div>
-      <p class="detail-desc-text" id="detail-desc"></p>
-    </div>
-    <!-- Extras -->
-    <div class="detail-section">
-      <div class="detail-extra-card">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div class="detail-extra-icon"><i class="ti ti-3d-cube-sphere" style="font-size:22px"></i></div>
-          <div><div style="font-size:14px;font-weight:500;color:var(--text-primary)">Visualización 3D</div><div style="font-size:12px;color:var(--text-muted)">Recorrée el proyecto completo</div></div>
+        <!-- Tipo badge + título + dirección + acciones -->
+        <div class="detail-top-block">
+          <div id="detail-tipo-badge" class="detail-tipo-badge"></div>
+          <h1 class="detail-title" id="detail-title"></h1>
+          <div class="detail-address" id="detail-address"></div>
+          <div class="detail-actions">
+            <button class="detail-action-btn" onclick="alert('Guardado en favoritos')"><i class="ti ti-heart"></i></button>
+            <button class="detail-action-btn" onclick="alert('Compartir propiedad')"><i class="ti ti-share"></i></button>
+            <button class="detail-cta-btn" onclick="goScreen('screen-sim')"><i class="ti ti-calculator"></i> Simula tu Crédito</button>
+            <button class="detail-action-btn" onclick="alert('Agendar visita')"><i class="ti ti-calendar"></i></button>
+          </div>
         </div>
-        <button class="btn-outline" style="margin-top:12px;width:100%" onclick="alert('Próximamente')">Ampliar</button>
-      </div>
-      <div class="detail-extra-card" style="margin-top:12px">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div class="detail-extra-icon"><i class="ti ti-certificate" style="font-size:22px"></i></div>
-          <div><div style="font-size:14px;font-weight:500;color:var(--text-primary)">Desarrollador certificado</div><div style="font-size:12px;color:var(--text-muted)">Accedé a toda la documentación</div></div>
+        <!-- Tarjeta de precio (mobile only — sidebar has it on desktop) -->
+        <div class="detail-price-card dt-mobile-price">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between">
+            <div>
+              <div id="detail-price-badge-m" class="detail-tipo-badge" style="margin-bottom:8px"></div>
+              <div class="detail-big-price" id="detail-price-m"></div>
+              <div class="detail-price-m2" id="detail-price-m2-m"></div>
+              <div class="detail-price-location" id="detail-location-m"></div>
+            </div>
+            <button class="detail-action-btn"><i class="ti ti-heart"></i></button>
+          </div>
+          <button class="btn-outline" style="margin-top:14px;width:100%" onclick="alert('Un asesor BBVA se pondrá en contacto con vos.')">
+            <i class="ti ti-headset"></i> Contacta al asesor
+          </button>
         </div>
-        <button class="btn-outline" style="margin-top:12px;width:100%" onclick="alert('Próximamente')">Ampliar</button>
-      </div>
-    </div>
-    <!-- Tu perfil / match -->
-    <div class="detail-section" id="detail-profile-section">
-      <div class="detail-section-title">Tu simulación</div>
-      <div class="props-profile" id="detail-profile-pills"></div>
-      <div class="disclaimer" id="detail-disclaimer" style="display:none;margin-top:8px">Esta simulación se basa en los datos que declarás. No es una pre-aprobación bancaria.</div>
-    </div>
-    <!-- Propiedades relacionadas -->
-    <div class="detail-section" style="padding-bottom:0">
-      <div class="detail-section-title">Propiedades que te interesaron</div>
-    </div>
-    <div class="detail-related-scroll">
-      <div id="detail-related"></div>
-    </div>
+        <!-- Descubre la propiedad -->
+        <div class="detail-section">
+          <div class="detail-section-title">Descubre la propiedad</div>
+          <div class="detail-attrs" id="detail-attrs"></div>
+        </div>
+        <!-- Ver en el mapa -->
+        <div class="detail-section">
+          <div class="detail-section-title">Ver en el mapa</div>
+          <div id="detail-map" style="height:160px;border-radius:10px;overflow:hidden;border:0.5px solid var(--border)"></div>
+        </div>
+        <!-- Reseña -->
+        <div class="detail-section">
+          <div class="detail-section-title">Reseña</div>
+          <p class="detail-desc-text" id="detail-desc"></p>
+        </div>
+        <!-- Extras -->
+        <div class="detail-section">
+          <div class="detail-extra-card">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="detail-extra-icon"><i class="ti ti-3d-cube-sphere" style="font-size:22px"></i></div>
+              <div><div style="font-size:14px;font-weight:500;color:var(--text-primary)">Visualización 3D</div><div style="font-size:12px;color:var(--text-muted)">Recorrée el proyecto completo</div></div>
+            </div>
+            <button class="btn-outline" style="margin-top:12px;width:100%" onclick="alert('Próximamente')">Ampliar</button>
+          </div>
+          <div class="detail-extra-card" style="margin-top:12px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="detail-extra-icon"><i class="ti ti-certificate" style="font-size:22px"></i></div>
+              <div><div style="font-size:14px;font-weight:500;color:var(--text-primary)">Desarrollador certificado</div><div style="font-size:12px;color:var(--text-muted)">Accedé a toda la documentación</div></div>
+            </div>
+            <button class="btn-outline" style="margin-top:12px;width:100%" onclick="alert('Próximamente')">Ampliar</button>
+          </div>
+        </div>
+        <!-- Tu perfil / match -->
+        <div class="detail-section" id="detail-profile-section">
+          <div class="detail-section-title">Tu simulación</div>
+          <div class="props-profile" id="detail-profile-pills"></div>
+          <div class="disclaimer" id="detail-disclaimer" style="display:none;margin-top:8px">Esta simulación se basa en los datos que declarás. No es una pre-aprobación bancaria.</div>
+        </div>
+        <!-- Propiedades relacionadas -->
+        <div class="detail-section" style="padding-bottom:0">
+          <div class="detail-section-title">Propiedades que te interesaron</div>
+        </div>
+        <div class="detail-related-scroll">
+          <div id="detail-related"></div>
+        </div>
+      </div><!-- /.dt-detail-main -->
+      <div class="dt-detail-sidebar">
+        <!-- Tarjeta de precio -->
+        <div class="detail-price-card">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between">
+            <div>
+              <div id="detail-price-badge" class="detail-tipo-badge" style="margin-bottom:8px"></div>
+              <div class="detail-big-price" id="detail-price"></div>
+              <div class="detail-price-m2" id="detail-price-m2"></div>
+              <div class="detail-price-location" id="detail-location"></div>
+            </div>
+            <button class="detail-action-btn"><i class="ti ti-heart"></i></button>
+          </div>
+          <button class="btn-outline" style="margin-top:14px;width:100%" onclick="alert('Un asesor BBVA se pondrá en contacto con vos.')">
+            <i class="ti ti-headset"></i> Contacta al asesor
+          </button>
+        </div>
+      </div><!-- /.dt-detail-sidebar -->
+    </div><!-- /.screen-scroll-inner -->
     <div style="height:80px"></div>
   </div>
 
@@ -1102,6 +1295,10 @@ function navTo(screenId, tabId) {
   goScreen(screenId);
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(tabId) && document.getElementById(tabId).classList.add('active');
+  // desktop nav active state
+  document.querySelectorAll('.dt-nav-btn').forEach(b => b.classList.remove('active'));
+  const dtMap = {'screen-0':'dtnav-inicio','screen-props':'dtnav-props','screen-sim':'dtnav-sim'};
+  if(dtMap[screenId]) document.getElementById(dtMap[screenId])?.classList.add('active');
 }
 
 const FAVS_IDS = [1, 3, 5];
@@ -1650,15 +1847,19 @@ function openPropDetail(id){
   // tipo badge (duplicated in price card too)
   document.getElementById('detail-tipo-badge').textContent = p.tipo;
   document.getElementById('detail-price-badge').textContent = p.tipo;
+  document.getElementById('detail-price-badge-m').textContent = p.tipo;
 
   // title & address
   document.getElementById('detail-title').textContent = p.desc.split('.')[0];
   document.getElementById('detail-address').textContent = `${p.zona}, Ciudad de México, CDMX`;
 
-  // price block
+  // price block (desktop sidebar + mobile card)
   document.getElementById('detail-price').textContent = fmt(p.price);
   document.getElementById('detail-price-m2').textContent = `${fmt(Math.round(p.price/p.area))} / m²`;
   document.getElementById('detail-location').textContent = `${p.zona}, Ciudad de México`;
+  document.getElementById('detail-price-m').textContent = fmt(p.price);
+  document.getElementById('detail-price-m2-m').textContent = `${fmt(Math.round(p.price/p.area))} / m²`;
+  document.getElementById('detail-location-m').textContent = `${p.zona}, Ciudad de México`;
 
   // attributes
   const attrDefs = [
