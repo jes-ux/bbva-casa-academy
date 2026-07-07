@@ -559,6 +559,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   /* ── DRAWER as sidebar overlay still works ── */
   #drawer{width:320px}
 
+  /* ── Barra de búsqueda + controles en una línea ── */
+  #list-controls{display:flex;gap:12px;align-items:center}
+  #list-controls-row1{flex:1}
+  #list-controls-row2{justify-content:flex-end;gap:4px;flex-shrink:0}
+
   /* ── Filtros y Ordenar: side-sheet desde la derecha en desktop ── */
   #sheet-filtros,#sheet-ordenar{
     top:64px;bottom:0;right:0;left:auto;
@@ -1162,7 +1167,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         </div>
         <!-- controles lista (se ocultan en modo mapa) -->
         <div id="list-controls">
-          <div style="display:flex;gap:8px;align-items:center">
+          <div id="list-controls-row1" style="display:flex;gap:8px;align-items:center">
             <div class="search-bar" style="flex:1;margin:0">
               <i class="ti ti-search" style="flex-shrink:0"></i>
               <input type="text" placeholder="Buscar zona, colonia..." oninput="onSearch(this.value)" id="props-search">
@@ -1170,7 +1175,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
             <button class="filter-icon-btn" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
           </div>
-          <div style="display:flex;align-items:center;justify-content:space-between">
+          <div id="list-controls-row2" style="display:flex;align-items:center;justify-content:space-between">
             <button class="sheet-link" onclick="openSheet('sheet-ordenar')"><i class="ti ti-arrows-sort" style="font-size:13px"></i> Ordenar</button>
             <button class="sheet-link" onclick="switchView('map')" id="map-toggle-btn"><i class="ti ti-map-pin" style="font-size:13px"></i> Ver en mapa</button>
           </div>
