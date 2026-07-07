@@ -1181,7 +1181,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div class="detail-actions">
             <button class="detail-action-btn" onclick="alert('Guardado en favoritos')"><i class="ti ti-heart"></i></button>
             <button class="detail-action-btn" onclick="alert('Compartir propiedad')"><i class="ti ti-share"></i></button>
-            <button class="detail-cta-btn" onclick="goScreen('screen-sim')"><i class="ti ti-calculator"></i> Simula tu Crédito</button>
+            <button class="detail-cta-btn" onclick="simRefPropId=currentPropId;goScreen('screen-sim')"><i class="ti ti-calculator"></i> Simula tu Crédito</button>
             <button class="detail-action-btn" onclick="alert('Agendar visita')"><i class="ti ti-calendar"></i></button>
           </div>
         </div>
@@ -1371,6 +1371,7 @@ let selectedMoment = 0;
 let selectedPlazo = 10;
 let entryPoint = 1;
 let simData = {ingreso:0, enganche:0, plazo:10, propMax:0, cuotaReal:0, pct:0};
+let simRefPropId = null; // prop que originó la simulación desde ficha de producto
 
 const PROPS = [
   {id:1,price:2800000,area:65,rec:2,ban:1,zona:'Narvarte',tipo:'Departamento',tags:['Bien conectado','Metro Insurgentes'],lat:19.4043,lng:-99.1663,desc:'Departamento luminoso con acabados modernos. A dos cuadras del metro Insurgentes y con excelente acceso a transporte público. Edificio con seguridad 24h y áreas comunes.'},
@@ -1404,7 +1405,7 @@ function navTo(screenId, tabId) {
 }
 
 const FAVS_IDS = [1, 3, 5];
-const SIM_HISTORY = [
+let SIM_HISTORY = [
   { id:'S001', fecha:'12 jun 2026', ingreso:35000, enganche:200000, plazo:20, propMax:2300000, cuota:22800, props:[1,2,3] },
   { id:'S002', fecha:'28 may 2026', ingreso:28000, enganche:150000, plazo:15, propMax:1750000, cuota:19400, props:[4,5] },
 ];
@@ -1468,6 +1469,12 @@ function renderSims() {
         <span style="font-size:11px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--text-secondary)">Enganche ${fmt(s.enganche)}</span>
       </div>
       <div style="padding:12px 16px">
+        ${s.refProp ? (() => { const rp = PROPS.find(p=>p.id===s.refProp); return rp ? `<div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Propiedad de referencia</div>
+        <div class="list-item" style="padding:10px 12px;border-radius:8px;background:var(--surface-1);margin-bottom:12px;cursor:pointer" onclick="openPropDetail(${rp.id})">
+          <div style="width:36px;height:36px;background:var(--surface-2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-building" style="font-size:16px;color:var(--text-muted)"></i></div>
+          <div class="list-item-body"><div class="list-item-title">${rp.zona} · ${rp.tipo}</div><div class="list-item-sub">${fmt(rp.price)} · ${rp.rec} rec · ${rp.area}m²</div></div>
+          <i class="ti ti-chevron-right" style="font-size:14px;color:var(--text-muted)"></i>
+        </div>` : ''; })() : ''}
         <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Propiedades en rango</div>
         ${simProps.map(p => `<div class="list-item" style="padding:10px 0;border-bottom:0.5px solid var(--border);cursor:pointer" onclick="openPropDetail(${p.id})">
           <div class="list-item-body"><div class="list-item-title">${fmt(p.price)}</div><div class="list-item-sub">${p.zona} · ${p.rec} rec · ${p.ban} baños · ${p.area}m²</div></div>
@@ -1788,6 +1795,21 @@ function goToPropDetail(id) {
 }
 
 function completeModule2() {
+  if (simRefPropId) {
+    // flujo desde ficha de producto: guardar sim con prop referenciada e ir a historial
+    const today = new Date().toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'});
+    const propsInRange = PROPS.filter(p => p.price <= simData.propMax).map(p => p.id);
+    SIM_HISTORY.unshift({
+      id:'S'+Date.now(), fecha:today,
+      ingreso:simData.ingreso, enganche:simData.enganche, plazo:simData.plazo,
+      propMax:simData.propMax, cuota:simData.cuotaReal,
+      props:propsInRange, refProp:simRefPropId
+    });
+    simRefPropId = null;
+    renderSims();
+    goScreen('screen-simulaciones');
+    return;
+  }
   if (moduleDone[2]) { goScreen('screen-props'); return; }
   showAchievement(2);
 }
