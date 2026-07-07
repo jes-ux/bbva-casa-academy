@@ -306,7 +306,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
 .notif-dot{width:8px;height:8px;border-radius:50%;background:var(--text-primary);flex-shrink:0}
 
-.sim-history-card{border:0.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2)}
+.sim-history-card{border:0.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2);transition:border-color .4s,box-shadow .4s}
+@keyframes sim-enter{0%{opacity:0;transform:translateY(-10px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes sim-glow{0%,100%{box-shadow:none;border-color:var(--border)}30%{box-shadow:0 0 0 3px rgba(255,255,255,.18);border-color:var(--text-primary)}70%{box-shadow:0 0 0 3px rgba(255,255,255,.10);border-color:var(--text-primary)}}
+.sim-history-card.sim-new{animation:sim-enter .35s ease forwards, sim-glow 2s ease 0.2s forwards}
 .sim-history-header{padding:14px 16px;background:var(--surface-2);display:flex;justify-content:space-between;align-items:flex-start;border-bottom:0.5px solid var(--border)}
 .sim-history-amount{font-size:20px;font-weight:600;color:var(--text-primary)}
 .sim-history-meta{font-size:12px;color:var(--text-muted);margin-top:2px}
@@ -2018,6 +2021,10 @@ function completeModule2() {
   if(!wasDone){ moduleDone[2] = true; localStorage.setItem('mod2','1'); }
   renderSims();
   goScreen('screen-simulaciones');
+  requestAnimationFrame(() => {
+    const first = document.querySelector('#sims-content .sim-history-card');
+    if(first){ first.classList.add('sim-new'); setTimeout(()=>first.classList.remove('sim-new'),2500); }
+  });
 }
 
 function viewPropsForSim(propMax) {
