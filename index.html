@@ -481,7 +481,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .prop-info{flex:1;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
 
   /* mini mapa sidebar */
-  .dt-props-map-col{display:block!important;position:sticky;top:121px;height:calc(100dvh - 121px);border-left:0.5px solid var(--border);overflow:hidden}
+  .dt-props-map-col{display:flex!important;flex-direction:column;position:sticky;top:121px;height:calc(100dvh - 121px);border-left:0.5px solid var(--border);overflow:hidden}
+  #map-container-preview{flex:1;min-height:0}
 
   /* ── MAP (desktop: full width below sticky header) ── */
   #map-wrap{
