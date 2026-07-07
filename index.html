@@ -1522,9 +1522,15 @@ function renderSims() {
           <i class="ti ti-chevron-right" style="font-size:14px;color:var(--text-muted)"></i>
         </div>` : ''; })() : ''}
         <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Propiedades en rango</div>
-        ${simProps.map(p => `<div class="list-item" style="padding:10px 0;border-bottom:0.5px solid var(--border);cursor:pointer" onclick="openPropDetail(${p.id})">
-          <div class="list-item-body"><div class="list-item-title">${fmt(p.price)}</div><div class="list-item-sub">${p.zona} · ${p.rec} rec · ${p.ban} baños · ${p.area}m²</div></div>
-          <i class="ti ti-chevron-right" style="font-size:14px;color:var(--text-muted)"></i>
+        ${simProps.map(p => `<div class="acct-prop-row" style="padding:10px 0" onclick="openPropDetail(${p.id})">
+          <div class="acct-prop-row-img" style="width:64px;height:52px;border-radius:6px;background:var(--surface-0);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="ti ti-building" style="font-size:22px;color:var(--text-muted)"></i>
+          </div>
+          <div class="acct-prop-row-body">
+            <div class="acct-prop-row-price" style="font-size:14px">${fmt(p.price)}</div>
+            <div class="acct-prop-row-meta">${p.zona} · ${p.rec} rec · ${p.ban} baños · ${p.area}m²</div>
+          </div>
+          <i class="ti ti-chevron-right acct-prop-row-chevron"></i>
         </div>`).join('')}
       </div>
     </div>`;
