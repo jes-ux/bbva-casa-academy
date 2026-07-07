@@ -354,21 +354,26 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
    ═══════════════════════════════════════ */
 .dt-nav,.dt-user,.dt-detail-sidebar{display:none}
 .mobile-only{display:flex}
+.dt-acct-sidebar{display:none}
+.dt-acct-wrap{display:contents}
 
 @media(min-width:900px){
   /* ── Shell ── */
   html,body{height:auto}
   #app{max-width:none}
 
-  /* ── Header ── */
+  /* ── Header (fixed full-width — DOM order is mid-page so sticky won't work) ── */
   .app-header{
-    position:sticky;top:0;left:0;transform:none;max-width:none;
+    position:fixed;top:0;left:0;transform:none;max-width:none;width:100%;
     height:64px;padding:0 40px;z-index:100;
     display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;
   }
-  .app-header.hidden{transform:none} /* disable mobile hide on desktop */
+  .app-header.hidden{transform:translateY(-110%)} /* keep hide animation working */
   #header-back{display:none!important}
   .mobile-only{display:none!important}
+
+  /* ── Screens — compensate for fixed 64px header ── */
+  .screen{padding-top:64px}
 
   /* desktop nav */
   .dt-nav{display:flex;align-items:center;gap:6px;justify-content:center}
@@ -487,15 +492,35 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     display:grid;grid-template-columns:1fr 300px;gap:32px;align-items:start;
   }
 
-  /* ── PROFILE SCREEN ── */
-  #screen-perfil .content{max-width:760px}
+  /* ── ACCOUNT SIDEBAR LAYOUT ── */
+  .dt-acct-wrap{display:flex;flex:1;min-height:calc(100dvh - 64px)}
+  .dt-acct-sidebar{
+    display:flex;flex-direction:column;
+    width:220px;flex-shrink:0;
+    border-right:0.5px solid var(--border);
+    padding:24px 0;
+    position:sticky;top:64px;height:calc(100dvh - 64px);overflow-y:auto;
+    background:var(--surface-2);
+  }
+  .dt-acct-item{
+    display:flex;align-items:center;gap:10px;width:100%;
+    padding:10px 20px;border:none;background:none;
+    font-size:14px;color:var(--text-secondary);cursor:pointer;
+    font-family:var(--font-sans);text-align:left;transition:color .15s,background .15s;
+  }
+  .dt-acct-item:hover{color:var(--text-primary);background:var(--surface-1)}
+  .dt-acct-item.active{color:var(--text-primary);font-weight:600}
+  .dt-acct-danger:hover{color:#e05252}
+  .dt-acct-wrap .content{flex:1;max-width:760px;padding:32px 40px}
+  /* hide mobile title header inside account screens */
+  .dt-acct-wrap ~ .dt-mobile-title,
+  .dt-mobile-title.mobile-only{display:none!important}
 
-  /* ── MISC SCREENS ── */
-  #screen-simulaciones .content,
-  #screen-favoritos .content,
-  #screen-oportunidades .content,
-  #screen-notificaciones .content,
-  #screen-configuracion .content{max-width:860px}
+  /* ── OPORTUNIDADES / FAVORITOS grid ── */
+  #screen-favoritos .props-grid,
+  #screen-oportunidades .props-grid{
+    grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  }
 
   /* ── MAP SCREEN ── */
   #screen-mapa .screen{padding-top:0}
@@ -573,9 +598,20 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   <!-- PERFIL -->
   <div id="screen-perfil" class="screen">
-    <div class="progress-bar-container" style="border-bottom:none;padding-bottom:0">
+    <div class="progress-bar-container mobile-only" style="border-bottom:none;padding-bottom:0">
       <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Mi perfil</div>
     </div>
+    <div class="dt-acct-wrap">
+    <aside class="dt-acct-sidebar">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
+      <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
+      <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
+      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+    </aside>
     <div class="content">
       <div style="display:flex;align-items:center;gap:14px">
         <div class="profile-avatar-lg">👤</div>
@@ -602,31 +638,67 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         </div>
       </div>
     </div>
+    </div><!-- /dt-acct-wrap -->
   </div>
 
   <!-- FAVORITOS -->
   <div id="screen-favoritos" class="screen">
-    <div class="progress-bar-container" style="border-bottom:none;padding-bottom:0">
+    <div class="progress-bar-container mobile-only" style="border-bottom:none;padding-bottom:0">
       <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Favoritos</div>
     </div>
+    <div class="dt-acct-wrap">
+    <aside class="dt-acct-sidebar">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
+      <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
+      <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
+      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+    </aside>
     <div class="content">
       <div class="props-grid" id="favs-grid"></div>
     </div>
+    </div><!-- /dt-acct-wrap -->
   </div>
 
   <!-- SIMULACIONES -->
   <div id="screen-simulaciones" class="screen">
-    <div class="progress-bar-container" style="border-bottom:none;padding-bottom:0">
+    <div class="progress-bar-container mobile-only" style="border-bottom:none;padding-bottom:0">
       <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Mis simulaciones</div>
     </div>
+    <div class="dt-acct-wrap">
+    <aside class="dt-acct-sidebar">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
+      <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
+      <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
+      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+    </aside>
     <div class="content" id="sims-content"></div>
+    </div><!-- /dt-acct-wrap -->
   </div>
 
   <!-- NOTIFICACIONES -->
   <div id="screen-notificaciones" class="screen">
-    <div class="progress-bar-container" style="border-bottom:none;padding-bottom:0">
+    <div class="progress-bar-container mobile-only" style="border-bottom:none;padding-bottom:0">
       <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Notificaciones</div>
     </div>
+    <div class="dt-acct-wrap">
+    <aside class="dt-acct-sidebar">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
+      <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
+      <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
+      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+    </aside>
     <div class="content">
       <div class="list-card">
         <div class="list-item">
@@ -656,13 +728,25 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         </div>
       </div>
     </div>
+    </div><!-- /dt-acct-wrap -->
   </div>
 
   <!-- CONFIGURACIÓN -->
   <div id="screen-configuracion" class="screen">
-    <div class="progress-bar-container" style="border-bottom:none;padding-bottom:0">
+    <div class="progress-bar-container mobile-only" style="border-bottom:none;padding-bottom:0">
       <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Configuración</div>
     </div>
+    <div class="dt-acct-wrap">
+    <aside class="dt-acct-sidebar">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
+      <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
+      <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
+      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+    </aside>
     <div class="content">
       <div class="section-screen">
         <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Notificaciones</div>
@@ -682,17 +766,31 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
       <div style="font-size:11px;color:var(--text-muted);text-align:center;line-height:1.6">BBVA Casa Academy v1.0.0 — Prototipo<br>© 2024 BBVA México</div>
     </div>
+    </div><!-- /dt-acct-wrap -->
   </div>
 
   <!-- OPORTUNIDADES -->
   <div id="screen-oportunidades" class="screen">
-    <div class="progress-bar-container" style="border-bottom:none;padding-bottom:0">
+    <div class="progress-bar-container mobile-only" style="border-bottom:none;padding-bottom:0">
       <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Oportunidades</div>
     </div>
+    <div class="dt-acct-wrap">
+    <aside class="dt-acct-sidebar">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
+      <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
+      <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
+      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+    </aside>
     <div class="content">
+      <h2 style="font-size:22px;font-weight:700;color:var(--text-primary);margin-bottom:8px">Oportunidades</h2>
       <p style="font-size:14px;color:var(--text-secondary);line-height:1.6">Propiedades nuevas que hacen match con tus simulaciones.</p>
       <div class="props-grid" id="opp-grid"></div>
     </div>
+    </div><!-- /dt-acct-wrap -->
   </div>
 
   <!-- ACADEMIA -->
@@ -1533,6 +1631,8 @@ function goScreen(id, isBack = false) {
   initHeaderScroll(s);
   if (id === 'screen-props') { renderProps(); }
   if (id === 'screen-academia') renderAcademia();
+  // sync account sidebar active state
+  document.querySelectorAll('.dt-acct-item[data-screen]').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
 }
 
 function toggleConcept(id) {
