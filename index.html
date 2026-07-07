@@ -409,6 +409,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .dt-nav-btn:hover{color:var(--text-primary);background:var(--surface-1)}
   .dt-nav-btn.active{color:var(--text-primary);font-weight:600}
 
+  /* ── mega-menu backdrop ── */
+  #mega-backdrop{display:none;position:fixed;inset:0;top:64px;background:rgba(0,0,0,.45);z-index:98;backdrop-filter:blur(1px)}
+  #mega-backdrop.open{display:block}
+
   /* ── mega-menu propiedades ── */
   .dt-nav-mega-wrap{position:relative}
   .dt-mega-menu{
@@ -650,6 +654,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   <!-- Drawer overlay -->
   <div id="drawer-overlay" onclick="closeDrawer()"></div>
+  <div id="mega-backdrop" onclick="closeMega()"></div>
 
   <!-- Drawer -->
   <div id="drawer">
@@ -1749,10 +1754,18 @@ function setHomeTab(btn) {
 /* ── chip dropdowns ── */
 let chipFilters = {tipo:'', minRec:0, minPrice:0, maxPrice:0};
 
-function openMega(){ document.getElementById('dt-mega-menu').classList.add('open'); }
-function closeMega(){ document.getElementById('dt-mega-menu').classList.remove('open'); }
-function toggleMega(){ document.getElementById('dt-mega-menu').classList.toggle('open'); }
-document.addEventListener('click', e => { if(!e.target.closest('.dt-nav-mega-wrap')) closeMega(); });
+function openMega(){
+  document.getElementById('dt-mega-menu').classList.add('open');
+  document.getElementById('mega-backdrop').classList.add('open');
+}
+function closeMega(){
+  document.getElementById('dt-mega-menu').classList.remove('open');
+  document.getElementById('mega-backdrop').classList.remove('open');
+}
+function toggleMega(){
+  const isOpen = document.getElementById('dt-mega-menu').classList.contains('open');
+  isOpen ? closeMega() : openMega();
+}
 
 function toggleMegaChip(btn){
   btn.classList.toggle('active');
