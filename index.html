@@ -453,7 +453,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     position:sticky;top:64px;z-index:50;
     background:var(--surface-0);border-bottom:0.5px solid var(--border);
     padding:14px 40px;
+    display:flex;flex-direction:row;gap:12px;align-items:center;
   }
+  #list-controls-row1{flex:1}
+  #list-controls-row2{display:flex;justify-content:flex-end;gap:4px;flex-shrink:0}
   #profile-pills{padding:10px 40px 0}
   #props-count{padding:12px 40px 0;font-size:13px}
 
@@ -558,11 +561,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   /* ── DRAWER as sidebar overlay still works ── */
   #drawer{width:320px}
-
-  /* ── Barra de búsqueda + controles en una línea ── */
-  #list-controls{display:flex;gap:12px;align-items:center}
-  #list-controls-row1{flex:1}
-  #list-controls-row2{justify-content:flex-end;gap:4px;flex-shrink:0}
 
   /* ── Filtros y Ordenar: side-sheet desde la derecha en desktop ── */
   #sheet-filtros,#sheet-ordenar{
