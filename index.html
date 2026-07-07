@@ -915,7 +915,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="dt-nav-mega-wrap">
         <button class="dt-nav-btn" id="dtnav-props" onclick="toggleMega()">Propiedades <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
         <div class="dt-mega-menu" id="dt-mega-menu">
-          <!-- columna izquierda: chips de tipo -->
+          <!-- columna izquierda: chips categoría, tipo y precio -->
           <div class="dt-mega-col dt-mega-types">
             <div class="dt-mega-section-title">Categoría</div>
             <div class="dt-mega-chips" id="mega-chips-cat">
@@ -931,26 +931,41 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
               <button class="dt-mega-chip" data-group="tipo" data-val="Oficina" onclick="toggleMegaChip(this)">Oficinas</button>
               <button class="dt-mega-chip" data-group="tipo" data-val="Terreno" onclick="toggleMegaChip(this)">Terrenos</button>
             </div>
+            <div class="dt-mega-section-title" style="margin-top:18px">Precio</div>
+            <div class="dt-mega-chips" id="mega-chips-precio">
+              <button class="dt-mega-chip" data-group="precio" onclick="toggleMegaChip(this);setChipPrecio(0,1000000)">Hasta $1M</button>
+              <button class="dt-mega-chip" data-group="precio" onclick="toggleMegaChip(this);setChipPrecio(1000000,3000000)">$1M – $3M</button>
+              <button class="dt-mega-chip" data-group="precio" onclick="toggleMegaChip(this);setChipPrecio(3000000,5000000)">$3M – $5M</button>
+              <button class="dt-mega-chip" data-group="precio" onclick="toggleMegaChip(this);setChipPrecio(5000000,0)">Más de $5M</button>
+            </div>
           </div>
-          <!-- columna derecha: zonas + precios -->
+          <!-- columna derecha: localidades en 3 columnas -->
           <div class="dt-mega-col dt-mega-locations">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 40px">
+            <div class="dt-mega-section-title">Opciones más buscadas</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 32px">
               <div>
-                <div class="dt-mega-section-title">Zonas</div>
+                <div class="dt-mega-sub-title">Colonias</div>
                 <button class="dt-mega-loc" onclick="setSearchZone('Narvarte');applyMegaFilters()">Narvarte</button>
                 <button class="dt-mega-loc" onclick="setSearchZone('Del Valle');applyMegaFilters()">Del Valle</button>
                 <button class="dt-mega-loc" onclick="setSearchZone('Coyoacán');applyMegaFilters()">Coyoacán</button>
-                <button class="dt-mega-loc" onclick="setSearchZone('Benito Juárez');applyMegaFilters()">Benito Juárez</button>
-                <button class="dt-mega-loc" onclick="setSearchZone('Polanco');applyMegaFilters()">Polanco</button>
                 <button class="dt-mega-loc" onclick="setSearchZone('Roma');applyMegaFilters()">Roma</button>
                 <button class="dt-mega-loc" onclick="setSearchZone('Condesa');applyMegaFilters()">Condesa</button>
               </div>
               <div>
-                <div class="dt-mega-section-title">Precio</div>
-                <button class="dt-mega-loc" onclick="setChipPrecio(0,1000000);applyMegaFilters()">Hasta $1M</button>
-                <button class="dt-mega-loc" onclick="setChipPrecio(1000000,3000000);applyMegaFilters()">$1M – $3M</button>
-                <button class="dt-mega-loc" onclick="setChipPrecio(3000000,5000000);applyMegaFilters()">$3M – $5M</button>
-                <button class="dt-mega-loc" onclick="setChipPrecio(5000000,0);applyMegaFilters()">Más de $5M</button>
+                <div class="dt-mega-sub-title">Alcaldías</div>
+                <button class="dt-mega-loc" onclick="setSearchZone('Benito Juárez');applyMegaFilters()">Benito Juárez</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Cuauhtémoc');applyMegaFilters()">Cuauhtémoc</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Miguel Hidalgo');applyMegaFilters()">Miguel Hidalgo</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Álvaro Obregón');applyMegaFilters()">Álvaro Obregón</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Tlalpan');applyMegaFilters()">Tlalpan</button>
+              </div>
+              <div>
+                <div class="dt-mega-sub-title">Ciudades</div>
+                <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()">Ciudad de México</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()">Guadalajara</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()">Monterrey</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()">Puebla</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()">Querétaro</button>
               </div>
             </div>
           </div>
