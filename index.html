@@ -1954,15 +1954,30 @@ function getMegaActiveContext() {
   return 'default';
 }
 
+const MEGA_SKEL_COL = `
+  <div>
+    <div class="mega-skel" style="width:60px;margin-bottom:14px"></div>
+    <div class="mega-skel" style="width:88px;margin-bottom:10px"></div>
+    <div class="mega-skel" style="width:72px;margin-bottom:10px"></div>
+    <div class="mega-skel" style="width:96px;margin-bottom:10px"></div>
+    <div class="mega-skel" style="width:64px;margin-bottom:10px"></div>
+    <div class="mega-skel" style="width:80px;margin-bottom:10px"></div>
+    <div class="mega-skel" style="width:44px;margin-top:4px"></div>
+  </div>`;
+
 let megaLocTimer = null;
 function refreshMegaLocations() {
   const grid = document.getElementById('mega-locations-grid');
   const title = document.getElementById('mega-locations-title');
   if (!grid) return;
-  // skeleton
-  grid.style.opacity = '0.4';
-  grid.style.pointerEvents = 'none';
   clearTimeout(megaLocTimer);
+
+  // mostrar skeleton inmediatamente
+  grid.style.pointerEvents = 'none';
+  grid.classList.remove('mega-cols-enter');
+  grid.innerHTML = MEGA_SKEL_COL + MEGA_SKEL_COL + MEGA_SKEL_COL;
+  if (title) title.textContent = 'Actualizando resultados…';
+
   megaLocTimer = setTimeout(() => {
     const ctx = getMegaActiveContext();
     const data = MEGA_LOCATIONS[ctx] || MEGA_LOCATIONS.default;
@@ -1974,11 +1989,9 @@ function refreshMegaLocations() {
         <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()" style="color:var(--text-muted);margin-top:4px">Todo →</button>
       </div>`).join('');
     grid.style.pointerEvents = '';
-    grid.classList.remove('mega-cols-enter');
-    void grid.offsetWidth; // reflow para reiniciar animación
-    grid.style.opacity = '1';
+    void grid.offsetWidth;
     grid.classList.add('mega-cols-enter');
-  }, 320);
+  }, 700);
 }
 
 function toggleMegaChip(btn){
