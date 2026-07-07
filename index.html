@@ -1510,6 +1510,7 @@ function clearSearch() {
 }
 
 function openDrawer() {
+  if (window.innerWidth >= 900) { goScreen('screen-perfil'); return; }
   document.getElementById('drawer').classList.add('open');
   document.getElementById('drawer-overlay').classList.add('open');
 }
