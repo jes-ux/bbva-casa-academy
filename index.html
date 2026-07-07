@@ -1587,9 +1587,9 @@ function renderAcademia() {
   document.getElementById('acad-bar').style.width = Math.round(done / 3 * 100) + '%';
 
   const modules = [
-    { n:1, title:'Entendé cómo funciona', sub:'CAT, tipos de tasa y enganche', time:'5 min', screen:'screen-edu', cta:'Empezar módulo', ctaDone:'Ver contenido' },
-    { n:2, title:'Simulá tu capacidad', sub:'Calculá cuánto podés pagar', time:'5 min', screen:'screen-sim', cta:'Empezar módulo', ctaDone:'Ver simulación' },
-    { n:3, title:'Buscá propiedades', sub:'Propiedades en tu rango', time:'3 min', screen:'screen-props', cta:'Ver propiedades', ctaDone:'Ver propiedades' },
+    { n:1, title:'Entendé cómo funciona', sub:'CAT, tipos de tasa y enganche', time:'5 min', screen:'screen-edu', cta:'Empezar módulo', ctaDone:'Ver contenido', ctaDoneAction:"goScreen('screen-edu')" },
+    { n:2, title:'Simulá tu capacidad', sub:'Calculá cuánto podés pagar', time:'5 min', screen:'screen-sim', cta:'Empezar módulo', ctaDone:'Ver simulación', ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
+    { n:3, title:'Buscá propiedades', sub:'Propiedades en tu rango', time:'3 min', screen:'screen-props', cta:'Ver propiedades', ctaDone:'Ver propiedades', ctaDoneAction:"navTo('screen-props','nav-props')" },
   ];
 
   document.getElementById('acad-modules').innerHTML = modules.map(m => {
@@ -1610,7 +1610,7 @@ function renderAcademia() {
           <div style="font-size:12px;color:var(--text-muted);margin-top:4px;display:flex;align-items:center;gap:4px"><i class="ti ti-clock" style="font-size:12px"></i> ${m.time}</div>
         </div>
       </div>
-      ${!isLocked ? `<div style="padding:0 16px 16px"><button class="btn-primary" style="font-size:14px;padding:12px" onclick="navTo('${m.screen}','nav-inicio')">${isDone ? m.ctaDone : m.cta}</button></div>` : `<div style="padding:0 16px 16px"><button class="btn-primary" style="font-size:14px;padding:12px;opacity:.3" disabled>Completá el módulo anterior</button></div>`}
+      ${!isLocked ? `<div style="padding:0 16px 16px"><button class="btn-primary" style="font-size:14px;padding:12px" onclick="${isDone ? m.ctaDoneAction : `navTo('${m.screen}','nav-inicio')`}">${isDone ? m.ctaDone : m.cta}</button></div>` : `<div style="padding:0 16px 16px"><button class="btn-primary" style="font-size:14px;padding:12px;opacity:.3" disabled>Completá el módulo anterior</button></div>`}
     </div>`;
   }).join('');
 }
@@ -1793,6 +1793,7 @@ function completeModule2() {
 }
 
 function goToAchievement() {
+  if (moduleDone[1] && moduleDone[2] && moduleDone[3]) { renderAcademia(); goScreen('screen-academia'); return; }
   if (moduleDone[1]) { goScreen('screen-sim'); return; }
   showAchievement(1);
 }
