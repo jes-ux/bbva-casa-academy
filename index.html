@@ -407,7 +407,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .dt-nav-btn.active{color:var(--text-primary);font-weight:600}
 
   /* ── mega-menu backdrop ── */
-  #mega-backdrop{display:none;position:fixed;inset:0;top:64px;background:rgba(0,0,0,.45);z-index:98;backdrop-filter:blur(1px)}
+  #mega-backdrop{display:none;position:fixed;inset:0;top:0;background:rgba(0,0,0,.45);z-index:101;backdrop-filter:blur(1px)}
   #mega-backdrop.open{display:block}
 
   /* ── mega-menu propiedades ── */
@@ -416,10 +416,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     display:none;position:fixed;top:64px;left:0;right:0;
     background:var(--surface-2);border-bottom:0.5px solid var(--border);
     box-shadow:0 8px 32px rgba(0,0,0,.3);
-    z-index:99;padding:28px 40px;
+    z-index:102;padding:28px 40px;
     display:none;flex-direction:row;gap:0;
   }
   .dt-mega-menu.open{display:flex}
+  .dt-mega-close{position:absolute;top:16px;right:20px;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:20px;line-height:1;padding:4px;border-radius:6px;display:flex;align-items:center;justify-content:center}
+  .dt-mega-close:hover{background:var(--surface-1);color:var(--text-primary)}
   .dt-mega-col{padding:0 40px 0 0}
   .dt-mega-types{min-width:220px;border-right:0.5px solid var(--border)}
   .dt-mega-locations{flex:1;padding-left:40px;padding-right:0}
@@ -917,6 +919,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="dt-nav-mega-wrap">
         <button class="dt-nav-btn" id="dtnav-props" onclick="toggleMega()">Propiedades <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
         <div class="dt-mega-menu" id="dt-mega-menu">
+          <button class="dt-mega-close" onclick="closeMega()" aria-label="Cerrar"><i class="ti ti-x"></i></button>
           <!-- columna izquierda: chips categoría, tipo y precio -->
           <div class="dt-mega-col dt-mega-types">
             <div class="dt-mega-section-title">Categoría</div>
