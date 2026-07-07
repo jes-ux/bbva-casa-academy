@@ -821,11 +821,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button id="header-back" style="display:none;width:32px;height:32px;border:none;background:none;cursor:pointer;color:var(--text-primary);padding:0;-webkit-tap-highlight-color:transparent;flex-shrink:0;align-items:center;justify-content:center" onclick="headerBack()">
         <i class="ti ti-arrow-left" style="font-size:18px"></i>
       </button>
-      <div class="app-header-brand"><i class="ti ti-building-bank" aria-hidden="true"></i> BBVA Casa Academy</div>
+      <div class="app-header-brand" style="cursor:pointer" onclick="navTo('screen-0','nav-inicio')"><i class="ti ti-building-bank" aria-hidden="true"></i> BBVA Casa Academy</div>
     </div>
     <!-- desktop nav: hidden on mobile via CSS -->
     <nav class="dt-nav" id="dt-nav">
-      <button class="dt-nav-btn" id="dtnav-inicio" onclick="navTo('screen-0','nav-inicio')">Inicio</button>
       <button class="dt-nav-btn" id="dtnav-props" onclick="navTo('screen-props','nav-props')">Propiedades</button>
       <button class="dt-nav-btn" id="dtnav-sim" onclick="navTo('screen-sim','nav-sim')">Simula tu Crédito</button>
       <button class="dt-nav-btn" id="dtnav-opps" onclick="renderOpps();goScreen('screen-oportunidades')">Oportunidades</button>
