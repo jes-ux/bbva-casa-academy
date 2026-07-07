@@ -429,6 +429,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .dt-mega-item i{font-size:13px;color:var(--text-muted)}
   .dt-mega-loc{display:block;width:100%;background:none;border:none;text-align:left;padding:6px 0;font-size:14px;font-family:var(--font-sans);color:var(--text-secondary);cursor:pointer;border-radius:4px}
   .dt-mega-loc:hover{color:var(--text-primary)}
+  .dt-mega-chips{display:flex;flex-wrap:wrap;gap:8px}
+  .dt-mega-chip{background:var(--surface-1);border:1px solid var(--border-strong);border-radius:20px;padding:6px 14px;font-size:13px;font-family:var(--font-sans);color:var(--text-primary);cursor:pointer;transition:background .15s,border-color .15s}
+  .dt-mega-chip:hover{background:var(--surface-0)}
+  .dt-mega-chip.active{background:var(--text-primary);color:var(--surface-2);border-color:var(--text-primary)}
 
   /* desktop user */
   .dt-user{display:flex;align-items:center;gap:4px;justify-content:flex-end}
@@ -911,33 +915,45 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="dt-nav-mega-wrap">
         <button class="dt-nav-btn" id="dtnav-props" onclick="toggleMega()">Propiedades <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
         <div class="dt-mega-menu" id="dt-mega-menu">
+          <!-- columna izquierda: chips de tipo -->
           <div class="dt-mega-col dt-mega-types">
-            <div class="dt-mega-section-title">Tipo de propiedad</div>
-            <button class="dt-mega-item" onclick="setChipTipo('Departamento');navTo('screen-props','nav-props')">Departamentos <i class="ti ti-chevron-right"></i></button>
-            <button class="dt-mega-item" onclick="setChipTipo('Casa');navTo('screen-props','nav-props')">Casas <i class="ti ti-chevron-right"></i></button>
-            <button class="dt-mega-item" onclick="setChipTipo('Local comercial');navTo('screen-props','nav-props')">Locales comerciales <i class="ti ti-chevron-right"></i></button>
-            <button class="dt-mega-item" onclick="setChipTipo('Oficina');navTo('screen-props','nav-props')">Oficinas <i class="ti ti-chevron-right"></i></button>
-            <button class="dt-mega-item" onclick="setChipTipo('Terreno');navTo('screen-props','nav-props')">Terrenos <i class="ti ti-chevron-right"></i></button>
-            <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-            <button class="dt-mega-item" onclick="setChipTipo('');navTo('screen-props','nav-props')" style="color:var(--text-muted)">Ver todas las propiedades</button>
+            <div class="dt-mega-section-title">Categoría</div>
+            <div class="dt-mega-chips" id="mega-chips-cat">
+              <button class="dt-mega-chip" data-group="cat" data-val="Residencial" onclick="toggleMegaChip(this)">Residencial</button>
+              <button class="dt-mega-chip" data-group="cat" data-val="Comercial" onclick="toggleMegaChip(this)">Comercial</button>
+              <button class="dt-mega-chip" data-group="cat" data-val="Industrial" onclick="toggleMegaChip(this)">Industrial</button>
+            </div>
+            <div class="dt-mega-section-title" style="margin-top:18px">Tipo de propiedad</div>
+            <div class="dt-mega-chips" id="mega-chips-tipo">
+              <button class="dt-mega-chip" data-group="tipo" data-val="Casa" onclick="toggleMegaChip(this)">Casas</button>
+              <button class="dt-mega-chip" data-group="tipo" data-val="Departamento" onclick="toggleMegaChip(this)">Departamentos</button>
+              <button class="dt-mega-chip" data-group="tipo" data-val="Local comercial" onclick="toggleMegaChip(this)">Locales</button>
+              <button class="dt-mega-chip" data-group="tipo" data-val="Oficina" onclick="toggleMegaChip(this)">Oficinas</button>
+              <button class="dt-mega-chip" data-group="tipo" data-val="Terreno" onclick="toggleMegaChip(this)">Terrenos</button>
+            </div>
+            <div style="margin-top:20px">
+              <button onclick="applyMegaFilters()" class="btn-primary" style="width:100%;font-size:13px;padding:10px">Ver propiedades →</button>
+            </div>
           </div>
+          <!-- columna derecha: zonas + precios -->
           <div class="dt-mega-col dt-mega-locations">
-            <div class="dt-mega-section-title">Zonas más buscadas</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 40px">
               <div>
-                <div class="dt-mega-sub-title">Colonias</div>
-                <button class="dt-mega-loc" onclick="setSearchZone('Narvarte');navTo('screen-props','nav-props')">Narvarte</button>
-                <button class="dt-mega-loc" onclick="setSearchZone('Del Valle');navTo('screen-props','nav-props')">Del Valle</button>
-                <button class="dt-mega-loc" onclick="setSearchZone('Coyoacán');navTo('screen-props','nav-props')">Coyoacán</button>
-                <button class="dt-mega-loc" onclick="setSearchZone('Benito Juárez');navTo('screen-props','nav-props')">Benito Juárez</button>
-                <button class="dt-mega-loc" onclick="setSearchZone('Polanco');navTo('screen-props','nav-props')">Polanco</button>
+                <div class="dt-mega-section-title">Zonas</div>
+                <button class="dt-mega-loc" onclick="setSearchZone('Narvarte');applyMegaFilters()">Narvarte</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Del Valle');applyMegaFilters()">Del Valle</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Coyoacán');applyMegaFilters()">Coyoacán</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Benito Juárez');applyMegaFilters()">Benito Juárez</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Polanco');applyMegaFilters()">Polanco</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Roma');applyMegaFilters()">Roma</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Condesa');applyMegaFilters()">Condesa</button>
               </div>
               <div>
-                <div class="dt-mega-sub-title">Ciudades</div>
-                <button class="dt-mega-loc" onclick="setSearchZone('');navTo('screen-props','nav-props')">Ciudad de México</button>
-                <button class="dt-mega-loc" onclick="setSearchZone('');navTo('screen-props','nav-props')">Guadalajara</button>
-                <button class="dt-mega-loc" onclick="setSearchZone('');navTo('screen-props','nav-props')">Monterrey</button>
-                <button class="dt-mega-loc" onclick="setSearchZone('');navTo('screen-props','nav-props')">Puebla</button>
+                <div class="dt-mega-section-title">Precio</div>
+                <button class="dt-mega-loc" onclick="setChipPrecio(0,1000000);applyMegaFilters()">Hasta $1M</button>
+                <button class="dt-mega-loc" onclick="setChipPrecio(1000000,3000000);applyMegaFilters()">$1M – $3M</button>
+                <button class="dt-mega-loc" onclick="setChipPrecio(3000000,5000000);applyMegaFilters()">$3M – $5M</button>
+                <button class="dt-mega-loc" onclick="setChipPrecio(5000000,0);applyMegaFilters()">Más de $5M</button>
               </div>
             </div>
           </div>
@@ -1725,6 +1741,19 @@ function openMega(){ document.getElementById('dt-mega-menu').classList.add('open
 function closeMega(){ document.getElementById('dt-mega-menu').classList.remove('open'); }
 function toggleMega(){ document.getElementById('dt-mega-menu').classList.toggle('open'); }
 document.addEventListener('click', e => { if(!e.target.closest('.dt-nav-mega-wrap')) closeMega(); });
+
+function toggleMegaChip(btn){
+  btn.classList.toggle('active');
+}
+function applyMegaFilters(){
+  const tipoChips = [...document.querySelectorAll('#mega-chips-tipo .dt-mega-chip.active')];
+  if(tipoChips.length === 1) setChipTipo(tipoChips[0].dataset.val);
+  else if(tipoChips.length === 0) setChipTipo('');
+  // multi-tipo: usar el primero seleccionado como filtro principal (prototipo)
+  else setChipTipo(tipoChips[0].dataset.val);
+  closeMega();
+  navTo('screen-props','nav-props');
+}
 function setSearchZone(zona){
   searchQuery = zona.toLowerCase();
   const inp = document.getElementById('props-search');
