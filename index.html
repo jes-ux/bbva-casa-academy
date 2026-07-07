@@ -440,18 +440,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   #profile-pills{padding:10px 40px 0}
   #props-count{padding:12px 40px 0;font-size:13px}
 
-  /* props grid → 1-column horizontal list */
-  .props-grid{columns:1;padding:16px 40px 40px}
-  .prop-card{
-    display:flex;flex-direction:row;margin-bottom:12px;
-    border-radius:12px;
+  /* props grid → 4-col vertical cards */
+  .props-grid{
+    columns:unset;padding:16px 40px 40px;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
   }
-  .prop-img{
-    width:220px;min-width:220px;height:auto!important;align-self:stretch;min-height:140px;
-    border-bottom:none;border-right:0.5px solid var(--border);
-    border-radius:0;flex-shrink:0;
-  }
-  .prop-info{flex:1;padding:16px 20px;display:flex;flex-direction:column;justify-content:space-between}
+  .prop-card{display:flex;flex-direction:column;margin-bottom:0;border-radius:12px}
+  .prop-img{width:100%;min-width:unset;height:160px!important;align-self:auto;min-height:unset;border-bottom:0.5px solid var(--border);border-right:none;border-radius:0;flex-shrink:unset}
+  .prop-info{flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
 
   /* ── MAP (desktop: full width below sticky header) ── */
   #map-wrap{
