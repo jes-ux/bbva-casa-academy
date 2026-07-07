@@ -329,6 +329,47 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .empty-state i{font-size:36px;color:var(--text-muted)}
 .empty-state p{font-size:14px;color:var(--text-muted);line-height:1.6}
 
+/* ── Mensajes / chat ── */
+.msg-thread-list{display:flex;flex-direction:column}
+.msg-thread-item{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.msg-thread-item:last-child{border-bottom:none}
+.msg-thread-item:hover{background:var(--surface-1)}
+.msg-thread-avatar{width:44px;height:44px;border-radius:50%;background:var(--surface-1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:0.5px solid var(--border)}
+.msg-thread-body{flex:1;min-width:0}
+.msg-thread-name{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:2px}
+.msg-thread-preview{font-size:13px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msg-thread-meta{font-size:11px;color:var(--text-muted);flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.msg-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--text-primary)}
+.msg-chat-wrap{display:flex;flex-direction:column;height:100%;background:var(--surface-0)}
+.msg-chat-header{display:flex;align-items:center;gap:12px;padding:14px 20px;background:var(--surface-2);border-bottom:0.5px solid var(--border);flex-shrink:0}
+.msg-chat-back{width:32px;height:32px;border:none;background:none;cursor:pointer;color:var(--text-primary);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.msg-chat-name{font-size:15px;font-weight:600;color:var(--text-primary)}
+.msg-chat-sub{font-size:12px;color:var(--text-muted)}
+.msg-chat-body{flex:1;overflow-y:auto;padding:16px 16px 20px;display:flex;flex-direction:column;gap:10px}
+.msg-bubble-wrap{display:flex;flex-direction:column;gap:3px}
+.msg-bubble-wrap.mine{align-items:flex-end}
+.msg-bubble-wrap.theirs{align-items:flex-start}
+.msg-bubble{max-width:80%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.5;word-break:break-word}
+.msg-bubble.mine{background:var(--text-primary);color:var(--surface-2);border-bottom-right-radius:4px}
+.msg-bubble.theirs{background:var(--surface-2);color:var(--text-primary);border:0.5px solid var(--border);border-bottom-left-radius:4px;box-shadow:var(--card-shadow)}
+.msg-time{font-size:10px;color:var(--text-muted);padding:0 4px}
+.msg-prop-ref{background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;max-width:80%;box-shadow:var(--card-shadow);cursor:pointer}
+.msg-prop-ref-img{width:52px;height:42px;border-radius:6px;object-fit:cover;background:var(--surface-1);flex-shrink:0}
+.msg-prop-ref-body{min-width:0;flex:1}
+.msg-prop-ref-price{font-size:13px;font-weight:700;color:var(--text-primary)}
+.msg-prop-ref-meta{font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msg-chat-footer{padding:12px 16px;background:var(--surface-2);border-top:0.5px solid var(--border);display:flex;gap:10px;align-items:flex-end;flex-shrink:0}
+.msg-chat-input{flex:1;border:0.5px solid var(--border-strong);border-radius:20px;padding:10px 16px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--surface-0);outline:none;resize:none;max-height:100px;line-height:1.4}
+.msg-chat-input:focus{border-color:var(--border-stronger)}
+.msg-chat-send{width:38px;height:38px;border-radius:50%;background:var(--text-primary);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--surface-2);flex-shrink:0;transition:opacity .15s}
+.msg-chat-send:hover{opacity:.85}
+/* contact sheet */
+.contact-field{margin-bottom:16px}
+.contact-field label{display:block;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:6px}
+.contact-field input,.contact-field textarea,.contact-field select{width:100%;border:0.5px solid var(--border-strong);border-radius:10px;padding:11px 14px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);background:var(--surface-0);outline:none;box-sizing:border-box}
+.contact-field input:focus,.contact-field textarea:focus{border-color:var(--border-stronger)}
+.contact-field textarea{resize:none;min-height:90px;line-height:1.5}
+
 .tooltip-popup{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:350px;background:var(--text-primary);color:var(--surface-2);font-size:13px;line-height:1.6;padding:14px 16px;border-radius:10px;z-index:100;pointer-events:none;opacity:0;transition:opacity .2s}
 .tooltip-popup.visible{opacity:1}
 
@@ -727,6 +768,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="drawer-item" onclick="closeDrawer();goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
       <button class="drawer-item" onclick="closeDrawer();renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="drawer-item" onclick="closeDrawer();renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="drawer-item" onclick="closeDrawer();renderMensajes();goScreen('screen-mensajes')"><i class="ti ti-message"></i> Mensajes</button>
       <button class="drawer-item" onclick="closeDrawer();goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="drawer-item" onclick="closeDrawer();goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
     </div>
@@ -756,6 +798,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
       <button class="dt-acct-item" data-screen="screen-favoritos" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="renderMensajes();goScreen('screen-mensajes')"><i class="ti ti-message"></i> Mensajes</button>
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
@@ -801,6 +844,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
       <button class="dt-acct-item" data-screen="screen-favoritos" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="renderMensajes();goScreen('screen-mensajes')"><i class="ti ti-message"></i> Mensajes</button>
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
@@ -823,6 +867,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
       <button class="dt-acct-item" data-screen="screen-favoritos" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="renderMensajes();goScreen('screen-mensajes')"><i class="ti ti-message"></i> Mensajes</button>
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
@@ -843,6 +888,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
       <button class="dt-acct-item" data-screen="screen-favoritos" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="renderMensajes();goScreen('screen-mensajes')"><i class="ti ti-message"></i> Mensajes</button>
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
@@ -891,6 +937,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
       <button class="dt-acct-item" data-screen="screen-favoritos" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="renderMensajes();goScreen('screen-mensajes')"><i class="ti ti-message"></i> Mensajes</button>
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
@@ -918,6 +965,29 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div><!-- /dt-acct-wrap -->
   </div>
 
+  <!-- MENSAJES -->
+  <div id="screen-mensajes" class="screen">
+    <div class="progress-bar-container mobile-only" style="border-bottom:none;padding-bottom:0">
+      <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Mensajes</div>
+    </div>
+    <div class="dt-acct-wrap">
+    <aside class="dt-acct-sidebar">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="renderMensajes();goScreen('screen-mensajes')"><i class="ti ti-message"></i> Mensajes</button>
+      <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
+      <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
+      <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
+      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+    </aside>
+    <div class="content" id="mensajes-content">
+      <!-- renderMensajes() escribe aquí -->
+    </div>
+    </div>
+  </div>
+
   <!-- OPORTUNIDADES -->
   <div id="screen-oportunidades" class="screen">
     <div class="progress-bar-container mobile-only" style="border-bottom:none;padding-bottom:0">
@@ -929,6 +999,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-perfil')"><i class="ti ti-user"></i> Perfil</button>
       <button class="dt-acct-item" data-screen="screen-favoritos" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="renderMensajes();goScreen('screen-mensajes')"><i class="ti ti-message"></i> Mensajes</button>
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
@@ -1372,7 +1443,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
               <div class="phase2-label">Próximamente — Fase 2</div>
               <h3>Pre-aprobación real con match bancario</h3>
               <p>¿Te interesa una de estas propiedades? En una próxima versión podrás pre-aprobar tu crédito directamente con BBVA y hacer match con la propiedad elegida.</p>
-              <button class="btn-outline" onclick="alert('Un asesor BBVA se pondrá en contacto con vos.')">Hablar con un asesor</button>
+              <button class="btn-outline" onclick="openContacto(currentPropId)">Hablar con un asesor</button>
             </div>
           </div>
           <!-- columna mapa — solo desktop -->
@@ -1425,7 +1496,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
             <button class="detail-action-btn"><i class="ti ti-heart"></i></button>
           </div>
-          <button class="btn-outline" style="margin-top:14px;width:100%" onclick="alert('Un asesor BBVA se pondrá en contacto con vos.')">
+          <button class="btn-outline" style="margin-top:14px;width:100%" onclick="openContacto(currentPropId)">
             <i class="ti ti-headset"></i> Contacta al asesor
           </button>
         </div>
@@ -1487,7 +1558,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
             <button class="detail-action-btn"><i class="ti ti-heart"></i></button>
           </div>
-          <button class="btn-outline" style="margin-top:14px;width:100%" onclick="alert('Un asesor BBVA se pondrá en contacto con vos.')">
+          <button class="btn-outline" style="margin-top:14px;width:100%" onclick="openContacto(currentPropId)">
             <i class="ti ti-headset"></i> Contacta al asesor
           </button>
         </div>
@@ -1589,6 +1660,50 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <div class="sheet-footer">
     <button class="btn-secondary" onclick="closeSheet()">Eliminar filtros</button>
     <button class="btn-primary" style="width:auto;padding:13px 24px" onclick="closeSheet()">Ver resultados</button>
+  </div>
+</div>
+
+<!-- SHEET: Contactar asesor -->
+<div class="bottom-sheet" id="sheet-contacto" style="max-height:92dvh">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Contactar asesor</span>
+    <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
+  </div>
+  <div class="sheet-body">
+    <div id="contacto-prop-ref" style="display:none;background:var(--surface-1);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:18px">
+      <div id="contacto-prop-img" style="width:52px;height:42px;border-radius:6px;background:var(--surface-0);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">🏠</div>
+      <div style="min-width:0;flex:1">
+        <div id="contacto-prop-price" style="font-size:13px;font-weight:700;color:var(--text-primary)"></div>
+        <div id="contacto-prop-meta" style="font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+      </div>
+    </div>
+    <div class="contact-field">
+      <label>Motivo de contacto</label>
+      <select id="contacto-motivo">
+        <option value="info">Quiero más información</option>
+        <option value="visita">Agendar una visita</option>
+        <option value="credito">Consulta sobre crédito hipotecario</option>
+        <option value="otro">Otro</option>
+      </select>
+    </div>
+    <div class="contact-field">
+      <label>Mensaje <span style="color:var(--text-muted);font-weight:400">(Opcional)</span></label>
+      <textarea id="contacto-mensaje" placeholder="Escribí tu mensaje..."></textarea>
+    </div>
+    <div style="display:flex;gap:10px">
+      <div class="contact-field" style="flex:1;margin-bottom:0">
+        <label>Nombre</label>
+        <input type="text" id="contacto-nombre" value="Natalia López">
+      </div>
+      <div class="contact-field" style="flex:1;margin-bottom:0">
+        <label>Teléfono</label>
+        <input type="tel" id="contacto-tel" value="+52 55 1234 5678">
+      </div>
+    </div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn-primary" style="width:100%" onclick="enviarContacto()"><i class="ti ti-send"></i> Enviar mensaje</button>
   </div>
 </div>
 
@@ -1919,6 +2034,162 @@ function showToast(icon, msg, type='default') {
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ══════════════════════════════════
+   MENSAJES / CONTACTO ASESOR
+   ══════════════════════════════════ */
+let MENSAJES = [
+  {
+    id:'m1', asesorNombre:'Carlos Ramírez', asesorEmoji:'👨‍💼',
+    propId: 1, fecha:'Hoy', leido:false,
+    mensajes:[
+      {de:'yo', texto:'Hola, realicé una simulación y quisiera que me den más información o se pongan en contacto conmigo.', hora:'10:14'},
+      {de:'asesor', texto:'¡Hola Natalia! Con gusto te ayudo. ¿Tienes disponibilidad para una llamada esta semana?', hora:'10:32'},
+      {de:'yo', texto:'Sí, el jueves en la tarde está perfecto.', hora:'10:35'},
+      {de:'asesor', texto:'Perfecto, te agendo para el jueves a las 5pm. Te enviaré los detalles por correo.', hora:'10:40'},
+    ]
+  }
+];
+let activeChatId = null;
+
+function openContacto(propId) {
+  const ref = document.getElementById('contacto-prop-ref');
+  if (propId) {
+    const p = PROPS.find(x => x.id === propId);
+    if (p) {
+      ref.style.display = 'flex';
+      document.getElementById('contacto-prop-price').textContent = '$' + p.price.toLocaleString('es-MX');
+      document.getElementById('contacto-prop-meta').textContent = `${p.tipo} · ${p.zona}`;
+      const emoji = {Casa:'🏡',Departamento:'🏢',Terreno:'🌿','Local comercial':'🏪',Oficina:'🏢'}[p.tipo]||'🏠';
+      document.getElementById('contacto-prop-img').textContent = emoji;
+    }
+  } else {
+    ref.style.display = 'none';
+  }
+  const motivo = propId ? 'info' : 'credito';
+  document.getElementById('contacto-motivo').value = motivo;
+  const p = propId ? PROPS.find(x=>x.id===propId) : null;
+  const msgDefault = p
+    ? `Hola, me interesa la propiedad en ${p.zona} ($${p.price.toLocaleString('es-MX')}). ¿Podrían darme más información?`
+    : 'Hola, realicé una simulación y quisiera que me den más información o se pongan en contacto conmigo.';
+  document.getElementById('contacto-mensaje').value = msgDefault;
+  document.getElementById('contacto-prop-ref').dataset.propId = propId || '';
+  openSheet('sheet-contacto');
+}
+
+function enviarContacto() {
+  const texto = document.getElementById('contacto-mensaje').value.trim() || document.getElementById('contacto-mensaje').placeholder;
+  const propId = parseInt(document.getElementById('contacto-prop-ref').dataset.propId) || null;
+  const motivo = document.getElementById('contacto-motivo');
+  const motivoLabel = motivo.options[motivo.selectedIndex].text;
+  const hora = new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  const existente = propId ? MENSAJES.find(m=>m.propId===propId) : null;
+  if (existente) {
+    existente.mensajes.push({de:'yo', texto, hora});
+    existente.leido = false;
+  } else {
+    MENSAJES.unshift({
+      id:'m'+Date.now(), asesorNombre:'Asesor BBVA', asesorEmoji:'👨‍💼',
+      propId, fecha:'Hoy', leido:false,
+      mensajes:[{de:'yo', texto:`${motivoLabel}: ${texto}`, hora}]
+    });
+  }
+  closeSheet();
+  showToast('ti-circle-check','Mensaje enviado. Tu asesor responderá pronto.','success');
+  setTimeout(()=>{
+    const hilo = MENSAJES.find(m=> propId ? m.propId===propId : !m.propId) || MENSAJES[0];
+    if(hilo){
+      const respHora = new Date(Date.now()+60000).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+      hilo.mensajes.push({de:'asesor',texto:'Gracias por tu mensaje, Natalia. Me pongo en contacto contigo a la brevedad.',hora:respHora});
+    }
+  }, 3000);
+}
+
+function renderMensajes() {
+  const el = document.getElementById('mensajes-content');
+  if (!el) return;
+  if (activeChatId) { renderChat(activeChatId); return; }
+  if (!MENSAJES.length) {
+    el.innerHTML = `<div class="empty-state"><i class="ti ti-message-off"></i><p>Aún no enviaste ningún mensaje.<br>Contactá a un asesor desde la ficha de cualquier propiedad.</p></div>`;
+    return;
+  }
+  const rows = MENSAJES.map(m => {
+    const last = m.mensajes[m.mensajes.length-1];
+    const unread = !m.leido ? '<div class="msg-unread-dot"></div>' : '';
+    const propRef = m.propId ? PROPS.find(p=>p.id===m.propId) : null;
+    const sub = propRef ? `· ${propRef.tipo} en ${propRef.zona}` : '';
+    return `<div class="msg-thread-item" onclick="openChat('${m.id}')">
+      <div class="msg-thread-avatar">${m.asesorEmoji}</div>
+      <div class="msg-thread-body">
+        <div class="msg-thread-name">${m.asesorNombre} <span style="font-size:11px;font-weight:400;color:var(--text-muted)">${sub}</span></div>
+        <div class="msg-thread-preview">${last.de==='yo'?'Tú: ':''}${last.texto}</div>
+      </div>
+      <div class="msg-thread-meta"><span>${m.fecha}</span>${unread}</div>
+    </div>`;
+  }).join('');
+  el.innerHTML = `<div class="list-card msg-thread-list">${rows}</div>`;
+}
+
+function openChat(id) {
+  activeChatId = id;
+  const m = MENSAJES.find(x=>x.id===id);
+  if(m) m.leido = true;
+  renderChat(id);
+  goScreen('screen-mensajes');
+}
+
+function renderChat(id) {
+  const m = MENSAJES.find(x=>x.id===id);
+  if(!m) return;
+  const el = document.getElementById('mensajes-content');
+  const propRef = m.propId ? PROPS.find(p=>p.id===m.propId) : null;
+  const propBubble = propRef ? `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:4px">
+      <div class="msg-prop-ref" onclick="openPropDetail(${propRef.id})">
+        <div class="msg-prop-ref-img" style="display:flex;align-items:center;justify-content:center;font-size:20px">${{Casa:'🏡',Departamento:'🏢',Terreno:'🌿','Local comercial':'🏪',Oficina:'🏢'}[propRef.tipo]||'🏠'}</div>
+        <div class="msg-prop-ref-body">
+          <div class="msg-prop-ref-price">$${propRef.price.toLocaleString('es-MX')}</div>
+          <div class="msg-prop-ref-meta">${propRef.tipo} · ${propRef.zona}</div>
+        </div>
+        <i class="ti ti-chevron-right" style="font-size:13px;color:var(--text-muted)"></i>
+      </div>
+    </div>` : '';
+  const bubbles = m.mensajes.map(msg=>`
+    <div class="msg-bubble-wrap ${msg.de==='yo'?'mine':'theirs'}">
+      <div class="msg-bubble ${msg.de==='yo'?'mine':'theirs'}">${msg.texto}</div>
+      <div class="msg-time">${msg.hora}</div>
+    </div>`).join('');
+  el.innerHTML = `<div class="msg-chat-wrap">
+    <div class="msg-chat-header">
+      <button class="msg-chat-back" onclick="activeChatId=null;renderMensajes()"><i class="ti ti-arrow-left" style="font-size:18px"></i></button>
+      <div class="msg-thread-avatar" style="width:36px;height:36px;font-size:16px">${m.asesorEmoji}</div>
+      <div><div class="msg-chat-name">${m.asesorNombre}</div><div class="msg-chat-sub">Asesor BBVA Inmobiliaria</div></div>
+    </div>
+    <div class="msg-chat-body" id="chat-body-${id}">
+      ${propBubble}
+      ${bubbles}
+    </div>
+    <div class="msg-chat-footer">
+      <textarea class="msg-chat-input" id="chat-input-${id}" rows="1" placeholder="Escribe un mensaje..."></textarea>
+      <button class="msg-chat-send" onclick="sendChatMsg('${id}')"><i class="ti ti-send" style="font-size:16px"></i></button>
+    </div>
+  </div>`;
+  const body = document.getElementById(`chat-body-${id}`);
+  if(body) body.scrollTop = body.scrollHeight;
+  const inp = document.getElementById(`chat-input-${id}`);
+  if(inp) inp.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatMsg(id);} });
+}
+
+function sendChatMsg(id) {
+  const inp = document.getElementById(`chat-input-${id}`);
+  const texto = inp ? inp.value.trim() : '';
+  if (!texto) return;
+  const m = MENSAJES.find(x=>x.id===id);
+  const hora = new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  m.mensajes.push({de:'yo',texto,hora});
+  inp.value = '';
+  renderChat(id);
 }
 
 function renderAcademia() {
