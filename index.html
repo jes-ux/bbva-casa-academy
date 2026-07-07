@@ -1768,11 +1768,24 @@ const CARD_PROFILES = [
   { h:145, amenities:['Balcón','Edificio 2023','Ciclovia enfrente'], shortDesc:'Colonia segura y bien conectada. A 5 min de Insurgentes.' },
 ];
 
+function getSimBadge(propId, price) {
+  if (!SIM_HISTORY.length) return null;
+  const isRef = SIM_HISTORY.some(s => s.refProp === propId);
+  if (isRef) return {label:'Simulada', icon:'ti-calculator', color:'var(--text-primary)', bg:'var(--surface-2)', border:true};
+  const inRange = SIM_HISTORY.some(s => s.propMax >= price);
+  if (inRange) return {label:'En tu rango', icon:'ti-check', color:'var(--text-success)', bg:'var(--bg-success)', border:false};
+  return null;
+}
+
 function propCardHTML(p) {
   const prof = CARD_PROFILES[(p.id - 1) % CARD_PROFILES.length];
   const isNew = p.tags.includes('Nuevo') || p.tags.includes('Nueva');
   const priceM2 = fmt(Math.round(p.price / p.area));
   const amenHtml = prof.amenities.map(a => `<span class="prop-tag">${a}</span>`).join('');
+  const simBadge = getSimBadge(p.id, p.price);
+  const simBadgeHTML = simBadge
+    ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:${simBadge.color};background:${simBadge.bg};border-radius:6px;padding:3px 7px;margin-bottom:6px;${simBadge.border?'border:1px solid currentColor;':''}""><i class="ti ${simBadge.icon}" style="font-size:10px"></i>${simBadge.label}</span>`
+    : '';
   return `<div class="prop-card" id="pcard-${p.id}" style="cursor:pointer" onclick="openPropDetail(${p.id})">
     <div class="prop-img" style="height:${prof.h}px">
       <div class="prop-img-icon"><i class="ti ti-building" style="font-size:32px;color:var(--border)"></i></div>
@@ -1781,6 +1794,7 @@ function propCardHTML(p) {
     </div>
     <div class="prop-info">
       <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px">${p.zona} · ${p.tipo}</div>
+      ${simBadgeHTML}
       <div class="prop-price">${fmt(p.price)}</div>
       <div class="prop-price-m2">${priceM2} / m²</div>
       <div class="prop-details">${p.rec} rec · ${p.ban} baño${p.ban>1?'s':''} · ${p.area} m²</div>
