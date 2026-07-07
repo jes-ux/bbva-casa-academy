@@ -1232,8 +1232,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
           </div>
           <!-- columna mapa — solo desktop -->
-          <div class="dt-props-map-col">
-            <div id="map-container-preview" style="width:100%;height:100%"></div>
+          <div class="dt-props-map-col" style="display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:0.5px solid var(--border);background:var(--surface-0);flex-shrink:0">
+              <span style="font-size:12px;color:var(--text-muted)">Ubicaciones</span>
+              <button onclick="switchView('map')" style="font-size:12px;font-weight:600;color:var(--text-primary);background:none;border:0.5px solid var(--border-strong);border-radius:7px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:5px"><i class="ti ti-arrows-maximize" style="font-size:12px"></i> Ver mapa completo</button>
+            </div>
+            <div id="map-container-preview" style="width:100%;flex:1"></div>
           </div>
         </div>
       </div>
@@ -1510,7 +1514,7 @@ function propCardHTML(p) {
   const isNew = p.tags.includes('Nuevo') || p.tags.includes('Nueva');
   const priceM2 = fmt(Math.round(p.price / p.area));
   const amenHtml = prof.amenities.map(a => `<span class="prop-tag">${a}</span>`).join('');
-  return `<div class="prop-card" style="cursor:pointer" onclick="openPropDetail(${p.id})">
+  return `<div class="prop-card" id="pcard-${p.id}" style="cursor:pointer" onclick="openPropDetail(${p.id})">
     <div class="prop-img" style="height:${prof.h}px">
       <div class="prop-img-icon"><i class="ti ti-building" style="font-size:32px;color:var(--border)"></i></div>
       ${isNew ? '<span class="prop-badge">Nuevo</span>' : ''}
@@ -1987,23 +1991,51 @@ function renderProps() {
 }
 
 let previewMap = null;
-let previewMarkers = [];
+let previewPropMarkers = {};
+let previewSelectedId = null;
+
 function initPreviewMap(props){
   const el = document.getElementById('map-container-preview');
   if(!el) return;
   if(!previewMap){
-    previewMap = L.map('map-container-preview',{zoomControl:false,dragging:false,scrollWheelZoom:false,doubleClickZoom:false,touchZoom:false}).setView([19.39,-99.165],12);
+    previewMap = L.map('map-container-preview',{zoomControl:false,scrollWheelZoom:false}).setView([19.39,-99.165],12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(previewMap);
+    L.control.zoom({position:'bottomright'}).addTo(previewMap);
   }
-  previewMarkers.forEach(m => previewMap.removeLayer(m));
-  previewMarkers = [];
+  Object.values(previewPropMarkers).forEach(m => previewMap.removeLayer(m));
+  previewPropMarkers = {};
+  previewSelectedId = null;
+
   props.forEach(p => {
     if(!p.lat||!p.lng) return;
-    const m = L.circleMarker([p.lat,p.lng],{radius:7,fillColor:'#1164e8',color:'#fff',weight:2,fillOpacity:1}).addTo(previewMap);
-    previewMarkers.push(m);
+    const marker = L.marker([p.lat,p.lng],{icon:makePriceIcon(p,false)}).addTo(previewMap);
+    marker.on('click',() => selectPreviewPin(p.id, props));
+    previewPropMarkers[p.id] = marker;
   });
-  if(previewMarkers.length) previewMap.fitBounds(L.featureGroup(previewMarkers).getBounds(),{padding:[24,24]});
-  setTimeout(()=>previewMap.invalidateSize(),100);
+
+  const valid = props.filter(p=>p.lat&&p.lng);
+  if(valid.length) previewMap.fitBounds(L.latLngBounds(valid.map(p=>[p.lat,p.lng])),{padding:[40,40]});
+  setTimeout(()=>previewMap.invalidateSize(),150);
+}
+
+function selectPreviewPin(id, props){
+  const p = props.find(x=>x.id===id);
+  if(!p) return;
+  // resetear anterior
+  if(previewSelectedId && previewPropMarkers[previewSelectedId]){
+    const prev = props.find(x=>x.id===previewSelectedId);
+    if(prev) previewPropMarkers[previewSelectedId].setIcon(makePriceIcon(prev,false));
+    const prevCard = document.getElementById(`pcard-${previewSelectedId}`);
+    if(prevCard) prevCard.style.outline='';
+  }
+  previewSelectedId = id;
+  previewPropMarkers[id].setIcon(makePriceIcon(p,true));
+  // resaltar card en lista
+  const card = document.getElementById(`pcard-${id}`);
+  if(card){
+    card.style.outline='2px solid var(--text-primary)';
+    card.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
 }
 
 let mapPropMarkers = {};
