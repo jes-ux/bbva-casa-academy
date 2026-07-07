@@ -360,7 +360,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 @media(min-width:900px){
   /* ── Shell ── */
   html,body{height:auto}
-  #app{max-width:none}
+  #app{max-width:none;padding-top:64px}
 
   /* ── Header (fixed full-width — DOM order is mid-page so sticky won't work) ── */
   .app-header{
@@ -372,8 +372,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   #header-back{display:none!important}
   .mobile-only{display:none!important}
 
-  /* ── Screens — compensate for fixed 64px header ── */
-  .screen{padding-top:64px}
+  /* ── Screens — padding handled by #app ── */
+  .screen{padding-top:0}
 
   /* desktop nav */
   .dt-nav{display:flex;align-items:center;gap:6px;justify-content:center}
