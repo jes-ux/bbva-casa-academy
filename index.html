@@ -1496,7 +1496,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
             <button class="detail-action-btn"><i class="ti ti-heart"></i></button>
           </div>
-          <button class="btn-outline" style="margin-top:14px;width:100%" onclick="openContacto(currentPropId)">
+          <div id="detail-sim-banner-m" style="margin-top:12px"></div>
+          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="openContacto(currentPropId)">
             <i class="ti ti-headset"></i> Contacta al asesor
           </button>
         </div>
@@ -1558,7 +1559,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
             <button class="detail-action-btn"><i class="ti ti-heart"></i></button>
           </div>
-          <button class="btn-outline" style="margin-top:14px;width:100%" onclick="openContacto(currentPropId)">
+          <div id="detail-sim-banner-dt" style="margin-top:12px"></div>
+          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="openContacto(currentPropId)">
             <i class="ti ti-headset"></i> Contacta al asesor
           </button>
         </div>
@@ -2710,6 +2712,23 @@ function openPropDetail(id){
   } else {
     pills.innerHTML='<span style="font-size:13px;color:var(--text-muted)">Simulá tu capacidad para ver si esta propiedad entra en tu rango.</span>';
   }
+
+  // banner de simulación en ficha
+  const simBadge = getSimBadge(id, p.price);
+  const relSim = SIM_HISTORY.find(s => s.refProp === id) || SIM_HISTORY.find(s => s.propMax >= p.price);
+  const simBannerHTML = simBadge && relSim ? `
+    <div style="display:flex;align-items:center;gap:10px;background:${simBadge.bg};border-radius:10px;padding:10px 12px;${simBadge.border?'border:1px solid var(--border-stronger);':''}cursor:pointer" onclick="renderSims();goScreen('screen-simulaciones')">
+      <div style="width:32px;height:32px;border-radius:8px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid var(--border)"><i class="ti ti-calculator" style="font-size:15px;color:var(--text-primary)"></i></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:600;color:${simBadge.color}">${simBadge.label}</div>
+        <div style="font-size:11px;color:var(--text-muted)">Cuota est. ${fmt(relSim.cuota)}/mes · ${relSim.plazo} años</div>
+      </div>
+      <i class="ti ti-chevron-right" style="font-size:13px;color:var(--text-muted);flex-shrink:0"></i>
+    </div>` : '';
+  ['detail-sim-banner-m','detail-sim-banner-dt'].forEach(elId => {
+    const el = document.getElementById(elId);
+    if(el) el.innerHTML = simBannerHTML;
+  });
 
   // propiedades relacionadas
   const related = PROPS.filter(x=>x.id!==id).slice(0,5);
