@@ -473,6 +473,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .dt-mega-item i{font-size:13px;color:var(--text-muted)}
   .dt-mega-loc{display:block;width:100%;background:none;border:none;text-align:left;padding:6px 0;font-size:14px;font-family:var(--font-sans);color:var(--text-secondary);cursor:pointer;border-radius:4px}
   .dt-mega-loc:hover{color:var(--text-primary)}
+  @keyframes mega-skeleton-pulse{0%,100%{opacity:.45}50%{opacity:.2}}
+  .mega-skel{height:14px;border-radius:4px;background:var(--border-strong);animation:mega-skeleton-pulse .9s ease infinite}
+  @keyframes mega-cols-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  .mega-cols-enter{animation:mega-cols-in .2s ease forwards}
   .dt-mega-chips{display:flex;flex-wrap:wrap;gap:8px}
   .dt-mega-chip{background:var(--surface-1);border:1px solid var(--border-strong);border-radius:20px;padding:6px 14px;font-size:13px;font-family:var(--font-sans);color:var(--text-primary);cursor:pointer;transition:background .15s,border-color .15s}
   .dt-mega-chip:hover{background:var(--surface-0)}
@@ -721,36 +725,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
     <div class="dt-mega-col dt-mega-locations">
-      <div class="dt-mega-section-title">Opciones más buscadas</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 32px">
-        <div>
-          <div class="dt-mega-sub-title">Colonias</div>
-          <button class="dt-mega-loc" onclick="setSearchZone('Narvarte');applyMegaFilters()">Narvarte</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('Del Valle');applyMegaFilters()">Del Valle</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('Coyoacán');applyMegaFilters()">Coyoacán</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('Roma');applyMegaFilters()">Roma</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('Condesa');applyMegaFilters()">Condesa</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()" style="color:var(--text-muted);margin-top:4px">Todo →</button>
-        </div>
-        <div>
-          <div class="dt-mega-sub-title">Alcaldías</div>
-          <button class="dt-mega-loc" onclick="setSearchZone('Benito Juárez');applyMegaFilters()">Benito Juárez</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('Cuauhtémoc');applyMegaFilters()">Cuauhtémoc</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('Miguel Hidalgo');applyMegaFilters()">Miguel Hidalgo</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('Álvaro Obregón');applyMegaFilters()">Álvaro Obregón</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('Tlalpan');applyMegaFilters()">Tlalpan</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()" style="color:var(--text-muted);margin-top:4px">Todo →</button>
-        </div>
-        <div>
-          <div class="dt-mega-sub-title">Ciudades</div>
-          <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()">Ciudad de México</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()">Guadalajara</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()">Monterrey</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()">Puebla</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()">Querétaro</button>
-          <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()" style="color:var(--text-muted);margin-top:4px">Todo →</button>
-        </div>
-      </div>
+      <div class="dt-mega-section-title" id="mega-locations-title">Opciones más buscadas</div>
+      <div id="mega-locations-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 32px"></div>
     </div>
   </div>
 
@@ -1892,6 +1868,7 @@ let chipFilters = {tipo:'', minRec:0, minPrice:0, maxPrice:0};
 function openMega(){
   document.getElementById('dt-mega-menu').classList.add('open');
   document.getElementById('mega-backdrop').classList.add('open');
+  refreshMegaLocations();
 }
 function closeMega(){
   document.getElementById('dt-mega-menu').classList.remove('open');
@@ -1902,8 +1879,111 @@ function toggleMega(){
   isOpen ? closeMega() : openMega();
 }
 
+const MEGA_LOCATIONS = {
+  default: {
+    title: 'Opciones más buscadas',
+    cols: [
+      { label:'Colonias', items:['Narvarte','Del Valle','Coyoacán','Roma','Condesa'] },
+      { label:'Alcaldías', items:['Benito Juárez','Cuauhtémoc','Miguel Hidalgo','Álvaro Obregón','Tlalpan'] },
+      { label:'Ciudades', items:['Ciudad de México','Guadalajara','Monterrey','Puebla','Querétaro'] },
+    ]
+  },
+  Casa: {
+    title: 'Zonas populares · Casas',
+    cols: [
+      { label:'Colonias', items:['Pedregal','Lomas Verdes','Jardines del Pedregal','San Ángel','Coyoacán'] },
+      { label:'Alcaldías', items:['Álvaro Obregón','Tlalpan','Coyoacán','Magdalena Contreras','Xochimilco'] },
+      { label:'Ciudades', items:['Ciudad de México','Guadalajara','Monterrey','Mérida','Querétaro'] },
+    ]
+  },
+  Departamento: {
+    title: 'Zonas populares · Departamentos',
+    cols: [
+      { label:'Colonias', items:['Roma Norte','Condesa','Polanco','Narvarte','Del Valle'] },
+      { label:'Alcaldías', items:['Benito Juárez','Cuauhtémoc','Miguel Hidalgo','Azcapotzalco','Iztacalco'] },
+      { label:'Ciudades', items:['Ciudad de México','Monterrey','Guadalajara','Puebla','Tijuana'] },
+    ]
+  },
+  'Local comercial': {
+    title: 'Zonas populares · Locales comerciales',
+    cols: [
+      { label:'Corredores', items:['Insurgentes','Reforma','Periférico Sur','Viaducto','Eje Central'] },
+      { label:'Alcaldías', items:['Cuauhtémoc','Benito Juárez','Venustiano Carranza','Iztapalapa','Gustavo A. Madero'] },
+      { label:'Ciudades', items:['Ciudad de México','Guadalajara','Monterrey','León','Puebla'] },
+    ]
+  },
+  Oficina: {
+    title: 'Zonas populares · Oficinas',
+    cols: [
+      { label:'Corredores', items:['Polanco','Santa Fe','Reforma','Insurgentes Sur','Periferico'] },
+      { label:'Alcaldías', items:['Miguel Hidalgo','Álvaro Obregón','Cuauhtémoc','Benito Juárez','Cuajimalpa'] },
+      { label:'Ciudades', items:['Ciudad de México','Monterrey','Guadalajara','Querétaro','San Luis Potosí'] },
+    ]
+  },
+  Terreno: {
+    title: 'Zonas populares · Terrenos',
+    cols: [
+      { label:'Colonias', items:['Ajusco','Valle de Bravo','Xochimilco','Pedregal','Tlalpuente'] },
+      { label:'Alcaldías', items:['Tlalpan','Xochimilco','Milpa Alta','Tláhuac','Cuajimalpa'] },
+      { label:'Ciudades', items:['Ciudad de México','Cuernavaca','Querétaro','Valle de Bravo','Tepoztlán'] },
+    ]
+  },
+  Residencial: {
+    title: 'Zonas residenciales destacadas',
+    cols: [
+      { label:'Colonias', items:['Polanco','Lomas de Chapultepec','San Ángel','Pedregal','Las Águilas'] },
+      { label:'Alcaldías', items:['Miguel Hidalgo','Álvaro Obregón','Coyoacán','Cuajimalpa','Tlalpan'] },
+      { label:'Ciudades', items:['Ciudad de México','Guadalajara','Monterrey','Mérida','San Miguel de Allende'] },
+    ]
+  },
+  Comercial: {
+    title: 'Zonas comerciales e industriales',
+    cols: [
+      { label:'Corredores', items:['Insurgentes','Reforma','Periferico','Viaducto','Avenida Universidad'] },
+      { label:'Alcaldías', items:['Cuauhtémoc','Iztapalapa','Gustavo A. Madero','Azcapotzalco','Venustiano Carranza'] },
+      { label:'Ciudades', items:['Ciudad de México','Monterrey','Guadalajara','Toluca','Tijuana'] },
+    ]
+  },
+};
+
+function getMegaActiveContext() {
+  const cats = [...document.querySelectorAll('#mega-chips-cat .dt-mega-chip.active')].map(b=>b.dataset.val);
+  const tipos = [...document.querySelectorAll('#mega-chips-tipo .dt-mega-chip.active')].map(b=>b.dataset.val);
+  if (tipos.length === 1) return tipos[0];
+  if (cats.length === 1) return cats[0];
+  return 'default';
+}
+
+let megaLocTimer = null;
+function refreshMegaLocations() {
+  const grid = document.getElementById('mega-locations-grid');
+  const title = document.getElementById('mega-locations-title');
+  if (!grid) return;
+  // skeleton
+  grid.style.opacity = '0.4';
+  grid.style.pointerEvents = 'none';
+  clearTimeout(megaLocTimer);
+  megaLocTimer = setTimeout(() => {
+    const ctx = getMegaActiveContext();
+    const data = MEGA_LOCATIONS[ctx] || MEGA_LOCATIONS.default;
+    if (title) title.textContent = data.title;
+    grid.innerHTML = data.cols.map(col => `
+      <div>
+        <div class="dt-mega-sub-title">${col.label}</div>
+        ${col.items.map(z => `<button class="dt-mega-loc" onclick="setSearchZone('${z}');applyMegaFilters()">${z}</button>`).join('')}
+        <button class="dt-mega-loc" onclick="setSearchZone('');applyMegaFilters()" style="color:var(--text-muted);margin-top:4px">Todo →</button>
+      </div>`).join('');
+    grid.style.pointerEvents = '';
+    grid.classList.remove('mega-cols-enter');
+    void grid.offsetWidth; // reflow para reiniciar animación
+    grid.style.opacity = '1';
+    grid.classList.add('mega-cols-enter');
+  }, 320);
+}
+
 function toggleMegaChip(btn){
   btn.classList.toggle('active');
+  refreshMegaLocations();
 }
 function applyMegaFilters(){
   const tipoChips = [...document.querySelectorAll('#mega-chips-tipo .dt-mega-chip.active')];
