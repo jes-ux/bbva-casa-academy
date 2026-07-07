@@ -409,6 +409,27 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .dt-nav-btn:hover{color:var(--text-primary);background:var(--surface-1)}
   .dt-nav-btn.active{color:var(--text-primary);font-weight:600}
 
+  /* ── mega-menu propiedades ── */
+  .dt-nav-mega-wrap{position:relative}
+  .dt-mega-menu{
+    display:none;position:fixed;top:64px;left:0;right:0;
+    background:var(--surface-2);border-bottom:0.5px solid var(--border);
+    box-shadow:0 8px 32px rgba(0,0,0,.3);
+    z-index:99;padding:28px 40px;
+    display:none;flex-direction:row;gap:0;
+  }
+  .dt-mega-menu.open{display:flex}
+  .dt-mega-col{padding:0 40px 0 0}
+  .dt-mega-types{min-width:220px;border-right:0.5px solid var(--border)}
+  .dt-mega-locations{flex:1;padding-left:40px;padding-right:0}
+  .dt-mega-section-title{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+  .dt-mega-sub-title{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;margin-top:4px}
+  .dt-mega-item{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:none;text-align:left;padding:8px 10px;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);cursor:pointer;border-radius:8px;gap:8px}
+  .dt-mega-item:hover{background:var(--surface-1)}
+  .dt-mega-item i{font-size:13px;color:var(--text-muted)}
+  .dt-mega-loc{display:block;width:100%;background:none;border:none;text-align:left;padding:6px 0;font-size:14px;font-family:var(--font-sans);color:var(--text-secondary);cursor:pointer;border-radius:4px}
+  .dt-mega-loc:hover{color:var(--text-primary)}
+
   /* desktop user */
   .dt-user{display:flex;align-items:center;gap:4px;justify-content:flex-end}
   .dt-user-link{
@@ -887,7 +908,41 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
     <!-- desktop nav: hidden on mobile via CSS -->
     <nav class="dt-nav" id="dt-nav">
-      <button class="dt-nav-btn" id="dtnav-props" onclick="navTo('screen-props','nav-props')">Propiedades</button>
+      <div class="dt-nav-mega-wrap" onmouseenter="openMega()" onmouseleave="closeMega()">
+        <button class="dt-nav-btn" id="dtnav-props" onclick="navTo('screen-props','nav-props')">Propiedades <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
+        <div class="dt-mega-menu" id="dt-mega-menu">
+          <div class="dt-mega-col dt-mega-types">
+            <div class="dt-mega-section-title">Tipo de propiedad</div>
+            <button class="dt-mega-item" onclick="setChipTipo('Departamento');navTo('screen-props','nav-props')">Departamentos <i class="ti ti-chevron-right"></i></button>
+            <button class="dt-mega-item" onclick="setChipTipo('Casa');navTo('screen-props','nav-props')">Casas <i class="ti ti-chevron-right"></i></button>
+            <button class="dt-mega-item" onclick="setChipTipo('Local comercial');navTo('screen-props','nav-props')">Locales comerciales <i class="ti ti-chevron-right"></i></button>
+            <button class="dt-mega-item" onclick="setChipTipo('Oficina');navTo('screen-props','nav-props')">Oficinas <i class="ti ti-chevron-right"></i></button>
+            <button class="dt-mega-item" onclick="setChipTipo('Terreno');navTo('screen-props','nav-props')">Terrenos <i class="ti ti-chevron-right"></i></button>
+            <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
+            <button class="dt-mega-item" onclick="setChipTipo('');navTo('screen-props','nav-props')" style="color:var(--text-muted)">Ver todas las propiedades</button>
+          </div>
+          <div class="dt-mega-col dt-mega-locations">
+            <div class="dt-mega-section-title">Zonas más buscadas</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px">
+              <div>
+                <div class="dt-mega-sub-title">Colonias</div>
+                <button class="dt-mega-loc" onclick="setSearchZone('Narvarte');navTo('screen-props','nav-props')">Narvarte</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Del Valle');navTo('screen-props','nav-props')">Del Valle</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Coyoacán');navTo('screen-props','nav-props')">Coyoacán</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Benito Juárez');navTo('screen-props','nav-props')">Benito Juárez</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('Polanco');navTo('screen-props','nav-props')">Polanco</button>
+              </div>
+              <div>
+                <div class="dt-mega-sub-title">Ciudades</div>
+                <button class="dt-mega-loc" onclick="setSearchZone('');navTo('screen-props','nav-props')">Ciudad de México</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('');navTo('screen-props','nav-props')">Guadalajara</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('');navTo('screen-props','nav-props')">Monterrey</button>
+                <button class="dt-mega-loc" onclick="setSearchZone('');navTo('screen-props','nav-props')">Puebla</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <button class="dt-nav-btn" id="dtnav-sim" onclick="navTo('screen-sim','nav-sim')">Simula tu Crédito</button>
       <button class="dt-nav-btn" id="dtnav-opps" onclick="renderOpps();goScreen('screen-oportunidades')">Oportunidades</button>
     </nav>
@@ -1665,6 +1720,14 @@ function setHomeTab(btn) {
 
 /* ── chip dropdowns ── */
 let chipFilters = {tipo:'', minRec:0, minPrice:0, maxPrice:0};
+
+function openMega(){ document.getElementById('dt-mega-menu').classList.add('open'); }
+function closeMega(){ document.getElementById('dt-mega-menu').classList.remove('open'); }
+function setSearchZone(zona){
+  searchQuery = zona.toLowerCase();
+  const inp = document.getElementById('props-search');
+  if(inp) inp.value = zona;
+}
 
 function setHomeTipo(val){
   document.getElementById('home-tipo-label').textContent = val;
