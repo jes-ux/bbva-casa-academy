@@ -908,8 +908,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
     <!-- desktop nav: hidden on mobile via CSS -->
     <nav class="dt-nav" id="dt-nav">
-      <div class="dt-nav-mega-wrap" onmouseenter="openMega()" onmouseleave="closeMega()">
-        <button class="dt-nav-btn" id="dtnav-props" onclick="navTo('screen-props','nav-props')">Propiedades <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
+      <div class="dt-nav-mega-wrap">
+        <button class="dt-nav-btn" id="dtnav-props" onclick="toggleMega()">Propiedades <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
         <div class="dt-mega-menu" id="dt-mega-menu">
           <div class="dt-mega-col dt-mega-types">
             <div class="dt-mega-section-title">Tipo de propiedad</div>
@@ -1723,6 +1723,8 @@ let chipFilters = {tipo:'', minRec:0, minPrice:0, maxPrice:0};
 
 function openMega(){ document.getElementById('dt-mega-menu').classList.add('open'); }
 function closeMega(){ document.getElementById('dt-mega-menu').classList.remove('open'); }
+function toggleMega(){ document.getElementById('dt-mega-menu').classList.toggle('open'); }
+document.addEventListener('click', e => { if(!e.target.closest('.dt-nav-mega-wrap')) closeMega(); });
 function setSearchZone(zona){
   searchQuery = zona.toLowerCase();
   const inp = document.getElementById('props-search');
