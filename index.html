@@ -1005,15 +1005,18 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <button class="home-tab" onclick="setHomeTab(this)">Oportunidades</button>
       </div>
       <div class="home-search-block">
-        <div class="home-select" onclick="toggleChipMenu('menu-home-tipo')" style="position:relative">
-          <span id="home-tipo-label">Departamentos</span>
-          <i class="ti ti-chevron-down" style="font-size:16px;color:var(--text-muted)"></i>
+        <div class="dt-chip-wrap" style="position:relative">
+          <div class="home-select" onclick="toggleChipMenu('menu-home-tipo')">
+            <span id="home-tipo-label">Todos los tipos</span>
+            <i class="ti ti-chevron-down" style="font-size:16px;color:var(--text-muted)"></i>
+          </div>
           <div class="dt-chip-menu" id="menu-home-tipo" style="top:calc(100% + 6px);left:0;right:0;min-width:unset">
-            <button onclick="setHomeTipo('Departamento')">Departamento</button>
-            <button onclick="setHomeTipo('Casa')">Casa</button>
-            <button onclick="setHomeTipo('Local comercial')">Local comercial</button>
-            <button onclick="setHomeTipo('Terreno')">Terreno</button>
-            <button onclick="setHomeTipo('Oficina')">Oficina</button>
+            <button onclick="setHomeTipo('')">Todos los tipos</button>
+            <button onclick="setHomeTipo('Departamento')">Departamentos</button>
+            <button onclick="setHomeTipo('Casa')">Casas</button>
+            <button onclick="setHomeTipo('Local comercial')">Locales comerciales</button>
+            <button onclick="setHomeTipo('Terreno')">Terrenos</button>
+            <button onclick="setHomeTipo('Oficina')">Oficinas</button>
           </div>
         </div>
         <div class="home-input">
@@ -1789,7 +1792,7 @@ function setSearchZone(zona){
 }
 
 function setHomeTipo(val){
-  document.getElementById('home-tipo-label').textContent = val;
+  document.getElementById('home-tipo-label').textContent = val || 'Todos los tipos';
   chipFilters.tipo = val;
   document.getElementById('menu-home-tipo').classList.remove('open');
 }
