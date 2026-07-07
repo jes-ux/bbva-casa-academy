@@ -526,11 +526,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .dt-acct-wrap ~ .dt-mobile-title,
   .dt-mobile-title.mobile-only{display:none!important}
 
-  /* ── OPORTUNIDADES / FAVORITOS grid ── */
-  #screen-favoritos .props-grid,
-  #screen-oportunidades .props-grid{
-    grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  }
+  /* ── FAVORITOS / OPORTUNIDADES — lista horizontal estilo MeLi ── */
+  .acct-prop-list{padding:0}
+  .acct-prop-row{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .15s}
+  .acct-prop-row:last-child{border-bottom:none}
+  .acct-prop-row:hover{background:var(--surface-1)}
+  .acct-prop-row-img{width:80px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;background:var(--surface-1)}
+  .acct-prop-row-body{flex:1;min-width:0}
+  .acct-prop-row-price{font-size:15px;font-weight:700;color:var(--text-primary)}
+  .acct-prop-row-meta{font-size:12px;color:var(--text-secondary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .acct-prop-row-tag{display:inline-block;font-size:10px;font-weight:600;background:var(--accent-blue);color:#fff;border-radius:4px;padding:1px 6px;margin-top:4px}
+  .acct-prop-row-chevron{font-size:16px;color:var(--text-muted);flex-shrink:0}
 
   /* ── MAP SCREEN ── */
   #screen-mapa .screen{padding-top:0}
@@ -669,7 +675,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
     <div class="content">
-      <div class="props-grid" id="favs-grid"></div>
+      <div id="favs-grid"></div>
     </div>
     </div><!-- /dt-acct-wrap -->
   </div>
@@ -799,7 +805,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="content">
       <h2 style="font-size:22px;font-weight:700;color:var(--text-primary);margin-bottom:8px">Oportunidades</h2>
       <p style="font-size:14px;color:var(--text-secondary);line-height:1.6">Propiedades nuevas que hacen match con tus simulaciones.</p>
-      <div class="props-grid" id="opp-grid"></div>
+      <div id="opp-grid"></div>
     </div>
     </div><!-- /dt-acct-wrap -->
   </div>
@@ -1470,11 +1476,26 @@ function propCardHTML(p) {
     </div></div>`;
 }
 
+function propListItemHTML(p) {
+  const tag = p.tags && p.tags[0] ? `<span class="acct-prop-row-tag">${p.tags[0]}</span>` : '';
+  return `<div class="acct-prop-row" onclick="openPropDetail(${p.id})">
+    <div class="acct-prop-row-img" style="background:var(--surface-1);display:flex;align-items:center;justify-content:center">
+      <i class="ti ti-building" style="font-size:28px;color:var(--text-muted)"></i>
+    </div>
+    <div class="acct-prop-row-body">
+      <div class="acct-prop-row-price">${fmt(p.price)}</div>
+      <div class="acct-prop-row-meta">${p.zona} · ${p.tipo} · ${p.rec} rec · ${p.area}m²</div>
+      ${tag}
+    </div>
+    <i class="ti ti-chevron-right acct-prop-row-chevron"></i>
+  </div>`;
+}
+
 function renderFavs() {
   const favProps = PROPS.filter(p => FAVS_IDS.includes(p.id));
   const grid = document.getElementById('favs-grid');
   if (!favProps.length) { grid.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:12px">🤍</div><div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:6px">Sin favoritos aún</div><div style="font-size:13px;color:var(--text-muted)">Guardá propiedades desde el buscador</div></div>'; return; }
-  grid.innerHTML = favProps.map(p => propCardHTML(p)).join('');
+  grid.innerHTML = `<div class="list-card acct-prop-list">${favProps.map(p => propListItemHTML(p)).join('')}</div>`;
 }
 
 function renderSims() {
@@ -1514,7 +1535,7 @@ function renderOpps() {
   const oppProps = PROPS.filter(p => p.tags && (p.tags.includes('Nueva') || p.tags.includes('Nuevo')));
   const grid = document.getElementById('opp-grid');
   if (!oppProps.length) { grid.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:12px">✨</div><div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:6px">Sin oportunidades por ahora</div><div style="font-size:13px;color:var(--text-muted)">Completá una simulación para ver matches</div></div>'; return; }
-  grid.innerHTML = oppProps.map(p => propCardHTML(p)).join('');
+  grid.innerHTML = `<div class="list-card acct-prop-list">${oppProps.map(p => propListItemHTML(p)).join('')}</div>`;
 }
 
 function setHomeTab(btn) {
