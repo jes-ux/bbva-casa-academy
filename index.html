@@ -465,6 +465,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .dt-filter-chip{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--text-primary);background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap;transition:background .15s}
   .dt-filter-chip:hover{background:var(--surface-1)}
   .dt-filter-chip i{font-size:13px;color:var(--text-muted)}
+  .dt-chip-wrap{position:relative}
+  .dt-chip-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:200;min-width:160px;padding:4px;flex-direction:column}
+  .dt-chip-menu.open{display:flex}
+  .dt-chip-menu button{background:none;border:none;text-align:left;padding:9px 14px;font-size:13px;font-family:var(--font-sans);color:var(--text-primary);cursor:pointer;border-radius:7px;white-space:nowrap}
+  .dt-chip-menu button:hover{background:var(--surface-1)}
+  .dt-chip-menu button.selected{font-weight:600;color:var(--text-primary)}
 
   /* ocultar botón filtro y row2 en desktop (reemplazados por chips) */
   #list-controls-row1 .filter-icon-btn{display:none}
@@ -1190,10 +1196,44 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
           <!-- chips de filtro: solo desktop -->
           <div class="dt-filter-chips">
-            <button class="dt-filter-chip" onclick="openSheet('sheet-filtros')">Comprar <i class="ti ti-chevron-down"></i></button>
-            <button class="dt-filter-chip" onclick="openSheet('sheet-filtros')">Departamento <i class="ti ti-chevron-down"></i></button>
-            <button class="dt-filter-chip" onclick="openSheet('sheet-filtros')">Recámaras <i class="ti ti-chevron-down"></i></button>
-            <button class="dt-filter-chip" onclick="openSheet('sheet-filtros')">Precio <i class="ti ti-chevron-down"></i></button>
+            <div class="dt-chip-wrap">
+              <button class="dt-filter-chip" onclick="toggleChipMenu('menu-op')"><span id="chip-op-label">Comprar</span> <i class="ti ti-chevron-down"></i></button>
+              <div class="dt-chip-menu" id="menu-op">
+                <button onclick="setChipOp('Comprar')">Comprar</button>
+                <button onclick="setChipOp('Rentar')">Rentar</button>
+                <button onclick="setChipOp('Preventa')">Preventa</button>
+              </div>
+            </div>
+            <div class="dt-chip-wrap">
+              <button class="dt-filter-chip" onclick="toggleChipMenu('menu-tipo')"><span id="chip-tipo-label">Tipo</span> <i class="ti ti-chevron-down"></i></button>
+              <div class="dt-chip-menu" id="menu-tipo">
+                <button onclick="setChipTipo('')">Cualquier tipo</button>
+                <button onclick="setChipTipo('Departamento')">Departamento</button>
+                <button onclick="setChipTipo('Casa')">Casa</button>
+                <button onclick="setChipTipo('Local comercial')">Local comercial</button>
+                <button onclick="setChipTipo('Oficina')">Oficina</button>
+              </div>
+            </div>
+            <div class="dt-chip-wrap">
+              <button class="dt-filter-chip" onclick="toggleChipMenu('menu-rec')"><span id="chip-rec-label">Recámaras</span> <i class="ti ti-chevron-down"></i></button>
+              <div class="dt-chip-menu" id="menu-rec">
+                <button onclick="setChipRec(0)">Cualquier cantidad</button>
+                <button onclick="setChipRec(1)">1+</button>
+                <button onclick="setChipRec(2)">2+</button>
+                <button onclick="setChipRec(3)">3+</button>
+                <button onclick="setChipRec(4)">4+</button>
+              </div>
+            </div>
+            <div class="dt-chip-wrap">
+              <button class="dt-filter-chip" onclick="toggleChipMenu('menu-precio')"><span id="chip-precio-label">Precio</span> <i class="ti ti-chevron-down"></i></button>
+              <div class="dt-chip-menu" id="menu-precio">
+                <button onclick="setChipPrecio(0,0)">Cualquier precio</button>
+                <button onclick="setChipPrecio(0,1000000)">Hasta $1M</button>
+                <button onclick="setChipPrecio(1000000,3000000)">$1M a $3M</button>
+                <button onclick="setChipPrecio(3000000,5000000)">$3M a $5M</button>
+                <button onclick="setChipPrecio(5000000,0)">Más de $5M</button>
+              </div>
+            </div>
             <button class="dt-filter-chip" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal"></i> Más filtros</button>
           </div>
           <div id="list-controls-row2" style="display:flex;align-items:center;justify-content:space-between">
@@ -1606,6 +1646,44 @@ function setHomeTab(btn) {
   btn.classList.add('active');
 }
 
+/* ── chip dropdowns ── */
+let chipFilters = {tipo:'', minRec:0, minPrice:0, maxPrice:0};
+
+function toggleChipMenu(id){
+  const isOpen = document.getElementById(id).classList.contains('open');
+  document.querySelectorAll('.dt-chip-menu').forEach(m => m.classList.remove('open'));
+  if(!isOpen) document.getElementById(id).classList.add('open');
+}
+document.addEventListener('click', e => {
+  if(!e.target.closest('.dt-chip-wrap')) document.querySelectorAll('.dt-chip-menu').forEach(m => m.classList.remove('open'));
+});
+function setChipOp(val){
+  document.getElementById('chip-op-label').textContent = val;
+  document.querySelectorAll('#menu-op button').forEach(b => b.classList.toggle('selected', b.textContent===val));
+  document.getElementById('menu-op').classList.remove('open');
+}
+function setChipTipo(val){
+  document.getElementById('chip-tipo-label').textContent = val || 'Tipo';
+  chipFilters.tipo = val;
+  document.querySelectorAll('#menu-tipo button').forEach(b => b.classList.toggle('selected', b.dataset.val===val));
+  document.getElementById('menu-tipo').classList.remove('open');
+  renderProps();
+}
+function setChipRec(val){
+  document.getElementById('chip-rec-label').textContent = val ? `${val}+ rec` : 'Recámaras';
+  chipFilters.minRec = val;
+  document.querySelectorAll('#menu-rec button').forEach(b => b.classList.toggle('selected', b.textContent===(val?`${val}+`:'Cualquier cantidad')));
+  document.getElementById('menu-rec').classList.remove('open');
+  renderProps();
+}
+function setChipPrecio(min, max){
+  const labels = {[`${0}_${0}`]:'Precio',[`${0}_${1000000}`]:'Hasta $1M',[`${1000000}_${3000000}`]:'$1M–$3M',[`${3000000}_${5000000}`]:'$3M–$5M',[`${5000000}_${0}`]:'Más de $5M'};
+  document.getElementById('chip-precio-label').textContent = labels[`${min}_${max}`] || 'Precio';
+  chipFilters.minPrice = min; chipFilters.maxPrice = max;
+  document.getElementById('menu-precio').classList.remove('open');
+  renderProps();
+}
+
 function openSheet(id) {
   document.getElementById(id).classList.add('open');
   document.getElementById('sheet-overlay').classList.add('open');
@@ -1975,6 +2053,11 @@ function getFilteredProps(){
   if(activeFilters.zona) show = show.filter(p=>p.zona===activeFilters.zona);
   if(activeFilters.tipo) show = show.filter(p=>p.tipo===activeFilters.tipo);
   if(activeFilters.rec) show = activeFilters.rec===3 ? show.filter(p=>p.rec>=3) : show.filter(p=>p.rec===activeFilters.rec);
+  // chip filters (desktop)
+  if(chipFilters.tipo) show = show.filter(p=>p.tipo===chipFilters.tipo);
+  if(chipFilters.minRec) show = show.filter(p=>p.rec>=chipFilters.minRec);
+  if(chipFilters.minPrice) show = show.filter(p=>p.price>=chipFilters.minPrice);
+  if(chipFilters.maxPrice) show = show.filter(p=>p.price<=chipFilters.maxPrice);
   return show.length ? show : PROPS.slice(0,3);
 }
 
