@@ -526,17 +526,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .dt-acct-wrap ~ .dt-mobile-title,
   .dt-mobile-title.mobile-only{display:none!important}
 
-  /* ── FAVORITOS / OPORTUNIDADES — lista horizontal estilo MeLi ── */
-  .acct-prop-list{padding:0}
-  .acct-prop-row{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .15s}
-  .acct-prop-row:last-child{border-bottom:none}
-  .acct-prop-row:hover{background:var(--surface-1)}
-  .acct-prop-row-img{width:80px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;background:var(--surface-1)}
+  /* ── FAVORITOS / OPORTUNIDADES — lista horizontal ── */
+  .acct-prop-list{padding:12px;display:flex;flex-direction:column;gap:8px}
+  .acct-prop-row{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:10px;background:var(--surface-1);cursor:pointer;transition:background .15s}
+  .acct-prop-row:hover{background:var(--surface-0)}
+  .acct-prop-row-img{width:80px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;background:var(--surface-2)}
   .acct-prop-row-body{flex:1;min-width:0}
   .acct-prop-row-price{font-size:15px;font-weight:700;color:var(--text-primary)}
   .acct-prop-row-meta{font-size:12px;color:var(--text-secondary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .acct-prop-row-tag{display:inline-block;font-size:10px;font-weight:600;background:var(--accent-blue);color:#fff;border-radius:4px;padding:1px 6px;margin-top:4px}
-  .acct-prop-row-chevron{font-size:16px;color:var(--text-muted);flex-shrink:0}
+  .acct-prop-row-cta{flex-shrink:0;font-size:12px;font-weight:600;color:var(--accent-blue);border:1.5px solid var(--accent-blue);border-radius:8px;padding:6px 14px;background:none;white-space:nowrap;cursor:pointer}
+  .acct-prop-row-cta:hover{background:var(--accent-blue);color:#fff}
 
   /* ── MAP SCREEN ── */
   #screen-mapa .screen{padding-top:0}
@@ -1487,7 +1487,7 @@ function propListItemHTML(p) {
       <div class="acct-prop-row-meta">${p.zona} · ${p.tipo} · ${p.rec} rec · ${p.area}m²</div>
       ${tag}
     </div>
-    <i class="ti ti-chevron-right acct-prop-row-chevron"></i>
+    <button class="acct-prop-row-cta" onclick="event.stopPropagation();openPropDetail(${p.id})">Ver propiedad</button>
   </div>`;
 }
 
@@ -1530,7 +1530,7 @@ function renderSims() {
             <div class="acct-prop-row-price" style="font-size:14px">${fmt(p.price)}</div>
             <div class="acct-prop-row-meta">${p.zona} · ${p.rec} rec · ${p.ban} baños · ${p.area}m²</div>
           </div>
-          <i class="ti ti-chevron-right acct-prop-row-chevron"></i>
+          <button class="acct-prop-row-cta" onclick="event.stopPropagation();openPropDetail(${p.id})">Ver propiedad</button>
         </div>`).join('')}
       </div>
     </div>`;
