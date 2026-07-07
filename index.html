@@ -972,10 +972,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </button>
       <div class="app-header-brand" style="cursor:pointer" onclick="navTo('screen-0','nav-inicio')"><i class="ti ti-building-bank" aria-hidden="true"></i> BBVA Inmobiliaria</div>
     </div>
-    <!-- desktop user actions: hidden on mobile -->
-    <div class="dt-user">
-      <button class="dt-user-btn" onclick="goScreen('screen-perfil')"><div class="app-header-avatar" style="width:30px;height:30px;font-size:13px">👤</div> Natalia <i class="ti ti-chevron-down" style="font-size:12px"></i></button>
-    </div>
     <!-- desktop nav: hidden on mobile via CSS -->
     <nav class="dt-nav" id="dt-nav">
       <div class="dt-nav-mega-wrap">
@@ -983,9 +979,13 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
       <button class="dt-nav-btn" id="dtnav-sim" onclick="navTo('screen-sim','nav-sim')">Simula tu Crédito</button>
       <button class="dt-nav-btn" id="dtnav-opps" onclick="renderOpps();goScreen('screen-oportunidades')">Oportunidades</button>
-      <button class="dt-nav-btn" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
-      <button class="dt-nav-btn" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
     </nav>
+    <!-- desktop user actions: hidden on mobile -->
+    <div class="dt-user">
+      <button class="dt-user-btn" onclick="goScreen('screen-perfil')"><div class="app-header-avatar" style="width:30px;height:30px;font-size:13px">👤</div> Natalia <i class="ti ti-chevron-down" style="font-size:12px"></i></button>
+      <button class="dt-user-link" onclick="renderFavs();goScreen('screen-favoritos')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-user-link" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+    </div>
     <!-- mobile: avatar only -->
     <div class="app-header-avatar mobile-only" onclick="openDrawer()">👤</div>
   </div>
