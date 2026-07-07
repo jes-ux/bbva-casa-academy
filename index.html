@@ -76,6 +76,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .home-tab{padding:8px 18px;border-radius:20px;border:0.5px solid var(--border);background:var(--surface-2);font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;font-family:var(--font-sans)}
 .home-tab.active{background:var(--text-primary);color:var(--surface-2);border-color:var(--text-primary)}
 .home-search-block{display:flex;flex-direction:column;gap:14px}
+.dt-chip-wrap{position:relative}
+.dt-chip-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:200;min-width:160px;padding:4px;flex-direction:column}
+.dt-chip-menu.open{display:flex}
+.dt-chip-menu button{background:none;border:none;text-align:left;padding:9px 14px;font-size:13px;font-family:var(--font-sans);color:var(--text-primary);cursor:pointer;border-radius:7px;white-space:nowrap}
+.dt-chip-menu button:hover{background:var(--surface-1)}
+.dt-chip-menu button.selected{font-weight:600}
 .home-select{display:flex;align-items:center;justify-content:space-between;padding:20px 18px;border:1px solid var(--border-strong);border-radius:12px;background:var(--surface-2);cursor:pointer;font-size:16px;color:var(--text-primary)}
 .home-input input{width:100%;padding:20px 18px;border:1px solid var(--border-strong);border-radius:12px;background:var(--surface-2);font-size:16px;color:var(--text-primary);font-family:var(--font-sans);box-sizing:border-box}
 .home-input input::placeholder{color:var(--text-muted)}
@@ -465,12 +471,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .dt-filter-chip{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--text-primary);background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap;transition:background .15s}
   .dt-filter-chip:hover{background:var(--surface-1)}
   .dt-filter-chip i{font-size:13px;color:var(--text-muted)}
-  .dt-chip-wrap{position:relative}
-  .dt-chip-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:200;min-width:160px;padding:4px;flex-direction:column}
-  .dt-chip-menu.open{display:flex}
-  .dt-chip-menu button{background:none;border:none;text-align:left;padding:9px 14px;font-size:13px;font-family:var(--font-sans);color:var(--text-primary);cursor:pointer;border-radius:7px;white-space:nowrap}
-  .dt-chip-menu button:hover{background:var(--surface-1)}
-  .dt-chip-menu button.selected{font-weight:600;color:var(--text-primary)}
+  /* dt-chip-menu overrides live in base CSS */
 
   /* ocultar botón filtro y row2 en desktop (reemplazados por chips) */
   #list-controls-row1 .filter-icon-btn{display:none}
@@ -910,9 +911,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <button class="home-tab" onclick="setHomeTab(this)">Oportunidades</button>
       </div>
       <div class="home-search-block">
-        <div class="home-select">
-          <span>Departamentos</span>
+        <div class="home-select" onclick="toggleChipMenu('menu-home-tipo')" style="position:relative">
+          <span id="home-tipo-label">Departamentos</span>
           <i class="ti ti-chevron-down" style="font-size:16px;color:var(--text-muted)"></i>
+          <div class="dt-chip-menu" id="menu-home-tipo" style="top:calc(100% + 6px);left:0;right:0;min-width:unset">
+            <button onclick="setHomeTipo('Departamento')">Departamento</button>
+            <button onclick="setHomeTipo('Casa')">Casa</button>
+            <button onclick="setHomeTipo('Local comercial')">Local comercial</button>
+            <button onclick="setHomeTipo('Terreno')">Terreno</button>
+            <button onclick="setHomeTipo('Oficina')">Oficina</button>
+          </div>
         </div>
         <div class="home-input">
           <input type="text" placeholder="¿Dónde querés buscar?">
@@ -1654,6 +1662,12 @@ function setHomeTab(btn) {
 
 /* ── chip dropdowns ── */
 let chipFilters = {tipo:'', minRec:0, minPrice:0, maxPrice:0};
+
+function setHomeTipo(val){
+  document.getElementById('home-tipo-label').textContent = val;
+  chipFilters.tipo = val;
+  document.getElementById('menu-home-tipo').classList.remove('open');
+}
 
 function toggleChipMenu(id){
   const isOpen = document.getElementById(id).classList.contains('open');
