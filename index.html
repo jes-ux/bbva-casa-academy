@@ -460,9 +460,19 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     max-width:none!important;width:100%!important;bottom:0!important;
   }
 
-  /* ── SIMULATOR ── */
-  #screen-sim .content{max-width:680px}
-  .comparison-box{max-width:560px}
+  /* ── SIMULATOR 2-col ── */
+  .dt-sim-wrap{
+    display:grid;grid-template-columns:1.4fr 1fr;gap:48px;
+    align-items:start;max-width:1000px;padding:40px;
+  }
+  .dt-sim-right{position:sticky;top:84px}
+  .dt-sim-placeholder{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:220px;border-radius:16px;border:1.5px dashed var(--border-strong);
+    color:var(--text-muted);
+  }
+  .dt-sim-cta-btn{display:block;width:100%;margin-top:8px}
+  .comparison-box{max-width:none}
 
   /* ── EDUCATION ── */
   #screen-edu .content{max-width:720px}
@@ -1015,44 +1025,54 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   <!-- MÓDULO 2 — SIMULACIÓN -->
   <div id="screen-sim" class="screen">
-    <div class="content">
-      <div class="sim-section">
-        <div>
-          <h2>¿Cuánto podés pagar sin que duela?</h2>
-          <p class="bajada">Una regla general — tu cuota no debería superar el 30% de tu ingreso mensual. Acá calculamos si eso aplica para vos.</p>
-        </div>
-        <div class="sim-form">
-          <div class="sim-field">
-            <label>
-              ¿Cuánto ganás al mes?
-              <span class="tt" onclick="showTooltip(event,'Ingreso neto — lo que cae a tu cuenta después de impuestos y deducciones.')">
-                <i class="ti ti-info-circle" style="font-size:14px;color:var(--text-muted)"></i>
-              </span>
-            </label>
-            <input type="number" id="ingreso" placeholder="25000" inputmode="numeric" oninput="simular()">
-            <div class="sim-helper">Ingreso neto mensual</div>
+    <div class="content dt-sim-wrap">
+      <!-- IZQUIERDA: formulario -->
+      <div class="dt-sim-left">
+        <div class="sim-section">
+          <div>
+            <h2>¿Cuánto podés pagar sin que duela?</h2>
+            <p class="bajada">Una regla general — tu cuota no debería superar el 30% de tu ingreso mensual. Acá calculamos si eso aplica para vos.</p>
           </div>
-          <div class="sim-field">
-            <label>
-              ¿Cuánto tenés ahorrado para el enganche?
-              <span class="tt" onclick="showTooltip(event,'El pago inicial. Generalmente entre el 10% y el 20% del valor de la propiedad.')">
-                <i class="ti ti-info-circle" style="font-size:14px;color:var(--text-muted)"></i>
-              </span>
-            </label>
-            <input type="number" id="enganche-input" placeholder="300000" inputmode="numeric" oninput="simular()">
-            <div class="sim-helper">Tu ahorro disponible para el pago inicial</div>
-          </div>
-          <div class="sim-field">
-            <label>¿En cuántos años querés pagarlo?</label>
-            <div class="plazo-options">
-              <button class="plazo-btn selected" onclick="selectPlazo(this,10)">10 años</button>
-              <button class="plazo-btn" onclick="selectPlazo(this,15)">15 años</button>
-              <button class="plazo-btn" onclick="selectPlazo(this,20)">20 años</button>
-              <button class="plazo-btn" onclick="selectPlazo(this,25)">25 años</button>
+          <div class="sim-form">
+            <div class="sim-field">
+              <label>
+                ¿Cuánto ganás al mes?
+                <span class="tt" onclick="showTooltip(event,'Ingreso neto — lo que cae a tu cuenta después de impuestos y deducciones.')">
+                  <i class="ti ti-info-circle" style="font-size:14px;color:var(--text-muted)"></i>
+                </span>
+              </label>
+              <input type="number" id="ingreso" placeholder="25000" inputmode="numeric" oninput="simular()">
+              <div class="sim-helper">Ingreso neto mensual</div>
+            </div>
+            <div class="sim-field">
+              <label>
+                ¿Cuánto tenés ahorrado para el enganche?
+                <span class="tt" onclick="showTooltip(event,'El pago inicial. Generalmente entre el 10% y el 20% del valor de la propiedad.')">
+                  <i class="ti ti-info-circle" style="font-size:14px;color:var(--text-muted)"></i>
+                </span>
+              </label>
+              <input type="number" id="enganche-input" placeholder="300000" inputmode="numeric" oninput="simular()">
+              <div class="sim-helper">Tu ahorro disponible para el pago inicial</div>
+            </div>
+            <div class="sim-field">
+              <label>¿En cuántos años querés pagarlo?</label>
+              <div class="plazo-options">
+                <button class="plazo-btn selected" onclick="selectPlazo(this,10)">10 años</button>
+                <button class="plazo-btn" onclick="selectPlazo(this,15)">15 años</button>
+                <button class="plazo-btn" onclick="selectPlazo(this,20)">20 años</button>
+                <button class="plazo-btn" onclick="selectPlazo(this,25)">25 años</button>
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
+      <!-- DERECHA: resultados + CTA -->
+      <div class="dt-sim-right">
+        <div id="sim-result-placeholder" class="dt-sim-placeholder">
+          <i class="ti ti-calculator" style="font-size:32px;color:var(--text-muted);margin-bottom:12px"></i>
+          <div style="font-size:14px;color:var(--text-muted)">Ingresá tus datos para ver el resultado</div>
+        </div>
         <div id="sim-result-area" style="display:none;flex-direction:column;gap:12px">
           <div class="sim-result">
             <div class="sim-result-main">
@@ -1091,10 +1111,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div class="perfil-resumen" id="perfil-resumen" style="display:none">
             <strong>Tu perfil:</strong> <span id="perfil-texto"></span>
           </div>
+
+          <!-- CTA desktop: dentro de la columna derecha -->
+          <button class="btn-primary dt-sim-cta-btn" onclick="completeModule2()">Ver propiedades en mi rango →</button>
         </div>
       </div>
     </div>
-    <div class="cta-area">
+    <!-- CTA mobile: fixed al fondo -->
+    <div class="cta-area mobile-only">
       <button class="btn-primary" onclick="completeModule2()">Ver propiedades en mi rango →</button>
     </div>
   </div>
@@ -1692,7 +1716,9 @@ function simular() {
   const ingreso = parseFloat(document.getElementById('ingreso').value) || 0;
   const enganche = parseFloat(document.getElementById('enganche-input').value) || 0;
   const ra = document.getElementById('sim-result-area');
-  if (!ingreso || !enganche) { ra.style.display = 'none'; return; }
+  const ph = document.getElementById('sim-result-placeholder');
+  if (!ingreso || !enganche) { ra.style.display = 'none'; if(ph) ph.style.display = ''; return; }
+  if(ph) ph.style.display = 'none';
 
   const r = TASA_ANUAL / 12;
   const n = selectedPlazo * 12;
