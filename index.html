@@ -559,8 +559,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   /* ── DRAWER as sidebar overlay still works ── */
   #drawer{width:320px}
 
-  /* ── Wider bottom sheets ── */
-  .bottom-sheet{max-width:480px}
+  /* ── Filtros y Ordenar: side-sheet desde la derecha en desktop ── */
+  #sheet-filtros,#sheet-ordenar{
+    top:64px;bottom:0;right:0;left:auto;
+    transform:translateX(100%);
+    border-radius:0;
+    max-width:420px;width:420px;
+    max-height:none;
+    border-left:0.5px solid var(--border);
+  }
+  #sheet-filtros.open,#sheet-ordenar.open{transform:translateX(0)}
+  #sheet-filtros .sheet-handle,#sheet-ordenar .sheet-handle{display:none}
 }
 </style>
 </head>
