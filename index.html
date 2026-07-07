@@ -1161,13 +1161,13 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
 
           <!-- CTA desktop: dentro de la columna derecha -->
-          <button class="btn-primary dt-sim-cta-btn" onclick="completeModule2()">Ver propiedades en mi rango →</button>
+          <button class="btn-primary dt-sim-cta-btn" onclick="completeModule2()">Confirmar simulación</button>
         </div>
       </div>
     </div>
     <!-- CTA mobile: fixed al fondo -->
     <div class="cta-area mobile-only">
-      <button class="btn-primary" onclick="completeModule2()">Ver propiedades en mi rango →</button>
+      <button class="btn-primary" onclick="completeModule2()">Confirmar simulación</button>
     </div>
   </div>
 
@@ -1596,8 +1596,28 @@ function renderFavs() {
 
 function renderSims() {
   const container = document.getElementById('sims-content');
+  if(!SIM_HISTORY.length){
+    container.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:12px">📋</div><div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:6px">Sin simulaciones aún</div><div style="font-size:13px;color:var(--text-muted)">Usá el simulador para ver cuánto podés pagar</div></div>';
+    return;
+  }
   container.innerHTML = SIM_HISTORY.map(s => {
-    const simProps = PROPS.filter(p => s.props.includes(p.id));
+    const rp = s.refProp ? PROPS.find(p=>p.id===s.refProp) : null;
+    const ctaLabel = rp ? 'Ver más propiedades en el rango' : 'Ver propiedades en el rango';
+
+    const refPropHTML = rp ? `
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Propiedad simulada</div>
+      <div class="acct-prop-row" style="padding:10px 12px;border-radius:10px;background:var(--surface-1);margin-bottom:4px" onclick="openPropDetail(${rp.id})">
+        <div class="acct-prop-row-img" style="width:56px;height:46px;border-radius:6px;background:var(--surface-0);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="ti ti-building" style="font-size:20px;color:var(--text-muted)"></i>
+        </div>
+        <div class="acct-prop-row-body">
+          <div class="acct-prop-row-price" style="font-size:14px">${fmt(rp.price)}</div>
+          <div class="acct-prop-row-meta">${rp.zona} · ${rp.tipo} · ${rp.rec} rec · ${rp.area}m²</div>
+        </div>
+        <i class="ti ti-chevron-right acct-prop-row-chevron"></i>
+        <button class="acct-prop-row-cta" onclick="event.stopPropagation();openPropDetail(${rp.id})">Ver ficha</button>
+      </div>` : '';
+
     return `<div class="sim-history-card" style="margin-bottom:16px">
       <div style="padding:14px 16px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start">
         <div>
@@ -1611,24 +1631,10 @@ function renderSims() {
         <span style="font-size:11px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--text-secondary)">Enganche ${fmt(s.enganche)}</span>
       </div>
       <div style="padding:12px 16px">
-        ${s.refProp ? (() => { const rp = PROPS.find(p=>p.id===s.refProp); return rp ? `<div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Propiedad de referencia</div>
-        <div class="list-item" style="padding:10px 12px;border-radius:8px;background:var(--surface-1);margin-bottom:12px;cursor:pointer" onclick="openPropDetail(${rp.id})">
-          <div style="width:36px;height:36px;background:var(--surface-2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-building" style="font-size:16px;color:var(--text-muted)"></i></div>
-          <div class="list-item-body"><div class="list-item-title">${rp.zona} · ${rp.tipo}</div><div class="list-item-sub">${fmt(rp.price)} · ${rp.rec} rec · ${rp.area}m²</div></div>
-          <i class="ti ti-chevron-right" style="font-size:14px;color:var(--text-muted)"></i>
-        </div>` : ''; })() : ''}
-        <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Propiedades en rango</div>
-        ${simProps.map(p => `<div class="acct-prop-row" style="padding:10px 0" onclick="openPropDetail(${p.id})">
-          <div class="acct-prop-row-img" style="width:64px;height:52px;border-radius:6px;background:var(--surface-0);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <i class="ti ti-building" style="font-size:22px;color:var(--text-muted)"></i>
-          </div>
-          <div class="acct-prop-row-body">
-            <div class="acct-prop-row-price" style="font-size:14px">${fmt(p.price)}</div>
-            <div class="acct-prop-row-meta">${p.zona} · ${p.rec} rec · ${p.ban} baños · ${p.area}m²</div>
-          </div>
-          <i class="ti ti-chevron-right acct-prop-row-chevron"></i>
-          <button class="acct-prop-row-cta" onclick="event.stopPropagation();openPropDetail(${p.id})">Ver propiedad</button>
-        </div>`).join('')}
+        ${refPropHTML}
+      </div>
+      <div style="padding:0 16px 16px">
+        <button class="btn-primary" style="width:100%;font-size:14px;padding:12px" onclick="viewPropsForSim(${s.propMax})">${ctaLabel} →</button>
       </div>
     </div>`;
   }).join('');
@@ -1945,7 +1951,7 @@ const ACH_DATA = {
     note: 'Tu cuota estimada y el monto máximo van a aparecer en cada propiedad.',
     pct: 66, counter: '2 de 3 módulos',
     pills: ['done','done','pending'],
-    ctaLabel: 'Ver propiedades en mi rango →', ctaFn: () => goScreen('screen-props'),
+    ctaLabel: 'Confirmar simulación', ctaFn: () => goScreen('screen-props'),
   },
   3: {
     icon: '🏠',
@@ -1984,23 +1990,25 @@ function goToPropDetail(id) {
 }
 
 function completeModule2() {
-  if (simRefPropId) {
-    // flujo desde ficha de producto: guardar sim con prop referenciada e ir a historial
-    const today = new Date().toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'});
-    const propsInRange = PROPS.filter(p => p.price <= simData.propMax).map(p => p.id);
-    SIM_HISTORY.unshift({
-      id:'S'+Date.now(), fecha:today,
-      ingreso:simData.ingreso, enganche:simData.enganche, plazo:simData.plazo,
-      propMax:simData.propMax, cuota:simData.cuotaReal,
-      props:propsInRange, refProp:simRefPropId
-    });
-    simRefPropId = null;
-    renderSims();
-    goScreen('screen-simulaciones');
-    return;
-  }
-  if (moduleDone[2]) { goScreen('screen-props'); return; }
-  showAchievement(2);
+  const today = new Date().toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'});
+  const propsInRange = PROPS.filter(p => p.price <= simData.propMax).map(p => p.id);
+  SIM_HISTORY.unshift({
+    id:'S'+Date.now(), fecha:today,
+    ingreso:simData.ingreso, enganche:simData.enganche, plazo:simData.plazo,
+    propMax:simData.propMax, cuota:simData.cuotaReal,
+    props:propsInRange, refProp:simRefPropId || null
+  });
+  const wasRef = !!simRefPropId;
+  simRefPropId = null;
+  const wasDone = moduleDone[2];
+  if(!wasDone){ moduleDone[2] = true; localStorage.setItem('mod2','1'); }
+  renderSims();
+  goScreen('screen-simulaciones');
+}
+
+function viewPropsForSim(propMax) {
+  simData.propMax = propMax;
+  navTo('screen-props','nav-props');
 }
 
 function goToAchievement() {
