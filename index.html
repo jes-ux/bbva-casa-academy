@@ -3044,18 +3044,20 @@ function openPropDetail(id){
     if(el) el.innerHTML = simBannerHTML;
   });
 
-  // propiedades relacionadas
-  const related = PROPS.filter(x=>x.id!==id).slice(0,5);
+  // propiedades relacionadas — mínimo 10 items repitiendo para llenar carrusel
+  const relBase = PROPS.filter(x=>x.id!==id);
+  const related = Array.from({length:10}, (_,i) => relBase[i % relBase.length]);
+  const relCard = r => `
+    <div class="detail-related-card" onclick="openPropDetail(${r.id})">
+      <div class="detail-related-img" style="padding:0"><img src="img/prop-${((r.id-1)%10)+1}.jpg" style="width:100%;height:100%;object-fit:cover" loading="lazy"></div>
+      <div class="detail-related-body">
+        <span class="detail-related-badge">${r.tipo}</span>
+        <div class="detail-related-price">${fmt(r.price)}</div>
+        <div class="detail-related-meta">${fmt(Math.round(r.price/r.area))} / m²<br>${r.rec} rec · ${r.ban} baños<br>${r.zona}</div>
+      </div>
+    </div>`;
   document.getElementById('detail-related').outerHTML =
-    `<div class="detail-related-inner" id="detail-related">${related.map(r=>`
-      <div class="detail-related-card" onclick="openPropDetail(${r.id})">
-        <div class="detail-related-img" style="padding:0"><img src="img/prop-${((r.id-1)%10)+1}.jpg" style="width:100%;height:100%;object-fit:cover"></div>
-        <div class="detail-related-body">
-          <span class="detail-related-badge">${r.tipo}</span>
-          <div class="detail-related-price">${fmt(r.price)}</div>
-          <div class="detail-related-meta">${fmt(Math.round(r.price/r.area))} / m²<br>${r.rec} rec · ${r.ban} baños<br>${r.zona}</div>
-        </div>
-      </div>`).join('')}</div>`;
+    `<div class="detail-related-inner" id="detail-related">${related.map(relCard).join('')}</div>`;
 
   const detailScreen = document.getElementById('screen-prop-detail');
   if(detailScreen) detailScreen.scrollTop = 0;
