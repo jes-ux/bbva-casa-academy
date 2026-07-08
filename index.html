@@ -3057,6 +3057,8 @@ function openPropDetail(id){
         </div>
       </div>`).join('')}</div>`;
 
+  const detailScreen = document.getElementById('screen-prop-detail');
+  if(detailScreen) detailScreen.scrollTop = 0;
   goScreen('screen-prop-detail');
 }
 
