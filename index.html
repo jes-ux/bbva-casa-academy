@@ -1749,6 +1749,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <div class="sheet-body" style="padding:0">
     <!-- Filtros rápidos -->
     <div style="padding:16px 20px 0">
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Categoría</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+        <button class="sheet-chip" onclick="togglePropSheetChip(this,'cat','Residencial')">Residencial</button>
+        <button class="sheet-chip" onclick="togglePropSheetChip(this,'cat','Comercial')">Comercial</button>
+        <button class="sheet-chip" onclick="togglePropSheetChip(this,'cat','Industrial')">Industrial</button>
+      </div>
       <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Tipo de propiedad</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
         <button class="sheet-chip" onclick="togglePropSheetChip(this,'tipo','Casa')">Casas</button>
