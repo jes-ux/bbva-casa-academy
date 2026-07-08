@@ -363,6 +363,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .msg-chat-input:focus{border-color:var(--border-stronger)}
 .msg-chat-send{width:38px;height:38px;border-radius:50%;background:var(--text-primary);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--surface-2);flex-shrink:0;transition:opacity .15s}
 .msg-chat-send:hover{opacity:.85}
+/* dt chat side sheet */
+.dt-chat-sheet{display:none;position:fixed;top:64px;right:0;width:440px;height:calc(100dvh - 64px);background:var(--surface-2);border-left:0.5px solid var(--border);box-shadow:-8px 0 32px rgba(0,0,0,.12);z-index:200;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.dt-chat-sheet.open{transform:translateX(0)}
 /* contact sheet */
 .contact-field{margin-bottom:16px}
 .contact-field label{display:block;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:6px}
@@ -418,6 +421,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .acct-prop-row-tag{display:inline-block;font-size:10px;font-weight:600;background:var(--accent-blue);color:#fff;border-radius:4px;padding:1px 6px;margin-top:4px}
 .acct-prop-row-cta{display:none}
 .acct-prop-row-chevron{font-size:16px;color:var(--text-muted);flex-shrink:0}
+#dt-mega-menu{display:none}
+#mega-backdrop{display:none}
 
 @media(min-width:900px){
   /* ── Mega-menu propiedades ── */
@@ -439,7 +444,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   /* ── Header (fixed full-width — DOM order is mid-page so sticky won't work) ── */
   .app-header{
     position:fixed;top:0;left:0;transform:none;max-width:none;width:100%;
-    height:64px;padding:0 40px;z-index:100;
+    height:64px;padding:0 40px;z-index:500;
     display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;
   }
   .app-header.hidden{transform:translateY(-110%)} /* keep hide animation working */
@@ -611,7 +616,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   }
 
   /* detail sidebar */
-  .dt-detail-sidebar{display:block}
+  .dt-detail-sidebar{display:block;position:sticky;top:80px;align-self:start}
   .dt-detail-main{min-width:0}
   .dt-mobile-price{display:none!important}
 
@@ -705,6 +710,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <!-- Drawer overlay -->
   <div id="drawer-overlay" onclick="closeDrawer()"></div>
   <div id="mega-backdrop" onclick="closeMega()"></div>
+  <!-- Desktop chat side sheet -->
+  <div class="dt-chat-sheet" id="dt-chat-sheet"><!-- renderDtChat() escribe aquí --></div>
   <div class="dt-mega-menu" id="dt-mega-menu">
     <button class="dt-mega-close" onclick="closeMega()" aria-label="Cerrar"><i class="ti ti-x"></i></button>
     <div class="dt-mega-col dt-mega-types">
@@ -1516,11 +1523,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <button class="btn-outline" style="margin-top:12px;width:100%" onclick="alert('Próximamente')">Ampliar</button>
           </div>
         </div>
-        <!-- Tu perfil / match -->
-        <div class="detail-section" id="detail-profile-section">
-          <div class="detail-section-title">Tu simulación</div>
+        <!-- Tu perfil / match — hidden -->
+        <div style="display:none" id="detail-profile-section">
           <div class="props-profile" id="detail-profile-pills"></div>
-          <div class="disclaimer" id="detail-disclaimer" style="display:none;margin-top:8px">Esta simulación se basa en los datos que declarás. No es una pre-aprobación bancaria.</div>
+          <div id="detail-disclaimer"></div>
         </div>
         <!-- Propiedades relacionadas -->
         <div class="detail-section" style="padding-bottom:0">
@@ -1811,7 +1817,7 @@ function propCardHTML(p) {
   const amenHtml = prof.amenities.map(a => `<span class="prop-tag">${a}</span>`).join('');
   const simBadge = getSimBadge(p.id, p.price);
   const simBadgeHTML = simBadge
-    ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:${simBadge.color};background:${simBadge.bg};border-radius:6px;padding:3px 7px;margin-bottom:6px;${simBadge.border?'border:1px solid currentColor;':''}""><i class="ti ${simBadge.icon}" style="font-size:10px"></i>${simBadge.label}</span>`
+    ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:${simBadge.color};background:${simBadge.bg};border-radius:6px;padding:3px 7px;margin-bottom:6px;align-self:flex-start;width:fit-content;${simBadge.border?'border:1px solid currentColor;':''}"><i class="ti ${simBadge.icon}" style="font-size:10px"></i>${simBadge.label}</span>`
     : '';
   const imgSrc = `img/prop-${((p.id-1)%10)+1}.jpg`;
   return `<div class="prop-card" id="pcard-${p.id}" style="cursor:pointer" onclick="openPropDetail(${p.id})">
@@ -1885,7 +1891,10 @@ function renderSims() {
           <div style="font-size:13px;font-weight:600;color:var(--text-primary)">Hasta ${fmt(s.propMax)}</div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Cuota ~${fmt(s.cuota)}/mes · ${s.plazo} años</div>
         </div>
-        <div style="font-size:11px;color:var(--text-muted)">${s.fecha}</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="font-size:11px;color:var(--text-muted)">${s.fecha}</div>
+          <button onclick="shareSimulation(${JSON.stringify(s).replace(/"/g,'&quot;')})" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;border-radius:6px;transition:background .15s" onmouseover="this.style.background='var(--surface-1)'" onmouseout="this.style.background='none'" title="Compartir simulación"><i class="ti ti-share" style="font-size:16px"></i></button>
+        </div>
       </div>
       <div style="padding:10px 16px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:0.5px solid var(--border)">
         <span style="font-size:11px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--text-secondary)">Ingreso ${fmt(s.ingreso)}</span>
@@ -1899,6 +1908,35 @@ function renderSims() {
       </div>
     </div>`;
   }).join('');
+}
+
+function shareSimulation(s) {
+  const text = `Mi simulación BBVA Inmobiliaria\n• Capacidad: hasta ${fmt(s.propMax)}\n• Cuota: ~${fmt(s.cuota)}/mes · ${s.plazo} años\n• Ingreso: ${fmt(s.ingreso)} · Enganche: ${fmt(s.enganche)}`;
+  const url = 'https://jes-ux.github.io/bbva-casa-academy/';
+  if (navigator.share) {
+    navigator.share({ title: 'Simulación BBVA Inmobiliaria', text, url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(text + '\n' + url).then(() => showToast('Simulación copiada al portapapeles')).catch(() => showToast('No se pudo compartir'));
+  }
+}
+
+function linkPropToSim(propId, simIdx) {
+  SIM_HISTORY[simIdx].refProp = propId;
+  const s = SIM_HISTORY[simIdx];
+  const linkedHTML = `
+    <div style="display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:10px;padding:10px 12px;border:1px solid var(--border-stronger);cursor:pointer" onclick="renderSims();goScreen('screen-simulaciones')">
+      <div style="width:32px;height:32px;border-radius:8px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid var(--border)"><i class="ti ti-calculator" style="font-size:15px;color:var(--text-primary)"></i></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:600;color:var(--text-primary)">Propiedad en tu simulación</div>
+        <div style="font-size:11px;color:var(--text-muted)">Cuota est. ${fmt(s.cuota)}/mes · ${s.plazo} años</div>
+      </div>
+      <i class="ti ti-chevron-right" style="font-size:13px;color:var(--text-muted);flex-shrink:0"></i>
+    </div>`;
+  ['detail-sim-banner-m','detail-sim-banner-dt'].forEach(elId => {
+    const el = document.getElementById(elId);
+    if(el) el.innerHTML = linkedHTML;
+  });
+  showToast('Propiedad agregada a tu simulación');
 }
 
 function renderOpps() {
@@ -2347,8 +2385,64 @@ function openChat(id) {
   activeChatId = id;
   const m = MENSAJES.find(x=>x.id===id);
   if(m) m.leido = true;
-  renderChat(id);
-  goScreen('screen-mensajes');
+  if(window.innerWidth >= 900) {
+    renderMensajes();
+    goScreen('screen-mensajes');
+    renderDtChat(id);
+  } else {
+    renderChat(id);
+    goScreen('screen-mensajes');
+  }
+}
+
+function closeDtChat() {
+  const sheet = document.getElementById('dt-chat-sheet');
+  sheet.classList.remove('open');
+  setTimeout(() => { sheet.style.display = 'none'; activeChatId = null; }, 300);
+}
+
+function renderDtChat(id) {
+  const sheet = document.getElementById('dt-chat-sheet');
+  const m = MENSAJES.find(x=>x.id===id);
+  if(!m) return;
+  const propRef = m.propId ? PROPS.find(p=>p.id===m.propId) : null;
+  const propBubble = propRef ? `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:4px">
+      <div class="msg-prop-ref" onclick="openPropDetail(${propRef.id});closeDtChat()">
+        <img class="msg-prop-ref-img" src="img/prop-${((propRef.id-1)%10)+1}.jpg" alt="">
+        <div class="msg-prop-ref-body">
+          <div class="msg-prop-ref-price">$${propRef.price.toLocaleString('es-MX')}</div>
+          <div class="msg-prop-ref-meta">${propRef.tipo} · ${propRef.zona}</div>
+        </div>
+        <i class="ti ti-chevron-right" style="font-size:13px;color:var(--text-muted)"></i>
+      </div>
+    </div>` : '';
+  const bubbles = m.mensajes.map(msg=>`
+    <div class="msg-bubble-wrap ${msg.de==='yo'?'mine':'theirs'}">
+      <div class="msg-bubble ${msg.de==='yo'?'mine':'theirs'}">${msg.texto}</div>
+      <div class="msg-time">${msg.hora}</div>
+    </div>`).join('');
+  sheet.innerHTML = `<div class="msg-chat-wrap">
+    <div class="msg-chat-header">
+      <button class="msg-chat-back" onclick="closeDtChat()"><i class="ti ti-x" style="font-size:18px"></i></button>
+      <div class="msg-thread-avatar" style="width:36px;height:36px;font-size:16px">${m.asesorEmoji}</div>
+      <div><div class="msg-chat-name">${m.asesorNombre}</div><div class="msg-chat-sub">Asesor BBVA Inmobiliaria</div></div>
+    </div>
+    <div class="msg-chat-body" id="chat-body-${id}">
+      ${propBubble}
+      ${bubbles}
+    </div>
+    <div class="msg-chat-footer">
+      <textarea class="msg-chat-input" id="chat-input-${id}" rows="1" placeholder="Escribe un mensaje..."></textarea>
+      <button class="msg-chat-send" onclick="sendChatMsg('${id}')"><i class="ti ti-send" style="font-size:16px"></i></button>
+    </div>
+  </div>`;
+  sheet.style.display = 'flex';
+  requestAnimationFrame(() => sheet.classList.add('open'));
+  const body = document.getElementById(`chat-body-${id}`);
+  if(body) body.scrollTop = body.scrollHeight;
+  const inp = document.getElementById(`chat-input-${id}`);
+  if(inp) inp.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatMsg(id);} });
 }
 
 function renderChat(id) {
@@ -2401,7 +2495,7 @@ function sendChatMsg(id) {
   const hora = new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
   m.mensajes.push({de:'yo',texto,hora});
   inp.value = '';
-  renderChat(id);
+  if(window.innerWidth >= 900) renderDtChat(id); else renderChat(id);
 }
 
 function renderAcademia() {
@@ -2918,17 +3012,33 @@ function openPropDetail(id){
   }
 
   // banner de simulación en ficha
-  const simBadge = getSimBadge(id, p.price);
-  const relSim = SIM_HISTORY.find(s => s.refProp === id) || SIM_HISTORY.find(s => s.propMax >= p.price);
-  const simBannerHTML = simBadge && relSim ? `
-    <div style="display:flex;align-items:center;gap:10px;background:${simBadge.bg};border-radius:10px;padding:10px 12px;${simBadge.border?'border:1px solid var(--border-stronger);':''}cursor:pointer" onclick="renderSims();goScreen('screen-simulaciones')">
-      <div style="width:32px;height:32px;border-radius:8px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid var(--border)"><i class="ti ti-calculator" style="font-size:15px;color:var(--text-primary)"></i></div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:600;color:${simBadge.color}">${simBadge.label}</div>
-        <div style="font-size:11px;color:var(--text-muted)">Cuota est. ${fmt(relSim.cuota)}/mes · ${relSim.plazo} años</div>
-      </div>
-      <i class="ti ti-chevron-right" style="font-size:13px;color:var(--text-muted);flex-shrink:0"></i>
-    </div>` : '';
+  const alreadyLinked = SIM_HISTORY.findIndex(s => s.refProp === id);
+  const inRangeSim = SIM_HISTORY.find(s => s.propMax >= p.price && s.refProp !== id);
+  let simBannerHTML = '';
+  if (alreadyLinked >= 0) {
+    const relSim = SIM_HISTORY[alreadyLinked];
+    simBannerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:10px;padding:10px 12px;border:1px solid var(--border-stronger);cursor:pointer" onclick="renderSims();goScreen('screen-simulaciones')">
+        <div style="width:32px;height:32px;border-radius:8px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid var(--border)"><i class="ti ti-calculator" style="font-size:15px;color:var(--text-primary)"></i></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:600;color:var(--text-primary)">Propiedad en tu simulación</div>
+          <div style="font-size:11px;color:var(--text-muted)">Cuota est. ${fmt(relSim.cuota)}/mes · ${relSim.plazo} años</div>
+        </div>
+        <i class="ti ti-chevron-right" style="font-size:13px;color:var(--text-muted);flex-shrink:0"></i>
+      </div>`;
+  } else if (inRangeSim) {
+    simBannerHTML = `
+      <div style="background:var(--bg-success);border-radius:10px;padding:12px 14px;border:1px solid var(--border)">
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid var(--border)"><i class="ti ti-check" style="font-size:15px;color:var(--text-success)"></i></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:600;color:var(--text-success)">Está en tu rango</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Tu simulación cubre hasta ${fmt(inRangeSim.propMax)} · Cuota est. ${fmt(inRangeSim.cuota)}/mes</div>
+          </div>
+        </div>
+        <button onclick="linkPropToSim(${id}, ${SIM_HISTORY.indexOf(inRangeSim)})" style="width:100%;font-size:12px;font-weight:600;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:8px;padding:9px;cursor:pointer;font-family:var(--font-sans);display:flex;align-items:center;justify-content:center;gap:6px" id="link-sim-btn-${id}"><i class="ti ti-calculator" style="font-size:13px"></i> Agregar a mi simulación</button>
+      </div>`;
+  }
   ['detail-sim-banner-m','detail-sim-banner-dt'].forEach(elId => {
     const el = document.getElementById(elId);
     if(el) el.innerHTML = simBannerHTML;
