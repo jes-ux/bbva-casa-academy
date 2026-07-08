@@ -1911,7 +1911,7 @@ function shareSimulation(s) {
   if (navigator.share) {
     navigator.share({ title: 'Simulación BBVA Inmobiliaria', text, url }).catch(() => {});
   } else {
-    navigator.clipboard.writeText(text + '\n' + url).then(() => showToast('Simulación copiada al portapapeles')).catch(() => showToast('No se pudo compartir'));
+    navigator.clipboard.writeText(text + '\n' + url).then(() => showToast('ti-copy','Simulación copiada al portapapeles')).catch(() => showToast('ti-alert-circle','No se pudo compartir'));
   }
 }
 
@@ -1931,7 +1931,7 @@ function linkPropToSim(propId, simIdx) {
     const el = document.getElementById(elId);
     if(el) el.innerHTML = linkedHTML;
   });
-  showToast('Propiedad agregada a tu simulación');
+  showToast('ti-circle-check','Propiedad agregada a tu simulación','success');
 }
 
 function renderOpps() {
@@ -3025,11 +3025,11 @@ function openPropDetail(id){
       </div>`;
   } else if (inRangeSim) {
     simBannerHTML = `
-      <div style="background:var(--bg-success);border-radius:10px;padding:12px 14px;border:1px solid var(--border)">
+      <div style="background:var(--surface-1);border-radius:10px;padding:12px 14px;border:1px solid var(--border)">
         <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
-          <div style="width:32px;height:32px;border-radius:8px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid var(--border)"><i class="ti ti-check" style="font-size:15px;color:var(--text-success)"></i></div>
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid var(--border)"><i class="ti ti-check" style="font-size:15px;color:var(--text-primary)"></i></div>
           <div style="flex:1;min-width:0">
-            <div style="font-size:12px;font-weight:600;color:var(--text-success)">Está en tu rango</div>
+            <div style="font-size:12px;font-weight:600;color:var(--text-primary)">Está en tu rango</div>
             <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Tu simulación cubre hasta ${fmt(inRangeSim.propMax)} · Cuota est. ${fmt(inRangeSim.cuota)}/mes</div>
           </div>
         </div>
