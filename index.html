@@ -1874,8 +1874,10 @@ function renderSims() {
           <div class="acct-prop-row-price" style="font-size:14px">${fmt(rp.price)}</div>
           <div class="acct-prop-row-meta">${rp.zona} · ${rp.tipo} · ${rp.rec} rec · ${rp.area}m²</div>
         </div>
-        <i class="ti ti-chevron-right acct-prop-row-chevron"></i>
-        <button class="acct-prop-row-cta" onclick="event.stopPropagation();openPropDetail(${rp.id})">Ver ficha</button>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <button class="acct-prop-row-cta" onclick="event.stopPropagation();openPropDetail(${rp.id})">Ver ficha</button>
+          <button onclick="event.stopPropagation();removePropFromSim('${s.id}',${rp.id})" style="width:28px;height:28px;border-radius:6px;border:0.5px solid var(--border);background:var(--surface-2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-muted)" title="Quitar propiedad"><i class="ti ti-trash" style="font-size:13px"></i></button>
+        </div>
       </div>`).join('')}` : '';
 
     return `<div class="sim-history-card" style="margin-bottom:16px">
@@ -1901,6 +1903,15 @@ function renderSims() {
       </div>
     </div>`;
   }).join('');
+}
+
+function removePropFromSim(simId, propId) {
+  const s = SIM_HISTORY.find(x => x.id === simId);
+  if (!s) return;
+  s.props = (s.props || []).filter(id => id !== propId);
+  if (s.refProp === propId) s.refProp = s.props[0] || null;
+  renderSims();
+  showToast('ti-trash', 'Propiedad quitada de la simulación');
 }
 
 function shareSimulation(s) {
