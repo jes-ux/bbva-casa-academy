@@ -402,6 +402,20 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .drawer-item.danger i{color:var(--text-danger)}
 .drawer-sep{height:0.5px;background:var(--border);margin:4px 0}
 
+/* ── Onboarding screens ── */
+.onboarding-screen{display:flex;flex-direction:column;min-height:100dvh;background:var(--surface-0);padding:0}
+.onb-hero{background:var(--text-primary);padding:60px 32px 40px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:1}
+.onb-hero-icon{font-size:40px;margin-bottom:20px}
+.onb-hero-title{font-size:28px;font-weight:800;color:var(--surface-2);line-height:1.2;margin-bottom:10px}
+.onb-hero-sub{font-size:15px;color:rgba(255,255,255,.7);line-height:1.5}
+.onb-body{padding:28px 24px 40px;display:flex;flex-direction:column;gap:12px}
+.onb-field{display:flex;flex-direction:column;gap:6px}
+.onb-field label{font-size:13px;font-weight:500;color:var(--text-secondary)}
+.onb-field input{border:0.5px solid var(--border-strong);border-radius:10px;padding:12px 14px;font-size:15px;font-family:var(--font-sans);color:var(--text-primary);background:var(--surface-2);outline:none;width:100%;box-sizing:border-box}
+.onb-field input:focus{border-color:var(--text-primary)}
+.onb-link{font-size:13px;color:var(--text-muted);text-align:center}
+.onb-link button{background:none;border:none;font-size:13px;font-weight:600;color:var(--text-primary);cursor:pointer;font-family:var(--font-sans);text-decoration:underline}
+
 /* ═══════════════════════════════════════
    DESKTOP — ≥900px
    Mobile styles remain untouched above
@@ -770,7 +784,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
     <div class="drawer-sep"></div>
     <div class="drawer-section" style="margin-top:auto">
-      <button class="drawer-item danger" onclick="closeDrawer()"><i class="ti ti-logout"></i> Cerrar sesión</button>
+      <button class="drawer-item danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </div>
     <div style="padding:20px;font-size:10px;color:var(--text-muted);line-height:1.6;margin-top:auto">
       © 2024 BBVA México, S.A., Institución de Banca Múltiple, Grupo Financiero BBVA México.
@@ -792,7 +806,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+      <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
     <div class="content">
       <div style="display:flex;align-items:center;gap:14px">
@@ -838,7 +852,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+      <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
     <div class="content">
       <div id="favs-grid"></div>
@@ -861,7 +875,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+      <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
     <div class="content" id="sims-content"></div>
     </div><!-- /dt-acct-wrap -->
@@ -882,7 +896,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+      <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
     <div class="content">
       <div class="list-card">
@@ -931,7 +945,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+      <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
     <div class="content">
       <div class="section-screen">
@@ -970,7 +984,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+      <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
     <div class="content" id="mensajes-content">
       <!-- renderMensajes() escribe aquí -->
@@ -993,7 +1007,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item dt-acct-danger" onclick="alert('Cerrando sesión...')"><i class="ti ti-logout"></i> Cerrar sesión</button>
+      <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
     <div class="content">
       <h2 style="font-size:22px;font-weight:700;color:var(--text-primary);margin-bottom:8px">Oportunidades</h2>
@@ -1022,6 +1036,57 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
       <!-- módulos -->
       <div style="display:flex;flex-direction:column;gap:12px" id="acad-modules"></div>
+    </div>
+  </div>
+
+  <!-- ONBOARDING: BIENVENIDA -->
+  <div id="screen-welcome" class="screen">
+    <div class="onboarding-screen">
+      <div class="onb-hero">
+        <div class="onb-hero-icon"><i class="ti ti-building-bank" style="font-size:48px;color:var(--surface-2)"></i></div>
+        <div class="onb-hero-title">Tu próxima propiedad empieza acá</div>
+        <div class="onb-hero-sub">Simulá tu crédito, explorá propiedades y conectá con un asesor BBVA.</div>
+      </div>
+      <div class="onb-body">
+        <button class="btn-primary" style="padding:14px;font-size:15px" onclick="goScreen('screen-registro')">Crear cuenta</button>
+        <button class="btn-outline" style="padding:14px;font-size:15px" onclick="goScreen('screen-login')">Iniciar sesión</button>
+        <div class="onb-link">Al continuar aceptás los <button onclick="void(0)">Términos y condiciones</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONBOARDING: LOGIN -->
+  <div id="screen-login" class="screen">
+    <div class="onboarding-screen">
+      <div class="onb-hero" style="flex:0;padding:48px 32px 32px">
+        <div class="onb-hero-title" style="font-size:24px">Bienvenida de vuelta</div>
+        <div class="onb-hero-sub">Ingresá con tu cuenta BBVA</div>
+      </div>
+      <div class="onb-body">
+        <div class="onb-field"><label>Correo electrónico</label><input type="email" placeholder="tu@email.com" id="login-email"></div>
+        <div class="onb-field"><label>Contraseña</label><input type="password" placeholder="••••••••" id="login-pass"></div>
+        <button class="btn-primary" style="padding:14px;font-size:15px;margin-top:4px" onclick="doLogin()">Iniciar sesión</button>
+        <div class="onb-link">¿No tenés cuenta? <button onclick="goScreen('screen-registro')">Registrate</button></div>
+        <div class="onb-link"><button onclick="void(0)">Olvidé mi contraseña</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONBOARDING: REGISTRO -->
+  <div id="screen-registro" class="screen">
+    <div class="onboarding-screen">
+      <div class="onb-hero" style="flex:0;padding:48px 32px 32px">
+        <div class="onb-hero-title" style="font-size:24px">Creá tu cuenta</div>
+        <div class="onb-hero-sub">Empezá tu camino hacia tu propiedad</div>
+      </div>
+      <div class="onb-body">
+        <div class="onb-field"><label>Nombre completo</label><input type="text" placeholder="Ej. Natalia García" id="reg-nombre"></div>
+        <div class="onb-field"><label>Correo electrónico</label><input type="email" placeholder="tu@email.com" id="reg-email"></div>
+        <div class="onb-field"><label>Teléfono</label><input type="tel" placeholder="+52 55 0000 0000" id="reg-tel"></div>
+        <div class="onb-field"><label>Contraseña</label><input type="password" placeholder="Mínimo 8 caracteres" id="reg-pass"></div>
+        <button class="btn-primary" style="padding:14px;font-size:15px;margin-top:4px" onclick="doRegistro()">Crear cuenta</button>
+        <div class="onb-link">¿Ya tenés cuenta? <button onclick="goScreen('screen-login')">Iniciá sesión</button></div>
+      </div>
     </div>
   </div>
 
@@ -1917,6 +1982,7 @@ function removePropFromSim(simId, propId) {
 function shareSimulation(s) {
   const text = `Mi simulación BBVA Inmobiliaria\n• Capacidad: hasta ${fmt(s.propMax)}\n• Cuota: ~${fmt(s.cuota)}/mes · ${s.plazo} años\n• Ingreso: ${fmt(s.ingreso)} · Enganche: ${fmt(s.enganche)}`;
   const url = 'https://jes-ux.github.io/bbva-casa-academy/';
+  markStep('shared_sim');
   if (navigator.share) {
     navigator.share({ title: 'Simulación BBVA Inmobiliaria', text, url }).catch(() => {});
   } else {
@@ -1943,6 +2009,7 @@ function linkPropToSim(propId, simIdx) {
     const el = document.getElementById(elId);
     if(el) el.innerHTML = linkedHTML;
   });
+  markStep('added_to_sim');
   showToast('ti-circle-check','Propiedad agregada a tu simulación','success');
 }
 
@@ -2261,7 +2328,7 @@ function initHeaderScroll(screen) {
 }
 
 // pantallas que nunca muestran el botón back (raíces de navegación)
-const ROOT_SCREENS = new Set(['screen-0','screen-academia']);
+const ROOT_SCREENS = new Set(['screen-0','screen-academia','screen-welcome','screen-login','screen-registro']);
 
 let navHistory = [];
 
@@ -2282,6 +2349,58 @@ function updateBackBtn() {
 // módulos completados
 const _savedModules = JSON.parse(localStorage.getItem('bbva_modules') || '{}');
 const moduleDone = { 1: !!_savedModules[1], 2: !!_savedModules[2], 3: !!_savedModules[3] };
+
+// ── Steps tracking (academia checklist) ──
+const _savedSteps = JSON.parse(localStorage.getItem('bbva_steps') || '{}');
+const STEPS_DONE = { ..._savedSteps };
+function markStep(key) {
+  if (STEPS_DONE[key]) return;
+  STEPS_DONE[key] = true;
+  localStorage.setItem('bbva_steps', JSON.stringify(STEPS_DONE));
+}
+
+// ── Onboarding actions ──
+function doLogin() {
+  markStep('registered');
+  markStep('profile_done');
+  enterApp();
+}
+function doRegistro() {
+  markStep('registered');
+  enterApp();
+}
+function enterApp() {
+  goScreen('screen-0');
+  navTo('screen-0','nav-inicio');
+}
+function doLogout() {
+  closeDrawer();
+  goScreen('screen-welcome');
+}
+
+// ── ACADEMY_SECTIONS definition ──
+const ACADEMY_SECTIONS = [
+  { id:'onboarding', label:'Empezá', icon:'ti-user-plus', steps:[
+    { key:'registered',   title:'Creá tu cuenta',              sub:'Registrate en BBVA Inmobiliaria',           cta:'Registrarme',       ctaAction:"goScreen('screen-registro')",               ctaDone:'Ver perfil',        ctaDoneAction:"goScreen('screen-perfil')" },
+    { key:'profile_done', title:'Completá tu perfil',          sub:'Agregá tu información de contacto',         cta:'Ir al perfil',      ctaAction:"goScreen('screen-perfil')",                 ctaDone:'Ver perfil',        ctaDoneAction:"goScreen('screen-perfil')" },
+  ]},
+  { id:'aprende', label:'Aprendé', icon:'ti-book', steps:[
+    { key:'edu_done',   title:'Entendé cómo funciona',       sub:'CAT, tipos de tasa y enganche',             cta:'Empezar módulo',    ctaAction:"goScreen('screen-edu')",                    ctaDone:'Repasar',           ctaDoneAction:"goScreen('screen-edu')" },
+  ]},
+  { id:'simula', label:'Simulá', icon:'ti-calculator', steps:[
+    { key:'sim_done',     title:'Hacé tu primera simulación',  sub:'Calculá cuánto podés pagar',                cta:'Simular ahora',     ctaAction:"goScreen('screen-sim')",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
+    { key:'shared_sim',   title:'Compartí tu simulación',      sub:'Enviásela a alguien de confianza',          cta:'Ir a simulaciones', ctaAction:"renderSims();goScreen('screen-simulaciones')", ctaDone:'Compartida ✓',   ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
+    { key:'added_to_sim', title:'Agregá una propiedad a tu sim', sub:'Vinculá lo que te gusta con tu capacidad', cta:'Ver propiedades',  ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
+  ]},
+  { id:'explora', label:'Explorá', icon:'ti-building', steps:[
+    { key:'viewed_prop',  title:'Abrí la ficha de una propiedad', sub:'Conocé todos los detalles',             cta:'Ver propiedades',   ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Seguir explorando', ctaDoneAction:"navTo('screen-props','nav-props')" },
+    { key:'faved',        title:'Guardá un favorito',            sub:'Marcá las propiedades que más te gustan', cta:'Ver propiedades',   ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver favoritos',     ctaDoneAction:"renderFavs();goScreen('screen-favoritos')" },
+  ]},
+  { id:'conecta', label:'Conectate', icon:'ti-headset', steps:[
+    { key:'contacted',    title:'Contactá a un asesor',         sub:'Abrí una ficha de propiedad y tocá "Contacta al asesor"', cta:'Ver propiedades', ctaAction:"navTo('screen-props','nav-props')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
+    { key:'messaged',     title:'Respondé en el chat',          sub:'Mantené la conversación con tu asesor',  cta:'Ir a mensajes',     ctaAction:"renderMensajes();goScreen('screen-mensajes')", ctaDone:'Ver mensajes',  ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
+  ]},
+];
 
 let toastTimer = null;
 function showToast(icon, msg, type='default') {
@@ -2354,6 +2473,7 @@ function enviarContacto() {
   }
   closeSheet();
   showToast('ti-circle-check','Mensaje enviado. Tu asesor responderá pronto.','success');
+  markStep('contacted');
   setTimeout(()=>{
     const hilo = MENSAJES.find(m=> propId ? m.propId===propId : !m.propId) || MENSAJES[0];
     if(hilo){
@@ -2505,40 +2625,55 @@ function sendChatMsg(id) {
   m.mensajes.push({de:'yo',texto,hora});
   inp.value = '';
   if(window.innerWidth >= 900) renderDtChat(id); else renderChat(id);
+  markStep('messaged');
 }
 
 function renderAcademia() {
-  const done = Object.values(moduleDone).filter(Boolean).length;
-  document.getElementById('acad-counter').textContent = `${done} de 3 módulos`;
-  document.getElementById('acad-bar').style.width = Math.round(done / 3 * 100) + '%';
+  const allSteps = ACADEMY_SECTIONS.flatMap(s => s.steps);
+  const doneCount = allSteps.filter(st => STEPS_DONE[st.key] || (st.key==='edu_done' && moduleDone[1]) || (st.key==='sim_done' && moduleDone[2]) || (st.key==='viewed_prop' && moduleDone[3])).length;
+  const total = allSteps.length;
+  document.getElementById('acad-counter').textContent = `${doneCount} de ${total} pasos`;
+  document.getElementById('acad-bar').style.width = Math.round(doneCount / total * 100) + '%';
 
-  const modules = [
-    { n:1, title:'Entendé cómo funciona', sub:'CAT, tipos de tasa y enganche', time:'5 min', screen:'screen-edu', cta:'Empezar módulo', ctaDone:'Ver contenido', ctaDoneAction:"goScreen('screen-edu')" },
-    { n:2, title:'Simulá tu capacidad', sub:'Calculá cuánto podés pagar', time:'5 min', screen:'screen-sim', cta:'Empezar módulo', ctaDone:'Ver simulación', ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
-    { n:3, title:'Buscá propiedades', sub:'Propiedades en tu rango', time:'3 min', screen:'screen-props', cta:'Ver propiedades', ctaDone:'Ver propiedades', ctaDoneAction:"navTo('screen-props','nav-props')" },
-  ];
-
-  document.getElementById('acad-modules').innerHTML = modules.map(m => {
-    const isDone = moduleDone[m.n];
-    const isLocked = m.n > 1 && !moduleDone[m.n - 1] && !isDone;
-    return `<div style="border:0.5px solid var(--border);border-radius:12px;overflow:hidden;${isDone ? 'opacity:1' : ''}">
-      <div style="padding:16px;display:flex;gap:14px;align-items:flex-start">
-        <div style="width:40px;height:40px;border-radius:10px;background:${isDone ? 'var(--text-primary)' : 'var(--surface-1)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <i class="ti ${isDone ? 'ti-check' : isLocked ? 'ti-lock' : 'ti-book'}" style="font-size:18px;color:${isDone ? 'var(--surface-2)' : 'var(--text-muted)'}"></i>
+  document.getElementById('acad-modules').innerHTML = ACADEMY_SECTIONS.map(sec => {
+    const secDone = sec.steps.filter(st => stepIsDone(st.key)).length;
+    const secTotal = sec.steps.length;
+    const allSecDone = secDone === secTotal;
+    return `<div style="border:0.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2)">
+      <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:0.5px solid var(--border)">
+        <div style="width:36px;height:36px;border-radius:9px;background:${allSecDone?'var(--text-primary)':'var(--surface-1)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="ti ${allSecDone?'ti-check':sec.icon}" style="font-size:16px;color:${allSecDone?'var(--surface-2)':'var(--text-muted)'}"></i>
         </div>
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-            <span style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">Módulo ${m.n}</span>
-            ${isDone ? '<span style="font-size:10px;font-weight:600;color:var(--text-primary);background:var(--bg-success);padding:2px 8px;border-radius:20px">Completado ✓</span>' : ''}
-          </div>
-          <div style="font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:3px">${m.title}</div>
-          <div style="font-size:13px;color:var(--text-muted)">${m.sub}</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;display:flex;align-items:center;gap:4px"><i class="ti ti-clock" style="font-size:12px"></i> ${m.time}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:600;color:var(--text-primary)">${sec.label}</div>
+          <div style="font-size:12px;color:var(--text-muted)">${secDone} de ${secTotal} completados</div>
         </div>
       </div>
-      ${!isLocked ? `<div style="padding:0 16px 16px"><button class="btn-primary" style="font-size:14px;padding:12px" onclick="${isDone ? m.ctaDoneAction : `navTo('${m.screen}','nav-inicio')`}">${isDone ? m.ctaDone : m.cta}</button></div>` : `<div style="padding:0 16px 16px"><button class="btn-primary" style="font-size:14px;padding:12px;opacity:.3" disabled>Completá el módulo anterior</button></div>`}
+      <div style="display:flex;flex-direction:column">
+        ${sec.steps.map((st,i) => {
+          const done = stepIsDone(st.key);
+          return `<div style="padding:12px 16px;display:flex;align-items:center;gap:12px;${i<sec.steps.length-1?'border-bottom:0.5px solid var(--border)':''}">
+            <div style="width:24px;height:24px;border-radius:50%;border:1.5px solid ${done?'var(--text-primary)':'var(--border-strong)'};background:${done?'var(--text-primary)':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              ${done?'<i class="ti ti-check" style="font-size:11px;color:var(--surface-2)"></i>':''}
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:${done?'400':'500'};color:${done?'var(--text-muted)':'var(--text-primary)'};text-decoration:${done?'line-through':'none'}">${st.title}</div>
+              ${!done?`<div style="font-size:11px;color:var(--text-muted);margin-top:2px">${st.sub}</div>`:''}
+            </div>
+            <button onclick="${done ? st.ctaDoneAction : st.ctaAction}" style="font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;border:0.5px solid var(--border-strong);background:${done?'var(--surface-1)':'var(--text-primary)'};color:${done?'var(--text-muted)':'var(--surface-2)'};cursor:pointer;white-space:nowrap;font-family:var(--font-sans);flex-shrink:0">${done ? st.ctaDone : st.cta}</button>
+          </div>`;
+        }).join('')}
+      </div>
     </div>`;
   }).join('');
+}
+
+function stepIsDone(key) {
+  if (STEPS_DONE[key]) return true;
+  if (key === 'edu_done' && moduleDone[1]) return true;
+  if (key === 'sim_done' && moduleDone[2]) return true;
+  if (key === 'viewed_prop' && moduleDone[3]) return true;
+  return false;
 }
 
 function goScreen(id, isBack = false) {
@@ -2551,8 +2686,16 @@ function goScreen(id, isBack = false) {
   s.classList.add('active');
   lastScrollY = 0;
   s.scrollTop = 0;
-  document.getElementById('app-header').classList.remove('hidden');
-  document.getElementById('bottom-nav').classList.remove('hidden');
+  const NOHEADER = new Set(['screen-welcome','screen-login','screen-registro']);
+  if (NOHEADER.has(id)) {
+    document.getElementById('app-header').style.display = 'none';
+    document.getElementById('bottom-nav').style.display = 'none';
+  } else {
+    document.getElementById('app-header').style.display = '';
+    document.getElementById('bottom-nav').style.display = '';
+    document.getElementById('app-header').classList.remove('hidden');
+    document.getElementById('bottom-nav').classList.remove('hidden');
+  }
   updateBackBtn();
   initHeaderScroll(s);
   if (id === 'screen-props') { renderProps(); }
@@ -2695,6 +2838,9 @@ const PILL_LABELS = ['Entendé','Simulá','Buscá'];
 function showAchievement(n) {
   moduleDone[n] = true;
   localStorage.setItem('bbva_modules', JSON.stringify(moduleDone));
+  if (n === 1) markStep('edu_done');
+  if (n === 2) markStep('sim_done');
+  if (n === 3) markStep('viewed_prop');
   const d = ACH_DATA[n];
   document.getElementById('ach-icon').textContent = d.icon;
   document.getElementById('ach-title').textContent = d.title;
@@ -2944,6 +3090,7 @@ function openPropDetail(id){
   currentPropId = id;
   const p = PROPS.find(x=>x.id===id);
   if(!p) return;
+  markStep('viewed_prop');
   if(!moduleDone[3]){
     ACH_DATA[3].ctaFn = () => goToPropDetail(id);
     showAchievement(3);
