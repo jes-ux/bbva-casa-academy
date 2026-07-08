@@ -2187,6 +2187,7 @@ function toggleMegaChip(btn){
 }
 /* ── Propiedades bottom sheet (mobile) ── */
 let propSheetFilters = {tipo:'', precio:''};
+let propSheetLocTimer = null;
 
 function openPropSheet(){
   // En desktop navega directo a propiedades
@@ -2196,14 +2197,26 @@ function openPropSheet(){
 }
 
 function renderPropSheetLocs(){
-  const tipoActive = [...document.querySelectorAll('#sheet-props-nav .sheet-chip[data-group="tipo"].active')].map(b=>b.dataset.val);
-  const ctx = tipoActive.length===1 ? tipoActive[0] : 'default';
-  const data = MEGA_LOCATIONS[ctx] || MEGA_LOCATIONS.default;
   const el = document.getElementById('prop-sheet-locs');
   if(!el) return;
-  const allItems = data.cols.flatMap(col => col.items.map(z => ({ label: col.label, zone: z })));
-  el.innerHTML = `
-    <div style="border-top:0.5px solid var(--border)">
+  clearTimeout(propSheetLocTimer);
+
+  // skeleton inmediato
+  const skelRow = `<div style="display:flex;align-items:center;padding:13px 20px;border-bottom:0.5px solid var(--border);gap:12px">
+    <div style="flex:1"><div class="mega-skel" style="width:45%;margin-bottom:6px"></div><div class="mega-skel" style="width:28%"></div></div>
+    <div class="mega-skel" style="width:10px;height:14px;flex-shrink:0"></div>
+  </div>`;
+  el.innerHTML = `<div style="border-top:0.5px solid var(--border)">
+    <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;padding:12px 20px 8px">Zonas populares</div>
+    ${skelRow.repeat(6)}
+  </div>`;
+
+  propSheetLocTimer = setTimeout(() => {
+    const tipoActive = [...document.querySelectorAll('#sheet-props-nav .sheet-chip[data-group="tipo"].active')].map(b=>b.dataset.val);
+    const ctx = tipoActive.length===1 ? tipoActive[0] : 'default';
+    const data = MEGA_LOCATIONS[ctx] || MEGA_LOCATIONS.default;
+    const allItems = data.cols.flatMap(col => col.items.map(z => ({ label: col.label, zone: z })));
+    el.innerHTML = `<div style="border-top:0.5px solid var(--border)">
       <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;padding:12px 20px 8px">Zonas populares</div>
       ${allItems.map(({label, zone}) => `
         <button onclick="setSearchZone('${zone}');applyPropSheet()" style="display:flex;align-items:center;width:100%;padding:13px 20px;border:none;background:none;font-family:var(--font-sans);cursor:pointer;border-bottom:0.5px solid var(--border);-webkit-tap-highlight-color:transparent;gap:12px">
@@ -2214,6 +2227,7 @@ function renderPropSheetLocs(){
           <i class="ti ti-chevron-right" style="font-size:14px;color:var(--text-muted);flex-shrink:0"></i>
         </button>`).join('')}
     </div>`;
+  }, 600);
 }
 
 function togglePropSheetChip(btn, group, val){
