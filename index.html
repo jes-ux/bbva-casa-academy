@@ -872,27 +872,27 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </aside>
     <div class="content">
       <div class="list-card">
-        <div class="list-item">
+        <div class="list-item" onclick="renderSims();goScreen('screen-simulaciones')">
           <div class="list-item-icon" style="background:var(--bg-success)"><i class="ti ti-circle-check" style="color:var(--text-success)"></i></div>
           <div class="list-item-body"><div class="list-item-title">Simulación guardada</div><div class="list-item-sub">Tu simulación de $2,300,000 quedó registrada</div></div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div class="list-item-meta">Hoy</div><div class="notif-dot"></div></div>
         </div>
-        <div class="list-item">
+        <div class="list-item" onclick="renderOpps();goScreen('screen-oportunidades')">
           <div class="list-item-icon" style="background:var(--bg-warning)"><i class="ti ti-sparkles" style="color:var(--text-warning)"></i></div>
           <div class="list-item-body"><div class="list-item-title">Nueva oportunidad</div><div class="list-item-sub">Una propiedad en Narvarte hace match con tu simulación</div></div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div class="list-item-meta">Hoy</div><div class="notif-dot"></div></div>
         </div>
-        <div class="list-item">
+        <div class="list-item" onclick="openPropDetail(3)">
           <div class="list-item-icon"><i class="ti ti-building"></i></div>
           <div class="list-item-body"><div class="list-item-title">Propiedad actualizada</div><div class="list-item-sub">Ámsterdam 145 en Del Valle bajó de precio</div></div>
           <div class="list-item-meta">Ayer</div>
         </div>
-        <div class="list-item">
+        <div class="list-item" onclick="renderAcademia();goScreen('screen-academia')">
           <div class="list-item-icon"><i class="ti ti-file-text"></i></div>
           <div class="list-item-body"><div class="list-item-title">Módulo completado</div><div class="list-item-sub">Completaste el módulo de Educación financiera</div></div>
           <div class="list-item-meta">Lun</div>
         </div>
-        <div class="list-item">
+        <div class="list-item" onclick="renderAcademia();goScreen('screen-academia')">
           <div class="list-item-icon"><i class="ti ti-bell"></i></div>
           <div class="list-item-body"><div class="list-item-title">Bienvenida a Casa Academy</div><div class="list-item-sub">Empezá tu camino hacia tu propiedad</div></div>
           <div class="list-item-meta">Mar 28</div>
