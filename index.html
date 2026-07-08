@@ -403,34 +403,32 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .drawer-sep{height:0.5px;background:var(--border);margin:4px 0}
 
 /* ── Onboarding screens ── */
-.onboarding-screen{display:flex;flex-direction:column;min-height:100dvh;background:#fff;padding:0;overflow-y:auto}
-.onb-topbar{padding:max(20px,env(safe-area-inset-top)) 24px 0;display:flex;align-items:center;min-height:72px}
-.onb-logo{display:flex;flex-direction:column;gap:1px}
-.onb-logo-bbva{font-size:28px;font-weight:900;color:#004A97;letter-spacing:-.5px;line-height:1}
-.onb-logo-sub{font-size:13px;font-weight:500;color:#02A9CE;letter-spacing:.01em}
-.onb-content{flex:1;display:flex;flex-direction:column;padding:32px 24px 40px;max-width:480px;width:100%;margin:0 auto;box-sizing:border-box}
-.onb-title{font-size:26px;font-weight:700;color:#004A97;margin-bottom:6px;line-height:1.2}
+.onboarding-screen{display:flex;flex-direction:column;min-height:100dvh;background:var(--surface-2);overflow-y:auto}
+.onb-topbar{padding:max(24px,env(safe-area-inset-top)) 24px 0;display:flex;align-items:center;min-height:72px}
+.onb-logo{font-size:20px;font-weight:700;color:var(--text-primary);letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
+.onb-logo i{font-size:22px;color:var(--text-primary)}
+.onb-content{flex:1;display:flex;flex-direction:column;padding:36px 24px 48px;max-width:480px;width:100%;margin:0 auto;box-sizing:border-box}
+.onb-title{font-size:26px;font-weight:700;color:var(--text-primary);margin-bottom:6px;line-height:1.2}
 .onb-sub{font-size:14px;color:var(--text-muted);line-height:1.5;margin-bottom:28px}
 .onb-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
 .onb-field label{font-size:13px;font-weight:500;color:var(--text-secondary)}
-.onb-field input{border:1.5px solid #ccc;border-radius:8px;padding:13px 14px;font-size:15px;font-family:var(--font-sans);color:var(--text-primary);background:#fff;outline:none;width:100%;box-sizing:border-box;transition:border-color .15s}
-.onb-field input:focus{border-color:#004A97}
-.onb-btn{width:100%;padding:14px;font-size:15px;font-weight:600;border-radius:8px;border:none;cursor:pointer;font-family:var(--font-sans);transition:background .15s,opacity .15s;background:#004A97;color:#fff}
-.onb-btn:disabled{background:#ccc;cursor:default}
-.onb-btn-outline{background:#fff;color:#004A97;border:1.5px solid #004A97}
-.onb-link-row{text-align:center;font-size:14px;color:#004A97;margin-top:4px}
-.onb-link-row button{background:none;border:none;font-size:14px;font-weight:600;color:#004A97;cursor:pointer;font-family:var(--font-sans);text-decoration:none}
-.onb-link-row button:hover{text-decoration:underline}
-.onb-forgot{font-size:13px;color:#004A97;background:none;border:none;cursor:pointer;font-family:var(--font-sans);padding:0;margin-top:-6px;margin-bottom:8px;text-align:left}
+.onb-field input{border:1px solid var(--border-strong);border-radius:8px;padding:13px 14px;font-size:15px;font-family:var(--font-sans);color:var(--text-primary);background:var(--surface-0);outline:none;width:100%;box-sizing:border-box;transition:border-color .15s}
+.onb-field input:focus{border-color:var(--text-primary);background:var(--surface-2)}
+.onb-btn{width:100%;padding:14px;font-size:15px;font-weight:600;border-radius:8px;border:none;cursor:pointer;font-family:var(--font-sans);background:var(--text-primary);color:var(--surface-2)}
+.onb-btn:disabled{background:var(--border-strong);color:var(--text-muted);cursor:default}
+.onb-btn-outline{background:var(--surface-2);color:var(--text-primary);border:1px solid var(--border-strong)}
+.onb-link-row{text-align:center;font-size:14px;color:var(--text-muted);margin-top:4px}
+.onb-link-row button{background:none;border:none;font-size:14px;font-weight:600;color:var(--text-primary);cursor:pointer;font-family:var(--font-sans);text-decoration:underline}
+.onb-forgot{font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;font-family:var(--font-sans);padding:0;margin-top:-6px;margin-bottom:12px;text-align:left;text-decoration:underline}
 .onb-divider{display:flex;align-items:center;gap:10px;margin:16px 0}
-.onb-divider::before,.onb-divider::after{content:'';flex:1;height:1px;background:#e0e0e0}
-.onb-divider span{font-size:12px;color:#999;white-space:nowrap}
+.onb-divider::before,.onb-divider::after{content:'';flex:1;height:0.5px;background:var(--border-strong)}
+.onb-divider span{font-size:12px;color:var(--text-muted);white-space:nowrap}
 .onb-social{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:4px}
-.onb-social-btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;border:1.5px solid #e0e0e0;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;font-weight:500;color:var(--text-primary);font-family:var(--font-sans);-webkit-tap-highlight-color:transparent}
+.onb-social-btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface-2);cursor:pointer;font-size:13px;font-weight:500;color:var(--text-primary);font-family:var(--font-sans);-webkit-tap-highlight-color:transparent}
 .onb-social-btn svg{flex-shrink:0}
 .onb-check-row{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--text-secondary);margin:4px 0 16px}
-.onb-check-row input[type=checkbox]{width:17px;height:17px;margin-top:1px;flex-shrink:0;accent-color:#004A97;cursor:pointer}
-.onb-back{background:none;border:none;cursor:pointer;color:#004A97;display:flex;align-items:center;gap:6px;font-size:14px;font-family:var(--font-sans);padding:0;margin-bottom:28px}
+.onb-check-row input[type=checkbox]{width:17px;height:17px;margin-top:1px;flex-shrink:0;cursor:pointer}
+.onb-back{background:none;border:none;cursor:pointer;color:var(--text-primary);display:flex;align-items:center;gap:6px;font-size:14px;font-family:var(--font-sans);padding:0;margin-bottom:28px}
 
 /* ═══════════════════════════════════════
    DESKTOP — ≥900px
@@ -1085,84 +1083,20 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <div id="screen-welcome" class="screen">
     <div class="onboarding-screen">
       <div class="onb-topbar">
-        <div class="onb-logo">
-          <div class="onb-logo-bbva">BBVA</div>
-          <div class="onb-logo-sub">Mi Casa</div>
-        </div>
+        <div class="onb-logo"><i class="ti ti-building-bank"></i> BBVA Inmobiliaria</div>
       </div>
       <div class="onb-content" style="justify-content:center">
-        <!-- Ilustración ciudad -->
-        <div style="margin:0 auto 32px;width:100%;max-width:320px">
-          <svg viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="320" height="180" rx="16" fill="#EEF4FB"/>
-            <!-- edificio fondo izq -->
-            <rect x="10" y="80" width="48" height="100" fill="#C8D8ED" rx="3"/>
-            <rect x="17" y="90" width="10" height="10" fill="#fff" rx="1" opacity=".7"/>
-            <rect x="33" y="90" width="10" height="10" fill="#fff" rx="1" opacity=".4"/>
-            <rect x="17" y="106" width="10" height="10" fill="#fff" rx="1" opacity=".4"/>
-            <rect x="33" y="106" width="10" height="10" fill="#fff" rx="1" opacity=".7"/>
-            <rect x="17" y="122" width="10" height="10" fill="#fff" rx="1" opacity=".5"/>
-            <rect x="33" y="122" width="10" height="10" fill="#fff" rx="1" opacity=".4"/>
-            <!-- edificio fondo der -->
-            <rect x="262" y="65" width="58" height="115" fill="#C8D8ED" rx="3"/>
-            <rect x="270" y="75" width="10" height="10" fill="#fff" rx="1" opacity=".4"/>
-            <rect x="286" y="75" width="10" height="10" fill="#fff" rx="1" opacity=".7"/>
-            <rect x="302" y="75" width="10" height="10" fill="#fff" rx="1" opacity=".4"/>
-            <rect x="270" y="91" width="10" height="10" fill="#fff" rx="1" opacity=".7"/>
-            <rect x="286" y="91" width="10" height="10" fill="#fff" rx="1" opacity=".4"/>
-            <rect x="302" y="91" width="10" height="10" fill="#fff" rx="1" opacity=".5"/>
-            <rect x="270" y="107" width="10" height="10" fill="#fff" rx="1" opacity=".4"/>
-            <rect x="286" y="107" width="10" height="10" fill="#fff" rx="1" opacity=".6"/>
-            <rect x="302" y="107" width="10" height="10" fill="#fff" rx="1" opacity=".4"/>
-            <!-- edificio centro principal -->
-            <rect x="110" y="30" width="100" height="150" fill="#004A97" rx="4"/>
-            <rect x="120" y="44" width="16" height="16" fill="#02A9CE" rx="2" opacity=".8"/>
-            <rect x="142" y="44" width="16" height="16" fill="#fff" rx="2" opacity=".2"/>
-            <rect x="164" y="44" width="16" height="16" fill="#02A9CE" rx="2" opacity=".8"/>
-            <rect x="120" y="66" width="16" height="16" fill="#fff" rx="2" opacity=".2"/>
-            <rect x="142" y="66" width="16" height="16" fill="#02A9CE" rx="2" opacity=".9"/>
-            <rect x="164" y="66" width="16" height="16" fill="#fff" rx="2" opacity=".2"/>
-            <rect x="120" y="88" width="16" height="16" fill="#02A9CE" rx="2" opacity=".7"/>
-            <rect x="142" y="88" width="16" height="16" fill="#fff" rx="2" opacity=".2"/>
-            <rect x="164" y="88" width="16" height="16" fill="#02A9CE" rx="2" opacity=".7"/>
-            <rect x="120" y="110" width="16" height="16" fill="#fff" rx="2" opacity=".15"/>
-            <rect x="142" y="110" width="16" height="16" fill="#02A9CE" rx="2" opacity=".6"/>
-            <rect x="164" y="110" width="16" height="16" fill="#fff" rx="2" opacity=".15"/>
-            <rect x="144" y="140" width="32" height="40" fill="#003070" rx="2"/>
-            <!-- edificio izq medio -->
-            <rect x="54" y="100" width="60" height="80" fill="#A8BFDC" rx="3"/>
-            <rect x="62" y="110" width="11" height="11" fill="#fff" rx="1" opacity=".6"/>
-            <rect x="79" y="110" width="11" height="11" fill="#fff" rx="1" opacity=".3"/>
-            <rect x="96" y="110" width="11" height="11" fill="#fff" rx="1" opacity=".6"/>
-            <rect x="62" y="127" width="11" height="11" fill="#fff" rx="1" opacity=".3"/>
-            <rect x="79" y="127" width="11" height="11" fill="#fff" rx="1" opacity=".6"/>
-            <rect x="96" y="127" width="11" height="11" fill="#fff" rx="1" opacity=".3"/>
-            <!-- edificio der medio -->
-            <rect x="206" y="95" width="60" height="85" fill="#A8BFDC" rx="3"/>
-            <rect x="214" y="105" width="11" height="11" fill="#fff" rx="1" opacity=".3"/>
-            <rect x="231" y="105" width="11" height="11" fill="#fff" rx="1" opacity=".6"/>
-            <rect x="248" y="105" width="11" height="11" fill="#fff" rx="1" opacity=".3"/>
-            <rect x="214" y="122" width="11" height="11" fill="#fff" rx="1" opacity=".6"/>
-            <rect x="231" y="122" width="11" height="11" fill="#fff" rx="1" opacity=".3"/>
-            <rect x="248" y="122" width="11" height="11" fill="#fff" rx="1" opacity=".6"/>
-            <!-- suelo -->
-            <rect x="0" y="175" width="320" height="5" fill="#C8D8ED" rx="2"/>
-            <!-- sol -->
-            <circle cx="272" cy="36" r="18" fill="#FFD54F" opacity=".7"/>
-            <circle cx="272" cy="36" r="12" fill="#FFB300" opacity=".5"/>
-          </svg>
-        </div>
         <div class="onb-title">Tu próxima casa empieza acá</div>
-        <div class="onb-sub">Simulá tu crédito hipotecario, explorá propiedades y conectá con un asesor BBVA.</div>
+        <div class="onb-sub">Simulá tu crédito, explorá propiedades y conectá con un asesor.</div>
         <button class="onb-btn" style="margin-bottom:10px" onclick="goScreen('screen-registro')">Crear cuenta</button>
         <button class="onb-btn onb-btn-outline" onclick="goScreen('screen-login')">Ya tengo cuenta</button>
-        <div class="onb-divider" style="margin-top:16px"><span>o continuá con</span></div>
+        <div class="onb-divider" style="margin-top:20px"><span>o continuá con</span></div>
         <div class="onb-social">
-          <button class="onb-social-btn" onclick="doLogin()"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</button>
-          <button class="onb-social-btn" onclick="doLogin()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.14-2.19 1.3-2.17 3.87.03 3.06 2.65 4.07 2.68 4.08-.03.07-.42 1.44-1.38 2.53M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> Apple</button>
-          <button class="onb-social-btn" onclick="doLogin()"><svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook</button>
+          <button class="onb-social-btn" onclick="doLogin()"><svg width="15" height="15" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</button>
+          <button class="onb-social-btn" onclick="doLogin()"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.14-2.19 1.3-2.17 3.87.03 3.06 2.65 4.07 2.68 4.08-.03.07-.42 1.44-1.38 2.53M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> Apple</button>
+          <button class="onb-social-btn" onclick="doLogin()"><svg width="15" height="15" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook</button>
         </div>
-        <div class="onb-link-row" style="font-size:11px;color:#999;margin-top:12px">Al continuar aceptás los <button onclick="void(0)" style="font-size:11px;color:#004A97">Términos y condiciones</button></div>
+        <div class="onb-link-row" style="font-size:11px;margin-top:16px">Al continuar aceptás los <button onclick="void(0)" style="font-size:11px">Términos y condiciones</button></div>
       </div>
     </div>
   </div>
@@ -1171,25 +1105,22 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <div id="screen-login" class="screen">
     <div class="onboarding-screen">
       <div class="onb-topbar">
-        <div class="onb-logo">
-          <div class="onb-logo-bbva">BBVA</div>
-          <div class="onb-logo-sub">Mi Casa</div>
-        </div>
+        <div class="onb-logo"><i class="ti ti-building-bank"></i> BBVA Inmobiliaria</div>
       </div>
       <div class="onb-content">
         <button class="onb-back" onclick="goScreen('screen-welcome')"><i class="ti ti-arrow-left" style="font-size:16px"></i> Volver</button>
         <div class="onb-title">Iniciar sesión</div>
-        <div class="onb-sub">Ingresá con tu cuenta BBVA Mi Casa</div>
+        <div class="onb-sub">Ingresá con tu cuenta BBVA</div>
         <div class="onb-field"><label>Email</label><input type="email" placeholder="natalia@email.com" id="login-email"></div>
         <div class="onb-field"><label>Contraseña</label><input type="password" placeholder="••••••••" id="login-pass"></div>
         <button class="onb-forgot" onclick="void(0)">Olvidé mi contraseña</button>
-        <label class="onb-check-row"><input type="checkbox" id="login-terms" onchange="document.getElementById('login-btn').disabled=!this.checked"> Acepto los <button onclick="void(0)" style="background:none;border:none;color:#004A97;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);padding:0 2px">Términos de Uso</button> y <button onclick="void(0)" style="background:none;border:none;color:#004A97;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);padding:0 2px">Políticas de Privacidad</button> del sitio</label>
+        <label class="onb-check-row"><input type="checkbox" id="login-terms" onchange="document.getElementById('login-btn').disabled=!this.checked"> Acepto los <button onclick="void(0)" style="background:none;border:none;font-size:13px;font-weight:500;color:var(--text-primary);cursor:pointer;font-family:var(--font-sans);padding:0 2px;text-decoration:underline">Términos de Uso</button> y <button onclick="void(0)" style="background:none;border:none;font-size:13px;font-weight:500;color:var(--text-primary);cursor:pointer;font-family:var(--font-sans);padding:0 2px;text-decoration:underline">Políticas de Privacidad</button></label>
         <button class="onb-btn" id="login-btn" disabled onclick="doLogin()">Ingresar</button>
         <div class="onb-divider"><span>o continuá con</span></div>
         <div class="onb-social">
-          <button class="onb-social-btn" onclick="doLogin()"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</button>
-          <button class="onb-social-btn" onclick="doLogin()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.14-2.19 1.3-2.17 3.87.03 3.06 2.65 4.07 2.68 4.08-.03.07-.42 1.44-1.38 2.53M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> Apple</button>
-          <button class="onb-social-btn" onclick="doLogin()"><svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook</button>
+          <button class="onb-social-btn" onclick="doLogin()"><svg width="15" height="15" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</button>
+          <button class="onb-social-btn" onclick="doLogin()"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.14-2.19 1.3-2.17 3.87.03 3.06 2.65 4.07 2.68 4.08-.03.07-.42 1.44-1.38 2.53M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> Apple</button>
+          <button class="onb-social-btn" onclick="doLogin()"><svg width="15" height="15" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook</button>
         </div>
         <div class="onb-link-row" style="margin-top:16px">¿No tenés cuenta? <button onclick="goScreen('screen-registro')">Crear cuenta</button></div>
       </div>
@@ -1200,26 +1131,23 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <div id="screen-registro" class="screen">
     <div class="onboarding-screen">
       <div class="onb-topbar">
-        <div class="onb-logo">
-          <div class="onb-logo-bbva">BBVA</div>
-          <div class="onb-logo-sub">Mi Casa</div>
-        </div>
+        <div class="onb-logo"><i class="ti ti-building-bank"></i> BBVA Inmobiliaria</div>
       </div>
       <div class="onb-content">
         <button class="onb-back" onclick="goScreen('screen-welcome')"><i class="ti ti-arrow-left" style="font-size:16px"></i> Volver</button>
         <div class="onb-title">Crear cuenta</div>
         <div class="onb-sub">Completá tus datos para empezar</div>
         <div class="onb-social" style="margin-bottom:4px">
-          <button class="onb-social-btn" onclick="doRegistro()"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</button>
-          <button class="onb-social-btn" onclick="doRegistro()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.14-2.19 1.3-2.17 3.87.03 3.06 2.65 4.07 2.68 4.08-.03.07-.42 1.44-1.38 2.53M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> Apple</button>
-          <button class="onb-social-btn" onclick="doRegistro()"><svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook</button>
+          <button class="onb-social-btn" onclick="doRegistro()"><svg width="15" height="15" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</button>
+          <button class="onb-social-btn" onclick="doRegistro()"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.14-2.19 1.3-2.17 3.87.03 3.06 2.65 4.07 2.68 4.08-.03.07-.42 1.44-1.38 2.53M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> Apple</button>
+          <button class="onb-social-btn" onclick="doRegistro()"><svg width="15" height="15" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook</button>
         </div>
         <div class="onb-divider"><span>o con tu correo</span></div>
         <div class="onb-field"><label>Nombre completo</label><input type="text" placeholder="Ej. Natalia García" id="reg-nombre"></div>
         <div class="onb-field"><label>Email</label><input type="email" placeholder="natalia@email.com" id="reg-email"></div>
         <div class="onb-field"><label>Teléfono</label><input type="tel" placeholder="+52 55 0000 0000" id="reg-tel"></div>
         <div class="onb-field"><label>Contraseña</label><input type="password" placeholder="Mínimo 8 caracteres" id="reg-pass"></div>
-        <label class="onb-check-row"><input type="checkbox" id="reg-terms" onchange="document.getElementById('reg-btn').disabled=!this.checked"> Acepto los <button onclick="void(0)" style="background:none;border:none;color:#004A97;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);padding:0 2px">Términos de Uso</button> y <button onclick="void(0)" style="background:none;border:none;color:#004A97;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);padding:0 2px">Políticas de Privacidad</button> del sitio</label>
+        <label class="onb-check-row"><input type="checkbox" id="reg-terms" onchange="document.getElementById('reg-btn').disabled=!this.checked"> Acepto los <button onclick="void(0)" style="background:none;border:none;font-size:13px;font-weight:500;color:var(--text-primary);cursor:pointer;font-family:var(--font-sans);padding:0 2px;text-decoration:underline">Términos de Uso</button> y <button onclick="void(0)" style="background:none;border:none;font-size:13px;font-weight:500;color:var(--text-primary);cursor:pointer;font-family:var(--font-sans);padding:0 2px;text-decoration:underline">Políticas de Privacidad</button></label>
         <button class="onb-btn" id="reg-btn" disabled onclick="doRegistro()">Crear cuenta</button>
         <div class="onb-link-row" style="margin-top:12px">¿Ya tenés cuenta? <button onclick="goScreen('screen-login')">Iniciar sesión</button></div>
       </div>
