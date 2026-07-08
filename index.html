@@ -403,18 +403,26 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .drawer-sep{height:0.5px;background:var(--border);margin:4px 0}
 
 /* ── Onboarding screens ── */
-.onboarding-screen{display:flex;flex-direction:column;min-height:100dvh;background:var(--surface-0);padding:0}
-.onb-hero{background:var(--text-primary);padding:60px 32px 40px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:1}
-.onb-hero-icon{font-size:40px;margin-bottom:20px}
-.onb-hero-title{font-size:28px;font-weight:800;color:var(--surface-2);line-height:1.2;margin-bottom:10px}
-.onb-hero-sub{font-size:15px;color:rgba(255,255,255,.7);line-height:1.5}
-.onb-body{padding:28px 24px 40px;display:flex;flex-direction:column;gap:12px}
+.onboarding-screen{display:flex;flex-direction:column;min-height:100dvh;background:var(--surface-2);padding:0;overflow-y:auto}
+.onb-hero{background:var(--text-primary);padding:56px 32px 36px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;overflow:hidden}
+.onb-hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:0.5px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.8);letter-spacing:.04em;text-transform:uppercase;margin-bottom:20px}
+.onb-hero-illus{width:100%;max-width:280px;margin:0 auto 24px}
+.onb-hero-title{font-size:26px;font-weight:800;color:var(--surface-2);line-height:1.2;margin-bottom:8px}
+.onb-hero-sub{font-size:14px;color:rgba(255,255,255,.65);line-height:1.55;max-width:280px}
+.onb-body{padding:24px 24px 36px;display:flex;flex-direction:column;gap:12px}
+.onb-divider{display:flex;align-items:center;gap:10px;margin:4px 0}
+.onb-divider::before,.onb-divider::after{content:'';flex:1;height:0.5px;background:var(--border-strong)}
+.onb-divider span{font-size:12px;color:var(--text-muted);white-space:nowrap}
+.onb-social{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.onb-social-btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;border:0.5px solid var(--border-strong);border-radius:10px;background:var(--surface-2);cursor:pointer;font-size:13px;font-weight:500;color:var(--text-primary);font-family:var(--font-sans);-webkit-tap-highlight-color:transparent}
+.onb-social-btn svg{flex-shrink:0}
 .onb-field{display:flex;flex-direction:column;gap:6px}
 .onb-field label{font-size:13px;font-weight:500;color:var(--text-secondary)}
-.onb-field input{border:0.5px solid var(--border-strong);border-radius:10px;padding:12px 14px;font-size:15px;font-family:var(--font-sans);color:var(--text-primary);background:var(--surface-2);outline:none;width:100%;box-sizing:border-box}
-.onb-field input:focus{border-color:var(--text-primary)}
+.onb-field input{border:0.5px solid var(--border-strong);border-radius:10px;padding:12px 14px;font-size:15px;font-family:var(--font-sans);color:var(--text-primary);background:var(--surface-0);outline:none;width:100%;box-sizing:border-box}
+.onb-field input:focus{border-color:var(--text-primary);background:var(--surface-2)}
 .onb-link{font-size:13px;color:var(--text-muted);text-align:center}
 .onb-link button{background:none;border:none;font-size:13px;font-weight:600;color:var(--text-primary);cursor:pointer;font-family:var(--font-sans);text-decoration:underline}
+.onb-back{position:absolute;top:max(16px,env(safe-area-inset-top));left:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--surface-2)}
 
 /* ═══════════════════════════════════════
    DESKTOP — ≥900px
@@ -1065,17 +1073,97 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   </div>
 
   <!-- ONBOARDING: BIENVENIDA -->
+  <!-- ONBOARDING: BIENVENIDA -->
   <div id="screen-welcome" class="screen">
     <div class="onboarding-screen">
       <div class="onb-hero">
-        <div class="onb-hero-icon"><i class="ti ti-building-bank" style="font-size:48px;color:var(--surface-2)"></i></div>
-        <div class="onb-hero-title">Tu próxima propiedad empieza acá</div>
-        <div class="onb-hero-sub">Simulá tu crédito, explorá propiedades y conectá con un asesor BBVA.</div>
+        <div class="onb-hero-badge"><i class="ti ti-building-bank" style="font-size:11px"></i> BBVA Inmobiliaria</div>
+        <!-- Ilustración ciudad / edificios -->
+        <div class="onb-hero-illus">
+          <svg viewBox="0 0 280 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- cielo con luna -->
+            <circle cx="240" cy="28" r="16" fill="rgba(255,255,255,.12)"/>
+            <circle cx="247" cy="22" r="12" fill="#1a1a18"/>
+            <!-- estrellas -->
+            <circle cx="40" cy="18" r="1.5" fill="rgba(255,255,255,.4)"/>
+            <circle cx="90" cy="10" r="1" fill="rgba(255,255,255,.3)"/>
+            <circle cx="150" cy="24" r="1.5" fill="rgba(255,255,255,.4)"/>
+            <circle cx="200" cy="14" r="1" fill="rgba(255,255,255,.3)"/>
+            <circle cx="60" cy="32" r="1" fill="rgba(255,255,255,.25)"/>
+            <!-- edificio fondo izq -->
+            <rect x="0" y="70" width="40" height="90" fill="rgba(255,255,255,.07)" rx="2"/>
+            <rect x="5" y="78" width="8" height="8" fill="rgba(255,255,255,.15)" rx="1"/>
+            <rect x="18" y="78" width="8" height="8" fill="rgba(255,255,255,.1)" rx="1"/>
+            <rect x="5" y="92" width="8" height="8" fill="rgba(255,255,255,.1)" rx="1"/>
+            <rect x="18" y="92" width="8" height="8" fill="rgba(255,255,255,.2)" rx="1"/>
+            <rect x="5" y="106" width="8" height="8" fill="rgba(255,255,255,.12)" rx="1"/>
+            <rect x="18" y="106" width="8" height="8" fill="rgba(255,255,255,.1)" rx="1"/>
+            <!-- edificio fondo der -->
+            <rect x="240" y="55" width="40" height="105" fill="rgba(255,255,255,.07)" rx="2"/>
+            <rect x="246" y="63" width="8" height="8" fill="rgba(255,255,255,.2)" rx="1"/>
+            <rect x="260" y="63" width="8" height="8" fill="rgba(255,255,255,.1)" rx="1"/>
+            <rect x="246" y="77" width="8" height="8" fill="rgba(255,255,255,.1)" rx="1"/>
+            <rect x="260" y="77" width="8" height="8" fill="rgba(255,255,255,.18)" rx="1"/>
+            <rect x="246" y="91" width="8" height="8" fill="rgba(255,255,255,.15)" rx="1"/>
+            <rect x="260" y="91" width="8" height="8" fill="rgba(255,255,255,.08)" rx="1"/>
+            <!-- edificio centro alto -->
+            <rect x="100" y="30" width="80" height="130" fill="rgba(255,255,255,.13)" rx="3"/>
+            <rect x="108" y="40" width="14" height="14" fill="rgba(255,255,255,.25)" rx="1"/>
+            <rect x="128" y="40" width="14" height="14" fill="rgba(255,255,255,.12)" rx="1"/>
+            <rect x="148" y="40" width="14" height="14" fill="rgba(255,255,255,.25)" rx="1"/>
+            <rect x="108" y="60" width="14" height="14" fill="rgba(255,255,255,.12)" rx="1"/>
+            <rect x="128" y="60" width="14" height="14" fill="rgba(255,255,255,.3)" rx="1"/>
+            <rect x="148" y="60" width="14" height="14" fill="rgba(255,255,255,.12)" rx="1"/>
+            <rect x="108" y="80" width="14" height="14" fill="rgba(255,255,255,.2)" rx="1"/>
+            <rect x="128" y="80" width="14" height="14" fill="rgba(255,255,255,.1)" rx="1"/>
+            <rect x="148" y="80" width="14" height="14" fill="rgba(255,255,255,.2)" rx="1"/>
+            <rect x="108" y="100" width="14" height="14" fill="rgba(255,255,255,.1)" rx="1"/>
+            <rect x="128" y="100" width="14" height="14" fill="rgba(255,255,255,.22)" rx="1"/>
+            <rect x="148" y="100" width="14" height="14" fill="rgba(255,255,255,.1)" rx="1"/>
+            <!-- puerta centro -->
+            <rect x="127" y="130" width="26" height="30" fill="rgba(255,255,255,.18)" rx="2"/>
+            <!-- edificio izq medio -->
+            <rect x="36" y="90" width="68" height="70" fill="rgba(255,255,255,.1)" rx="2"/>
+            <rect x="43" y="98" width="10" height="10" fill="rgba(255,255,255,.22)" rx="1"/>
+            <rect x="59" y="98" width="10" height="10" fill="rgba(255,255,255,.1)" rx="1"/>
+            <rect x="75" y="98" width="10" height="10" fill="rgba(255,255,255,.18)" rx="1"/>
+            <rect x="43" y="114" width="10" height="10" fill="rgba(255,255,255,.1)" rx="1"/>
+            <rect x="59" y="114" width="10" height="10" fill="rgba(255,255,255,.25)" rx="1"/>
+            <rect x="75" y="114" width="10" height="10" fill="rgba(255,255,255,.1)" rx="1"/>
+            <!-- edificio der medio -->
+            <rect x="176" y="85" width="68" height="75" fill="rgba(255,255,255,.1)" rx="2"/>
+            <rect x="183" y="93" width="10" height="10" fill="rgba(255,255,255,.1)" rx="1"/>
+            <rect x="199" y="93" width="10" height="10" fill="rgba(255,255,255,.22)" rx="1"/>
+            <rect x="215" y="93" width="10" height="10" fill="rgba(255,255,255,.1)" rx="1"/>
+            <rect x="183" y="109" width="10" height="10" fill="rgba(255,255,255,.2)" rx="1"/>
+            <rect x="199" y="109" width="10" height="10" fill="rgba(255,255,255,.1)" rx="1"/>
+            <rect x="215" y="109" width="10" height="10" fill="rgba(255,255,255,.18)" rx="1"/>
+            <!-- suelo -->
+            <rect x="0" y="155" width="280" height="5" fill="rgba(255,255,255,.08)"/>
+          </svg>
+        </div>
+        <div class="onb-hero-title">Tu próxima casa empieza acá</div>
+        <div class="onb-hero-sub">Simulá tu crédito, explorá propiedades y conectá con un asesor.</div>
       </div>
       <div class="onb-body">
         <button class="btn-primary" style="padding:14px;font-size:15px" onclick="goScreen('screen-registro')">Crear cuenta</button>
-        <button class="btn-outline" style="padding:14px;font-size:15px" onclick="goScreen('screen-login')">Iniciar sesión</button>
-        <div class="onb-link">Al continuar aceptás los <button onclick="void(0)">Términos y condiciones</button></div>
+        <button class="btn-outline" style="padding:14px;font-size:15px" onclick="goScreen('screen-login')">Ya tengo cuenta</button>
+        <div class="onb-divider"><span>o continuá con</span></div>
+        <div class="onb-social">
+          <button class="onb-social-btn" onclick="doLogin()">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Google
+          </button>
+          <button class="onb-social-btn" onclick="doLogin()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.14-2.19 1.3-2.17 3.87.03 3.06 2.65 4.07 2.68 4.08-.03.07-.42 1.44-1.38 2.53M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            Apple
+          </button>
+          <button class="onb-social-btn" onclick="doLogin()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            Facebook
+          </button>
+        </div>
+        <div class="onb-link" style="font-size:11px">Al continuar aceptás los <button onclick="void(0)">Términos y condiciones</button></div>
       </div>
     </div>
   </div>
@@ -1083,16 +1171,35 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <!-- ONBOARDING: LOGIN -->
   <div id="screen-login" class="screen">
     <div class="onboarding-screen">
-      <div class="onb-hero" style="flex:0;padding:48px 32px 32px">
-        <div class="onb-hero-title" style="font-size:24px">Bienvenida de vuelta</div>
-        <div class="onb-hero-sub">Ingresá con tu cuenta BBVA</div>
+      <div class="onb-hero" style="padding:max(52px,env(safe-area-inset-top)) 28px 28px">
+        <button class="onb-back" onclick="goScreen('screen-welcome')"><i class="ti ti-arrow-left" style="font-size:16px"></i></button>
+        <div style="width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <i class="ti ti-lock" style="font-size:24px;color:var(--surface-2)"></i>
+        </div>
+        <div class="onb-hero-title" style="font-size:22px">Bienvenida de vuelta</div>
+        <div class="onb-hero-sub" style="font-size:13px">Ingresá con tu cuenta BBVA</div>
       </div>
       <div class="onb-body">
+        <div class="onb-social">
+          <button class="onb-social-btn" onclick="doLogin()">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Google
+          </button>
+          <button class="onb-social-btn" onclick="doLogin()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.14-2.19 1.3-2.17 3.87.03 3.06 2.65 4.07 2.68 4.08-.03.07-.42 1.44-1.38 2.53M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            Apple
+          </button>
+          <button class="onb-social-btn" onclick="doLogin()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            Facebook
+          </button>
+        </div>
+        <div class="onb-divider"><span>o con tu correo</span></div>
         <div class="onb-field"><label>Correo electrónico</label><input type="email" placeholder="tu@email.com" id="login-email"></div>
         <div class="onb-field"><label>Contraseña</label><input type="password" placeholder="••••••••" id="login-pass"></div>
-        <button class="btn-primary" style="padding:14px;font-size:15px;margin-top:4px" onclick="doLogin()">Iniciar sesión</button>
-        <div class="onb-link">¿No tenés cuenta? <button onclick="goScreen('screen-registro')">Registrate</button></div>
+        <button class="btn-primary" style="padding:14px;font-size:15px;margin-top:4px" onclick="doLogin()">Entrar</button>
         <div class="onb-link"><button onclick="void(0)">Olvidé mi contraseña</button></div>
+        <div class="onb-link">¿No tenés cuenta? <button onclick="goScreen('screen-registro')">Registrate</button></div>
       </div>
     </div>
   </div>
@@ -1100,17 +1207,37 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <!-- ONBOARDING: REGISTRO -->
   <div id="screen-registro" class="screen">
     <div class="onboarding-screen">
-      <div class="onb-hero" style="flex:0;padding:48px 32px 32px">
-        <div class="onb-hero-title" style="font-size:24px">Creá tu cuenta</div>
-        <div class="onb-hero-sub">Empezá tu camino hacia tu propiedad</div>
+      <div class="onb-hero" style="padding:max(52px,env(safe-area-inset-top)) 28px 28px">
+        <button class="onb-back" onclick="goScreen('screen-welcome')"><i class="ti ti-arrow-left" style="font-size:16px"></i></button>
+        <div style="width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <i class="ti ti-user-plus" style="font-size:24px;color:var(--surface-2)"></i>
+        </div>
+        <div class="onb-hero-title" style="font-size:22px">Creá tu cuenta</div>
+        <div class="onb-hero-sub" style="font-size:13px">Empezá tu camino hacia tu propiedad</div>
       </div>
       <div class="onb-body">
+        <div class="onb-social">
+          <button class="onb-social-btn" onclick="doRegistro()">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Google
+          </button>
+          <button class="onb-social-btn" onclick="doRegistro()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.14-2.19 1.3-2.17 3.87.03 3.06 2.65 4.07 2.68 4.08-.03.07-.42 1.44-1.38 2.53M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            Apple
+          </button>
+          <button class="onb-social-btn" onclick="doRegistro()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            Facebook
+          </button>
+        </div>
+        <div class="onb-divider"><span>o con tu correo</span></div>
         <div class="onb-field"><label>Nombre completo</label><input type="text" placeholder="Ej. Natalia García" id="reg-nombre"></div>
         <div class="onb-field"><label>Correo electrónico</label><input type="email" placeholder="tu@email.com" id="reg-email"></div>
         <div class="onb-field"><label>Teléfono</label><input type="tel" placeholder="+52 55 0000 0000" id="reg-tel"></div>
         <div class="onb-field"><label>Contraseña</label><input type="password" placeholder="Mínimo 8 caracteres" id="reg-pass"></div>
         <button class="btn-primary" style="padding:14px;font-size:15px;margin-top:4px" onclick="doRegistro()">Crear cuenta</button>
         <div class="onb-link">¿Ya tenés cuenta? <button onclick="goScreen('screen-login')">Iniciá sesión</button></div>
+        <div class="onb-link" style="font-size:11px">Al crear tu cuenta aceptás los <button onclick="void(0)">Términos y condiciones</button></div>
       </div>
     </div>
   </div>
