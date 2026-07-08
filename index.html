@@ -420,6 +420,18 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .acct-prop-row-chevron{font-size:16px;color:var(--text-muted);flex-shrink:0}
 
 @media(min-width:900px){
+  /* ── Mega-menu propiedades ── */
+  .dt-mega-menu{
+    display:none;position:fixed;top:64px;left:0;right:0;
+    background:var(--surface-2);border-bottom:0.5px solid var(--border);
+    box-shadow:0 8px 32px rgba(0,0,0,.3);
+    z-index:102;padding:28px 40px;
+    flex-direction:row;gap:0;
+  }
+  .dt-mega-menu.open{display:flex !important}
+  #mega-backdrop{display:none;position:fixed;inset:0;top:0;background:rgba(0,0,0,.45);z-index:101;backdrop-filter:blur(1px)}
+  #mega-backdrop.open{display:block !important}
+
   /* ── Shell ── */
   html,body{height:auto}
   #app{max-width:none;padding-top:64px}
@@ -451,16 +463,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   #mega-backdrop{display:none;position:fixed;inset:0;top:0;background:rgba(0,0,0,.45);z-index:101;backdrop-filter:blur(1px)}
   #mega-backdrop.open{display:block}
 
-  /* ── mega-menu propiedades ── */
+  /* ── mega-menu propiedades — solo desktop ── */
   .dt-nav-mega-wrap{position:relative}
-  .dt-mega-menu{
-    display:none;position:fixed;top:64px;left:0;right:0;
-    background:var(--surface-2);border-bottom:0.5px solid var(--border);
-    box-shadow:0 8px 32px rgba(0,0,0,.3);
-    z-index:102;padding:28px 40px;
-    display:none;flex-direction:row;gap:0;
-  }
-  .dt-mega-menu.open{display:flex}
+  .dt-mega-menu{display:none !important}
+  #mega-backdrop{display:none !important}
   .dt-mega-close{position:absolute;top:16px;right:20px;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:20px;line-height:1;padding:4px;border-radius:6px;display:flex;align-items:center;justify-content:center}
   .dt-mega-close:hover{background:var(--surface-1);color:var(--text-primary)}
   .dt-mega-col{padding:0 40px 0 0}
