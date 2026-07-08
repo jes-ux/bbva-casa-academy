@@ -1743,41 +1743,34 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 <div class="bottom-sheet" id="sheet-props-nav" style="max-height:92dvh">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
-    <span class="sheet-title">Propiedades</span>
+    <span class="sheet-title">Explorar propiedades</span>
     <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
   </div>
-  <div class="sheet-body" style="padding:20px">
-    <!-- Categoría -->
-    <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Categoría</div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">
-      <button class="sheet-chip" onclick="togglePropSheetChip(this,'cat','Residencial')">Residencial</button>
-      <button class="sheet-chip" onclick="togglePropSheetChip(this,'cat','Comercial')">Comercial</button>
-      <button class="sheet-chip" onclick="togglePropSheetChip(this,'cat','Industrial')">Industrial</button>
+  <div class="sheet-body" style="padding:0">
+    <!-- Filtros rápidos -->
+    <div style="padding:16px 20px 0">
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Tipo de propiedad</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+        <button class="sheet-chip" onclick="togglePropSheetChip(this,'tipo','Casa')">Casas</button>
+        <button class="sheet-chip" onclick="togglePropSheetChip(this,'tipo','Departamento')">Departamentos</button>
+        <button class="sheet-chip" onclick="togglePropSheetChip(this,'tipo','Local comercial')">Locales</button>
+        <button class="sheet-chip" onclick="togglePropSheetChip(this,'tipo','Oficina')">Oficinas</button>
+        <button class="sheet-chip" onclick="togglePropSheetChip(this,'tipo','Terreno')">Terrenos</button>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Precio</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px">
+        <button class="sheet-chip" onclick="togglePropSheetChip(this,'precio','0-1m');setChipPrecio(0,1000000)">Hasta $1M</button>
+        <button class="sheet-chip" onclick="togglePropSheetChip(this,'precio','1m-3m');setChipPrecio(1000000,3000000)">$1M – $3M</button>
+        <button class="sheet-chip" onclick="togglePropSheetChip(this,'precio','3m-5m');setChipPrecio(3000000,5000000)">$3M – $5M</button>
+        <button class="sheet-chip" onclick="togglePropSheetChip(this,'precio','5m+');setChipPrecio(5000000,0)">Más de $5M</button>
+      </div>
     </div>
-    <!-- Tipo -->
-    <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Tipo de propiedad</div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">
-      <button class="sheet-chip" onclick="togglePropSheetChip(this,'tipo','Casa')">Casas</button>
-      <button class="sheet-chip" onclick="togglePropSheetChip(this,'tipo','Departamento')">Departamentos</button>
-      <button class="sheet-chip" onclick="togglePropSheetChip(this,'tipo','Local comercial')">Locales</button>
-      <button class="sheet-chip" onclick="togglePropSheetChip(this,'tipo','Oficina')">Oficinas</button>
-      <button class="sheet-chip" onclick="togglePropSheetChip(this,'tipo','Terreno')">Terrenos</button>
-    </div>
-    <!-- Precio -->
-    <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Precio</div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px">
-      <button class="sheet-chip" onclick="togglePropSheetChip(this,'precio','0-1m');setChipPrecio(0,1000000)">Hasta $1M</button>
-      <button class="sheet-chip" onclick="togglePropSheetChip(this,'precio','1m-3m');setChipPrecio(1000000,3000000)">$1M – $3M</button>
-      <button class="sheet-chip" onclick="togglePropSheetChip(this,'precio','3m-5m');setChipPrecio(3000000,5000000)">$3M – $5M</button>
-      <button class="sheet-chip" onclick="togglePropSheetChip(this,'precio','5m+');setChipPrecio(5000000,0)">Más de $5M</button>
-    </div>
-    <!-- Localidades -->
-    <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Opciones más buscadas</div>
-    <div id="prop-sheet-locs" style="margin-top:12px"></div>
+    <!-- Zonas como lista -->
+    <div id="prop-sheet-locs" style="margin-top:16px"></div>
   </div>
-  <div class="sheet-footer">
-    <button class="btn-secondary" onclick="resetPropSheet()">Limpiar</button>
-    <button class="btn-primary" style="width:auto;padding:13px 28px" onclick="applyPropSheet()">Ver propiedades</button>
+  <div class="sheet-footer" style="flex-direction:row;gap:10px">
+    <button class="btn-outline" style="flex:1;padding:13px" onclick="resetPropSheet()">Limpiar</button>
+    <button class="btn-primary" style="flex:2;padding:13px" onclick="applyPropSheet()">Ver todas</button>
   </div>
 </div>
 
@@ -2202,14 +2195,19 @@ function renderPropSheetLocs(){
   const data = MEGA_LOCATIONS[ctx] || MEGA_LOCATIONS.default;
   const el = document.getElementById('prop-sheet-locs');
   if(!el) return;
-  el.innerHTML = data.cols.map(col=>`
-    <div style="margin-bottom:16px">
-      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">${col.label}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px">
-        ${col.items.map(z=>`<button onclick="setSearchZone('${z}');applyPropSheet()" style="font-size:13px;color:var(--text-secondary);background:none;border:none;padding:4px 0;font-family:var(--font-sans);cursor:pointer;text-align:left">${z}</button>`).join('')}
-        <button onclick="setSearchZone('');applyPropSheet()" style="font-size:13px;color:var(--text-muted);background:none;border:none;padding:4px 0;font-family:var(--font-sans);cursor:pointer">Todo →</button>
-      </div>
-    </div>`).join('');
+  const allItems = data.cols.flatMap(col => col.items.map(z => ({ label: col.label, zone: z })));
+  el.innerHTML = `
+    <div style="border-top:0.5px solid var(--border)">
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;padding:12px 20px 8px">Zonas populares</div>
+      ${allItems.map(({label, zone}) => `
+        <button onclick="setSearchZone('${zone}');applyPropSheet()" style="display:flex;align-items:center;width:100%;padding:13px 20px;border:none;background:none;font-family:var(--font-sans);cursor:pointer;border-bottom:0.5px solid var(--border);-webkit-tap-highlight-color:transparent;gap:12px">
+          <div style="flex:1;text-align:left">
+            <div style="font-size:14px;color:var(--text-primary)">${zone}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:1px">${label}</div>
+          </div>
+          <i class="ti ti-chevron-right" style="font-size:14px;color:var(--text-muted);flex-shrink:0"></i>
+        </button>`).join('')}
+    </div>`;
 }
 
 function togglePropSheetChip(btn, group, val){
