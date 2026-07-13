@@ -1149,7 +1149,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
       <!-- Paso 2: resto del formulario -->
       <div class="onb-content" id="reg-paso2" style="display:none">
-        <button class="onb-back" style="margin-bottom:20px" onclick="regVolver()"><i class="ti ti-arrow-left" style="font-size:16px"></i> Volver</button>
         <div class="onb-title" style="font-size:20px;margin-bottom:20px" id="reg-p2-email-label"></div>
         <div class="onb-field">
           <label>Nombre completo</label>
@@ -1169,6 +1168,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <span id="reg-pass-error" style="display:none;font-size:12px;color:#c0392b;margin-top:4px">Las contraseñas no coinciden.</span>
         </div>
         <button class="onb-btn" id="reg-btn" style="margin-top:4px" disabled onclick="doRegistro()">Crear cuenta</button>
+        <div class="onb-link-row" style="margin-top:12px"><button onclick="regVolver()">Usar otro correo electrónico</button></div>
       </div>
     </div>
   </div>
