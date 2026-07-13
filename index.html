@@ -1148,27 +1148,29 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
 
       <!-- Paso 2: resto del formulario -->
-      <div class="onb-content" id="reg-paso2" style="display:none">
+      <div class="onb-content" id="reg-paso2" style="display:none;background:var(--surface-1)">
         <div class="onb-title" id="reg-p2-email-label"></div>
         <div class="onb-sub" style="margin-bottom:24px">Completa tus datos para terminar el registro.</div>
-        <div class="onb-field">
-          <label>Nombre completo</label>
-          <input type="text" placeholder="Ej. Natalia García" id="reg-nombre" autocomplete="name" oninput="regP2Check()">
+        <div style="background:var(--surface-2);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:0;box-shadow:0 1px 4px rgba(0,0,0,.07)">
+          <div class="onb-field">
+            <label>Nombre completo</label>
+            <input type="text" placeholder="Ej. Natalia García" id="reg-nombre" autocomplete="name" oninput="regP2Check()">
+          </div>
+          <div class="onb-field">
+            <label>Teléfono</label>
+            <input type="tel" placeholder="+52 55 0000 0000" id="reg-tel" autocomplete="tel" oninput="regP2Check()">
+          </div>
+          <div class="onb-field">
+            <label>Contraseña</label>
+            <input type="password" placeholder="Mínimo 8 caracteres" id="reg-pass" autocomplete="new-password" oninput="regP2Check()">
+          </div>
+          <div class="onb-field" style="margin-bottom:0">
+            <label>Confirma tu contraseña</label>
+            <input type="password" placeholder="Repite tu contraseña" id="reg-pass2" autocomplete="new-password" oninput="regP2Check()">
+            <span id="reg-pass-error" style="display:none;font-size:12px;color:#c0392b;margin-top:4px">Las contraseñas no coinciden.</span>
+          </div>
         </div>
-        <div class="onb-field">
-          <label>Teléfono</label>
-          <input type="tel" placeholder="+52 55 0000 0000" id="reg-tel" autocomplete="tel" oninput="regP2Check()">
-        </div>
-        <div class="onb-field">
-          <label>Contraseña</label>
-          <input type="password" placeholder="Mínimo 8 caracteres" id="reg-pass" autocomplete="new-password" oninput="regP2Check()">
-        </div>
-        <div class="onb-field">
-          <label>Confirma tu contraseña</label>
-          <input type="password" placeholder="Repite tu contraseña" id="reg-pass2" autocomplete="new-password" oninput="regP2Check()">
-          <span id="reg-pass-error" style="display:none;font-size:12px;color:#c0392b;margin-top:4px">Las contraseñas no coinciden.</span>
-        </div>
-        <button class="onb-btn" id="reg-btn" style="margin-top:4px" disabled onclick="doRegistro()">Crear cuenta</button>
+        <button class="onb-btn" id="reg-btn" style="margin-top:20px" disabled onclick="doRegistro()">Crear cuenta</button>
         <div class="onb-link-row" style="margin-top:12px"><button onclick="regVolver()">Usar otro correo electrónico</button></div>
       </div>
     </div>
