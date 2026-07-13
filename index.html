@@ -470,14 +470,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   html,body{height:auto}
   #app{max-width:none;padding-top:64px}
 
-  /* ── Onboarding: full-width, sin header ── */
-  .onboarding-screen{
-    position:fixed;inset:0;z-index:600;
-    background:var(--surface-1);
-    overflow-y:auto;
-  }
-  .onb-topbar{padding:20px 40px 0;max-width:none}
-  .onb-content{max-width:440px;padding:32px 0 48px}
+
 
   /* ── Header (fixed full-width — DOM order is mid-page so sticky won't work) ── */
   .app-header{
@@ -687,6 +680,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   /* hide mobile title header inside account screens */
   .dt-acct-wrap ~ .dt-mobile-title,
   .dt-mobile-title.mobile-only{display:none!important}
+
+  /* ── Onboarding screens: cubren todo el viewport en desktop ── */
+  .onb-screen.active{
+    position:fixed;inset:0;z-index:600;
+    height:100dvh;padding-top:0;overflow-y:auto;
+  }
+  .onb-screen .onboarding-screen{min-height:100%;overflow:visible}
+  .onb-screen .onb-topbar{padding:20px 40px 0;max-width:none;width:100%;box-sizing:border-box}
+  .onb-screen .onb-content{max-width:440px;margin:0 auto;padding:32px 24px 48px}
 
   /* ── FAVORITOS / OPORTUNIDADES — overrides desktop ── */
   .acct-prop-list{padding:12px;display:flex;flex-direction:column;gap:8px}
@@ -1111,7 +1113,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   </div>
 
   <!-- ONBOARDING: LOGIN -->
-  <div id="screen-login" class="screen">
+  <div id="screen-login" class="screen onb-screen">
     <div class="onboarding-screen">
       <div class="onb-topbar">
         <div class="onb-logo"><i class="ti ti-building-bank"></i> BBVA Inmobiliaria</div>
@@ -1135,7 +1137,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   </div>
 
   <!-- ONBOARDING: REGISTRO -->
-  <div id="screen-registro" class="screen">
+  <div id="screen-registro" class="screen onb-screen">
     <div class="onboarding-screen">
       <div class="onb-topbar">
         <div class="onb-logo"><i class="ti ti-building-bank"></i> BBVA Inmobiliaria</div>
