@@ -1102,7 +1102,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   </div>
 
   <!-- ONBOARDING: LOGIN -->
-  <div id="screen-login" class="screen">
+  <div id="screen-login" class="screen active">
     <div class="onboarding-screen">
       <div class="onb-topbar">
         <div class="onb-logo"><i class="ti ti-building-bank"></i> BBVA Inmobiliaria</div>
@@ -1181,7 +1181,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <div id="toast"></div>
 
   <!-- PASO 0 -->
-  <div id="screen-0" class="screen active">
+  <div id="screen-0" class="screen">
     <div class="home-hero">
       <h1 class="home-hero-title">La <em>mejor opción</em> para acceder a tu próxima <em>propiedad</em></h1>
       <div class="home-tabs">
@@ -2420,7 +2420,7 @@ function initHeaderScroll(screen) {
 }
 
 // pantallas que nunca muestran el botón back (raíces de navegación)
-const ROOT_SCREENS = new Set(['screen-0','screen-academia','screen-welcome','screen-login','screen-registro']);
+const ROOT_SCREENS = new Set(['screen-0','screen-academia','screen-login','screen-registro']);
 
 let navHistory = [];
 
@@ -2467,7 +2467,7 @@ function enterApp() {
 }
 function doLogout() {
   closeDrawer();
-  goScreen('screen-welcome');
+  goScreen('screen-login');
 }
 
 // ── ACADEMY_SECTIONS definition ──
@@ -2778,7 +2778,7 @@ function goScreen(id, isBack = false) {
   s.classList.add('active');
   lastScrollY = 0;
   s.scrollTop = 0;
-  const NOHEADER = new Set(['screen-welcome','screen-login','screen-registro']);
+  const NOHEADER = new Set(['screen-login','screen-registro']);
   if (NOHEADER.has(id)) {
     document.getElementById('app-header').style.display = 'none';
     document.getElementById('bottom-nav').style.display = 'none';
