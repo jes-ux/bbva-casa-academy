@@ -403,7 +403,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .drawer-sep{height:0.5px;background:var(--border);margin:4px 0}
 
 /* ── Onboarding screens ── */
-.onboarding-screen{display:flex;flex-direction:column;min-height:100dvh;background:var(--surface-2);overflow-y:auto}
+.onboarding-screen{display:flex;flex-direction:column;min-height:100dvh;background:var(--surface-1);overflow-y:auto}
 .onb-topbar{padding:max(24px,env(safe-area-inset-top)) 24px 0;display:flex;align-items:center;min-height:72px}
 .onb-logo{font-size:20px;font-weight:700;color:var(--text-primary);letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
 .onb-logo i{font-size:22px;color:var(--text-primary)}
@@ -469,6 +469,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   /* ── Shell ── */
   html,body{height:auto}
   #app{max-width:none;padding-top:64px}
+
+  /* ── Onboarding: full-width, sin header ── */
+  .onboarding-screen{
+    position:fixed;inset:0;z-index:600;
+    background:var(--surface-1);
+    overflow-y:auto;
+  }
+  .onb-topbar{padding:20px 40px 0;max-width:none}
+  .onb-content{max-width:440px;padding:32px 0 48px}
 
   /* ── Header (fixed full-width — DOM order is mid-page so sticky won't work) ── */
   .app-header{
@@ -1107,7 +1116,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="onb-topbar">
         <div class="onb-logo"><i class="ti ti-building-bank"></i> BBVA Inmobiliaria</div>
       </div>
-      <div class="onb-content" style="background:var(--surface-1)">
+      <div class="onb-content">
         <div class="onb-title">Iniciar sesión</div>
         <div style="background:var(--surface-2);border-radius:14px;padding:20px;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(0,0,0,.07)">
           <div class="onb-field"><label>Email</label><input type="email" placeholder="natalia@email.com" id="login-email"></div>
@@ -1149,7 +1158,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
 
       <!-- Paso 2: resto del formulario -->
-      <div class="onb-content" id="reg-paso2" style="display:none;background:var(--surface-1)">
+      <div class="onb-content" id="reg-paso2" style="display:none">
         <div class="onb-title" id="reg-p2-email-label"></div>
         <div class="onb-sub" style="margin-bottom:24px">Completa tus datos para terminar el registro.</div>
         <div style="background:var(--surface-2);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:0;box-shadow:0 1px 4px rgba(0,0,0,.07)">
