@@ -1142,9 +1142,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <div class="onb-field">
           <label>Correo electrónico</label>
           <input type="email" placeholder="nombre@correo.com" id="reg-email" autocomplete="email" oninput="regP1Check()">
+          <span id="reg-email-exists" style="display:none;font-size:13px;color:var(--text-muted);margin-top:6px">Ya tienes una cuenta con este correo. <button onclick="regIrLogin()" style="background:none;border:none;font-size:13px;font-weight:600;color:var(--text-primary);cursor:pointer;padding:0;font-family:var(--font-sans);text-decoration:underline">Inicia sesión.</button></span>
         </div>
         <button class="onb-btn" id="reg-p1-btn" style="margin-top:4px" disabled onclick="regIrPaso2()">Continuar</button>
-        <div class="onb-link-row" style="margin-top:12px">¿Ya tienes cuenta? <button onclick="goScreen('screen-login')">Iniciar sesión</button></div>
       </div>
 
       <!-- Paso 2: resto del formulario -->
@@ -2484,11 +2484,25 @@ function doRegistro() {
   enterApp();
 }
 
+// Emails que ya existen en el prototipo (simulación)
+const EMAILS_EXISTENTES = new Set(['natalia@email.com', 'demo@bbva.com', 'test@test.com']);
+
 function regP1Check() {
   const email = document.getElementById('reg-email')?.value.trim();
   const valid = email && email.includes('@') && email.includes('.');
+  const existe = valid && EMAILS_EXISTENTES.has(email.toLowerCase());
+  const existsEl = document.getElementById('reg-email-exists');
   const btn = document.getElementById('reg-p1-btn');
-  if (btn) btn.disabled = !valid;
+  if (existsEl) existsEl.style.display = existe ? 'block' : 'none';
+  if (btn) btn.disabled = !valid || existe;
+}
+
+function regIrLogin() {
+  const email = document.getElementById('reg-email')?.value.trim();
+  const loginInput = document.getElementById('login-email');
+  if (loginInput) loginInput.value = email;
+  goScreen('screen-login');
+  setTimeout(() => document.getElementById('login-pass')?.focus(), 100);
 }
 
 function regIrPaso2() {
