@@ -1924,6 +1924,19 @@ const CARD_PROFILES = [
   { h:145, amenities:['Balcón','Edificio 2023','Ciclovia enfrente'], shortDesc:'Colonia segura y bien conectada. A 5 min de Insurgentes.' },
 ];
 
+const PROP_IMGS = [
+  'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&q=80',
+  'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80',
+  'https://images.unsplash.com/photo-1600607687939-ce8a6d349a58?w=600&q=80',
+  'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80',
+  'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80',
+  'https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=600&q=80',
+  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+  'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=600&q=80',
+  'https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?w=600&q=80',
+  'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=80',
+];
+
 function getSimBadge(propId, price) {
   if (!SIM_HISTORY.length) return null;
   const isRef = SIM_HISTORY.some(s => s.refProp === propId);
@@ -1942,7 +1955,7 @@ function propCardHTML(p) {
   const simBadgeHTML = simBadge
     ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:${simBadge.color};background:${simBadge.bg};border-radius:6px;padding:3px 7px;margin-bottom:6px;align-self:flex-start;width:fit-content;${simBadge.border?'border:1px solid currentColor;':''}"><i class="ti ${simBadge.icon}" style="font-size:10px"></i>${simBadge.label}</span>`
     : '';
-  const imgSrc = `img/prop-${((p.id-1)%10)+1}.jpg`;
+  const imgSrc = PROP_IMGS[(p.id - 1) % PROP_IMGS.length];
   return `<div class="prop-card" id="pcard-${p.id}" style="cursor:pointer" onclick="openPropDetail(${p.id})">
     <div class="prop-img" style="height:${prof.h}px;background:var(--surface-1)">
       <img src="${imgSrc}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
@@ -3182,8 +3195,7 @@ function openPropDetail(id){
   // hero image
   const heroImg = document.getElementById('detail-hero-img');
   const heroIcon = document.getElementById('detail-hero-icon');
-  const imgSrc = `img/prop-${((p.id-1)%10)+1}.jpg`;
-  heroImg.src = imgSrc;
+  heroImg.src = PROP_IMGS[(p.id - 1) % PROP_IMGS.length];
   heroImg.style.display = 'block';
   if(heroIcon) heroIcon.style.display = 'none';
 
