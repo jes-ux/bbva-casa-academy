@@ -1290,7 +1290,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="edu-section">
         <div>
           <h2>Antes de elegir, entiende qué estás firmando.</h2>
-          <p class="bajada">Un crédito hipotecario es el compromiso financiero más grande que vas a asumir. Queremos que lo entiendas de principio a fin, no que confíes a ciegas.</p>
+          <p class="bajada">Un crédito hipotecario es el compromiso financiero más grande que vas a asumir. Queremos que lo entiendas de principio a fin, no que confíes a ciegas</p>
         </div>
 
         <!-- CAT -->
@@ -1371,7 +1371,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
           </div>
           <div id="quiz-done" style="display:none;text-align:center;padding:10px 0;font-size:14px;color:var(--text-secondary)">
-            Entendiste los conceptos clave. Ya puedes simular tu capacidad.
+            Entendiste los conceptos clave. Ya puedes simular tu capacidad
           </div>
         </div>
       </div>
@@ -1408,7 +1408,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <div class="sim-section">
           <div>
             <h2>¿Cuánto puedes pagar sin que duela?</h2>
-            <p class="bajada">Una regla general — tu cuota no debería superar el 30% de tu ingreso mensual. Acá calculamos si eso aplica para vos.</p>
+            <p class="bajada">Una regla general — tu cuota no debería superar el 30% de tu ingreso mensual. Acá calculamos si eso aplica para vos</p>
           </div>
           <div class="sim-form">
             <div class="sim-field">
@@ -1506,7 +1506,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="props-section">
         <div>
           <h2>Propiedades en tu rango.</h2>
-          <p class="bajada">Resultados filtrados según tu simulación. Los precios son referenciales.</p>
+          <p class="bajada">Resultados filtrados según tu simulación. Los precios son referenciales</p>
         </div>
         <div class="props-profile" id="profile-pills">
           <span class="profile-pill" id="pill-monto">Hasta $3,000,000</span>
@@ -2672,7 +2672,7 @@ function renderMensajes() {
   if (!el) return;
   if (activeChatId) { renderChat(activeChatId); return; }
   if (!MENSAJES.length) {
-    el.innerHTML = `<div class="empty-state"><i class="ti ti-message-off"></i><p>Aún no enviaste ningún mensaje.<br>Contactá a un asesor desde la ficha de cualquier propiedad.</p></div>`;
+    el.innerHTML = `<div class="empty-state"><i class="ti ti-message-off"></i><p>Aún no enviaste ningún mensaje<br>Contacta a un asesor desde la ficha de cualquier propiedad</p></div>`;
     return;
   }
   const rows = MENSAJES.map(m => {
@@ -2991,7 +2991,7 @@ const ACH_DATA = {
   1: {
     icon: '🎓',
     title: 'Módulo 1 completado',
-    body: 'Ya entiendes qué es el CAT, cómo funcionan las tasas y para qué sirve el enganche. Eso te pone por delante del 70% de los compradores de primera vez.',
+    body: 'Ya entiendes qué es el CAT, cómo funcionan las tasas y para qué sirve el enganche. Eso te pone por delante del 70% de los compradores de primera vez',
     note: 'Elegiste comparar por CAT. Lo vamos a usar cuando veamos tus opciones.',
     pct: 33, counter: '1 de 3 módulos',
     pills: ['done','pending','pending'],
@@ -3000,7 +3000,7 @@ const ACH_DATA = {
   2: {
     icon: '📊',
     title: 'Módulo 2 completado',
-    body: 'Ya sabes cuánto puedes pagar sin que duela. Tu simulación está lista — ahora veamos qué propiedades entran en tu rango.',
+    body: 'Ya sabes cuánto puedes pagar sin que duela. Tu simulación está lista — ahora veamos qué propiedades entran en tu rango',
     note: 'Tu cuota estimada y el monto máximo van a aparecer en cada propiedad.',
     pct: 66, counter: '2 de 3 módulos',
     pills: ['done','done','pending'],
@@ -3009,7 +3009,7 @@ const ACH_DATA = {
   3: {
     icon: '🏠',
     title: '¡Todo listo!',
-    body: 'Recorriste los tres módulos. Ya tienes los conceptos, la simulación y un panorama real de propiedades en tu rango.',
+    body: 'Recorriste los tres módulos. Ya tienes los conceptos, la simulación y un panorama real de propiedades en tu rango',
     note: 'Cuando quieras dar el siguiente paso, un asesor BBVA puede acompañarte.',
     pct: 100, counter: '3 de 3 módulos',
     pills: ['done','done','done'],
