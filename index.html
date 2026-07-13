@@ -1098,7 +1098,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
       <div class="onb-content" style="justify-content:center">
         <div class="onb-title">Tu próxima casa empieza acá</div>
-        <div class="onb-sub">Simula tu crédito, explora propiedades y conecta con un asesor.</div>
+        <div class="onb-sub">Simula tu crédito, explora propiedades y conecta con un asesor</div>
         <button class="onb-btn" style="margin-bottom:10px" onclick="goScreen('screen-registro')">Crear cuenta</button>
         <button class="onb-btn onb-btn-outline" onclick="goScreen('screen-login')">Ya tengo cuenta</button>
         <div class="onb-divider" style="margin-top:20px"><span>o continuá con</span></div>
@@ -1165,7 +1165,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <!-- Paso 2: resto del formulario -->
       <div class="onb-content" id="reg-paso2" style="display:none">
         <div class="onb-title" id="reg-p2-email-label"></div>
-        <div class="onb-sub" style="margin-bottom:24px">Completa tus datos para terminar el registro.</div>
+        <div class="onb-sub" style="margin-bottom:24px">Completa tus datos para terminar el registro</div>
         <div style="background:var(--surface-2);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:0;box-shadow:0 1px 4px rgba(0,0,0,.07)">
           <div class="onb-field">
             <label>Nombre completo</label>
@@ -2534,6 +2534,11 @@ function regVolver() {
   document.getElementById('reg-paso2').style.display = 'none';
   document.getElementById('reg-paso1').style.display = 'flex';
   setTimeout(() => document.getElementById('reg-email')?.focus(), 50);
+}
+
+function regShowConfirm() {
+  const el = document.getElementById('reg-confirm-field');
+  if (el) el.style.display = 'flex';
 }
 
 function regP2Check() {
