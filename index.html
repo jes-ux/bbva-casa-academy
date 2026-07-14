@@ -739,7 +739,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <button class="nav-tab" id="nav-props" onclick="openPropSheet()">
       <i class="ti ti-building"></i><span>Propiedades</span>
     </button>
-    <button class="nav-tab" id="nav-sim" onclick="goScreen('screen-login')">
+    <button class="nav-tab" id="nav-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))">
       <i class="ti ti-calculator"></i><span>Simular</span>
     </button>
     <button class="nav-tab" id="nav-menu" onclick="openDrawer()">
@@ -794,10 +794,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="drawer-close" onclick="closeDrawer()"><i class="ti ti-x" style="font-size:18px"></i></button>
     </div>
     <div class="drawer-section">
-      <button class="drawer-item" onclick="goScreen('screen-login')"><i class="ti ti-user"></i> Perfil</button>
-      <button class="drawer-item" onclick="goScreen('screen-login')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="drawer-item" onclick="requireAuth(()=>goScreen('screen-perfil'))"><i class="ti ti-user"></i> Perfil</button>
+      <button class="drawer-item" onclick="requireAuth(()=>{renderFavs();goScreen('screen-favoritos')})"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="drawer-item" onclick="closeDrawer();renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
-      <button class="drawer-item" onclick="goScreen('screen-login')"><i class="ti ti-message"></i> Mensajes</button>
+      <button class="drawer-item" onclick="requireAuth(()=>{renderMensajes();goScreen('screen-mensajes')})"><i class="ti ti-message"></i> Mensajes</button>
       <button class="drawer-item" onclick="closeDrawer();goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="drawer-item" onclick="closeDrawer();goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <button class="drawer-item" onclick="closeDrawer();renderAcademia();goScreen('screen-academia')"><i class="ti ti-school"></i> Casa Academy</button>
@@ -821,16 +821,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="dt-acct-wrap">
     <aside class="dt-acct-sidebar">
       <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
-      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-login')"><i class="ti ti-user"></i> Perfil</button>
-      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="goScreen('screen-login')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="requireAuth(()=>goScreen('screen-perfil'))"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="requireAuth(()=>{renderFavs();goScreen('screen-favoritos')})"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
-      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="goScreen('screen-login')"><i class="ti ti-message"></i> Mensajes</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="requireAuth(()=>{renderMensajes();goScreen('screen-mensajes')})"><i class="ti ti-message"></i> Mensajes</button>
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item" data-screen="screen-academia" onclick="goScreen('screen-login')"><i class="ti ti-school"></i> Casa Academy</button>
-      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="goScreen('screen-login')"><i class="ti ti-sparkles"></i> Oportunidades</button>
-      <button class="dt-acct-item" data-screen="screen-sim" onclick="goScreen('screen-login')"><i class="ti ti-calculator"></i> Simula tu crédito</button>
+      <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Casa Academy</button>
+      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
@@ -871,16 +871,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="dt-acct-wrap">
     <aside class="dt-acct-sidebar">
       <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
-      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-login')"><i class="ti ti-user"></i> Perfil</button>
-      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="goScreen('screen-login')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="requireAuth(()=>goScreen('screen-perfil'))"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="requireAuth(()=>{renderFavs();goScreen('screen-favoritos')})"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
-      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="goScreen('screen-login')"><i class="ti ti-message"></i> Mensajes</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="requireAuth(()=>{renderMensajes();goScreen('screen-mensajes')})"><i class="ti ti-message"></i> Mensajes</button>
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item" data-screen="screen-academia" onclick="goScreen('screen-login')"><i class="ti ti-school"></i> Casa Academy</button>
-      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="goScreen('screen-login')"><i class="ti ti-sparkles"></i> Oportunidades</button>
-      <button class="dt-acct-item" data-screen="screen-sim" onclick="goScreen('screen-login')"><i class="ti ti-calculator"></i> Simula tu crédito</button>
+      <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Casa Academy</button>
+      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
@@ -898,16 +898,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="dt-acct-wrap">
     <aside class="dt-acct-sidebar">
       <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
-      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-login')"><i class="ti ti-user"></i> Perfil</button>
-      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="goScreen('screen-login')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="requireAuth(()=>goScreen('screen-perfil'))"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="requireAuth(()=>{renderFavs();goScreen('screen-favoritos')})"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
-      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="goScreen('screen-login')"><i class="ti ti-message"></i> Mensajes</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="requireAuth(()=>{renderMensajes();goScreen('screen-mensajes')})"><i class="ti ti-message"></i> Mensajes</button>
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item" data-screen="screen-academia" onclick="goScreen('screen-login')"><i class="ti ti-school"></i> Casa Academy</button>
-      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="goScreen('screen-login')"><i class="ti ti-sparkles"></i> Oportunidades</button>
-      <button class="dt-acct-item" data-screen="screen-sim" onclick="goScreen('screen-login')"><i class="ti ti-calculator"></i> Simula tu crédito</button>
+      <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Casa Academy</button>
+      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
@@ -923,16 +923,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="dt-acct-wrap">
     <aside class="dt-acct-sidebar">
       <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
-      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-login')"><i class="ti ti-user"></i> Perfil</button>
-      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="goScreen('screen-login')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="requireAuth(()=>goScreen('screen-perfil'))"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="requireAuth(()=>{renderFavs();goScreen('screen-favoritos')})"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
-      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="goScreen('screen-login')"><i class="ti ti-message"></i> Mensajes</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="requireAuth(()=>{renderMensajes();goScreen('screen-mensajes')})"><i class="ti ti-message"></i> Mensajes</button>
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item" data-screen="screen-academia" onclick="goScreen('screen-login')"><i class="ti ti-school"></i> Casa Academy</button>
-      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="goScreen('screen-login')"><i class="ti ti-sparkles"></i> Oportunidades</button>
-      <button class="dt-acct-item" data-screen="screen-sim" onclick="goScreen('screen-login')"><i class="ti ti-calculator"></i> Simula tu crédito</button>
+      <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Casa Academy</button>
+      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
@@ -943,7 +943,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div class="list-item-body"><div class="list-item-title">Simulación guardada</div><div class="list-item-sub">Tu simulación de $3,200,000 quedó registrada</div></div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div class="list-item-meta">Hoy</div><div class="notif-dot"></div></div>
         </div>
-        <div class="list-item" onclick="goScreen('screen-login')">
+        <div class="list-item" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})">
           <div class="list-item-icon" style="background:var(--bg-warning)"><i class="ti ti-sparkles" style="color:var(--text-warning)"></i></div>
           <div class="list-item-body"><div class="list-item-title">Nueva oportunidad</div><div class="list-item-sub">Una propiedad en Narvarte hace match con tu simulación</div></div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div class="list-item-meta">Hoy</div><div class="notif-dot"></div></div>
@@ -953,12 +953,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div class="list-item-body"><div class="list-item-title">Propiedad actualizada</div><div class="list-item-sub">Ámsterdam 145 en Del Valle bajó de precio</div></div>
           <div class="list-item-meta">Ayer</div>
         </div>
-        <div class="list-item" onclick="goScreen('screen-login')">
+        <div class="list-item" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})">
           <div class="list-item-icon"><i class="ti ti-file-text"></i></div>
           <div class="list-item-body"><div class="list-item-title">Módulo completado</div><div class="list-item-sub">Completaste el módulo de Educación financiera</div></div>
           <div class="list-item-meta">Lun</div>
         </div>
-        <div class="list-item" onclick="goScreen('screen-login')">
+        <div class="list-item" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})">
           <div class="list-item-icon"><i class="ti ti-bell"></i></div>
           <div class="list-item-body"><div class="list-item-title">Bienvenido a Casa Academy</div><div class="list-item-sub">Empieza tu camino hacia tu casa</div></div>
           <div class="list-item-meta">Mar 28</div>
@@ -976,16 +976,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="dt-acct-wrap">
     <aside class="dt-acct-sidebar">
       <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
-      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-login')"><i class="ti ti-user"></i> Perfil</button>
-      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="goScreen('screen-login')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="requireAuth(()=>goScreen('screen-perfil'))"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="requireAuth(()=>{renderFavs();goScreen('screen-favoritos')})"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
-      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="goScreen('screen-login')"><i class="ti ti-message"></i> Mensajes</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="requireAuth(()=>{renderMensajes();goScreen('screen-mensajes')})"><i class="ti ti-message"></i> Mensajes</button>
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item" data-screen="screen-academia" onclick="goScreen('screen-login')"><i class="ti ti-school"></i> Casa Academy</button>
-      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="goScreen('screen-login')"><i class="ti ti-sparkles"></i> Oportunidades</button>
-      <button class="dt-acct-item" data-screen="screen-sim" onclick="goScreen('screen-login')"><i class="ti ti-calculator"></i> Simula tu crédito</button>
+      <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Casa Academy</button>
+      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
@@ -1019,16 +1019,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="dt-acct-wrap">
     <aside class="dt-acct-sidebar">
       <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
-      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-login')"><i class="ti ti-user"></i> Perfil</button>
-      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="goScreen('screen-login')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="requireAuth(()=>goScreen('screen-perfil'))"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="requireAuth(()=>{renderFavs();goScreen('screen-favoritos')})"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
-      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="goScreen('screen-login')"><i class="ti ti-message"></i> Mensajes</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="requireAuth(()=>{renderMensajes();goScreen('screen-mensajes')})"><i class="ti ti-message"></i> Mensajes</button>
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item" data-screen="screen-academia" onclick="goScreen('screen-login')"><i class="ti ti-school"></i> Casa Academy</button>
-      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="goScreen('screen-login')"><i class="ti ti-sparkles"></i> Oportunidades</button>
-      <button class="dt-acct-item" data-screen="screen-sim" onclick="goScreen('screen-login')"><i class="ti ti-calculator"></i> Simula tu crédito</button>
+      <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Casa Academy</button>
+      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
@@ -1046,16 +1046,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="dt-acct-wrap">
     <aside class="dt-acct-sidebar">
       <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
-      <button class="dt-acct-item" data-screen="screen-perfil" onclick="goScreen('screen-login')"><i class="ti ti-user"></i> Perfil</button>
-      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="goScreen('screen-login')"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="requireAuth(()=>goScreen('screen-perfil'))"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="requireAuth(()=>{renderFavs();goScreen('screen-favoritos')})"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
-      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="goScreen('screen-login')"><i class="ti ti-message"></i> Mensajes</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="requireAuth(()=>{renderMensajes();goScreen('screen-mensajes')})"><i class="ti ti-message"></i> Mensajes</button>
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
-      <button class="dt-acct-item" data-screen="screen-academia" onclick="goScreen('screen-login')"><i class="ti ti-school"></i> Casa Academy</button>
-      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="goScreen('screen-login')"><i class="ti ti-sparkles"></i> Oportunidades</button>
-      <button class="dt-acct-item" data-screen="screen-sim" onclick="goScreen('screen-login')"><i class="ti ti-calculator"></i> Simula tu crédito</button>
+      <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Casa Academy</button>
+      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
@@ -1204,8 +1204,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="dt-nav-mega-wrap">
         <button class="dt-nav-btn" id="dtnav-props" onclick="toggleMega()">Propiedades <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
       </div>
-      <button class="dt-nav-btn" id="dtnav-sim" onclick="goScreen('screen-login')">Simula tu Crédito</button>
-      <button class="dt-nav-btn" id="dtnav-opps" onclick="goScreen('screen-login')">Oportunidades</button>
+      <button class="dt-nav-btn" id="dtnav-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))">Simula tu Crédito</button>
+      <button class="dt-nav-btn" id="dtnav-opps" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})">Oportunidades</button>
     </nav>
     <!-- desktop user actions: hidden on mobile -->
     <div class="dt-user">
@@ -1629,9 +1629,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <h1 class="detail-title" id="detail-title"></h1>
           <div class="detail-address" id="detail-address"></div>
           <div class="detail-actions">
-            <button class="detail-action-btn" onclick="goScreen('screen-login')"><i class="ti ti-heart"></i></button>
+            <button class="detail-action-btn" onclick="requireAuth(()=>alert('Guardado en favoritos'))"><i class="ti ti-heart"></i></button>
             <button class="detail-action-btn" onclick="alert('Compartir propiedad')"><i class="ti ti-share"></i></button>
-            <button class="detail-cta-btn" onclick="goScreen('screen-login')"><i class="ti ti-calculator"></i> Simula tu Crédito</button>
+            <button class="detail-cta-btn" onclick="requireAuth(()=>{simRefPropId=currentPropId;goScreen('screen-sim')})"><i class="ti ti-calculator"></i> Simula tu Crédito</button>
             <button class="detail-action-btn" onclick="alert('Agendar visita')"><i class="ti ti-calendar"></i></button>
           </div>
         </div>
@@ -1647,7 +1647,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <button class="detail-action-btn"><i class="ti ti-heart"></i></button>
           </div>
           <div id="detail-sim-banner-m" style="margin-top:12px"></div>
-          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="goScreen('screen-login')">
+          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>openContacto(currentPropId))">
             <i class="ti ti-headset"></i> Contacta al asesor
           </button>
         </div>
@@ -1709,7 +1709,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <button class="detail-action-btn"><i class="ti ti-heart"></i></button>
           </div>
           <div id="detail-sim-banner-dt" style="margin-top:12px"></div>
-          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="goScreen('screen-login')">
+          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>openContacto(currentPropId))">
             <i class="ti ti-headset"></i> Contacta al asesor
           </button>
         </div>
@@ -1996,7 +1996,7 @@ function propCardHTML(p) {
     <div class="prop-img" style="height:${prof.h}px;background:var(--surface-1)">
       <img src="${imgSrc}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
       ${isNew ? '<span class="prop-badge">Nuevo</span>' : ''}
-      <div class="prop-fav" onclick="event.stopPropagation();goScreen('screen-login'),'fav')"><i class="ti ti-heart" style="font-size:13px;color:var(--text-muted)"></i></div>
+      <div class="prop-fav" onclick="event.stopPropagation();requireAuth(()=>alert('Guardado'))"><i class="ti ti-heart" style="font-size:13px;color:var(--text-muted)"></i></div>
     </div>
     <div class="prop-info">
       <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px">${p.zona} · ${p.tipo}</div>
@@ -2493,16 +2493,26 @@ function markStep(key) {
 // ── Onboarding actions ──
 let isLoggedIn = false;
 
+let _pendingAction = null;
+
+function requireAuth(fn) {
+  if (isLoggedIn) { fn(); return; }
+  _pendingAction = fn;
+  goScreen('screen-login');
+}
+
 function doLogin() {
   isLoggedIn = true;
   markStep('registered');
   markStep('profile_done');
-  enterApp();
+  if (_pendingAction) { const fn = _pendingAction; _pendingAction = null; fn(); }
+  else enterApp();
 }
 function doRegistro() {
   isLoggedIn = true;
   markStep('registered');
-  enterApp();
+  if (_pendingAction) { const fn = _pendingAction; _pendingAction = null; fn(); }
+  else enterApp();
 }
 
 // Emails que ya existen en el prototipo (simulación)
@@ -2578,7 +2588,7 @@ const ACADEMY_SECTIONS = [
     { key:'edu_done',   title:'Entiende cómo funciona',       sub:'CAT, tipos de tasa y enganche',             cta:'Empezar módulo',    ctaAction:"goScreen('screen-edu')",                    ctaDone:'Repasar',           ctaDoneAction:"goScreen('screen-edu')" },
   ]},
   { id:'simula', label:'Simula', icon:'ti-calculator', steps:[
-    { key:'sim_done',     title:'Haz tu primera simulación',  sub:'Calcula cuánto puedes pagar',                cta:'Simular ahora',     ctaAction:"goScreen('screen-login')",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
+    { key:'sim_done',     title:'Haz tu primera simulación',  sub:'Calcula cuánto puedes pagar',                cta:'Simular ahora',     ctaAction:"requireAuth(()=>navTo('screen-sim','nav-sim'))",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
     { key:'shared_sim',   title:'Compartí tu simulación',      sub:'Enviásela a alguien de confianza',          cta:'Ir a simulaciones', ctaAction:"renderSims();goScreen('screen-simulaciones')", ctaDone:'Compartida ✓',   ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
     { key:'added_to_sim', title:'Agrega una propiedad a tu simulación', sub:'Vincula lo que te gusta con tu capacidad', cta:'Ver propiedades',  ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
   ]},
