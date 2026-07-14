@@ -2630,10 +2630,12 @@ let currentUser = _existingSession || null;
 let isLoggedIn = !!_existingSession;
 
 let _pendingAction = null;
+let _pendingReturnScreen = null;
 
 function requireAuth(fn) {
   if (isLoggedIn) { fn(); return; }
   _pendingAction = fn;
+  _pendingReturnScreen = document.querySelector('.screen.active')?.id || null;
   goScreen('screen-login');
 }
 
@@ -2668,8 +2670,10 @@ function doLogin() {
   markStep('profile_done');
   updateHeaderAvatar();
   renderPerfil();
-  enterApp();
-  if (_pendingAction) { const fn = _pendingAction; _pendingAction = null; fn(); }
+  if (_pendingAction) {
+    if (_pendingReturnScreen) goScreen(_pendingReturnScreen, true);
+    const fn = _pendingAction; _pendingAction = null; _pendingReturnScreen = null; fn();
+  } else enterApp();
 }
 function doRegistro() {
   const email  = document.getElementById('reg-email')?.value.trim() || '';
@@ -2681,8 +2685,10 @@ function doRegistro() {
   markStep('registered');
   updateHeaderAvatar();
   renderPerfil();
-  enterApp();
-  if (_pendingAction) { const fn = _pendingAction; _pendingAction = null; fn(); }
+  if (_pendingAction) {
+    if (_pendingReturnScreen) goScreen(_pendingReturnScreen, true);
+    const fn = _pendingAction; _pendingAction = null; _pendingReturnScreen = null; fn();
+  } else enterApp();
 }
 
 // Emails que ya existen en el prototipo (simulación)
