@@ -3564,7 +3564,7 @@ function openPropDetail(id){
             <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Tu simulación cubre hasta ${fmt(inRangeSim.propMax)} · Cuota est. ${fmt(inRangeSim.cuota)}/mes</div>
           </div>
         </div>
-        <button onclick="linkPropToSim(${id}, ${SIM_HISTORY.indexOf(inRangeSim)})" style="width:100%;font-size:12px;font-weight:600;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:8px;padding:9px;cursor:pointer;font-family:var(--font-sans);display:flex;align-items:center;justify-content:center;gap:6px" id="link-sim-btn-${id}"><i class="ti ti-calculator" style="font-size:13px"></i> Agregar a mi simulación</button>
+        <button onclick="requireAuth(()=>linkPropToSim(${id}, ${SIM_HISTORY.indexOf(inRangeSim)}))" style="width:100%;font-size:12px;font-weight:600;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:8px;padding:9px;cursor:pointer;font-family:var(--font-sans);display:flex;align-items:center;justify-content:center;gap:6px" id="link-sim-btn-${id}"><i class="ti ti-calculator" style="font-size:13px"></i> Agregar a mi simulación</button>
       </div>`;
   }
   ['detail-sim-banner-m','detail-sim-banner-dt'].forEach(elId => {
