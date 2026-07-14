@@ -752,6 +752,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <div id="mega-backdrop" onclick="closeMega()"></div>
   <!-- Desktop chat side sheet -->
   <div class="dt-chat-sheet" id="dt-chat-sheet"><!-- renderDtChat() escribe aquí --></div>
+  <div class="dt-chat-sheet" id="dt-contact-sheet" style="display:none;flex-direction:column"></div>
   <div class="dt-mega-menu" id="dt-mega-menu">
     <button class="dt-mega-close" onclick="closeMega()" aria-label="Cerrar"><i class="ti ti-x"></i></button>
     <div class="dt-mega-col dt-mega-types">
@@ -2835,7 +2836,89 @@ function openContacto(propId) {
     : 'Hola, realicé una simulación y quisiera que me den más información o se pongan en contacto conmigo.';
   document.getElementById('contacto-mensaje').value = msgDefault;
   document.getElementById('contacto-prop-ref').dataset.propId = propId || '';
-  openSheet('sheet-contacto');
+  // Prefill con datos del usuario si está logueado
+  const nEl = document.getElementById('contacto-nombre');
+  const tEl = document.getElementById('contacto-tel');
+  if (nEl) nEl.value = currentUser?.nombre || '';
+  if (tEl) tEl.value = currentUser?.tel || '';
+
+  if (window.innerWidth >= 900) {
+    openDtContactSheet();
+  } else {
+    openSheet('sheet-contacto');
+  }
+}
+
+function openDtContactSheet() {
+  const sheet = document.getElementById('dt-contact-sheet');
+  if (!sheet) return;
+  // Clonar el contenido del sheet-contacto al side sheet
+  const propId = parseInt(document.getElementById('contacto-prop-ref').dataset.propId) || null;
+  const p = propId ? PROPS.find(x=>x.id===propId) : null;
+  const propHTML = p ? `
+    <div style="background:var(--surface-1);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:18px">
+      <div style="width:52px;height:42px;border-radius:6px;background:var(--surface-0);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">${{Casa:'🏡',Departamento:'🏢',Terreno:'🌿','Local comercial':'🏪',Oficina:'🏢'}[p.tipo]||'🏠'}</div>
+      <div style="min-width:0;flex:1">
+        <div style="font-size:13px;font-weight:700;color:var(--text-primary)">$${p.price.toLocaleString('es-MX')}</div>
+        <div style="font-size:11px;color:var(--text-muted)">${p.tipo} · ${p.zona}</div>
+      </div>
+    </div>` : '';
+  const msgVal = document.getElementById('contacto-mensaje').value;
+  const motivoVal = document.getElementById('contacto-motivo').value;
+  const nombreVal = document.getElementById('contacto-nombre').value;
+  const telVal = document.getElementById('contacto-tel').value;
+  sheet.innerHTML = `
+    <div class="msg-chat-header">
+      <button class="msg-chat-back" onclick="closeDtContactSheet()"><i class="ti ti-x" style="font-size:18px"></i></button>
+      <div style="flex:1"><div class="msg-chat-name">Contactar asesor</div></div>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px">
+      ${propHTML}
+      <div class="contact-field">
+        <label>Motivo de contacto</label>
+        <select id="dt-contacto-motivo">
+          <option value="info" ${motivoVal==='info'?'selected':''}>Quiero más información</option>
+          <option value="visita" ${motivoVal==='visita'?'selected':''}>Agendar una visita</option>
+          <option value="credito" ${motivoVal==='credito'?'selected':''}>Consulta sobre crédito hipotecario</option>
+          <option value="otro" ${motivoVal==='otro'?'selected':''}>Otro</option>
+        </select>
+      </div>
+      <div class="contact-field">
+        <label>Mensaje <span style="color:var(--text-muted);font-weight:400">(Opcional)</span></label>
+        <textarea id="dt-contacto-mensaje" placeholder="Escribe tu mensaje...">${msgVal}</textarea>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div class="contact-field" style="flex:1;margin-bottom:0"><label>Nombre</label><input type="text" id="dt-contacto-nombre" value="${nombreVal}"></div>
+        <div class="contact-field" style="flex:1;margin-bottom:0"><label>Teléfono</label><input type="tel" id="dt-contacto-tel" value="${telVal}"></div>
+      </div>
+    </div>
+    <div style="padding:16px 24px;border-top:0.5px solid var(--border)">
+      <button class="btn-primary" onclick="enviarDtContacto(${propId||'null'})"><i class="ti ti-send"></i> Enviar mensaje</button>
+    </div>`;
+  sheet.style.display = 'flex';
+  requestAnimationFrame(() => sheet.classList.add('open'));
+}
+
+function closeDtContactSheet() {
+  const sheet = document.getElementById('dt-contact-sheet');
+  sheet.classList.remove('open');
+  setTimeout(() => { sheet.style.display = 'none'; }, 300);
+}
+
+function enviarDtContacto(propId) {
+  // Sync valores del dt-sheet al sheet original y reutilizar enviarContacto
+  const sync = (dtId, origId) => {
+    const dt = document.getElementById(dtId);
+    const orig = document.getElementById(origId);
+    if (dt && orig) orig.value = dt.value;
+  };
+  sync('dt-contacto-motivo','contacto-motivo');
+  sync('dt-contacto-mensaje','contacto-mensaje');
+  sync('dt-contacto-nombre','contacto-nombre');
+  sync('dt-contacto-tel','contacto-tel');
+  document.getElementById('contacto-prop-ref').dataset.propId = propId || '';
+  closeDtContactSheet();
+  enviarContacto();
 }
 
 function enviarContacto() {
