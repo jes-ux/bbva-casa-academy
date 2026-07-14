@@ -104,6 +104,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .concept-title{font-size:14px;font-weight:600;color:var(--text-primary)}
 .concept-pill{font-size:10px;padding:3px 8px;border:0.5px solid var(--border);border-radius:20px;color:var(--text-muted);white-space:nowrap;flex-shrink:0}
 .concept-body{font-size:13px;color:var(--text-secondary);line-height:1.65;display:none}
+.edu-locked{opacity:.45;pointer-events:none;filter:grayscale(.4)}
+.edu-locked.unlocked{opacity:1;pointer-events:auto;filter:none;transition:opacity .3s,filter .3s}
+.edu-step-num{width:22px;height:22px;border-radius:50%;background:var(--surface-1);border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-muted);flex-shrink:0}
+.edu-step-num.done{background:var(--text-primary);color:#fff;border-color:var(--text-primary)}
 .concept-body.open{display:block}
 .tt{display:inline;border-bottom:1px dashed var(--border-stronger);cursor:help;color:var(--text-primary);position:relative}
 
@@ -1304,14 +1308,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="content">
       <div class="edu-section">
         <div>
-          <h2>Antes de elegir, entiende qué estás firmando.</h2>
+          <h2>Antes de elegir, entiende qué estás firmando</h2>
           <p class="bajada">Un crédito hipotecario es el compromiso financiero más grande que vas a asumir. Queremos que lo entiendas de principio a fin, no que confíes a ciegas</p>
         </div>
 
         <!-- CAT -->
-        <div class="concept-card" onclick="toggleConcept('cat')">
+        <div class="concept-card" id="card-cat" onclick="openConcept('cat')">
           <div class="concept-header">
-            <div class="concept-title">CAT — Costo Anual Total</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="edu-step-num" id="step-num-cat">1</span>
+              <div class="concept-title">CAT — Costo Anual Total</div>
+            </div>
             <span class="concept-pill">Esencial</span>
           </div>
           <div class="concept-body" id="cat">
@@ -1321,33 +1328,39 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         </div>
 
         <!-- Tipos de tasa -->
-        <div class="concept-card" onclick="toggleConcept('tasa')">
+        <div class="concept-card edu-locked" id="card-tasa" onclick="openConcept('tasa')">
           <div class="concept-header">
-            <div class="concept-title">Tipos de tasa</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="edu-step-num" id="step-num-tasa">2</span>
+              <div class="concept-title">Tipos de tasa</div>
+            </div>
             <span class="concept-pill">Importante</span>
           </div>
           <div class="concept-body" id="tasa">
             <div class="tasa-grid" onclick="event.stopPropagation()">
               <div class="tasa-item">
                 <div class="tasa-item-name">Tasa fija</div>
-                <div class="tasa-item-desc">Tu cuota no cambia nunca. Más previsibilidad, cuota inicial más alta.</div>
+                <div class="tasa-item-desc">Tu cuota no cambia nunca. Más previsibilidad, cuota inicial más alta</div>
               </div>
               <div class="tasa-item">
                 <div class="tasa-item-name">Tasa variable</div>
-                <div class="tasa-item-desc">Empieza más baja, pero puede subir con la inflación. Más riesgo.</div>
+                <div class="tasa-item-desc">Empieza más baja, pero puede subir con la inflación. Más riesgo</div>
               </div>
               <div class="tasa-item">
                 <div class="tasa-item-name">Tasa creciente</div>
-                <div class="tasa-item-desc">Arranca baja y sube gradualmente — ideal si esperás que tu ingreso crezca.</div>
+                <div class="tasa-item-desc">Arranca baja y sube gradualmente — ideal si esperás que tu ingreso crezca</div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Enganche -->
-        <div class="concept-card" onclick="toggleConcept('enganche')">
+        <div class="concept-card edu-locked" id="card-enganche" onclick="openConcept('enganche')">
           <div class="concept-header">
-            <div class="concept-title">Enganche</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="edu-step-num" id="step-num-enganche">3</span>
+              <div class="concept-title">Enganche</div>
+            </div>
             <span class="concept-pill">Básico</span>
           </div>
           <div class="concept-body" id="enganche">
@@ -1357,9 +1370,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
 
       <!-- Mini-check -->
-      <div class="mini-check">
+      <div class="mini-check edu-locked" id="mini-check-block">
         <h3>Mini check — 3 preguntas</h3>
-        <p style="font-size:12px;color:var(--text-muted)">No es un examen, es confirmación de avance.</p>
+        <p style="font-size:12px;color:var(--text-muted)">Leé los 3 temas para desbloquear</p>
+        <div id="mini-check-locked-msg" style="font-size:13px;color:var(--text-muted);margin-top:8px;display:flex;align-items:center;gap:6px"><i class="ti ti-lock" style="font-size:15px"></i> Completa los 3 temas primero</div>
+        <div id="quiz-container-wrap" style="display:none">
+        <p style="font-size:12px;color:var(--text-muted)">No es un examen, es confirmación de avance</p>
         <div id="quiz-container">
           <div class="question" id="q1">
             <p>¿Qué mide el CAT?</p>
@@ -1389,6 +1405,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             Entendiste los conceptos clave. Ya puedes simular tu capacidad
           </div>
         </div>
+        </div><!-- /quiz-container-wrap -->
       </div>
     </div>
   </div>
@@ -1520,7 +1537,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="content">
       <div class="props-section">
         <div>
-          <h2>Propiedades en tu rango.</h2>
+          <h2>Propiedades en tu rango</h2>
           <p class="bajada">Resultados filtrados según tu simulación. Los precios son referenciales</p>
         </div>
         <div class="props-profile" id="profile-pills">
@@ -3199,8 +3216,40 @@ function goScreen(id, isBack = false) {
   document.querySelectorAll('.dt-acct-item[data-screen]').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
 }
 
-function toggleConcept(id) {
-  document.getElementById(id).classList.toggle('open');
+const EDU_READ = {cat:false,tasa:false,enganche:false};
+function openConcept(id) {
+  const body = document.getElementById(id);
+  if (!body) return;
+  const isOpen = body.classList.contains('open');
+  // Close all others
+  ['cat','tasa','enganche'].forEach(k => document.getElementById(k)?.classList.remove('open'));
+  if (!isOpen) {
+    body.classList.add('open');
+    if (!EDU_READ[id]) {
+      EDU_READ[id] = true;
+      // Mark step num as done
+      const num = document.getElementById('step-num-'+id);
+      if (num) { num.classList.add('done'); num.innerHTML = '<i class="ti ti-check" style="font-size:11px"></i>'; }
+      // Unlock next card
+      const order = ['cat','tasa','enganche'];
+      const idx = order.indexOf(id);
+      if (idx < order.length - 1) {
+        const next = document.getElementById('card-'+order[idx+1]);
+        if (next) { next.classList.add('unlocked'); next.classList.remove('edu-locked'); }
+      }
+      // If all read, unlock mini-check
+      if (EDU_READ.cat && EDU_READ.tasa && EDU_READ.enganche) {
+        const mc = document.getElementById('mini-check-block');
+        const locked = document.getElementById('mini-check-locked-msg');
+        const wrap = document.getElementById('quiz-container-wrap');
+        const sub = mc?.querySelector('p');
+        if (mc) { mc.classList.add('unlocked'); mc.classList.remove('edu-locked'); }
+        if (locked) locked.style.display = 'none';
+        if (wrap) wrap.style.display = 'block';
+        if (sub) sub.textContent = 'No es un examen, es confirmación de avance';
+      }
+    }
+  }
 }
 
 let tooltipTimer = null;
