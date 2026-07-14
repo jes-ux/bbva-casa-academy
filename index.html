@@ -1182,12 +1182,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
           <div class="onb-field">
             <label>Contraseña</label>
-            <input type="password" placeholder="Mínimo 8 caracteres" id="reg-pass" autocomplete="new-password" oninput="regP2Check()">
+            <input type="password" placeholder="Mínimo 8 caracteres" id="reg-pass" autocomplete="new-password" oninput="regP2Check()" onfocus="regShowConfirm()">
           </div>
-          <div class="onb-field" style="margin-bottom:0">
+          <div id="reg-confirm-field" class="onb-field" style="display:none;margin-bottom:0">
             <label>Confirma tu contraseña</label>
             <input type="password" placeholder="Repite tu contraseña" id="reg-pass2" autocomplete="new-password" oninput="regP2Check()">
-            <span id="reg-pass-error" style="display:none;font-size:12px;color:#c0392b;margin-top:4px">Las contraseñas no coinciden.</span>
+            <span id="reg-pass-error" style="display:none;font-size:12px;color:#c0392b;margin-top:4px">Las contraseñas no coinciden</span>
           </div>
         </div>
         <div style="display:flex;align-items:flex-start;gap:10px;margin-top:16px">
