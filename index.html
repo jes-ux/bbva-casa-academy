@@ -2870,7 +2870,7 @@ function enviarContacto() {
 function renderMensajes() {
   const el = document.getElementById('mensajes-content');
   if (!el) return;
-  if (activeChatId) { renderChat(activeChatId); return; }
+  if (activeChatId && window.innerWidth < 900) { renderChat(activeChatId); return; }
   if (!MENSAJES.length) {
     el.innerHTML = `<div class="empty-state"><i class="ti ti-message-off"></i><p>Aún no enviaste ningún mensaje<br>Contacta a un asesor desde la ficha de cualquier propiedad</p></div>`;
     return;
