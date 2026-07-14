@@ -2668,8 +2668,8 @@ function doLogin() {
   markStep('profile_done');
   updateHeaderAvatar();
   renderPerfil();
+  enterApp();
   if (_pendingAction) { const fn = _pendingAction; _pendingAction = null; fn(); }
-  else enterApp();
 }
 function doRegistro() {
   const email  = document.getElementById('reg-email')?.value.trim() || '';
@@ -2681,8 +2681,8 @@ function doRegistro() {
   markStep('registered');
   updateHeaderAvatar();
   renderPerfil();
+  enterApp();
   if (_pendingAction) { const fn = _pendingAction; _pendingAction = null; fn(); }
-  else enterApp();
 }
 
 // Emails que ya existen en el prototipo (simulación)
