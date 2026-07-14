@@ -846,7 +846,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="section-screen">
         <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Datos personales</div>
         <div class="list-card">
-          <div class="profile-field" style="padding:13px 16px"><div><div class="profile-field-label">Nombre completo</div><div class="profile-field-value" id="perfil-field-nombre">Natalia García Molina</div></div><span class="profile-field-edit"><i class="ti ti-edit" style="font-size:15px;color:var(--text-muted)"></i></span></div>
+          <div class="profile-field" id="perfil-nombre-row" style="padding:13px 16px"><div style="flex:1;min-width:0"><div class="profile-field-label">Nombre completo</div><div class="profile-field-value" id="perfil-field-nombre">Natalia García Molina</div><input id="perfil-input-nombre" type="text" style="display:none;width:100%;border:none;border-bottom:1px solid var(--border-strong);background:none;font-size:15px;font-weight:500;color:var(--text-primary);padding:2px 0;font-family:var(--font-sans);outline:none" onkeydown="if(event.key==='Enter')perfilGuardarNombre()" onblur="perfilGuardarNombre()"></div><span class="profile-field-edit" onclick="perfilEditarNombre()"><i class="ti ti-edit" style="font-size:15px;color:var(--text-muted)"></i></span></div>
           <div class="profile-field" style="padding:13px 16px"><div><div class="profile-field-label">Teléfono</div><div class="profile-field-value" id="perfil-field-tel">+52 55 1234 5678</div></div><span class="profile-field-edit"><i class="ti ti-edit" style="font-size:15px;color:var(--text-muted)"></i></span></div>
           <div class="profile-field" style="padding:13px 16px"><div><div class="profile-field-label">CURP</div><div class="profile-field-value">GAMN900312MDFRCX04</div></div><span class="profile-field-edit"><i class="ti ti-edit" style="font-size:15px;color:var(--text-muted)"></i></span></div>
           <div class="profile-field" style="padding:13px 16px;border-bottom:none"><div><div class="profile-field-label">RFC</div><div class="profile-field-value">GAMN900312AB3</div></div><span class="profile-field-edit"><i class="ti ti-edit" style="font-size:15px;color:var(--text-muted)"></i></span></div>
@@ -2570,6 +2570,32 @@ function renderPerfil() {
   if (el('perfil-field-tel'))    el('perfil-field-tel').textContent    = currentUser.tel || '';
 }
 
+function perfilEditarNombre() {
+  const val = document.getElementById('perfil-field-nombre');
+  const inp = document.getElementById('perfil-input-nombre');
+  if (!val || !inp) return;
+  inp.value = val.textContent;
+  val.style.display = 'none';
+  inp.style.display = 'block';
+  inp.focus(); inp.select();
+}
+function perfilGuardarNombre() {
+  const val = document.getElementById('perfil-field-nombre');
+  const inp = document.getElementById('perfil-input-nombre');
+  if (!val || !inp || inp.style.display === 'none') return;
+  const nuevo = inp.value.trim();
+  if (nuevo && currentUser) {
+    currentUser.nombre = nuevo;
+    saveSession(currentUser);
+    updateHeaderAvatar();
+  }
+  val.textContent = currentUser?.nombre || '';
+  val.style.display = '';
+  inp.style.display = 'none';
+  // actualizar también el encabezado del perfil
+  const pn = document.getElementById('perfil-nombre');
+  if (pn) pn.textContent = currentUser?.nombre || '';
+}
 function perfilUploadAvatar() {
   const input = document.createElement('input');
   input.type = 'file'; input.accept = 'image/*';
