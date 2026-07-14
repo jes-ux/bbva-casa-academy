@@ -1644,7 +1644,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <h1 class="detail-title" id="detail-title"></h1>
           <div class="detail-address" id="detail-address"></div>
           <div class="detail-actions">
-            <button class="detail-action-btn" onclick="requireAuth(()=>alert('Guardado en favoritos'))"><i class="ti ti-heart"></i></button>
+            <button class="detail-action-btn" id="detail-fav-dt" onclick="requireAuth(()=>toggleFav(currentPropId))"><i class="ti ti-heart"></i></button>
             <button class="detail-action-btn" onclick="alert('Compartir propiedad')"><i class="ti ti-share"></i></button>
             <button class="detail-cta-btn" onclick="requireAuth(()=>{simRefPropId=currentPropId;goScreen('screen-sim')})"><i class="ti ti-calculator"></i> Simula tu Crédito</button>
             <button class="detail-action-btn" onclick="alert('Agendar visita')"><i class="ti ti-calendar"></i></button>
@@ -1659,7 +1659,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
               <div class="detail-price-m2" id="detail-price-m2-m"></div>
               <div class="detail-price-location" id="detail-location-m"></div>
             </div>
-            <button class="detail-action-btn"><i class="ti ti-heart"></i></button>
+            <button class="detail-action-btn" id="detail-fav-m" onclick="requireAuth(()=>toggleFav(currentPropId))"><i class="ti ti-heart"></i></button>
           </div>
           <div id="detail-sim-banner-m" style="margin-top:12px"></div>
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>openContacto(currentPropId))">
@@ -1721,7 +1721,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
               <div class="detail-price-m2" id="detail-price-m2"></div>
               <div class="detail-price-location" id="detail-location"></div>
             </div>
-            <button class="detail-action-btn"><i class="ti ti-heart"></i></button>
+            <button class="detail-action-btn" id="detail-fav-m" onclick="requireAuth(()=>toggleFav(currentPropId))"><i class="ti ti-heart"></i></button>
           </div>
           <div id="detail-sim-banner-dt" style="margin-top:12px"></div>
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>openContacto(currentPropId))">
@@ -1955,7 +1955,8 @@ function navTo(screenId, tabId) {
   if(dtMap[screenId]) document.getElementById(dtMap[screenId])?.classList.add('active');
 }
 
-const FAVS_IDS = [1, 3, 5];
+const _savedFavs = JSON.parse(localStorage.getItem('bbva_favs') || '[1,3,5]');
+const FAVS_IDS = _savedFavs;
 let SIM_HISTORY = [
   { id:'S001', fecha:'12 jun 2026', ingreso:35000, enganche:400000, plazo:25, propMax:3200000, cuota:18500, props:[1,2,3] },
   { id:'S002', fecha:'28 may 2026', ingreso:28000, enganche:250000, plazo:20, propMax:2800000, cuota:15200, props:[4,5] },
@@ -2011,7 +2012,7 @@ function propCardHTML(p) {
     <div class="prop-img" style="height:${prof.h}px;background:var(--surface-1)">
       <img src="${imgSrc}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
       ${isNew ? '<span class="prop-badge">Nuevo</span>' : ''}
-      <div class="prop-fav" onclick="event.stopPropagation();requireAuth(()=>alert('Guardado'))"><i class="ti ti-heart" style="font-size:13px;color:var(--text-muted)"></i></div>
+      <div class="prop-fav" onclick="event.stopPropagation();requireAuth(()=>toggleFav(${p.id}))">${favIconHTML(p.id)}</div>
     </div>
     <div class="prop-info">
       <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px">${p.zona} · ${p.tipo}</div>
@@ -2040,6 +2041,31 @@ function propListItemHTML(p) {
   </div>`;
 }
 
+function toggleFav(propId) {
+  const idx = FAVS_IDS.indexOf(propId);
+  const adding = idx === -1;
+  if (adding) { FAVS_IDS.push(propId); markStep('faved'); }
+  else { FAVS_IDS.splice(idx, 1); }
+  localStorage.setItem('bbva_favs', JSON.stringify(FAVS_IDS));
+  showToast(adding ? 'ti-heart-filled' : 'ti-heart', adding ? 'Agregado a favoritos' : 'Eliminado de favoritos', adding ? 'success' : 'default');
+  // actualizar corazón en la card
+  const card = document.getElementById(`pcard-${propId}`);
+  if (card) updateFavIcon(card.querySelector('.prop-fav i'), adding);
+  // actualizar corazón en el detalle
+  ['detail-fav-dt','detail-fav-m','detail-fav-m2'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) updateFavIcon(btn.querySelector('i'), adding);
+  });
+}
+function updateFavIcon(icon, faved) {
+  if (!icon) return;
+  icon.className = faved ? 'ti ti-heart-filled' : 'ti ti-heart';
+  icon.style.color = faved ? '#e53935' : '';
+}
+function favIconHTML(propId) {
+  const f = FAVS_IDS.includes(propId);
+  return `<i class="ti ${f?'ti-heart-filled':'ti-heart'}" style="font-size:13px;color:${f?'#e53935':'var(--text-muted)'}"></i>`;
+}
 function renderFavs() {
   const favProps = PROPS.filter(p => FAVS_IDS.includes(p.id));
   const grid = document.getElementById('favs-grid');
@@ -3560,6 +3586,12 @@ function openPropDetail(id){
   const p = PROPS.find(x=>x.id===id);
   if(!p) return;
   markStep('viewed_prop');
+  // Actualizar íconos de corazón al abrir detalle
+  const faved = FAVS_IDS.includes(id);
+  ['detail-fav-dt','detail-fav-m'].forEach(btnId => {
+    const btn = document.getElementById(btnId);
+    if (btn) updateFavIcon(btn.querySelector('i'), faved);
+  });
   if(!moduleDone[3]){
     ACH_DATA[3].ctaFn = () => goToPropDetail(id);
     showAchievement(3);
