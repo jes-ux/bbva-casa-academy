@@ -1898,14 +1898,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <label>Mensaje <span style="color:var(--text-muted);font-weight:400">(Opcional)</span></label>
       <textarea id="contacto-mensaje" placeholder="Escribí tu mensaje..."></textarea>
     </div>
-    <div style="display:flex;gap:10px">
+    <div id="contacto-datos-anonimo" style="display:flex;gap:10px">
       <div class="contact-field" style="flex:1;margin-bottom:0">
         <label>Nombre</label>
-        <input type="text" id="contacto-nombre" value="Natalia López">
+        <input type="text" id="contacto-nombre" placeholder="Tu nombre">
       </div>
       <div class="contact-field" style="flex:1;margin-bottom:0">
         <label>Teléfono</label>
-        <input type="tel" id="contacto-tel" value="+52 55 1234 5678">
+        <input type="tel" id="contacto-tel" placeholder="+52 55 0000 0000">
       </div>
     </div>
   </div>
@@ -2836,7 +2836,9 @@ function openContacto(propId) {
     : 'Hola, realicé una simulación y quisiera que me den más información o se pongan en contacto conmigo.';
   document.getElementById('contacto-mensaje').value = msgDefault;
   document.getElementById('contacto-prop-ref').dataset.propId = propId || '';
-  // Prefill con datos del usuario si está logueado
+  // Si está logueado, ocultar campos de nombre/tel (ya los tenemos)
+  const datosAnon = document.getElementById('contacto-datos-anonimo');
+  if (datosAnon) datosAnon.style.display = isLoggedIn ? 'none' : 'flex';
   const nEl = document.getElementById('contacto-nombre');
   const tEl = document.getElementById('contacto-tel');
   if (nEl) nEl.value = currentUser?.nombre || '';
@@ -2887,10 +2889,10 @@ function openDtContactSheet() {
         <label>Mensaje <span style="color:var(--text-muted);font-weight:400">(Opcional)</span></label>
         <textarea id="dt-contacto-mensaje" placeholder="Escribe tu mensaje...">${msgVal}</textarea>
       </div>
-      <div style="display:flex;gap:10px">
+      ${!isLoggedIn ? `<div style="display:flex;gap:10px">
         <div class="contact-field" style="flex:1;margin-bottom:0"><label>Nombre</label><input type="text" id="dt-contacto-nombre" value="${nombreVal}"></div>
         <div class="contact-field" style="flex:1;margin-bottom:0"><label>Teléfono</label><input type="tel" id="dt-contacto-tel" value="${telVal}"></div>
-      </div>
+      </div>` : ''}
     </div>
     <div style="padding:16px 24px;border-top:0.5px solid var(--border)">
       <button class="btn-primary" onclick="enviarDtContacto(${propId||'null'})"><i class="ti ti-send"></i> Enviar mensaje</button>
