@@ -1122,7 +1122,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="onb-content">
         <div class="onb-title">Iniciar sesión</div>
         <div style="background:var(--surface-2);border-radius:14px;padding:20px;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(0,0,0,.07)">
-          <div class="onb-field"><label>Email</label><input type="email" placeholder="natalia@email.com" id="login-email"></div>
+          <div class="onb-field"><label>Email</label><input type="email" placeholder="natalia@email.com" id="login-email" oninput="loginClearError()"></div>
+          <div id="login-email-error" style="display:none;margin:-8px 0 12px;padding:10px 12px;background:var(--bg-danger);border:1px solid var(--border-danger);border-radius:8px;font-size:13px;color:var(--text-danger);line-height:1.4">
+            No encontramos una cuenta con ese correo. <button onclick="loginIrRegistro()" style="background:none;border:none;font-size:13px;font-weight:600;color:var(--text-danger);cursor:pointer;padding:0;font-family:var(--font-sans);text-decoration:underline">Crear cuenta</button>
+          </div>
           <div class="onb-field" style="margin-bottom:4px"><label>Contraseña</label><input type="password" placeholder="••••••••" id="login-pass"></div>
           <button class="onb-forgot" onclick="void(0)" style="margin-bottom:16px">Olvidé mi contraseña</button>
           <button class="onb-btn" id="login-btn" onclick="doLogin()">Ingresar</button>
@@ -2633,13 +2636,30 @@ function requireAuth(fn) {
   goScreen('screen-login');
 }
 
+function loginClearError() {
+  const el = document.getElementById('login-email-error');
+  if (el) el.style.display = 'none';
+}
+function loginIrRegistro() {
+  const email = document.getElementById('login-email')?.value.trim();
+  const regInput = document.getElementById('reg-email');
+  if (regInput && email) regInput.value = email;
+  goScreen('screen-registro');
+}
 function doLogin() {
   const emailVal = document.getElementById('login-email')?.value.trim().toLowerCase() || '';
   const saved = getSession();
+  // Verificar si el email tiene cuenta: sesión guardada o emails demo
+  const tienecuenta = (saved && saved.email.toLowerCase() === emailVal) || !!DEMO_USERS[emailVal];
+  if (!tienecuenta) {
+    const errEl = document.getElementById('login-email-error');
+    if (errEl) errEl.style.display = 'block';
+    return;
+  }
   if (saved && saved.email.toLowerCase() === emailVal) {
     currentUser = saved;
   } else {
-    currentUser = DEMO_USERS[emailVal] || { email:emailVal, nombre:emailVal.split('@')[0], tel:'', avatar:null };
+    currentUser = DEMO_USERS[emailVal];
     saveSession(currentUser);
   }
   isLoggedIn = true;
