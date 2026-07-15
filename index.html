@@ -1776,65 +1776,37 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   </div>
   <div class="sheet-body">
     <div class="sheet-section">
-      <div class="sheet-section-title">Tipo de operación</div>
-      <div class="sheet-chips">
-        <button class="sheet-chip active" onclick="toggleChip(this)">Compra</button>
-        <button class="sheet-chip" onclick="toggleChip(this)">Renta</button>
-        <button class="sheet-chip" onclick="toggleChip(this)">Preventa</button>
-      </div>
-    </div>
-    <div class="sheet-section">
       <div class="sheet-section-title">Tipo de propiedad</div>
-      <div class="sheet-chips">
-        <button class="sheet-chip active" onclick="toggleChip(this)">Departamento</button>
-        <button class="sheet-chip active" onclick="toggleChip(this)">Casa</button>
-        <button class="sheet-chip" onclick="toggleChip(this)">Local comercial</button>
-        <button class="sheet-chip" onclick="toggleChip(this)">Terreno</button>
-        <button class="sheet-chip" onclick="toggleChip(this)">Oficina</button>
+      <div class="sheet-chips" id="sheet-chips-tipo">
+        <button class="sheet-chip" data-val="Departamento" onclick="toggleChip(this)">Departamento</button>
+        <button class="sheet-chip" data-val="Casa" onclick="toggleChip(this)">Casa</button>
+        <button class="sheet-chip" data-val="Local comercial" onclick="toggleChip(this)">Local comercial</button>
+        <button class="sheet-chip" data-val="Terreno" onclick="toggleChip(this)">Terreno</button>
+        <button class="sheet-chip" data-val="Oficina" onclick="toggleChip(this)">Oficina</button>
       </div>
     </div>
     <div class="sheet-section">
-      <div class="sheet-section-title">Valor del inmueble</div>
-      <div class="sheet-chips">
-        <button class="sheet-chip" onclick="toggleChip(this)">Hasta $1M</button>
-        <button class="sheet-chip active" onclick="toggleChip(this)">$1M a $3M</button>
-        <button class="sheet-chip" onclick="toggleChip(this)">$3M a $5M</button>
-        <button class="sheet-chip" onclick="toggleChip(this)">Más de $5M</button>
-      </div>
-      <div class="sheet-row-price">
-        <input class="sheet-price-input" placeholder="$ Mín">
-        <input class="sheet-price-input" placeholder="$ Máx">
+      <div class="sheet-section-title">Recámaras mínimas</div>
+      <div class="sheet-chips" id="sheet-chips-rec">
+        <button class="sheet-chip" data-val="1" onclick="toggleChipExclusive(this,'sheet-chips-rec')">1+</button>
+        <button class="sheet-chip" data-val="2" onclick="toggleChipExclusive(this,'sheet-chips-rec')">2+</button>
+        <button class="sheet-chip" data-val="3" onclick="toggleChipExclusive(this,'sheet-chips-rec')">3+</button>
+        <button class="sheet-chip" data-val="4" onclick="toggleChipExclusive(this,'sheet-chips-rec')">4+</button>
       </div>
     </div>
     <div class="sheet-section">
-      <div class="sheet-section-title">Recámaras</div>
-      <div class="sheet-chips">
-        <button class="sheet-chip" onclick="toggleChip(this)">1+</button>
-        <button class="sheet-chip active" onclick="toggleChip(this)">2+</button>
-        <button class="sheet-chip" onclick="toggleChip(this)">3+</button>
-        <button class="sheet-chip" onclick="toggleChip(this)">4+</button>
-        <button class="sheet-chip" onclick="toggleChip(this)">5+</button>
-      </div>
-    </div>
-    <div class="sheet-section">
-      <div class="sheet-section-title">Baños</div>
-      <div class="sheet-chips">
-        <button class="sheet-chip" onclick="toggleChip(this)">1+</button>
-        <button class="sheet-chip" onclick="toggleChip(this)">2+</button>
-        <button class="sheet-chip" onclick="toggleChip(this)">3+</button>
-      </div>
-    </div>
-    <div class="sheet-section">
-      <div class="sheet-section-title">Superficie</div>
-      <div class="sheet-row-price">
-        <input class="sheet-price-input" placeholder="m² Mín">
-        <input class="sheet-price-input" placeholder="m² Máx">
+      <div class="sheet-section-title">Precio</div>
+      <div class="sheet-chips" id="sheet-chips-precio">
+        <button class="sheet-chip" data-min="0" data-max="1000000" onclick="toggleChipExclusive(this,'sheet-chips-precio')">Hasta $1M</button>
+        <button class="sheet-chip" data-min="1000000" data-max="3000000" onclick="toggleChipExclusive(this,'sheet-chips-precio')">$1M a $3M</button>
+        <button class="sheet-chip" data-min="3000000" data-max="5000000" onclick="toggleChipExclusive(this,'sheet-chips-precio')">$3M a $5M</button>
+        <button class="sheet-chip" data-min="5000000" data-max="0" onclick="toggleChipExclusive(this,'sheet-chips-precio')">Más de $5M</button>
       </div>
     </div>
   </div>
   <div class="sheet-footer">
-    <button class="btn-secondary" onclick="closeSheet()">Eliminar filtros</button>
-    <button class="btn-primary" style="width:auto;padding:13px 24px" onclick="closeSheet()">Ver resultados</button>
+    <button class="btn-secondary" onclick="clearSheetFilters()">Eliminar filtros</button>
+    <button class="btn-primary" style="width:auto;padding:13px 24px" onclick="applySheetFilters()">Ver resultados</button>
   </div>
 </div>
 
@@ -2482,6 +2454,31 @@ function closeSheet() {
   document.getElementById('sheet-overlay').classList.remove('open');
 }
 function toggleChip(el) { el.classList.toggle('active'); }
+function toggleChipExclusive(el, groupId) {
+  const active = el.classList.contains('active');
+  document.querySelectorAll(`#${groupId} .sheet-chip`).forEach(c => c.classList.remove('active'));
+  if (!active) el.classList.add('active');
+}
+let sheetActiveCount = 0;
+function applySheetFilters() {
+  const tipos = [...document.querySelectorAll('#sheet-chips-tipo .sheet-chip.active')].map(c => c.dataset.val);
+  const recEl = document.querySelector('#sheet-chips-rec .sheet-chip.active');
+  const precioEl = document.querySelector('#sheet-chips-precio .sheet-chip.active');
+  chipFilters.tipo = tipos.length === 1 ? tipos[0] : '';
+  chipFilters.minRec = recEl ? parseInt(recEl.dataset.val) : 0;
+  chipFilters.minPrice = precioEl ? parseInt(precioEl.dataset.min) : 0;
+  chipFilters.maxPrice = precioEl && precioEl.dataset.max !== '0' ? parseInt(precioEl.dataset.max) : 0;
+  sheetActiveCount = (tipos.length === 1 ? 1 : 0) + (recEl ? 1 : 0) + (precioEl ? 1 : 0);
+  closeSheet();
+  renderProps();
+}
+function clearSheetFilters() {
+  document.querySelectorAll('#sheet-chips-tipo .sheet-chip, #sheet-chips-rec .sheet-chip, #sheet-chips-precio .sheet-chip').forEach(c => c.classList.remove('active'));
+  chipFilters.tipo = ''; chipFilters.minRec = 0; chipFilters.minPrice = 0; chipFilters.maxPrice = 0;
+  sheetActiveCount = 0;
+  closeSheet();
+  renderProps();
+}
 function selectOrder(row) {
   row.closest('.sheet-body').querySelectorAll('.sheet-radio').forEach(r => r.classList.remove('selected'));
   row.querySelector('.sheet-radio').classList.add('selected');
@@ -3489,11 +3486,12 @@ function goToAchievement() {
 }
 
 function updateFilterBadge() {
-  const count = Object.values(activeFilters).filter(v => v !== null).length + (searchQuery ? 1 : 0);
+  const dtCount = (chipFilters.tipo ? 1 : 0) + (chipFilters.minRec ? 1 : 0) + (chipFilters.minPrice || chipFilters.maxPrice ? 1 : 0) + (searchQuery ? 1 : 0);
+  const mobCount = sheetActiveCount + (searchQuery ? 1 : 0);
   const mob = document.getElementById('filter-badge-mobile');
   const dt  = document.getElementById('filter-badge-desktop');
-  if (mob) mob.style.display = count ? 'block' : 'none';
-  if (dt)  { dt.style.display = count ? 'inline' : 'none'; dt.textContent = count; }
+  if (mob) mob.style.display = mobCount ? 'block' : 'none';
+  if (dt)  { dt.style.display = dtCount ? 'inline' : 'none'; dt.textContent = dtCount; }
 }
 
 function toggleFilter(key, val){
