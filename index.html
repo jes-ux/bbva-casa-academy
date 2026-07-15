@@ -2133,8 +2133,9 @@ function renderSims() {
       <div style="padding:12px 16px">
         ${refPropHTML}
       </div>
-      <div style="padding:0 16px 16px">
+      <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px">
         <button class="btn-primary" style="width:100%;font-size:14px;padding:12px" onclick="viewPropsForSim(${s.propMax})">${ctaLabel} →</button>
+        <button class="btn-secondary" style="width:100%;font-size:14px;padding:11px;display:flex;align-items:center;justify-content:center;gap:7px" onclick="openContactoHipotecario(${JSON.stringify(s).replace(/"/g,'&quot;')})"><i class="ti ti-headset" style="font-size:15px"></i> Contactar a un asesor hipotecario</button>
       </div>
     </div>`;
   }).join('');
@@ -2858,6 +2859,7 @@ let MENSAJES = [
 let activeChatId = null;
 
 function openContacto(propId) {
+  document.querySelector('#sheet-contacto .sheet-title').textContent = 'Contactar asesor';
   const ref = document.getElementById('contacto-prop-ref');
   if (propId) {
     const p = PROPS.find(x => x.id === propId);
@@ -2887,6 +2889,27 @@ function openContacto(propId) {
   if (nEl) nEl.value = currentUser?.nombre || '';
   if (tEl) tEl.value = currentUser?.tel || '';
 
+  if (window.innerWidth >= 900) {
+    openDtContactSheet();
+  } else {
+    openSheet('sheet-contacto');
+  }
+}
+
+function openContactoHipotecario(sim) {
+  // Personaliza el sheet para contexto de asesor hipotecario (no inmobiliario)
+  document.querySelector('#sheet-contacto .sheet-title').textContent = 'Asesor hipotecario';
+  document.getElementById('contacto-prop-ref').style.display = 'none';
+  document.getElementById('contacto-prop-ref').dataset.propId = '';
+  document.getElementById('contacto-motivo').value = 'credito';
+  document.getElementById('contacto-mensaje').value =
+    `Hola, realicé una simulación y me gustaría hablar con un asesor hipotecario.\n\nMi capacidad estimada es de hasta ${fmt(sim.propMax)}, con una cuota de ~${fmt(sim.cuota)}/mes a ${sim.plazo} años.\n\n¿Podrían ponerse en contacto conmigo?`;
+  const datosAnon = document.getElementById('contacto-datos-anonimo');
+  if (datosAnon) datosAnon.style.display = isLoggedIn ? 'none' : 'flex';
+  const nEl = document.getElementById('contacto-nombre');
+  const tEl = document.getElementById('contacto-tel');
+  if (nEl) nEl.value = currentUser?.nombre || '';
+  if (tEl) tEl.value = currentUser?.tel || '';
   if (window.innerWidth >= 900) {
     openDtContactSheet();
   } else {
