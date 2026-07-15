@@ -3771,7 +3771,7 @@ function openPropDetail(id){
 
   // simulación pill
   const pills = document.getElementById('detail-profile-pills');
-  if(simData.propMax){
+  if(isLoggedIn && simData.propMax){
     pills.innerHTML = `
       <span class="profile-pill">Hasta ${fmt(simData.propMax)}</span>
       <span class="profile-pill">Enganche ${fmt(simData.enganche)}</span>
@@ -3779,12 +3779,12 @@ function openPropDetail(id){
     `;
     document.getElementById('detail-disclaimer').style.display='block';
   } else {
-    pills.innerHTML='<span style="font-size:13px;color:var(--text-muted)">Simula tu capacidad para ver si esta propiedad entra en tu rango.</span>';
+    pills.innerHTML='';
   }
 
-  // banner de simulación en ficha
-  const alreadyLinked = SIM_HISTORY.findIndex(s => s.refProp === id);
-  const inRangeSim = SIM_HISTORY.find(s => s.propMax >= p.price && s.refProp !== id);
+  // banner de simulación en ficha (solo si hay sesión)
+  const alreadyLinked = isLoggedIn ? SIM_HISTORY.findIndex(s => s.refProp === id) : -1;
+  const inRangeSim = isLoggedIn ? SIM_HISTORY.find(s => s.propMax >= p.price && s.refProp !== id) : null;
   let simBannerHTML = '';
   if (alreadyLinked >= 0) {
     const relSim = SIM_HISTORY[alreadyLinked];
