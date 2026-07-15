@@ -1567,7 +1567,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
               <input type="text" placeholder="Buscar zona, colonia..." oninput="document.getElementById('search-clear').style.display=this.value?'block':'none'" onkeydown="if(event.key==='Enter'){onSearch(this.value);this.blur();}" id="props-search">
               <button id="search-clear" onclick="clearSearch()" style="display:none;background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;line-height:1"><i class="ti ti-x" style="font-size:14px"></i></button>
             </div>
-            <button class="filter-icon-btn" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
+            <button class="filter-icon-btn" id="filter-btn-mobile" onclick="openSheet('sheet-filtros')" style="position:relative"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i><span id="filter-badge-mobile" style="display:none;position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:#e53935;border:1.5px solid var(--surface-2)"></span></button>
           </div>
           <!-- chips de filtro: solo desktop -->
           <div class="dt-filter-chips">
@@ -1609,7 +1609,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
                 <button onclick="setChipPrecio(5000000,0)">Más de $5M</button>
               </div>
             </div>
-            <button class="dt-filter-chip" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal"></i> Más filtros</button>
+            <button class="dt-filter-chip" id="filter-btn-desktop" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal"></i> Más filtros<span id="filter-badge-desktop" style="display:none;background:#e53935;color:#fff;border-radius:10px;font-size:10px;font-weight:700;padding:1px 5px;margin-left:4px"></span></button>
           </div>
           <div id="list-controls-row2" style="display:flex;align-items:center;justify-content:space-between">
             <button class="sheet-link" onclick="openSheet('sheet-ordenar')"><i class="ti ti-arrows-sort" style="font-size:13px"></i> Ordenar</button>
@@ -3488,6 +3488,14 @@ function goToAchievement() {
   showAchievement(1);
 }
 
+function updateFilterBadge() {
+  const count = Object.values(activeFilters).filter(v => v !== null).length + (searchQuery ? 1 : 0);
+  const mob = document.getElementById('filter-badge-mobile');
+  const dt  = document.getElementById('filter-badge-desktop');
+  if (mob) mob.style.display = count ? 'block' : 'none';
+  if (dt)  { dt.style.display = count ? 'inline' : 'none'; dt.textContent = count; }
+}
+
 function toggleFilter(key, val){
   activeFilters[key] = activeFilters[key]===val ? null : val;
   renderProps();
@@ -3496,6 +3504,7 @@ function toggleFilter(key, val){
 function onSearch(q){
   searchQuery = q.toLowerCase();
   document.getElementById('search-clear').style.display = q ? 'block' : 'none';
+  updateFilterBadge();
   renderProps();
 }
 
@@ -3541,6 +3550,7 @@ function getFilteredProps(){
 }
 
 function renderProps() {
+  updateFilterBadge();
   const hasSim = isLoggedIn && simData.propMax > 0;
   const titleEl = document.querySelector('#screen-props .props-section > div:first-child h2');
   const bajadaEl = document.querySelector('#screen-props .props-section > div:first-child .bajada');
