@@ -84,6 +84,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .home-input input::placeholder{color:var(--text-muted)}
 .home-input input:focus{outline:none;border-color:var(--text-primary)}
 .home-search-btn{width:100%;padding:20px;border:none;border-radius:12px;background:var(--text-primary);color:var(--surface-2);font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-sans)}
+/* ── Skeleton ── */
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.sk{border-radius:8px;background:linear-gradient(90deg,var(--surface-1) 25%,var(--border) 50%,var(--surface-1) 75%);background-size:800px 100%;animation:shimmer 1.2s infinite linear}
+.sk-line{height:14px;margin-bottom:10px;border-radius:6px}
+.sk-title{height:20px;width:60%;margin-bottom:14px;border-radius:6px}
+.sk-card{border-radius:14px;border:0.5px solid var(--border);padding:16px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
+.sk-img{height:160px;border-radius:10px;margin-bottom:4px}
+.sk-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0}
+.sk-row{display:flex;align-items:center;gap:12px}
+#skeleton-overlay{position:fixed;inset:0;z-index:150;background:var(--surface-2);padding:64px 16px 80px;overflow:hidden;display:none;opacity:0;transition:opacity .15s}
+#skeleton-overlay.visible{opacity:1}
 #toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(20px);max-width:390px;width:calc(100% - 40px);font-size:13px;font-weight:500;padding:12px 16px;border-radius:12px;z-index:200;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;display:flex;align-items:center;gap:10px}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast.toast-success{background:#1a7a2e;color:#fff}
@@ -1237,6 +1248,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   <!-- Toast -->
   <div id="toast"></div>
+
+  <!-- Skeleton overlay -->
+  <div id="skeleton-overlay"></div>
 
   <!-- PASO 0 -->
   <div id="screen-0" class="screen active">
@@ -2551,9 +2565,16 @@ function markStep(key) {
 
 // ── Session management ──
 const SESSION_KEY = 'bbva_session';
+const USERS_KEY   = 'bbva_users';
 function getSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch { return null; } }
 function saveSession(data) { localStorage.setItem(SESSION_KEY, JSON.stringify(data)); }
 function clearSession() { localStorage.removeItem(SESSION_KEY); }
+function getRegisteredUsers() { try { return JSON.parse(localStorage.getItem(USERS_KEY)) || {}; } catch { return {}; } }
+function saveRegisteredUser(data) {
+  const users = getRegisteredUsers();
+  users[data.email.toLowerCase()] = data;
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
 
 function getInitials(name) {
   if (!name) return '?';
@@ -2701,8 +2722,8 @@ function loginIrRegistro() {
 function doLogin() {
   const emailVal = document.getElementById('login-email')?.value.trim().toLowerCase() || '';
   const saved = getSession();
-  // Verificar si el email tiene cuenta: sesión guardada o emails demo
-  const tienecuenta = (saved && saved.email.toLowerCase() === emailVal) || !!DEMO_USERS[emailVal];
+  const registrados = getRegisteredUsers();
+  const tienecuenta = (saved && saved.email.toLowerCase() === emailVal) || !!DEMO_USERS[emailVal] || !!registrados[emailVal];
   if (!tienecuenta) {
     const errEl = document.getElementById('login-email-error');
     if (errEl) errEl.style.display = 'flex';
@@ -2710,6 +2731,9 @@ function doLogin() {
   }
   if (saved && saved.email.toLowerCase() === emailVal) {
     currentUser = saved;
+  } else if (registrados[emailVal]) {
+    currentUser = registrados[emailVal];
+    saveSession(currentUser);
   } else {
     currentUser = DEMO_USERS[emailVal];
     saveSession(currentUser);
@@ -2730,6 +2754,7 @@ function doRegistro() {
   const tel    = document.getElementById('reg-tel')?.value.trim() || '';
   currentUser = { email, nombre, tel, avatar:null };
   saveSession(currentUser);
+  saveRegisteredUser(currentUser);
   isLoggedIn = true;
   markStep('registered');
   updateHeaderAvatar();
@@ -3192,32 +3217,54 @@ function stepIsDone(key) {
   return false;
 }
 
+const SKELETON_TEMPLATES = {
+  'screen-props': `<div class="sk sk-title" style="width:40%"></div>${[1,2,3].map(()=>`<div class="sk-card"><div class="sk sk-img"></div><div class="sk sk-line" style="width:55%"></div><div class="sk sk-line" style="width:35%"></div></div>`).join('')}`,
+  'screen-simulaciones': `<div class="sk sk-title" style="width:50%"></div>${[1,2].map(()=>`<div class="sk-card"><div class="sk sk-line" style="width:70%"></div><div class="sk sk-line" style="width:45%"></div><div class="sk sk-line" style="width:30%"></div></div>`).join('')}`,
+  'screen-mensajes': `<div class="sk sk-title" style="width:35%"></div>${[1,2,3].map(()=>`<div class="sk-row" style="padding:12px 0;border-bottom:0.5px solid var(--border)"><div class="sk sk-avatar"></div><div style="flex:1;display:flex;flex-direction:column;gap:8px"><div class="sk sk-line" style="width:50%"></div><div class="sk sk-line" style="width:75%"></div></div></div>`).join('')}`,
+  'screen-academia': `<div class="sk sk-title" style="width:45%"></div><div class="sk sk-line" style="height:8px;border-radius:4px;margin-bottom:20px"></div>${[1,2,3].map(()=>`<div class="sk-card"><div class="sk sk-line" style="width:60%"></div><div class="sk sk-line" style="width:80%"></div></div>`).join('')}`,
+  'screen-0': `<div class="sk sk-title" style="width:70%;height:32px;margin-bottom:8px"></div><div class="sk sk-title" style="width:55%;height:32px;margin-bottom:24px"></div><div class="sk sk-line" style="height:44px;border-radius:12px;margin-bottom:10px"></div><div class="sk sk-line" style="height:44px;border-radius:12px;margin-bottom:10px"></div>`,
+};
+const SKELETON_SKIP = new Set(['screen-login','screen-registro','screen-perfil','screen-config']);
+let _skTimer = null;
+
+function showSkeleton(targetId, cb) {
+  if (SKELETON_SKIP.has(targetId)) { cb(); return; }
+  const ov = document.getElementById('skeleton-overlay');
+  ov.innerHTML = SKELETON_TEMPLATES[targetId] || `<div class="sk sk-title" style="width:45%"></div>${[1,2,3].map(()=>`<div class="sk-card"><div class="sk sk-line" style="width:65%"></div><div class="sk sk-line" style="width:40%"></div></div>`).join('')}`;
+  ov.style.display = 'block';
+  requestAnimationFrame(() => ov.classList.add('visible'));
+  if (_skTimer) clearTimeout(_skTimer);
+  _skTimer = setTimeout(() => {
+    ov.classList.remove('visible');
+    setTimeout(() => { ov.style.display = 'none'; cb(); }, 150);
+  }, 280);
+}
+
 function goScreen(id, isBack = false) {
   const current = document.querySelector('.screen.active')?.id;
-  if (!isBack && current && current !== id) {
-    navHistory.push(current);
-  }
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const s = document.getElementById(id);
-  s.classList.add('active');
-  lastScrollY = 0;
-  s.scrollTop = 0;
-  const NOHEADER = new Set(['screen-login','screen-registro']);
-  if (NOHEADER.has(id)) {
-    document.getElementById('app-header').style.display = 'none';
-    document.getElementById('bottom-nav').style.display = 'none';
-  } else {
-    document.getElementById('app-header').style.display = '';
-    document.getElementById('bottom-nav').style.display = '';
-    document.getElementById('app-header').classList.remove('hidden');
-    document.getElementById('bottom-nav').classList.remove('hidden');
-  }
-  updateBackBtn();
-  initHeaderScroll(s);
-  if (id === 'screen-props') { renderProps(); }
-  if (id === 'screen-academia') renderAcademia();
-  // sync account sidebar active state
-  document.querySelectorAll('.dt-acct-item[data-screen]').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
+  if (!isBack && current && current !== id) navHistory.push(current);
+  showSkeleton(id, () => {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const s = document.getElementById(id);
+    s.classList.add('active');
+    lastScrollY = 0;
+    s.scrollTop = 0;
+    const NOHEADER = new Set(['screen-login','screen-registro']);
+    if (NOHEADER.has(id)) {
+      document.getElementById('app-header').style.display = 'none';
+      document.getElementById('bottom-nav').style.display = 'none';
+    } else {
+      document.getElementById('app-header').style.display = '';
+      document.getElementById('bottom-nav').style.display = '';
+      document.getElementById('app-header').classList.remove('hidden');
+      document.getElementById('bottom-nav').classList.remove('hidden');
+    }
+    updateBackBtn();
+    initHeaderScroll(s);
+    if (id === 'screen-props') renderProps();
+    if (id === 'screen-academia') renderAcademia();
+    document.querySelectorAll('.dt-acct-item[data-screen]').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
+  });
 }
 
 const EDU_READ = {cat:false,tasa:false,enganche:false};
