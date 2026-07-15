@@ -2585,7 +2585,7 @@ function updateHeaderAvatar() {
   const mobAv  = document.getElementById('mob-header-avatar');
   if (isLoggedIn && currentUser) {
     if (anonDt) anonDt.style.display = 'none';
-    if (authDt) authDt.style.display = 'flex';
+    if (authDt) authDt.style.display = window.innerWidth >= 900 ? 'flex' : 'none';
     if (mobBtn) mobBtn.style.display = 'none';
     if (mobAv)  mobAv.style.display  = 'flex';
     const dtAv = document.getElementById('dt-header-avatar');
