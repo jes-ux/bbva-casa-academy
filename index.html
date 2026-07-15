@@ -2021,7 +2021,7 @@ const PROP_IMGS = [
 ];
 
 function getSimBadge(propId, price) {
-  if (!SIM_HISTORY.length) return null;
+  if (!isLoggedIn || !SIM_HISTORY.length) return null;
   const isRef = SIM_HISTORY.some(s => s.refProp === propId);
   if (isRef) return {label:'Simulada', icon:'ti-calculator', color:'var(--text-primary)', bg:'var(--surface-2)', border:true};
   const inRange = SIM_HISTORY.some(s => s.propMax >= price);
@@ -3541,6 +3541,13 @@ function getFilteredProps(){
 }
 
 function renderProps() {
+  const hasSim = isLoggedIn && simData.propMax > 0;
+  const titleEl = document.querySelector('#screen-props .props-section > div:first-child h2');
+  const bajadaEl = document.querySelector('#screen-props .props-section > div:first-child .bajada');
+  const pillsEl = document.getElementById('profile-pills');
+  if (titleEl) titleEl.textContent = hasSim ? 'Propiedades en tu rango' : 'Explorar propiedades';
+  if (bajadaEl) bajadaEl.textContent = hasSim ? 'Resultados filtrados según tu simulación. Los precios son referenciales' : 'Encontrá la propiedad que estás buscando';
+  if (pillsEl) pillsEl.style.display = hasSim ? '' : 'none';
   const show = getFilteredProps();
   document.getElementById('props-count').textContent = `${show.length} propiedad${show.length!==1?'es':''} encontrada${show.length!==1?'s':''}`;
   if(currentView==='list'){
