@@ -1679,7 +1679,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <button class="detail-action-btn" id="detail-fav-m" onclick="requireAuth(()=>toggleFav(currentPropId))"><i class="ti ti-heart"></i></button>
           </div>
           <div id="detail-sim-banner-m" style="margin-top:12px"></div>
-          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>openContacto(currentPropId))">
+          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>openChatContacto(currentPropId))">
             <i class="ti ti-headset"></i> Contacta al asesor
           </button>
         </div>
@@ -1741,7 +1741,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <button class="detail-action-btn" id="detail-fav-m" onclick="requireAuth(()=>toggleFav(currentPropId))"><i class="ti ti-heart"></i></button>
           </div>
           <div id="detail-sim-banner-dt" style="margin-top:12px"></div>
-          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>openContacto(currentPropId))">
+          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>openChatContacto(currentPropId))">
             <i class="ti ti-headset"></i> Contacta al asesor
           </button>
         </div>
@@ -2135,7 +2135,7 @@ function renderSims() {
       </div>
       <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px">
         <button class="btn-primary" style="width:100%;font-size:14px;padding:12px" onclick="viewPropsForSim(${s.propMax})">${ctaLabel} →</button>
-        <button class="btn-secondary" style="width:100%;font-size:14px;padding:11px;display:flex;align-items:center;justify-content:center;gap:7px" onclick="openContactoHipotecario(${JSON.stringify(s).replace(/"/g,'&quot;')})"><i class="ti ti-headset" style="font-size:15px"></i> Contactar a un asesor hipotecario</button>
+        <button class="btn-secondary" style="width:100%;font-size:14px;padding:11px;display:flex;align-items:center;justify-content:center;gap:7px" onclick="requireAuth(()=>openChatHipotecario(${JSON.stringify(s).replace(/"/g,'&quot;')}))"><i class="ti ti-headset" style="font-size:15px"></i> Contactar a un asesor hipotecario</button>
       </div>
     </div>`;
   }).join('');
@@ -2858,63 +2858,44 @@ let MENSAJES = [
 ];
 let activeChatId = null;
 
-function openContacto(propId) {
-  document.querySelector('#sheet-contacto .sheet-title').textContent = 'Contactar asesor';
-  const ref = document.getElementById('contacto-prop-ref');
-  if (propId) {
-    const p = PROPS.find(x => x.id === propId);
-    if (p) {
-      ref.style.display = 'flex';
-      document.getElementById('contacto-prop-price').textContent = '$' + p.price.toLocaleString('es-MX');
-      document.getElementById('contacto-prop-meta').textContent = `${p.tipo} · ${p.zona}`;
-      const emoji = {Casa:'🏡',Departamento:'🏢',Terreno:'🌿','Local comercial':'🏪',Oficina:'🏢'}[p.tipo]||'🏠';
-      document.getElementById('contacto-prop-img').textContent = emoji;
-    }
-  } else {
-    ref.style.display = 'none';
-  }
-  const motivo = propId ? 'info' : 'credito';
-  document.getElementById('contacto-motivo').value = motivo;
-  const p = propId ? PROPS.find(x=>x.id===propId) : null;
-  const msgDefault = p
-    ? `Hola, me interesa la propiedad en ${p.zona} ($${p.price.toLocaleString('es-MX')}). ¿Podrían darme más información?`
-    : 'Hola, realicé una simulación y quisiera que me den más información o se pongan en contacto conmigo.';
-  document.getElementById('contacto-mensaje').value = msgDefault;
-  document.getElementById('contacto-prop-ref').dataset.propId = propId || '';
-  // Si está logueado, ocultar campos de nombre/tel (ya los tenemos)
-  const datosAnon = document.getElementById('contacto-datos-anonimo');
-  if (datosAnon) datosAnon.style.display = isLoggedIn ? 'none' : 'flex';
-  const nEl = document.getElementById('contacto-nombre');
-  const tEl = document.getElementById('contacto-tel');
-  if (nEl) nEl.value = currentUser?.nombre || '';
-  if (tEl) tEl.value = currentUser?.tel || '';
-
-  if (window.innerWidth >= 900) {
-    openDtContactSheet();
-  } else {
-    openSheet('sheet-contacto');
-  }
+function _newChatId() {
+  return 'mc' + Date.now();
 }
 
-function openContactoHipotecario(sim) {
-  // Personaliza el sheet para contexto de asesor hipotecario (no inmobiliario)
-  document.querySelector('#sheet-contacto .sheet-title').textContent = 'Asesor hipotecario';
-  document.getElementById('contacto-prop-ref').style.display = 'none';
-  document.getElementById('contacto-prop-ref').dataset.propId = '';
-  document.getElementById('contacto-motivo').value = 'credito';
-  document.getElementById('contacto-mensaje').value =
-    `Hola, realicé una simulación y me gustaría hablar con un asesor hipotecario.\n\nMi capacidad estimada es de hasta ${fmt(sim.propMax)}, con una cuota de ~${fmt(sim.cuota)}/mes a ${sim.plazo} años.\n\n¿Podrían ponerse en contacto conmigo?`;
-  const datosAnon = document.getElementById('contacto-datos-anonimo');
-  if (datosAnon) datosAnon.style.display = isLoggedIn ? 'none' : 'flex';
-  const nEl = document.getElementById('contacto-nombre');
-  const tEl = document.getElementById('contacto-tel');
-  if (nEl) nEl.value = currentUser?.nombre || '';
-  if (tEl) tEl.value = currentUser?.tel || '';
-  if (window.innerWidth >= 900) {
-    openDtContactSheet();
-  } else {
-    openSheet('sheet-contacto');
+function openChatContacto(propId) {
+  const existing = MENSAJES.find(m => m.propId === propId && m.tipo !== 'hipotecario');
+  if (existing) {
+    openChat(existing.id);
+    return;
   }
+  const p = PROPS.find(x => x.id === propId);
+  const emoji = p ? ({Casa:'🏡',Departamento:'🏢',Terreno:'🌿','Local comercial':'🏪',Oficina:'🏢'}[p.tipo]||'🏠') : '👨‍💼';
+  const preMsg = p
+    ? `Hola, me interesa la propiedad en ${p.zona} ($${p.price.toLocaleString('es-MX')}). ¿Podrían darme más información?`
+    : 'Hola, me interesa esta propiedad. ¿Podrían darme más información?';
+  const id = _newChatId();
+  MENSAJES.unshift({ id, propId, asesorNombre:'Asesor Inmobiliario', asesorEmoji: emoji, mensajes:[], fecha:'Hoy', leido:true });
+  openChat(id);
+  setTimeout(() => {
+    const inp = document.getElementById(`chat-input-${id}`);
+    if (inp) { inp.value = preMsg; inp.focus(); }
+  }, 100);
+}
+
+function openChatHipotecario(sim) {
+  const existing = MENSAJES.find(m => m.tipo === 'hipotecario');
+  if (existing) {
+    openChat(existing.id);
+    return;
+  }
+  const preMsg = `Hola, realicé una simulación y me gustaría hablar con un asesor hipotecario.\n\nMi capacidad estimada es de hasta ${fmt(sim.propMax)}, con una cuota de ~${fmt(sim.cuota)}/mes a ${sim.plazo} años.\n\n¿Podrían ponerse en contacto conmigo?`;
+  const id = _newChatId();
+  MENSAJES.unshift({ id, tipo:'hipotecario', asesorNombre:'Asesor Hipotecario BBVA', asesorEmoji:'🏦', mensajes:[], fecha:'Hoy', leido:true });
+  openChat(id);
+  setTimeout(() => {
+    const inp = document.getElementById(`chat-input-${id}`);
+    if (inp) { inp.value = preMsg; inp.focus(); }
+  }, 100);
 }
 
 function openDtContactSheet() {
