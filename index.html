@@ -2083,7 +2083,8 @@ function renderSims() {
     return;
   }
   container.innerHTML = SIM_HISTORY.map(s => {
-    const linkedProps = (s.props || []).map(pid => PROPS.find(p=>p.id===pid)).filter(Boolean);
+    const propIds = [...new Set([...(s.props || []), ...(s.refProp ? [s.refProp] : [])])];
+    const linkedProps = propIds.map(pid => PROPS.find(p=>p.id===pid)).filter(Boolean);
     const ctaLabel = linkedProps.length ? 'Ver más propiedades en el rango' : 'Ver propiedades en el rango';
 
     const refPropHTML = linkedProps.length ? `
