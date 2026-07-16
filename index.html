@@ -2156,13 +2156,10 @@ function removePropFromSim(simId, propId) {
 }
 
 function shareSimulation(s) {
-  const text = `Mi simulación BBVA Inmobiliaria\n• Capacidad: hasta ${fmt(s.propMax)}\n• Cuota: ~${fmt(s.cuota)}/mes · ${s.plazo} años\n• Ingreso: ${fmt(s.ingreso)} · Enganche: ${fmt(s.enganche)}`;
-  const url = 'https://jes-ux.github.io/bbva-casa-academy/';
   markStep('shared_sim');
-  if (navigator.share) {
-    navigator.share({ title: 'Simulación BBVA Inmobiliaria', text, url }).catch(() => {});
-  } else {
-    navigator.clipboard.writeText(text + '\n' + url).then(() => showToast('ti-copy','Simulación copiada al portapapeles')).catch(() => showToast('ti-alert-circle','No se pudo compartir'));
+  document.querySelector('#sheet-share .sheet-title').textContent = 'Compartir simulación';
+  openSheet('sheet-share');
+  if (false) { // legacy
   }
 }
 
@@ -2472,7 +2469,10 @@ function closeSheet() {
   document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open'));
   document.getElementById('sheet-overlay').classList.remove('open');
 }
-function openShareSheet() { openSheet('sheet-share'); }
+function openShareSheet() {
+  document.querySelector('#sheet-share .sheet-title').textContent = 'Compartir propiedad';
+  openSheet('sheet-share');
+}
 function toggleChip(el) { el.classList.toggle('active'); }
 function toggleChipExclusive(el, groupId) {
   const active = el.classList.contains('active');
