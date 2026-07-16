@@ -3410,12 +3410,12 @@ const ACH_DATA = {
   },
   2: {
     icon: '📊',
-    title: 'Módulo 2 completado',
-    body: 'Ya sabes cuánto puedes pagar sin que duela. Tu simulación está lista — ahora veamos qué propiedades entran en tu rango',
-    note: 'Tu cuota estimada y el monto máximo van a aparecer en cada propiedad.',
+    title: '¡Simulación lista!',
+    body: 'Ya sabés cuánto podés pagar. Tu capacidad estimada y cuota mensual van a aparecer en cada propiedad para que compares fácil.',
+    note: 'Podés volver a simular cuando quieras ajustar los números.',
     pct: 66, counter: '2 de 3 módulos',
     pills: ['done','done','pending'],
-    ctaLabel: 'Confirmar simulación', ctaFn: () => goScreen('screen-props'),
+    ctaLabel: 'Ver mi simulación →', ctaFn: () => { renderSims(); goScreen('screen-simulaciones'); },
   },
   3: {
     icon: '🏠',
@@ -3468,9 +3468,7 @@ function completeModule2() {
   const wasRef = !!simRefPropId;
   simRefPropId = null;
   const wasDone = moduleDone[2];
-  if(!wasDone){ moduleDone[2] = true; localStorage.setItem('mod2','1'); }
-  renderSims();
-  goScreen('screen-simulaciones');
+  if(!wasDone){ showAchievement(2); } else { renderSims(); goScreen('screen-simulaciones'); }
   requestAnimationFrame(() => {
     const first = document.querySelector('#sims-content .sim-history-card');
     if(first){ first.classList.add('sim-new'); setTimeout(()=>first.classList.remove('sim-new'),2500); }
