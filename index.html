@@ -2044,8 +2044,11 @@ function propCardHTML(p) {
     </div></div>`;
 }
 
-function propListItemHTML(p) {
+function propListItemHTML(p, showRemoveFav = false) {
   const tag = p.tags && p.tags[0] ? `<span class="acct-prop-row-tag">${p.tags[0]}</span>` : '';
+  const favBtn = showRemoveFav
+    ? `<button onclick="event.stopPropagation();toggleFav(${p.id});renderFavs()" style="width:32px;height:32px;border-radius:8px;border:0.5px solid var(--border);background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;color:#e53935"><i class="ti ti-heart-filled" style="font-size:15px"></i></button>`
+    : `<i class="ti ti-chevron-right acct-prop-row-chevron"></i><button class="acct-prop-row-cta" onclick="event.stopPropagation();openPropDetail(${p.id})">Ver propiedad</button>`;
   return `<div class="acct-prop-row" onclick="openPropDetail(${p.id})">
     <div class="acct-prop-row-img" style="padding:0;overflow:hidden">
       <img src="img/prop-${((p.id-1)%10)+1}.jpg" alt="" style="width:100%;height:100%;object-fit:cover">
@@ -2055,8 +2058,7 @@ function propListItemHTML(p) {
       <div class="acct-prop-row-meta">${p.zona} · ${p.tipo} · ${p.rec} rec · ${p.area}m²</div>
       ${tag}
     </div>
-    <i class="ti ti-chevron-right acct-prop-row-chevron"></i>
-    <button class="acct-prop-row-cta" onclick="event.stopPropagation();openPropDetail(${p.id})">Ver propiedad</button>
+    ${favBtn}
   </div>`;
 }
 
@@ -2089,7 +2091,7 @@ function renderFavs() {
   const favProps = PROPS.filter(p => FAVS_IDS.includes(p.id));
   const grid = document.getElementById('favs-grid');
   if (!favProps.length) { grid.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:12px">🤍</div><div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:6px">Sin favoritos aún</div><div style="font-size:13px;color:var(--text-muted)">Guardá propiedades desde el buscador</div></div>'; return; }
-  grid.innerHTML = `<div class="list-card acct-prop-list">${favProps.map(p => propListItemHTML(p)).join('')}</div>`;
+  grid.innerHTML = `<div class="list-card acct-prop-list">${favProps.map(p => propListItemHTML(p, true)).join('')}</div>`;
 }
 
 function renderSims() {
