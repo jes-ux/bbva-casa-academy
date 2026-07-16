@@ -3568,12 +3568,12 @@ function getFilteredProps(){
 
 function renderProps() {
   updateFilterBadge();
-  const hasSim = isLoggedIn && simData.propMax > 0;
+  const hasSim = isLoggedIn && simData.propMax > 0 && !searchQuery;
   const titleEl = document.querySelector('#screen-props .props-section > div:first-child h2');
   const bajadaEl = document.querySelector('#screen-props .props-section > div:first-child .bajada');
   const pillsEl = document.getElementById('profile-pills');
-  if (titleEl) titleEl.textContent = hasSim ? 'Propiedades en tu rango' : 'Explorar propiedades';
-  if (bajadaEl) bajadaEl.textContent = hasSim ? 'Resultados filtrados según tu simulación. Los precios son referenciales' : 'Encontrá la propiedad que estás buscando';
+  if (titleEl) titleEl.textContent = searchQuery ? `Resultados para "${searchQuery}"` : hasSim ? 'Propiedades en tu rango' : 'Explorar propiedades';
+  if (bajadaEl) bajadaEl.textContent = searchQuery ? '' : hasSim ? 'Resultados filtrados según tu simulación. Los precios son referenciales' : 'Encontrá la propiedad que estás buscando';
   if (pillsEl) pillsEl.style.display = hasSim ? '' : 'none';
   const show = getFilteredProps();
   document.getElementById('props-count').textContent = `${show.length} propiedad${show.length!==1?'es':''} encontrada${show.length!==1?'s':''}`;
