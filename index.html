@@ -1678,9 +1678,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div class="detail-address" id="detail-address"></div>
           <div class="detail-actions">
             <button class="detail-action-btn" id="detail-fav-dt" onclick="requireAuth(()=>toggleFav(currentPropId))"><i class="ti ti-heart"></i></button>
-            <button class="detail-action-btn" onclick="alert('Compartir propiedad')"><i class="ti ti-share"></i></button>
+            <button class="detail-action-btn" onclick="openShareSheet()"><i class="ti ti-share"></i></button>
             <button class="detail-cta-btn" onclick="requireAuth(()=>{simRefPropId=currentPropId;goScreen('screen-sim')})"><i class="ti ti-calculator"></i> Simula tu Crédito</button>
-            <button class="detail-action-btn" onclick="alert('Agendar visita')"><i class="ti ti-calendar"></i></button>
           </div>
         </div>
         <!-- Tarjeta de precio (mobile only — sidebar has it on desktop) -->
@@ -1765,6 +1764,21 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div><!-- /.screen-scroll-inner -->
     <div style="height:80px"></div>
   </div>
+
+<!-- Share sheet -->
+<div class="bottom-sheet" id="sheet-share">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Compartir propiedad</span>
+    <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
+  </div>
+  <div class="sheet-body" style="padding:8px 0 16px">
+    <button class="drawer-item" onclick="closeSheet();showToast('ti-check','Enlace copiado al portapapeles','success')"><i class="ti ti-link"></i> Copiar enlace</button>
+    <button class="drawer-item" onclick="closeSheet();showToast('ti-brand-whatsapp','Abriendo WhatsApp...','default')"><i class="ti ti-brand-whatsapp"></i> Compartir por WhatsApp</button>
+    <button class="drawer-item" onclick="closeSheet();showToast('ti-mail','Abriendo correo...','default')"><i class="ti ti-mail"></i> Enviar por correo</button>
+    <button class="drawer-item" onclick="closeSheet();showToast('ti-share','Compartiendo...','default')"><i class="ti ti-dots"></i> Más opciones</button>
+  </div>
+</div>
 
 <!-- Sheet overlay -->
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
@@ -2456,6 +2470,7 @@ function closeSheet() {
   document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open'));
   document.getElementById('sheet-overlay').classList.remove('open');
 }
+function openShareSheet() { openSheet('sheet-share'); }
 function toggleChip(el) { el.classList.toggle('active'); }
 function toggleChipExclusive(el, groupId) {
   const active = el.classList.contains('active');
