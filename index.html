@@ -1673,11 +1673,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         </div>
         <!-- Tipo badge + título + dirección + acciones -->
         <div class="detail-top-block">
-          <div id="detail-tipo-badge" class="detail-tipo-badge"></div>
           <h1 class="detail-title" id="detail-title"></h1>
           <div class="detail-address" id="detail-address"></div>
           <div class="detail-actions">
-            <button class="detail-action-btn" onclick="openShareSheet()"><i class="ti ti-share"></i></button>
             <button class="detail-cta-btn" onclick="requireAuth(()=>{simRefPropId=currentPropId;goScreen('screen-sim')})"><i class="ti ti-calculator"></i> Simula tu Crédito</button>
           </div>
         </div>
@@ -1690,7 +1688,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
               <div class="detail-price-m2" id="detail-price-m2-m"></div>
               <div class="detail-price-location" id="detail-location-m"></div>
             </div>
-            <button class="detail-action-btn" id="detail-fav-m" onclick="requireAuth(()=>toggleFav(currentPropId))"><i class="ti ti-heart"></i></button>
+            <div style="display:flex;gap:6px">
+              <button class="detail-action-btn" onclick="openShareSheet()"><i class="ti ti-share"></i></button>
+              <button class="detail-action-btn" id="detail-fav-m" onclick="requireAuth(()=>toggleFav(currentPropId))"><i class="ti ti-heart"></i></button>
+            </div>
           </div>
           <div id="detail-sim-banner-m" style="margin-top:12px"></div>
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>openChatContacto(currentPropId))">
@@ -1752,7 +1753,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
               <div class="detail-price-m2" id="detail-price-m2"></div>
               <div class="detail-price-location" id="detail-location"></div>
             </div>
-            <button class="detail-action-btn" id="detail-fav-m" onclick="requireAuth(()=>toggleFav(currentPropId))"><i class="ti ti-heart"></i></button>
+            <div style="display:flex;gap:6px">
+              <button class="detail-action-btn" onclick="openShareSheet()"><i class="ti ti-share"></i></button>
+              <button class="detail-action-btn" id="detail-fav-m" onclick="requireAuth(()=>toggleFav(currentPropId))"><i class="ti ti-heart"></i></button>
+            </div>
           </div>
           <div id="detail-sim-banner-dt" style="margin-top:12px"></div>
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>openChatContacto(currentPropId))">
