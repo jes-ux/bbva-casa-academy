@@ -86,6 +86,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .home-search-btn{width:100%;padding:20px;border:none;border-radius:12px;background:var(--text-primary);color:var(--surface-2);font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-sans)}
 /* ── Skeleton ── */
 @keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+@keyframes spin{to{transform:rotate(360deg)}}
 .sk{border-radius:8px;background:linear-gradient(90deg,var(--surface-1) 25%,var(--border) 50%,var(--surface-1) 75%);background-size:800px 100%;animation:shimmer 1.2s infinite linear}
 .sk-line{height:14px;margin-bottom:10px;border-radius:6px}
 .sk-title{height:20px;width:60%;margin-bottom:14px;border-radius:6px}
@@ -1150,7 +1151,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <button class="onb-forgot" onclick="goScreen('screen-forgot-password')" style="margin-bottom:16px">Olvidé mi contraseña</button>
           <button class="onb-btn" id="login-btn" onclick="doLogin()">Ingresar</button>
           <div class="onb-divider" style="margin:16px 0"><span>o continúa con</span></div>
-          <button class="onb-social-btn" style="width:100%;justify-content:center;gap:10px;padding:13px" onclick="void(0)">
+          <button class="onb-social-btn" style="width:100%;justify-content:center;gap:10px;padding:13px" onclick="iniciarGoogleAuth('login')">
             <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
             Ingresar con Google
           </button>
@@ -1171,7 +1172,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="onb-content" id="reg-paso1">
         <div class="onb-title">Crear cuenta</div>
         <div style="background:var(--surface-2);border-radius:14px;padding:20px;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(0,0,0,.07)">
-          <button class="onb-social-btn" style="width:100%;justify-content:center;gap:10px;margin-bottom:16px;padding:13px" onclick="void(0)">
+          <button class="onb-social-btn" style="width:100%;justify-content:center;gap:10px;margin-bottom:16px;padding:13px" onclick="iniciarGoogleAuth('registro')">
             <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
             Regístrate con Google
           </button>
@@ -1277,6 +1278,20 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
         </div>
         <button class="onb-btn" id="newpass-btn" style="margin-top:16px" disabled onclick="doNewPassword()">Guardar contraseña</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONBOARDING: SIMULACIÓN OAUTH GOOGLE -->
+  <div id="screen-google-auth" class="screen onb-screen">
+    <div class="onboarding-screen">
+      <div class="onb-content" style="justify-content:center;align-items:center;text-align:center">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--surface-2);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;box-shadow:var(--card-shadow)">
+          <svg width="30" height="30" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        </div>
+        <div class="onb-title" id="google-auth-title" style="font-size:20px">Conectando con Google</div>
+        <div class="onb-sub" id="google-auth-sub">Redirigiendo a accounts.google.com…</div>
+        <div style="width:28px;height:28px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--text-primary);animation:spin .8s linear infinite;margin:28px auto 0"></div>
       </div>
     </div>
   </div>
@@ -2848,6 +2863,38 @@ function doRegistro() {
   } else enterApp();
 }
 
+// ── Simulación OAuth Google ──
+const GOOGLE_DEMO_USER = { email:'natalia@email.com', nombre:'Natalia García Molina', tel:'+52 55 1234 5678', avatar:null };
+let _googleAuthMode = 'login';
+
+function iniciarGoogleAuth(mode) {
+  _googleAuthMode = mode;
+  document.getElementById('google-auth-title').textContent = mode === 'registro' ? 'Creando tu cuenta con Google' : 'Conectando con Google';
+  document.getElementById('google-auth-sub').textContent = 'Redirigiendo a accounts.google.com…';
+  goScreen('screen-google-auth');
+  setTimeout(completarGoogleAuth, 1400);
+}
+
+function completarGoogleAuth() {
+  if (_googleAuthMode === 'registro') {
+    currentUser = { email:'usuario.google@gmail.com', nombre:'Usuario de Google', tel:'', avatar:null };
+    saveRegisteredUser(currentUser);
+  } else {
+    currentUser = GOOGLE_DEMO_USER;
+  }
+  saveSession(currentUser);
+  isLoggedIn = true;
+  markStep('registered');
+  if (_googleAuthMode === 'login') markStep('profile_done');
+  updateHeaderAvatar();
+  renderPerfil();
+  showToast('ti-circle-check', _googleAuthMode === 'registro' ? 'Cuenta creada con Google' : 'Sesión iniciada con Google', 'success');
+  if (_pendingAction) {
+    if (_pendingReturnScreen) goScreen(_pendingReturnScreen, true);
+    const fn = _pendingAction; _pendingAction = null; _pendingReturnScreen = null; fn();
+  } else enterApp();
+}
+
 // Emails que ya existen en el prototipo (simulación)
 const EMAILS_EXISTENTES = new Set(['natalia@email.com', 'demo@bbva.com', 'test@test.com']);
 
@@ -3377,7 +3424,7 @@ function goScreen(id, isBack = false) {
     s.classList.add('active');
     lastScrollY = 0;
     s.scrollTop = 0;
-    const NOHEADER = new Set(['screen-login','screen-registro','screen-forgot-password','screen-check-email','screen-new-password']);
+    const NOHEADER = new Set(['screen-login','screen-registro','screen-forgot-password','screen-check-email','screen-new-password','screen-google-auth']);
     if (NOHEADER.has(id)) {
       document.getElementById('app-header').style.display = 'none';
       document.getElementById('bottom-nav').style.display = 'none';
