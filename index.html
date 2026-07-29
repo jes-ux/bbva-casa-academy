@@ -429,6 +429,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .onb-field label{font-size:13px;font-weight:500;color:var(--text-secondary)}
 .onb-field input{border:1px solid var(--border-strong);border-radius:8px;padding:13px 14px;font-size:15px;font-family:var(--font-sans);color:var(--text-primary);background:var(--surface-0);outline:none;width:100%;box-sizing:border-box;transition:border-color .15s}
 .onb-field input:focus{border-color:var(--text-primary);background:var(--surface-2)}
+.onb-field input.input-error{border-color:var(--border-danger);background:var(--bg-danger)}
 .onb-btn{width:100%;padding:14px;font-size:15px;font-weight:600;border-radius:8px;border:none;cursor:pointer;font-family:var(--font-sans);background:var(--text-primary);color:var(--surface-2)}
 .onb-btn:disabled{background:var(--border-strong);color:var(--text-muted);cursor:default}
 .onb-btn-outline{background:var(--surface-2);color:var(--text-primary);border:1px solid var(--border-strong)}
@@ -1146,7 +1147,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             No encontramos una cuenta con ese correo electrónico
           </div>
           <div class="onb-field" style="margin-bottom:4px"><label>Contraseña</label><input type="password" placeholder="••••••••" id="login-pass"></div>
-          <button class="onb-forgot" onclick="void(0)" style="margin-bottom:16px">Olvidé mi contraseña</button>
+          <button class="onb-forgot" onclick="goScreen('screen-forgot-password')" style="margin-bottom:16px">Olvidé mi contraseña</button>
           <button class="onb-btn" id="login-btn" onclick="doLogin()">Ingresar</button>
           <div class="onb-divider" style="margin:16px 0"><span>o continúa con</span></div>
           <button class="onb-social-btn" style="width:100%;justify-content:center;gap:10px;padding:13px" onclick="void(0)">
@@ -1214,6 +1215,70 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         </div>
         <button class="onb-btn" id="reg-btn" style="margin-top:16px" disabled onclick="doRegistro()">Crear cuenta</button>
         <div class="onb-link-row" style="margin-top:12px"><button onclick="regVolver()">Usar otro correo electrónico</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONBOARDING: RECUPERAR CONTRASEÑA -->
+  <div id="screen-forgot-password" class="screen onb-screen">
+    <div class="onboarding-screen">
+      <div class="onb-topbar">
+        <div class="onb-logo" onclick="enterApp()" style="cursor:pointer"><i class="ti ti-building-bank"></i> BBVA Inmobiliaria</div>
+      </div>
+      <div class="onb-content">
+        <div class="onb-title">Recuperar contraseña</div>
+        <div class="onb-sub">Ingresá tu correo y te enviaremos un enlace para restablecer tu contraseña</div>
+        <div style="background:var(--surface-2);border-radius:14px;padding:20px;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(0,0,0,.07)">
+          <div class="onb-field" style="margin-bottom:0"><label>Email</label><input type="email" placeholder="natalia@email.com" id="forgot-email" oninput="forgotClearError()"></div>
+          <div id="forgot-email-error" style="display:none;margin:10px 0 0;font-size:12px;color:var(--text-danger);align-items:center;gap:5px">
+            <i class="ti ti-alert-circle" style="font-size:13px;flex-shrink:0"></i>
+            No encontramos una cuenta con ese correo
+          </div>
+        </div>
+        <button class="onb-btn" id="forgot-btn" style="margin-top:16px" onclick="doForgotPassword()">Enviar enlace</button>
+        <div class="onb-link-row" style="margin-top:12px"><button onclick="goScreen('screen-login')">Volver a iniciar sesión</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONBOARDING: REVISÁ TU CORREO -->
+  <div id="screen-check-email" class="screen onb-screen">
+    <div class="onboarding-screen">
+      <div class="onb-topbar">
+        <div class="onb-logo" onclick="enterApp()" style="cursor:pointer"><i class="ti ti-building-bank"></i> BBVA Inmobiliaria</div>
+      </div>
+      <div class="onb-content" style="justify-content:center;align-items:center;text-align:center">
+        <div class="achievement-icon" style="margin:0 auto 20px"><i class="ti ti-mail" style="font-size:32px"></i></div>
+        <div class="onb-title">Revisá tu correo</div>
+        <div class="onb-sub">Te enviamos un enlace a <strong id="check-email-address" style="color:var(--text-primary)"></strong></div>
+        <div class="onb-sub" style="margin-top:-14px;font-size:12px">El enlace vence en 30 minutos</div>
+        <button class="onb-btn" style="margin-top:8px" onclick="abrirCorreo()">Abrir correo</button>
+        <div class="onb-link-row" style="margin-top:12px"><button onclick="reenviarEnlace()">Reenviar enlace</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONBOARDING: CREAR NUEVA CONTRASEÑA -->
+  <div id="screen-new-password" class="screen onb-screen">
+    <div class="onboarding-screen">
+      <div class="onb-topbar">
+        <div class="onb-logo" onclick="enterApp()" style="cursor:pointer"><i class="ti ti-building-bank"></i> BBVA Inmobiliaria</div>
+      </div>
+      <div class="onb-content">
+        <div class="onb-title">Crear nueva contraseña</div>
+        <div class="onb-sub">Elegí una contraseña nueva para tu cuenta</div>
+        <div style="background:var(--surface-2);border-radius:14px;padding:20px;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(0,0,0,.07)">
+          <div class="onb-field">
+            <label>Nueva contraseña</label>
+            <input type="password" placeholder="Mínimo 8 caracteres" id="newpass-1" autocomplete="new-password" oninput="newPassCheck()">
+          </div>
+          <div class="onb-field" style="margin-bottom:0">
+            <label>Confirmar contraseña</label>
+            <input type="password" placeholder="Repetí tu contraseña" id="newpass-2" autocomplete="new-password" oninput="newPassCheck()">
+            <span id="newpass-error" style="display:none;font-size:12px;color:var(--text-danger);margin-top:4px">Las contraseñas no coinciden</span>
+          </div>
+        </div>
+        <button class="onb-btn" id="newpass-btn" style="margin-top:16px" disabled onclick="doNewPassword()">Guardar contraseña</button>
       </div>
     </div>
   </div>
@@ -2852,6 +2917,59 @@ function doLogout() {
   goScreen('screen-login');
 }
 
+// ── Recuperar contraseña ──
+let _forgotEmail = '';
+
+function emailTieneCuenta(email) {
+  const saved = getSession();
+  const registrados = getRegisteredUsers();
+  return (saved && saved.email.toLowerCase() === email) || !!DEMO_USERS[email] || !!registrados[email];
+}
+
+function forgotClearError() {
+  document.getElementById('forgot-email')?.classList.remove('input-error');
+  const el = document.getElementById('forgot-email-error');
+  if (el) el.style.display = 'none';
+}
+
+function doForgotPassword() {
+  const email = document.getElementById('forgot-email')?.value.trim().toLowerCase() || '';
+  if (!emailTieneCuenta(email)) {
+    document.getElementById('forgot-email')?.classList.add('input-error');
+    const errEl = document.getElementById('forgot-email-error');
+    if (errEl) errEl.style.display = 'flex';
+    return;
+  }
+  _forgotEmail = email;
+  const addrEl = document.getElementById('check-email-address');
+  if (addrEl) addrEl.textContent = email;
+  goScreen('screen-check-email');
+}
+
+function abrirCorreo() {
+  goScreen('screen-new-password');
+}
+
+function reenviarEnlace() {
+  showToast('ti-circle-check', 'Enlace reenviado a ' + _forgotEmail, 'success');
+}
+
+function newPassCheck() {
+  const p1 = document.getElementById('newpass-1')?.value || '';
+  const p2 = document.getElementById('newpass-2')?.value || '';
+  const errEl = document.getElementById('newpass-error');
+  const mismatch = p1 && p2 && p1 !== p2;
+  if (errEl) errEl.style.display = mismatch ? 'block' : 'none';
+  const ok = p1.length >= 8 && p1 === p2;
+  const btn = document.getElementById('newpass-btn');
+  if (btn) btn.disabled = !ok;
+}
+
+function doNewPassword() {
+  showToast('ti-circle-check', 'Contraseña actualizada', 'success');
+  goScreen('screen-login');
+}
+
 // ── ACADEMY_SECTIONS definition ──
 const ACADEMY_SECTIONS = [
   { id:'onboarding', label:'Empieza', icon:'ti-user-plus', steps:[
@@ -3270,7 +3388,7 @@ function goScreen(id, isBack = false) {
     s.classList.add('active');
     lastScrollY = 0;
     s.scrollTop = 0;
-    const NOHEADER = new Set(['screen-login','screen-registro']);
+    const NOHEADER = new Set(['screen-login','screen-registro','screen-forgot-password','screen-check-email','screen-new-password']);
     if (NOHEADER.has(id)) {
       document.getElementById('app-header').style.display = 'none';
       document.getElementById('bottom-nav').style.display = 'none';
