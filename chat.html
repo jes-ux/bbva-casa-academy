@@ -178,6 +178,11 @@ function calcSim(ingreso, enganche, plazo){
   return {credito:Math.round(credito), propMax:Math.round(propMax), cuota:Math.round(cuota), pct};
 }
 
+function cuotaParaCredito(credito, plazo){
+  const r = TASA/12, n = plazo*12;
+  return credito*r/(1-Math.pow(1+r,-n));
+}
+
 const PROPS = [
   {price:2800000,area:65,rec:2,ban:1,zona:'Narvarte',tipo:'Departamento',tags:['Bien conectado','Metro Insurgentes']},
   {price:3100000,area:72,rec:2,ban:2,zona:'Del Valle',tipo:'Departamento',tags:['Amplio','Estacionamiento']},
@@ -512,10 +517,10 @@ async function onPlazo(p){
   await queue(()=>{}, 300);
   await queue(()=>{
     const comparisons = [10,15,20,25].map(pp=>{
-      const rr = calcSim(simData.ingreso, simData.enganche, pp);
+      const cuotaPp = cuotaParaCredito(r.credito, pp);
       return `<div class="compare-row${pp===p?' current':''}">
         <span>${pp} años${pp===p?' (elegido)':''}</span>
-        <span>${fmt(rr.cuota)}/mes</span>
+        <span>${fmt(cuotaPp)}/mes</span>
       </div>`;
     }).join('');
 
@@ -621,7 +626,9 @@ function filterProps(){
   if(prefData.zona) list = list.filter(p => p.zona === prefData.zona);
   if(prefData.tipo) list = list.filter(p => p.tipo === prefData.tipo);
   if(prefData.rec) list = prefData.rec === 3 ? list.filter(p => p.rec >= 3) : list.filter(p => p.rec === prefData.rec);
-  return list.length ? list : PROPS.slice(0,3);
+  if(list.length) return {list, inBudget:true};
+  const closest = PROPS.slice().sort((a,b)=>Math.abs(a.price-max)-Math.abs(b.price-max)).slice(0,3);
+  return {list: closest, inBudget:false};
 }
 
 function renderPropCards(list){
@@ -640,11 +647,14 @@ function renderPropCards(list){
 async function startProps(){
   clearReplies();
   setProgress(90,'Módulo 3 — Propiedades');
-  const show = filterProps();
+  const {list: show, inBudget} = filterProps();
   const zonaLabel = prefData.zona || 'todas las zonas';
   const tipoLabel = prefData.tipo || 'cualquier tipo';
   const recLabel = prefData.rec ? (prefData.rec===3?'3+ rec':prefData.rec+' rec') : 'cualquier tamaño';
-  await botSay([`Encontré ${show.length} propiedad${show.length!==1?'es':''} en ${zonaLabel} · ${tipoLabel} · ${recLabel}. Los precios son referenciales.`], 0);
+  const msg = inBudget
+    ? `Encontré ${show.length} propiedad${show.length!==1?'es':''} en ${zonaLabel} · ${tipoLabel} · ${recLabel}. Los precios son referenciales.`
+    : `No encontré propiedades en ${zonaLabel} · ${tipoLabel} · ${recLabel} dentro de tu rango simulado. Te muestro las más cercanas a tu presupuesto.`;
+  await botSay([msg], 0);
   await queue(()=>{
     addCard(`<div id="prop-list">${renderPropCards(show)}</div>`);
     scrollChat();
@@ -730,11 +740,13 @@ async function reApplyFilter(key, val){
   prefData[key] = val;
   const labelMap = {zona: val||'todas las zonas', tipo: val||'cualquier tipo', rec: val?(val===3?'3+ rec':val+' rec'):'cualquier tamaño'};
   addUserBubble(labelMap[key]);
-  const show = filterProps();
+  const {list: show, inBudget} = filterProps();
   showTyping();
   await queue(()=>{
     removeTyping();
-    addBotBubble(`${show.length} propiedad${show.length!==1?'es':''} con ese filtro.`);
+    addBotBubble(inBudget
+      ? `${show.length} propiedad${show.length!==1?'es':''} con ese filtro.`
+      : `Ninguna propiedad con ese filtro está en tu rango simulado. Te muestro las más cercanas a tu presupuesto.`);
     const list = document.getElementById('prop-list');
     if(list){ list.innerHTML = renderPropCards(show); scrollChat(); }
     else { addCard(`<div id="prop-list">${renderPropCards(show)}</div>`); scrollChat(); }
