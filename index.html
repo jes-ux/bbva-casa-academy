@@ -2075,8 +2075,10 @@ const DEMO_SEED_SIMS = [
   { id:'S002', fecha:'28 may 2026', ingreso:28000, enganche:250000, plazo:20, propMax:2800000, cuota:15200, props:[4,5] },
 ];
 
-function favsKey() { return currentUser ? 'bbva_favs_' + currentUser.email.toLowerCase() : null; }
-function simsKey() { return currentUser ? 'bbva_sims_' + currentUser.email.toLowerCase() : null; }
+function favsKey()    { return currentUser ? 'bbva_favs_'    + currentUser.email.toLowerCase() : null; }
+function simsKey()    { return currentUser ? 'bbva_sims_'    + currentUser.email.toLowerCase() : null; }
+function modulesKey() { return currentUser ? 'bbva_modules_' + currentUser.email.toLowerCase() : null; }
+function stepsKey()   { return currentUser ? 'bbva_steps_'   + currentUser.email.toLowerCase() : null; }
 
 function saveFavs() {
   const key = favsKey();
@@ -2086,9 +2088,19 @@ function saveSimHistory() {
   const key = simsKey();
   if (key) localStorage.setItem(key, JSON.stringify(SIM_HISTORY));
 }
+function saveModules() {
+  const key = modulesKey();
+  if (key) localStorage.setItem(key, JSON.stringify(moduleDone));
+}
+function saveSteps() {
+  const key = stepsKey();
+  if (key) localStorage.setItem(key, JSON.stringify(STEPS_DONE));
+}
 
-// Recarga FAVS_IDS/SIM_HISTORY para el usuario activo (o los vacía si no hay sesión).
-// Se llama al cargar la página, tras login/registro y al cerrar sesión.
+// Recarga FAVS_IDS/SIM_HISTORY/moduleDone/STEPS_DONE para el usuario activo (o los
+// vacía si no hay sesión). Se llama al cargar la página, tras login/registro y al
+// cerrar sesión, para que una cuenta nueva arranque de cero y ninguna cuenta vea el
+// progreso de otra.
 function loadUserScopedData() {
   FAVS_IDS.length = 0;
   const fKey = favsKey();
@@ -2109,6 +2121,26 @@ function loadUserScopedData() {
       saveSimHistory();
     }
   }
+
+  [1,2,3].forEach(n => moduleDone[n] = false);
+  const mKey = modulesKey();
+  if (mKey) {
+    try {
+      const savedModules = JSON.parse(localStorage.getItem(mKey)) || {};
+      [1,2,3].forEach(n => moduleDone[n] = !!savedModules[n]);
+    } catch {}
+  }
+
+  Object.keys(STEPS_DONE).forEach(k => delete STEPS_DONE[k]);
+  const stKey = stepsKey();
+  if (stKey) {
+    try { Object.assign(STEPS_DONE, JSON.parse(localStorage.getItem(stKey)) || {}); } catch {}
+  }
+
+  // La Academy (screen-edu) mantiene su propio estado de desbloqueo progresivo en el
+  // DOM (EDU_READ) que no vive en localStorage — hay que sincronizarlo con el usuario
+  // recién cargado para que no arrastre el avance de la cuenta anterior.
+  if (typeof initEduScreen === 'function') initEduScreen();
 }
 
 // Cada propiedad tiene perfil visual propio: altura de imagen + amenidades + descripción corta
@@ -2716,17 +2748,14 @@ function updateBackBtn() {
   btn.style.display = show ? 'inline-flex' : 'none';
 }
 
-// módulos completados
-const _savedModules = JSON.parse(localStorage.getItem('bbva_modules') || '{}');
-const moduleDone = { 1: !!_savedModules[1], 2: !!_savedModules[2], 3: !!_savedModules[3] };
-
-// ── Steps tracking (academia checklist) ──
-const _savedSteps = JSON.parse(localStorage.getItem('bbva_steps') || '{}');
-const STEPS_DONE = { ..._savedSteps };
+// módulos completados y checklist de la academia — se llenan por cuenta en loadUserScopedData()
+const moduleDone = { 1: false, 2: false, 3: false };
+const STEPS_DONE = {};
+const EDU_READ = {cat:false,tasa:false,enganche:false};
 function markStep(key) {
   if (STEPS_DONE[key]) return;
   STEPS_DONE[key] = true;
-  localStorage.setItem('bbva_steps', JSON.stringify(STEPS_DONE));
+  saveSteps();
 }
 
 // ── Session management ──
@@ -3511,11 +3540,72 @@ function goScreen(id, isBack = false) {
     initHeaderScroll(s);
     if (id === 'screen-props') renderProps();
     if (id === 'screen-academia') renderAcademia();
+    if (id === 'screen-edu') initEduScreen();
     document.querySelectorAll('.dt-acct-item[data-screen]').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
   });
 }
 
-const EDU_READ = {cat:false,tasa:false,enganche:false};
+// Sincroniza la pantalla del Módulo 1 con moduleDone[1] cada vez que se entra: si ya
+// está completo (aunque haya sido en una sesión anterior), lo muestra todo desbloqueado
+// para poder repasarlo libremente sin tener que rehacer el quiz. Si no está completo
+// (p. ej. se acaba de cambiar de cuenta), lo vuelve a dejar en su estado inicial
+// bloqueado, para que no arrastre el avance leído por la cuenta anterior.
+function initEduScreen() {
+  const order = ['cat','tasa','enganche'];
+  if (moduleDone[1]) {
+    order.forEach(k => {
+      EDU_READ[k] = true;
+      const num = document.getElementById('step-num-'+k);
+      if (num) { num.classList.add('done'); num.innerHTML = '<i class="ti ti-check" style="font-size:11px"></i>'; }
+    });
+    ['tasa','enganche'].forEach(k => {
+      const card = document.getElementById('card-'+k);
+      if (card) { card.classList.add('unlocked'); card.classList.remove('edu-locked'); }
+    });
+    const mc = document.getElementById('mini-check-block');
+    const locked = document.getElementById('mini-check-locked-msg');
+    const wrap = document.getElementById('quiz-container-wrap');
+    const sub = mc?.querySelector('p');
+    if (mc) { mc.classList.add('unlocked'); mc.classList.remove('edu-locked'); }
+    if (locked) locked.style.display = 'none';
+    if (wrap) wrap.style.display = 'block';
+    if (sub) sub.textContent = 'No es un examen, es confirmación de avance';
+    ['q1','q2','q3'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    const done = document.getElementById('quiz-done');
+    if (done) done.style.display = 'block';
+  } else {
+    order.forEach(k => {
+      EDU_READ[k] = false;
+      document.getElementById(k)?.classList.remove('open');
+      const num = document.getElementById('step-num-'+k);
+      if (num) { num.classList.remove('done'); num.textContent = String(order.indexOf(k) + 1); }
+    });
+    ['tasa','enganche'].forEach(k => {
+      const card = document.getElementById('card-'+k);
+      if (card) { card.classList.add('edu-locked'); card.classList.remove('unlocked'); }
+    });
+    const mc = document.getElementById('mini-check-block');
+    const locked = document.getElementById('mini-check-locked-msg');
+    const wrap = document.getElementById('quiz-container-wrap');
+    const sub = mc?.querySelector('p');
+    if (mc) { mc.classList.add('edu-locked'); mc.classList.remove('unlocked'); }
+    if (locked) locked.style.display = '';
+    if (wrap) wrap.style.display = 'none';
+    if (sub) sub.textContent = 'Leé los 3 temas para desbloquear';
+    const q1 = document.getElementById('q1'); if (q1) q1.style.display = '';
+    const q2 = document.getElementById('q2'); if (q2) q2.style.display = 'none';
+    const q3 = document.getElementById('q3'); if (q3) q3.style.display = 'none';
+    document.querySelectorAll('#quiz-container .option').forEach(o => {
+      o.classList.remove('correct','wrong');
+      o.style.pointerEvents = '';
+      const icon = o.querySelector('i');
+      if (icon) icon.className = 'ti ti-circle';
+    });
+    const done = document.getElementById('quiz-done');
+    if (done) done.style.display = 'none';
+  }
+}
+
 function openConcept(id) {
   const body = document.getElementById(id);
   if (!body) return;
@@ -3680,7 +3770,7 @@ const PILL_LABELS = ['Entiende','Simula','Busca'];
 
 function showAchievement(n) {
   moduleDone[n] = true;
-  localStorage.setItem('bbva_modules', JSON.stringify(moduleDone));
+  saveModules();
   if (n === 1) markStep('edu_done');
   if (n === 2) markStep('sim_done');
   if (n === 3) markStep('viewed_prop');
@@ -3731,9 +3821,12 @@ function viewPropsForSim(propMax) {
 }
 
 function goToAchievement() {
-  if (moduleDone[1] && moduleDone[2] && moduleDone[3]) { renderAcademia(); goScreen('screen-academia'); return; }
-  if (moduleDone[1]) { goScreen('screen-sim'); return; }
-  showAchievement(1);
+  if (!moduleDone[1]) { showAchievement(1); return; }
+  // Módulo 1 ya estaba hecho de antes (esto es un repaso del quiz) — retomar en el
+  // siguiente paso pendiente en vez de mandar siempre al módulo 2.
+  if (!moduleDone[2]) { goScreen('screen-sim'); return; }
+  if (!moduleDone[3]) { goScreen('screen-props'); return; }
+  renderAcademia(); goScreen('screen-academia');
 }
 
 function updateFilterBadge() {
