@@ -479,6 +479,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .prop-unavailable-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--text-warning);background:var(--bg-warning);border-radius:6px;padding:3px 7px;margin-top:5px;width:fit-content}
 .acct-prop-row-remove-btn{flex-shrink:0;font-size:12px;font-weight:600;color:var(--text-danger);background:var(--surface-0);border:1.5px solid var(--border-danger);border-radius:8px;padding:7px 12px;cursor:pointer;font-family:inherit;white-space:nowrap}
 .acct-prop-row-remove-btn:hover{background:var(--bg-danger)}
+.contact-done-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--text-success);background:var(--bg-success);border-radius:6px;padding:4px 9px;width:fit-content;cursor:pointer;border:none;font-family:inherit}
+.contact-done-badge:hover{opacity:.85}
 #dt-mega-menu{display:none}
 #mega-backdrop{display:none}
 
@@ -1817,6 +1819,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
           </div>
           <div id="detail-sim-banner-m" style="margin-top:12px"></div>
+          <div id="detail-contact-badge-m" style="margin-top:10px"></div>
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>contactarInmobiliario(currentPropId))">
             <i class="ti ti-headset"></i> Contacta al asesor
           </button>
@@ -1882,6 +1885,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
           </div>
           <div id="detail-sim-banner-dt" style="margin-top:12px"></div>
+          <div id="detail-contact-badge-dt" style="margin-top:10px"></div>
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>contactarInmobiliario(currentPropId))">
             <i class="ti ti-headset"></i> Contacta al asesor
           </button>
@@ -2468,6 +2472,11 @@ function renderSims() {
         <button onclick="event.stopPropagation();removePropFromSim('${s.id}',${rp.id})" class="acct-prop-row-remove-btn">Eliminar</button>
       </div>`).join('')}` : '';
 
+    const contactoHipo = WA_CONTACTS.find(c => c.simId === s.id && c.tipo === 'hipotecario');
+    const hipoBadgeHTML = contactoHipo
+      ? `<button class="contact-done-badge" onclick="verContactoWA('${contactoHipo.id}')"><i class="ti ti-circle-check" style="font-size:13px"></i> Asesor hipotecario contactado</button>`
+      : '';
+
     return `<div class="sim-history-card" style="margin-bottom:16px">
       <div style="padding:14px 16px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start">
         <div>
@@ -2487,6 +2496,7 @@ function renderSims() {
         ${refPropHTML}
       </div>
       <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px">
+        ${hipoBadgeHTML}
         <button class="btn-primary" style="width:100%;font-size:14px;padding:12px" onclick="viewPropsForSim(${s.propMax})">${ctaLabel} →</button>
         <button class="btn-secondary" style="width:100%;font-size:14px;padding:11px;display:flex;align-items:center;justify-content:center;gap:7px" onclick="requireAuth(()=>contactarHipotecario(${JSON.stringify(s).replace(/"/g,'&quot;')}))"><i class="ti ti-headset" style="font-size:15px"></i> Contactar a un asesor hipotecario</button>
       </div>
@@ -3792,6 +3802,11 @@ function contactarPorWhatsapp({ tipo, asesor, propId, simId, mensaje, stepKey })
 }
 
 function contactarInmobiliario(propId) {
+  // Si ya existe un contacto registrado para esta propiedad, retomamos ese registro
+  // en vez de generar uno nuevo — evita duplicar el contacto y deja claro que ya se
+  // habló con un asesor sobre esta ficha.
+  const existing = WA_CONTACTS.find(c => c.propId === propId && c.tipo === 'inmobiliario');
+  if (existing) { verContactoWA(existing.id); return; }
   const p = PROPS.find(x => x.id === propId);
   const asesor = asesorInmobiliarioFor(propId);
   const mensaje = p
@@ -3801,6 +3816,8 @@ function contactarInmobiliario(propId) {
 }
 
 function contactarHipotecario(sim) {
+  const existing = WA_CONTACTS.find(c => c.simId === sim.id && c.tipo === 'hipotecario');
+  if (existing) { verContactoWA(existing.id); return; }
   const mensaje = `Hola, realicé una simulación y me gustaría hablar con un asesor hipotecario.\n\nMi capacidad estimada es de hasta ${fmt(sim.propMax)}, con una cuota de ~${fmt(sim.cuota)}/mes a ${sim.plazo} años.\n\n¿Podrían ponerse en contacto conmigo?`;
   contactarPorWhatsapp({ tipo:'hipotecario', asesor: ASESOR_HIPOTECARIO, simId: sim.id, mensaje, stepKey:'contacted_hipo' });
 }
@@ -4788,6 +4805,16 @@ function openPropDetail(id){
   ['detail-sim-banner-m','detail-sim-banner-dt'].forEach(elId => {
     const el = document.getElementById(elId);
     if(el) el.innerHTML = simBannerHTML;
+  });
+
+  // badge de contacto previo con el asesor inmobiliario de esta propiedad
+  const contactoInmob = isLoggedIn ? WA_CONTACTS.find(c => c.propId === id && c.tipo === 'inmobiliario') : null;
+  const contactBadgeHTML = contactoInmob
+    ? `<button class="contact-done-badge" onclick="verContactoWA('${contactoInmob.id}')"><i class="ti ti-circle-check" style="font-size:13px"></i> Asesor inmobiliario contactado</button>`
+    : '';
+  ['detail-contact-badge-m','detail-contact-badge-dt'].forEach(elId => {
+    const el = document.getElementById(elId);
+    if(el) el.innerHTML = contactBadgeHTML;
   });
 
   // propiedades relacionadas — mínimo 10 items repitiendo para llenar carrusel
