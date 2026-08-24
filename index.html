@@ -2038,14 +2038,17 @@ let entryPoint = 1;
 let simData = {ingreso:0, enganche:0, plazo:10, propMax:0, cuotaReal:0, pct:0};
 let simRefPropId = null; // prop que originó la simulación desde ficha de producto
 
-// Verdadero mientras el usuario recorre a propósito el camino guiado de Casa Academy
-// (entró por un "momento" en el inicio, o retomó un módulo puntual desde la sección
-// Academia). Solo en ese caso tiene sentido interrumpir con la pantalla de logro al
-// completar un módulo — si no, completar el módulo es un efecto secundario de una
-// acción normal (ver una propiedad, simular) y se avisa con un toast liviano. No se
-// persiste a propósito: cada sesión nueva arranca en false, así que si alguien
-// abandonó el recorrido y vuelve otro día, no le reaparece la pantalla de la nada.
-let enFlujoAcademia = false;
+// Qué módulo (2 o 3) se espera completar a continuación del recorrido guiado y
+// consciente de Casa Academy — null si no hay ninguno pendiente. Se arma en el momento
+// exacto en que el usuario elige seguir ese camino (un "momento" en el inicio, retomar
+// un módulo desde la sección Academia, o el CTA de una pantalla de logro) y se consume
+// en el instante en que se evalúa — no basta con "true/false" para toda la sesión,
+// porque si el usuario arranca el recorrido y se desvía a completar OTRO módulo antes
+// de terminarlo, ese flag genérico dispararía el logro equivocado más tarde. Guardar
+// el número del módulo puntual evita esa mezcla. Tampoco se persiste: cada sesión
+// nueva arranca en null, así que si alguien abandonó el recorrido y vuelve otro día,
+// no le reaparece la pantalla de la nada.
+let proximoModuloConsciente = null;
 
 const PROPS = [
   {id:1,price:2800000,area:65,rec:2,ban:1,zona:'Narvarte',tipo:'Departamento',tags:['Bien conectado','Metro Insurgentes'],lat:19.4043,lng:-99.1663,desc:'Departamento luminoso con acabados modernos. A dos cuadras del metro Insurgentes y con excelente acceso a transporte público. Edificio con seguridad 24h y áreas comunes.'},
@@ -2761,7 +2764,10 @@ function closeDrawer() {
 function goMoment(n) {
   const allDone = moduleDone[1] && moduleDone[2] && moduleDone[3];
   if (allDone) { renderAcademia(); goScreen('screen-academia'); return; }
-  enFlujoAcademia = true;
+  // Módulo 1 no depende de este flag (su logro siempre se muestra, es parte del quiz
+  // que el usuario ya está haciendo a propósito) — se arma recién cuando continúa hacia
+  // el Módulo 2 desde esa pantalla de logro. Entrar por 2 o 3 sí apunta directo.
+  proximoModuloConsciente = n === 1 ? null : n;
   entryPoint = n;
   if (n === 1) goScreen('screen-edu');
   else if (n === 2) goScreen('screen-sim');
@@ -3176,15 +3182,15 @@ const ACADEMY_SECTIONS = [
     { key:'profile_done', title:'Completa tu perfil',          sub:'Agrega tu información de contacto',         cta:'Ir al perfil',      ctaAction:"goScreen('screen-perfil')",                 ctaDone:'Ver perfil',        ctaDoneAction:"goScreen('screen-perfil')" },
   ]},
   { id:'aprende', label:'Aprende', icon:'ti-book', steps:[
-    { key:'edu_done',   achModule:1, title:'Entiende cómo funciona',       sub:'CAT, tipos de tasa y enganche',             cta:'Empezar módulo',    ctaAction:"enFlujoAcademia=true;goScreen('screen-edu')",                    ctaDone:'Repasar',           ctaDoneAction:"goScreen('screen-edu')" },
+    { key:'edu_done',   achModule:1, title:'Entiende cómo funciona',       sub:'CAT, tipos de tasa y enganche',             cta:'Empezar módulo',    ctaAction:"proximoModuloConsciente=null;goScreen('screen-edu')",                    ctaDone:'Repasar',           ctaDoneAction:"goScreen('screen-edu')" },
   ]},
   { id:'simula', label:'Simula', icon:'ti-calculator', steps:[
-    { key:'sim_done',     achModule:2, title:'Haz tu primera simulación',  sub:'Calcula cuánto puedes pagar',                cta:'Simular ahora',     ctaAction:"requireAuth(()=>{enFlujoAcademia=true;navTo('screen-sim','nav-sim')})",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
+    { key:'sim_done',     achModule:2, title:'Haz tu primera simulación',  sub:'Calcula cuánto puedes pagar',                cta:'Simular ahora',     ctaAction:"requireAuth(()=>{proximoModuloConsciente=2;navTo('screen-sim','nav-sim')})",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
     { key:'shared_sim',   title:'Compartí tu simulación',      sub:'Enviásela a alguien de confianza',          cta:'Ir a simulaciones', ctaAction:"renderSims();goScreen('screen-simulaciones')", ctaDone:'Compartida ✓',   ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
     { key:'added_to_sim', title:'Agrega una propiedad a tu simulación', sub:'Vincula lo que te gusta con tu capacidad', cta:'Ver propiedades',  ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
   ]},
   { id:'explora', label:'Explora', icon:'ti-building', steps:[
-    { key:'viewed_prop',  achModule:3, title:'Abrí la ficha de una propiedad', sub:'Conocé todos los detalles',             cta:'Ver propiedades',   ctaAction:"enFlujoAcademia=true;navTo('screen-props','nav-props')",          ctaDone:'Seguir explorando', ctaDoneAction:"navTo('screen-props','nav-props')" },
+    { key:'viewed_prop',  achModule:3, title:'Abrí la ficha de una propiedad', sub:'Conocé todos los detalles',             cta:'Ver propiedades',   ctaAction:"proximoModuloConsciente=3;navTo('screen-props','nav-props')",          ctaDone:'Seguir explorando', ctaDoneAction:"navTo('screen-props','nav-props')" },
     { key:'faved',        title:'Guardá un favorito',            sub:'Marcá las propiedades que más te gustan', cta:'Ver propiedades',   ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver favoritos',     ctaDoneAction:"renderFavs();goScreen('screen-favoritos')" },
   ]},
   { id:'conecta', label:'Conéctate', icon:'ti-headset', steps:[
@@ -3950,7 +3956,7 @@ const ACH_DATA = {
     note: 'Elegiste comparar por CAT. Lo vamos a usar cuando veamos tus opciones.',
     pct: 33, counter: '1 de 3 módulos',
     pills: ['done','pending','pending'],
-    ctaLabel: 'Simular mi capacidad →', ctaFn: () => goScreen('screen-sim'),
+    ctaLabel: 'Simular mi capacidad →', ctaFn: () => { proximoModuloConsciente = 2; goScreen('screen-sim'); },
   },
   2: {
     icon: '📊',
@@ -3959,7 +3965,9 @@ const ACH_DATA = {
     note: 'Podés volver a simular cuando quieras ajustar los números.',
     pct: 66, counter: '2 de 3 módulos',
     pills: ['done','done','pending'],
-    ctaLabel: 'Ver mi simulación →', ctaFn: () => { renderSims(); goScreen('screen-simulaciones'); },
+    // Rearma el recorrido consciente: si desde acá va a ver propiedades en su rango,
+    // completar el Módulo 3 todavía cuenta como continuación del mismo recorrido.
+    ctaLabel: 'Ver mi simulación →', ctaFn: () => { proximoModuloConsciente = 3; renderSims(); goScreen('screen-simulaciones'); },
   },
   3: {
     icon: '🏠',
@@ -3992,7 +4000,7 @@ function markModuleDone(n) {
 /* ══════════════════════════════════
    NOTIFICACIONES
    Cuando un módulo o paso de Casa Academy se completa fuera del recorrido guiado
-   (ver enFlujoAcademia), no tiene sentido interrumpir con una pantalla ni con un
+   (ver proximoModuloConsciente), no tiene sentido interrumpir con una pantalla ni con un
    toast — ni siquiera un toast se siente bien si la persona no lo está haciendo a
    propósito. En cambio, queda un aviso en la bandeja de notificaciones que puede
    revisar cuando quiera, con acceso directo a Casa Academy para ver el detalle.
@@ -4032,7 +4040,7 @@ function updateNotifBadge() {
 }
 
 // Se llama en vez de mostrar la pantalla de logro cuando el módulo n se completó
-// fuera del recorrido consciente de Casa Academy (ver markModuleDone / enFlujoAcademia).
+// fuera del recorrido consciente de Casa Academy (ver markModuleDone / proximoModuloConsciente).
 function notificarModuloCompletado(n) {
   const todoListo = moduleDone[1] && moduleDone[2] && moduleDone[3];
   const title = todoListo ? '¡Completaste Casa Academy!' : 'Módulo completado';
@@ -4110,11 +4118,15 @@ function completeModule2() {
   saveSimHistory();
   simRefPropId = null;
   // Confirmar una simulación completa el Módulo 2. Si el usuario está conscientemente
-  // recorriendo Casa Academy (entró por un "momento" o retomó el módulo desde ahí), la
-  // pantalla de logro tiene sentido y corresponde. Si no, es un efecto secundario de una
-  // acción normal (quería ver cuánto puede pagar) y basta un toast liviano.
+  // recorriendo Casa Academy y este era justo el paso que esperaba (proximoModuloConsciente
+  // === 2), la pantalla de logro corresponde. Si no —simuló por su cuenta, o venía
+  // apuntando a otro módulo— es un efecto secundario de una acción normal y basta un
+  // toast liviano. Se consume acá mismo pase lo que pase, así no queda "pendiente" y
+  // no contamina una simulación posterior que no tenga nada que ver.
+  const esperabaModulo2 = proximoModuloConsciente === 2;
+  proximoModuloConsciente = null;
   const moduloDosRecienCompletado = markModuleDone(2);
-  if (moduloDosRecienCompletado && enFlujoAcademia) {
+  if (moduloDosRecienCompletado && esperabaModulo2) {
     showAchievement(2);
     return;
   }
@@ -4363,12 +4375,16 @@ function openPropDetail(id){
     const btn = document.getElementById(btnId);
     if (btn) updateFavIcon(btn.querySelector('i'), faved);
   });
-  // Abrir una ficha completa el Módulo 3. Igual que con el Módulo 2: si está
-  // conscientemente en el recorrido de Casa Academy, la pantalla de logro corresponde;
-  // si no (p. ej. volvió días después a buscar una propiedad sin acordarse de la
-  // Academia), no lo interrumpimos — mostramos la ficha y avisamos con un toast liviano.
+  // Abrir una ficha completa el Módulo 3. Igual que con el Módulo 2: solo si este era
+  // justo el paso que el recorrido consciente esperaba (proximoModuloConsciente === 3)
+  // corresponde la pantalla de logro. Si no —p. ej. volvió días después a buscar una
+  // propiedad sin acordarse de la Academia, o venía en medio de otro módulo— no lo
+  // interrumpimos: mostramos la ficha y avisamos con un toast liviano. Se consume acá
+  // mismo pase lo que pase (ver nota en completeModule2).
+  const esperabaModulo3 = proximoModuloConsciente === 3;
+  proximoModuloConsciente = null;
   const moduloTresRecienCompletado = markModuleDone(3);
-  if (moduloTresRecienCompletado && enFlujoAcademia) {
+  if (moduloTresRecienCompletado && esperabaModulo3) {
     ACH_DATA[3].ctaFn = () => openPropDetail(id);
     showAchievement(3);
     return;
