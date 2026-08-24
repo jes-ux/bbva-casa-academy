@@ -320,6 +320,13 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
 .notif-dot{width:8px;height:8px;border-radius:50%;background:var(--text-primary);flex-shrink:0}
 
+/* Indicador de notificaciones sin leer — mismo punto que .notif-dot, en el ícono de
+   campana de los menús y en el avatar, para que se note desde cualquier pantalla. */
+.ti-bell{position:relative;display:inline-block}
+.ti-bell.has-unread::after{content:'';position:absolute;top:-2px;right:-4px;width:7px;height:7px;border-radius:50%;background:var(--text-primary)}
+.app-header-avatar,.drawer-avatar{position:relative}
+.app-header-avatar.has-unread::after,.drawer-avatar.has-unread::after{content:'';position:absolute;top:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:var(--text-primary);border:2px solid var(--surface-2)}
+
 .sim-history-card{border:0.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2);transition:border-color .4s,box-shadow .4s}
 @keyframes sim-enter{0%{opacity:0;transform:translateY(-10px)}100%{opacity:1;transform:translateY(0)}}
 @keyframes sim-glow{0%,100%{box-shadow:none;border-color:var(--border)}30%{box-shadow:0 0 0 3px rgba(255,255,255,.18);border-color:var(--text-primary)}70%{box-shadow:0 0 0 3px rgba(255,255,255,.10);border-color:var(--text-primary)}}
@@ -816,7 +823,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="drawer-item" onclick="requireAuth(()=>{renderFavs();goScreen('screen-favoritos')})"><i class="ti ti-heart"></i> Favoritos</button>
       <button class="drawer-item" onclick="closeDrawer();renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
       <button class="drawer-item" onclick="requireAuth(()=>{renderMensajes();goScreen('screen-mensajes')})"><i class="ti ti-message"></i> Mensajes</button>
-      <button class="drawer-item" onclick="closeDrawer();goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
+      <button class="drawer-item" data-screen="screen-notificaciones" onclick="closeDrawer();goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="drawer-item" onclick="closeDrawer();renderAcademia();goScreen('screen-academia')"><i class="ti ti-school"></i> Casa Academy</button>
       <button class="drawer-item" onclick="closeDrawer();renderOpps();goScreen('screen-oportunidades')"><i class="ti ti-sparkles"></i> Oportunidades</button>
     </div>
@@ -2185,6 +2192,7 @@ function loadUserScopedData() {
       saveNotifications();
     }
   }
+  if (typeof updateNotifBadge === 'function') updateNotifBadge();
 
   // La Academy (screen-edu) mantiene su propio estado de desbloqueo progresivo en el
   // DOM (EDU_READ) que no vive en localStorage — hay que sincronizarlo con el usuario
@@ -4009,6 +4017,18 @@ function pushNotification({ icon, iconBg, iconColor, title, body, route, propId 
   });
   saveNotifications();
   if (document.querySelector('.screen.active')?.id === 'screen-notificaciones') renderNotificaciones();
+  updateNotifBadge();
+}
+
+// Prende/apaga el punto de "no leído" en la campana de cada menú (drawer y sidebars
+// de escritorio) y en el avatar del header/drawer, para que se note desde cualquier
+// pantalla que hay algo nuevo en Notificaciones.
+function updateNotifBadge() {
+  const unread = NOTIFICATIONS.some(n => !n.leido);
+  document.querySelectorAll('[data-screen="screen-notificaciones"] .ti-bell').forEach(el => el.classList.toggle('has-unread', unread));
+  ['mob-header-avatar', 'dt-header-avatar', 'drawer-avatar-el'].forEach(id => {
+    document.getElementById(id)?.classList.toggle('has-unread', unread);
+  });
 }
 
 // Se llama en vez de mostrar la pantalla de logro cuando el módulo n se completó
@@ -4053,7 +4073,7 @@ function renderNotificaciones() {
 function abrirNotificacion(id) {
   const n = NOTIFICATIONS.find(x => x.id === id);
   if (!n) return;
-  if (!n.leido) { n.leido = true; saveNotifications(); }
+  if (!n.leido) { n.leido = true; saveNotifications(); updateNotifBadge(); }
   if (n.propId) { openPropDetail(n.propId); return; }
   if (n.route && NOTIF_ROUTES[n.route]) { NOTIF_ROUTES[n.route](); return; }
   renderNotificaciones();
