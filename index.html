@@ -1861,6 +1861,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   </div>
 </div>
 
+<div class="bottom-sheet" id="sheet-link-sim">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">¿A cuál simulación la sumamos?</span>
+    <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
+  </div>
+  <div class="sheet-body" style="padding:8px 0 16px" id="sheet-link-sim-body"></div>
+</div>
+
 <!-- Sheet overlay -->
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
 
@@ -2055,12 +2064,52 @@ function navTo(screenId, tabId) {
   if(dtMap[screenId]) document.getElementById(dtMap[screenId])?.classList.add('active');
 }
 
-const _savedFavs = JSON.parse(localStorage.getItem('bbva_favs') || '[]');
-const FAVS_IDS = _savedFavs;
-let SIM_HISTORY = [
+// Favoritos y simulaciones viven por cuenta (no en un balde global) para que una
+// cuenta nueva no "herede" los datos de otra. Se llenan recién en loadUserScopedData(),
+// una vez que sabemos quién es currentUser.
+const FAVS_IDS = [];
+let SIM_HISTORY = [];
+
+const DEMO_SEED_SIMS = [
   { id:'S001', fecha:'12 jun 2026', ingreso:35000, enganche:400000, plazo:25, propMax:3200000, cuota:18500, props:[1,2,3] },
   { id:'S002', fecha:'28 may 2026', ingreso:28000, enganche:250000, plazo:20, propMax:2800000, cuota:15200, props:[4,5] },
 ];
+
+function favsKey() { return currentUser ? 'bbva_favs_' + currentUser.email.toLowerCase() : null; }
+function simsKey() { return currentUser ? 'bbva_sims_' + currentUser.email.toLowerCase() : null; }
+
+function saveFavs() {
+  const key = favsKey();
+  if (key) localStorage.setItem(key, JSON.stringify(FAVS_IDS));
+}
+function saveSimHistory() {
+  const key = simsKey();
+  if (key) localStorage.setItem(key, JSON.stringify(SIM_HISTORY));
+}
+
+// Recarga FAVS_IDS/SIM_HISTORY para el usuario activo (o los vacía si no hay sesión).
+// Se llama al cargar la página, tras login/registro y al cerrar sesión.
+function loadUserScopedData() {
+  FAVS_IDS.length = 0;
+  const fKey = favsKey();
+  if (fKey) {
+    try { (JSON.parse(localStorage.getItem(fKey)) || []).forEach(id => FAVS_IDS.push(id)); } catch {}
+  }
+
+  SIM_HISTORY.length = 0;
+  const sKey = simsKey();
+  if (sKey) {
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(sKey)); } catch {}
+    if (saved) {
+      saved.forEach(s => SIM_HISTORY.push(s));
+    } else if (currentUser.email.toLowerCase() === 'natalia@email.com') {
+      // Cuenta demo: arranca con historial de ejemplo la primera vez, como cualquier otra cuenta poblada.
+      DEMO_SEED_SIMS.forEach(s => SIM_HISTORY.push({...s}));
+      saveSimHistory();
+    }
+  }
+}
 
 // Cada propiedad tiene perfil visual propio: altura de imagen + amenidades + descripción corta
 const CARD_PROFILES = [
@@ -2139,7 +2188,7 @@ function toggleFav(propId) {
   const adding = idx === -1;
   if (adding) { FAVS_IDS.push(propId); markStep('faved'); }
   else { FAVS_IDS.splice(idx, 1); }
-  localStorage.setItem('bbva_favs', JSON.stringify(FAVS_IDS));
+  saveFavs();
   showToast(adding ? 'ti-heart-filled' : 'ti-heart', adding ? 'Agregado a favoritos' : 'Eliminado de favoritos', adding ? 'success' : 'default');
   // actualizar corazón en la card
   const card = document.getElementById(`pcard-${propId}`);
@@ -2223,6 +2272,7 @@ function removePropFromSim(simId, propId) {
   if (!s) return;
   s.props = (s.props || []).filter(id => id !== propId);
   if (s.refProp === propId) s.refProp = s.props[0] || null;
+  saveSimHistory();
   renderSims();
   showToast('ti-trash', 'Propiedad quitada de la simulación');
 }
@@ -2241,6 +2291,7 @@ function linkPropToSim(propId, simIdx) {
   s.refProp = propId;
   if (!Array.isArray(s.props)) s.props = [];
   if (!s.props.includes(propId)) s.props.push(propId);
+  saveSimHistory();
   const linkedHTML = `
     <div style="display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:10px;padding:10px 12px;border:1px solid var(--border-stronger);cursor:pointer" onclick="renderSims();goScreen('screen-simulaciones')">
       <div style="width:32px;height:32px;border-radius:8px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid var(--border)"><i class="ti ti-calculator" style="font-size:15px;color:var(--text-primary)"></i></div>
@@ -2256,6 +2307,32 @@ function linkPropToSim(propId, simIdx) {
   });
   markStep('added_to_sim');
   showToast('ti-circle-check','Propiedad agregada a tu simulación','success');
+}
+
+// Cuando una propiedad entra en el presupuesto de más de una simulación, le pedimos
+// al usuario que elija a cuál sumarla en vez de adivinar. Se ordenan por cercanía de
+// monto (la más ajustada al precio de la propiedad primero) como ayuda visual.
+function openLinkSimPicker(propId) {
+  const p = PROPS.find(x => x.id === propId);
+  if (!p) return;
+  const matches = SIM_HISTORY
+    .map((s, i) => ({s, i}))
+    .filter(({s}) => s.propMax >= p.price && !(s.props||[]).includes(propId))
+    .sort((a, b) => Math.abs(a.s.propMax - p.price) - Math.abs(b.s.propMax - p.price));
+  if (!matches.length) return;
+  const body = document.getElementById('sheet-link-sim-body');
+  if (!body) return;
+  body.innerHTML = matches.map(({s, i}, idx) => `
+    <button class="drawer-item" style="align-items:flex-start;flex-direction:column;gap:3px;text-align:left;height:auto" onclick="linkPropToSim(${propId}, ${i});closeSheet();renderSims()">
+      <span style="display:flex;align-items:center;gap:8px;width:100%">
+        <i class="ti ti-calculator"></i>
+        <span style="font-weight:600;flex:1">Hasta ${fmt(s.propMax)}</span>
+        ${idx === 0 ? '<span style="font-size:10px;font-weight:600;color:var(--text-success);background:var(--bg-success);border-radius:6px;padding:2px 6px;flex-shrink:0">Más cercana</span>' : ''}
+      </span>
+      <span style="font-size:11px;color:var(--text-muted);padding-left:24px">Cuota ~${fmt(s.cuota)}/mes · ${s.plazo} años · ${s.fecha}</span>
+    </button>
+  `).join('');
+  openSheet('sheet-link-sim');
 }
 
 function renderOpps() {
@@ -2787,6 +2864,7 @@ const DEMO_USERS = {
 const _existingSession = getSession();
 let currentUser = _existingSession || null;
 let isLoggedIn = !!_existingSession;
+loadUserScopedData();
 
 let _pendingAction = null;
 let _pendingReturnScreen = null;
@@ -2828,6 +2906,7 @@ function doLogin() {
     saveSession(currentUser);
   }
   isLoggedIn = true;
+  loadUserScopedData();
   markStep('registered');
   markStep('profile_done');
   updateHeaderAvatar();
@@ -2845,6 +2924,7 @@ function doRegistro() {
   saveSession(currentUser);
   saveRegisteredUser(currentUser);
   isLoggedIn = true;
+  loadUserScopedData();
   markStep('registered');
   updateHeaderAvatar();
   renderPerfil();
@@ -2875,6 +2955,7 @@ function completarGoogleAuth() {
   }
   saveSession(currentUser);
   isLoggedIn = true;
+  loadUserScopedData();
   markStep('registered');
   if (_googleAuthMode === 'login') markStep('profile_done');
   updateHeaderAvatar();
@@ -2939,6 +3020,7 @@ function doLogout() {
   isLoggedIn = false;
   currentUser = null;
   clearSession();
+  loadUserScopedData();
   updateHeaderAvatar();
   closeDrawer();
   goScreen('screen-login');
@@ -3624,13 +3706,15 @@ function goToPropDetail(id) {
 
 function completeModule2() {
   const today = new Date().toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'});
-  const propsInRange = PROPS.filter(p => p.price <= simData.propMax).map(p => p.id);
+  // props arranca vacío: una propiedad se suma a una simulación solo cuando el usuario
+  // lo elige explícitamente (linkPropToSim), no automáticamente por entrar en el rango.
   SIM_HISTORY.unshift({
     id:'S'+Date.now(), fecha:today,
     ingreso:simData.ingreso, enganche:simData.enganche, plazo:simData.plazo,
     propMax:simData.propMax, cuota:simData.cuotaReal,
-    props:propsInRange, refProp:simRefPropId || null
+    props: simRefPropId ? [simRefPropId] : [], refProp:simRefPropId || null
   });
+  saveSimHistory();
   const wasRef = !!simRefPropId;
   simRefPropId = null;
   const wasDone = moduleDone[2];
@@ -3949,8 +4033,10 @@ function openPropDetail(id){
   }
 
   // banner de simulación en ficha (solo si hay sesión)
-  const alreadyLinked = isLoggedIn ? SIM_HISTORY.findIndex(s => s.refProp === id) : -1;
-  const inRangeSim = isLoggedIn ? SIM_HISTORY.find(s => s.propMax >= p.price && s.refProp !== id) : null;
+  const alreadyLinked = isLoggedIn ? SIM_HISTORY.findIndex(s => (s.props||[]).includes(id)) : -1;
+  const matchingSims = isLoggedIn
+    ? SIM_HISTORY.map((s, i) => ({s, i})).filter(({s}) => s.propMax >= p.price && !(s.props||[]).includes(id))
+    : [];
   let simBannerHTML = '';
   if (alreadyLinked >= 0) {
     const relSim = SIM_HISTORY[alreadyLinked];
@@ -3963,7 +4049,9 @@ function openPropDetail(id){
         </div>
         <i class="ti ti-chevron-right" style="font-size:13px;color:var(--text-muted);flex-shrink:0"></i>
       </div>`;
-  } else if (inRangeSim) {
+  } else if (matchingSims.length === 1) {
+    const inRangeSim = matchingSims[0].s;
+    const simIdx = matchingSims[0].i;
     simBannerHTML = `
       <div style="background:var(--surface-1);border-radius:10px;padding:12px 14px;border:1px solid var(--border)">
         <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
@@ -3973,7 +4061,19 @@ function openPropDetail(id){
             <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Tu simulación cubre hasta ${fmt(inRangeSim.propMax)} · Cuota est. ${fmt(inRangeSim.cuota)}/mes</div>
           </div>
         </div>
-        <button onclick="requireAuth(()=>linkPropToSim(${id}, ${SIM_HISTORY.indexOf(inRangeSim)}))" style="width:100%;font-size:12px;font-weight:600;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:8px;padding:9px;cursor:pointer;font-family:var(--font-sans);display:flex;align-items:center;justify-content:center;gap:6px" id="link-sim-btn-${id}"><i class="ti ti-calculator" style="font-size:13px"></i> Agregar a mi simulación</button>
+        <button onclick="requireAuth(()=>linkPropToSim(${id}, ${simIdx}))" style="width:100%;font-size:12px;font-weight:600;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:8px;padding:9px;cursor:pointer;font-family:var(--font-sans);display:flex;align-items:center;justify-content:center;gap:6px" id="link-sim-btn-${id}"><i class="ti ti-calculator" style="font-size:13px"></i> Agregar a mi simulación</button>
+      </div>`;
+  } else if (matchingSims.length > 1) {
+    simBannerHTML = `
+      <div style="background:var(--surface-1);border-radius:10px;padding:12px 14px;border:1px solid var(--border)">
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid var(--border)"><i class="ti ti-check" style="font-size:15px;color:var(--text-primary)"></i></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:600;color:var(--text-primary)">Está en el rango de ${matchingSims.length} simulaciones</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Elegí a cuál de tus simulaciones sumarla</div>
+          </div>
+        </div>
+        <button onclick="requireAuth(()=>openLinkSimPicker(${id}))" style="width:100%;font-size:12px;font-weight:600;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:8px;padding:9px;cursor:pointer;font-family:var(--font-sans);display:flex;align-items:center;justify-content:center;gap:6px" id="link-sim-btn-${id}"><i class="ti ti-calculator" style="font-size:13px"></i> Agregar a mi simulación</button>
       </div>`;
   }
   ['detail-sim-banner-m','detail-sim-banner-dt'].forEach(elId => {
