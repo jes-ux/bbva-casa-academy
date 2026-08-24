@@ -735,18 +735,77 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   /* ── DRAWER as sidebar overlay still works ── */
   #drawer{width:320px}
 
-  /* ── Filtros y Ordenar: side-sheet desde la derecha en desktop ── */
-  #sheet-filtros,#sheet-ordenar{
+  /* ── Todo bottom-sheet es side-sheet desde la derecha en desktop — nunca un
+     sheet centrado angosto flotando sobre un viewport ancho. Una sola regla para
+     los ocho (Compartir, Sumar a simulación, WhatsApp, detalle de contacto,
+     Filtros, Ordenar, Explorar propiedades) en vez de duplicar el patrón. ── */
+  .bottom-sheet{
     top:64px;bottom:0;right:0;left:auto;
     transform:translateX(100%);
     border-radius:0;
     max-width:420px;width:420px;
     max-height:none;
     border-left:0.5px solid var(--border);
+    box-shadow:-8px 0 32px rgba(0,0,0,.12);
   }
-  #sheet-filtros.open,#sheet-ordenar.open{transform:translateX(0)}
-  #sheet-filtros .sheet-handle,#sheet-ordenar .sheet-handle{display:none}
+  .bottom-sheet.open{transform:translateX(0)}
+  .bottom-sheet .sheet-handle{display:none}
 }
+
+/* ══════════════════════════════════
+   SIMULACIÓN DE WHATSAPP — un "salto" real a una interfaz de chat, no solo un
+   toast. En escritorio se abre en una pestaña nueva (ver abrirRedireccionWhatsapp);
+   en mobile no hay pestañas con sentido, así que esta misma capa se muestra como
+   overlay de pantalla completa por encima de la app, simulando que se abrió la
+   app de WhatsApp — con un botón de volver que la cierra y te devuelve a BBVA.
+   Paleta propia (verde WhatsApp) a propósito: tiene que leerse como "otra app".
+   ══════════════════════════════════ */
+.wa-app-overlay{
+  position:fixed;inset:0;z-index:9000;
+  background:#F0F2F5;
+  display:none;flex-direction:column;
+  transform:translateY(100%);
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+}
+.wa-app-overlay.open{display:flex;transform:translateY(0)}
+.wa-app-overlay.wa-window{transition:none}
+.wa-sidebar{width:400px;flex-shrink:0;background:#fff;border-right:1px solid #D1D7DB;display:none;flex-direction:column}
+.wa-app-overlay.wa-desktop{flex-direction:row}
+.wa-app-overlay.wa-desktop .wa-sidebar{display:flex}
+.wa-sidebar-top{padding:14px 16px;background:#F0F2F5;border-bottom:1px solid #D1D7DB;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.wa-sidebar-brand{display:flex;align-items:center;gap:9px;font-weight:600;color:#41525D;font-size:15px}
+.wa-sidebar-close{background:none;border:none;cursor:pointer;color:#54656F;font-size:17px;padding:4px;display:flex}
+.wa-sidebar-search{padding:8px 12px;flex-shrink:0}
+.wa-sidebar-search-field{width:100%;background:#F0F2F5;border-radius:8px;padding:8px 12px;font-size:13.5px;color:#8696A0}
+.wa-chat-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#F0F2F5;border-left:3px solid #00A884}
+.wa-chat-item-avatar{width:46px;height:46px;border-radius:50%;background:#fff;border:1px solid #D1D7DB;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+.wa-chat-item-body{min-width:0;flex:1}
+.wa-chat-item-name{font-size:15px;font-weight:500;color:#111B21}
+.wa-chat-item-preview{font-size:13px;color:#667781;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wa-close-hint{display:none;font-size:11px;color:#667781;padding:0 16px 12px;line-height:1.4}
+
+.wa-panel{flex:1;display:flex;flex-direction:column;min-width:0;background:#EFEAE2}
+.wa-header{background:#008069;color:#fff;padding:11px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.wa-header-back{background:none;border:none;color:#fff;font-size:21px;cursor:pointer;padding:2px;display:flex;flex-shrink:0}
+.wa-header-avatar{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.wa-header-info{flex:1;min-width:0}
+.wa-header-name{font-size:15.5px;font-weight:600}
+.wa-header-status{font-size:12.5px;opacity:.85}
+.wa-header-icons{display:flex;gap:20px;font-size:18px;opacity:.95;flex-shrink:0}
+
+.wa-body{flex:1;overflow-y:auto;padding:18px 7%;display:flex;flex-direction:column;background:#EFEAE2}
+.wa-day-chip{align-self:center;background:#E1F2FB;color:#54656F;font-size:12.5px;font-weight:500;padding:5px 12px;border-radius:8px;margin-bottom:10px;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+.wa-bubble-out{align-self:flex-end;max-width:75%;background:#D9FDD3;border-radius:8px 2px 8px 8px;padding:7px 9px 8px;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+.wa-bubble-text{font-size:14.3px;color:#111B21;white-space:pre-line;line-height:1.4}
+.wa-bubble-meta{display:flex;justify-content:flex-end;align-items:center;gap:3px;margin-top:3px;font-size:11px;color:#667781}
+.wa-bubble-meta .ti{font-size:15px;color:#53BDEB}
+
+.wa-inputbar{flex-shrink:0;background:#F0F2F5;padding:9px 12px;display:flex;align-items:center;gap:12px}
+.wa-inputbar i{font-size:22px;color:#54656F;flex-shrink:0}
+.wa-inputbar-field{flex:1;background:#fff;border-radius:20px;padding:9px 16px;font-size:14.5px;color:#8696A0}
+.wa-inputbar-mic{width:38px;height:38px;border-radius:50%;background:#00A884;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wa-inputbar-mic i{color:#fff;font-size:17px}
+@media (max-width:899px){ .wa-sidebar{display:none!important} }
 </style>
 </head>
 <body>
@@ -1866,13 +1925,51 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 </div>
 
 <!-- Detalle de un contacto por WhatsApp ya registrado -->
-<div class="bottom-sheet" id="sheet-wa-detail" style="max-height:92dvh">
+<div class="bottom-sheet" id="sheet-wa-detail">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
     <span class="sheet-title">Contacto por WhatsApp</span>
     <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
   </div>
   <div class="sheet-body" style="padding:8px 24px 20px;overflow-y:auto" id="wa-detail-body"></div>
+</div>
+
+<!-- "Salto" a WhatsApp — pestaña nueva en desktop, overlay de pantalla completa en
+     mobile. Ver abrirRedireccionWhatsapp() / cerrarVentanaWhatsapp(). -->
+<div class="wa-app-overlay" id="wa-app-overlay">
+  <div class="wa-sidebar" id="wa-sidebar">
+    <div class="wa-sidebar-top">
+      <div class="wa-sidebar-brand"><i class="ti ti-brand-whatsapp" style="font-size:21px;color:#00A884"></i> WhatsApp</div>
+      <button class="wa-sidebar-close" onclick="cerrarVentanaWhatsapp()" title="Cerrar"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="wa-sidebar-search"><div class="wa-sidebar-search-field">Buscar un chat</div></div>
+    <div class="wa-chat-item">
+      <div class="wa-chat-item-avatar" id="wa-side-avatar"></div>
+      <div class="wa-chat-item-body">
+        <div class="wa-chat-item-name" id="wa-side-nombre"></div>
+        <div class="wa-chat-item-preview" id="wa-side-preview"></div>
+      </div>
+    </div>
+    <div class="wa-close-hint" id="wa-close-hint">No se pudo cerrar la pestaña sola — cerrala vos para volver a BBVA.</div>
+  </div>
+  <div class="wa-panel">
+    <div class="wa-header">
+      <button class="wa-header-back" id="wa-panel-back" onclick="cerrarVentanaWhatsapp()" title="Volver a BBVA"><i class="ti ti-arrow-left"></i></button>
+      <div class="wa-header-avatar" id="wa-panel-avatar"></div>
+      <div class="wa-header-info">
+        <div class="wa-header-name" id="wa-panel-nombre"></div>
+        <div class="wa-header-status">en línea</div>
+      </div>
+      <div class="wa-header-icons"><i class="ti ti-video"></i><i class="ti ti-phone"></i><i class="ti ti-dots-vertical"></i></div>
+    </div>
+    <div class="wa-body" id="wa-panel-body"></div>
+    <div class="wa-inputbar">
+      <i class="ti ti-mood-smile"></i>
+      <i class="ti ti-paperclip"></i>
+      <div class="wa-inputbar-field">Escribe un mensaje</div>
+      <div class="wa-inputbar-mic"><i class="ti ti-microphone"></i></div>
+    </div>
+  </div>
 </div>
 
 <!-- Sheet overlay -->
@@ -1944,7 +2041,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 </div>
 
 <!-- SHEET: Propiedades (mobile) -->
-<div class="bottom-sheet" id="sheet-props-nav" style="max-height:92dvh">
+<div class="bottom-sheet" id="sheet-props-nav">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
     <span class="sheet-title">Explorar propiedades</span>
@@ -1985,7 +2082,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 </div>
 
 <!-- SHEET: Contactar asesor -->
-<div class="bottom-sheet" id="sheet-contacto" style="max-height:92dvh">
+<div class="bottom-sheet" id="sheet-contacto">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
     <span class="sheet-title">Contactar asesor</span>
@@ -2278,7 +2375,7 @@ function propListItemHTML(p, showRemoveFav = false) {
 function toggleFav(propId) {
   const idx = FAVS_IDS.indexOf(propId);
   const adding = idx === -1;
-  if (adding) { FAVS_IDS.push(propId); markStep('faved'); }
+  if (adding) { FAVS_IDS.push(propId); marcarPasoAcademia('faved'); }
   else { FAVS_IDS.splice(idx, 1); }
   saveFavs();
   showToast(adding ? 'ti-heart-filled' : 'ti-heart', adding ? 'Agregado a favoritos' : 'Eliminado de favoritos', adding ? 'success' : 'default');
@@ -2370,7 +2467,7 @@ function removePropFromSim(simId, propId) {
 }
 
 function shareSimulation(s) {
-  markStep('shared_sim');
+  marcarPasoAcademia('shared_sim');
   document.querySelector('#sheet-share .sheet-title').textContent = 'Compartir simulación';
   openSheet('sheet-share');
   if (false) { // legacy
@@ -2397,7 +2494,7 @@ function linkPropToSim(propId, simIdx) {
     const el = document.getElementById(elId);
     if(el) el.innerHTML = linkedHTML;
   });
-  markStep('added_to_sim');
+  marcarPasoAcademia('added_to_sim');
   showToast('ti-circle-check','Propiedad agregada a tu simulación','success');
 }
 
@@ -3003,8 +3100,7 @@ function doLogin() {
   }
   isLoggedIn = true;
   loadUserScopedData();
-  markStep('registered');
-  markStep('profile_done');
+  notificarRegistroYPerfil(markStep('registered'), markStep('profile_done'));
   updateHeaderAvatar();
   renderPerfil();
   if (_pendingAction) {
@@ -3021,7 +3117,9 @@ function doRegistro() {
   saveRegisteredUser(currentUser);
   isLoggedIn = true;
   loadUserScopedData();
-  markStep('registered');
+  // El formulario de registro ya pide nombre y teléfono en el mismo paso, así que
+  // también completa "profile_done" — si no, el checklist nunca lo marcaría solo.
+  notificarRegistroYPerfil(markStep('registered'), markStep('profile_done'));
   updateHeaderAvatar();
   renderPerfil();
   if (_pendingAction) {
@@ -3052,8 +3150,7 @@ function completarGoogleAuth() {
   saveSession(currentUser);
   isLoggedIn = true;
   loadUserScopedData();
-  markStep('registered');
-  if (_googleAuthMode === 'login') markStep('profile_done');
+  notificarRegistroYPerfil(markStep('registered'), _googleAuthMode === 'login' ? markStep('profile_done') : false);
   updateHeaderAvatar();
   renderPerfil();
   showToast('ti-circle-check', _googleAuthMode === 'registro' ? 'Cuenta creada con Google' : 'Sesión iniciada con Google', 'success');
@@ -3532,6 +3629,91 @@ function asesorInmobiliarioFor(propId) {
   return ASESORES_INMOBILIARIOS[(propId - 1) % ASESORES_INMOBILIARIOS.length];
 }
 
+// ── "Salto" real a WhatsApp ──
+// En escritorio abre una pestaña nueva (la misma index.html con ?wa=1&... en la URL,
+// detectado más abajo) que se muestra a pantalla completa como WhatsApp Web, con
+// sidebar. En mobile no hay pestañas nuevas con sentido, así que se usa el mismo
+// panel de chat como overlay de pantalla completa dentro de la propia página,
+// simulando que se abrió la app — con un botón de volver que la cierra.
+function waChatBodyHTML(mensaje, hora) {
+  return `
+    <div class="wa-day-chip">Hoy</div>
+    <div class="wa-bubble-out">
+      <div class="wa-bubble-text">${mensaje}</div>
+      <div class="wa-bubble-meta">${hora} <i class="ti ti-checks"></i></div>
+    </div>`;
+}
+
+function pintarPanelWhatsapp({ nombre, emoji, mensaje, hora }) {
+  const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setText('wa-panel-avatar', emoji);
+  setText('wa-panel-nombre', nombre);
+  setText('wa-side-avatar', emoji);
+  setText('wa-side-nombre', nombre);
+  const previewEl = document.getElementById('wa-side-preview');
+  if (previewEl) previewEl.textContent = mensaje.split('\n')[0];
+  const bodyEl = document.getElementById('wa-panel-body');
+  if (bodyEl) bodyEl.innerHTML = waChatBodyHTML(mensaje, hora);
+}
+
+let _cerrarWaCallback = null;
+
+function abrirRedireccionWhatsapp({ nombre, rol, emoji, tel, mensaje }, onClose) {
+  const hora = new Date().toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit' });
+  if (window.innerWidth >= 900) {
+    const params = new URLSearchParams({ wa:'1', nombre, rol: rol || '', emoji, tel, mensaje, hora });
+    window.open(`${location.pathname}?${params.toString()}`, '_blank');
+    if (onClose) onClose();
+    return;
+  }
+  const overlay = document.getElementById('wa-app-overlay');
+  if (!overlay) { if (onClose) onClose(); return; }
+  pintarPanelWhatsapp({ nombre, emoji, mensaje, hora });
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => overlay.classList.add('open'));
+  _cerrarWaCallback = onClose || null;
+}
+
+function cerrarVentanaWhatsapp() {
+  if (esVentanaWhatsapp) {
+    window.close();
+    // Si el navegador no deja cerrarla por script (p. ej. la pestaña se recargó),
+    // al menos avisamos cómo volver.
+    setTimeout(() => {
+      const hint = document.getElementById('wa-close-hint');
+      if (hint) hint.style.display = 'block';
+    }, 300);
+    return;
+  }
+  const overlay = document.getElementById('wa-app-overlay');
+  if (overlay) overlay.classList.remove('open');
+  setTimeout(() => { if (overlay) overlay.style.display = ''; }, 320);
+  const cb = _cerrarWaCallback;
+  _cerrarWaCallback = null;
+  if (typeof cb === 'function') cb();
+}
+
+// Si esta pestaña se abrió como el "salto" simulado a WhatsApp (?wa=1&...), se
+// muestra directo la interfaz a pantalla completa con sidebar, como WhatsApp Web.
+const _waParams = new URLSearchParams(location.search);
+const esVentanaWhatsapp = _waParams.get('wa') === '1';
+if (esVentanaWhatsapp) {
+  document.title = 'WhatsApp';
+  const overlay = document.getElementById('wa-app-overlay');
+  if (overlay) {
+    overlay.classList.add('wa-desktop', 'wa-window', 'open');
+    overlay.style.display = 'flex';
+    pintarPanelWhatsapp({
+      nombre: _waParams.get('nombre') || '',
+      emoji: _waParams.get('emoji') || '💬',
+      mensaje: _waParams.get('mensaje') || '',
+      hora: _waParams.get('hora') || '',
+    });
+    const backBtn = document.getElementById('wa-panel-back');
+    if (backBtn) backBtn.style.display = 'none';
+  }
+}
+
 function contactarPorWhatsapp({ tipo, asesor, propId, simId, mensaje, stepKey }) {
   const avatarEl = document.getElementById('wa-avatar');
   const nombreEl = document.getElementById('wa-nombre');
@@ -3561,7 +3743,12 @@ function contactarPorWhatsapp({ tipo, asesor, propId, simId, mensaje, stepKey })
     if (statusEl) statusEl.innerHTML = '<i class="ti ti-circle-check" style="font-size:16px;color:var(--text-success)"></i><span>Contacto registrado</span>';
     setTimeout(() => {
       closeSheet();
-      showToast('ti-brand-whatsapp', `Te redirigimos a WhatsApp con ${asesor.nombre}. Quedó un registro en Mensajes.`, 'success');
+      // El toast de confirmación se muestra recién cuando "se vuelve" de WhatsApp:
+      // en desktop eso es inmediato (la pestaña nueva no bloquea esta), en mobile
+      // recién al cerrar el overlay de pantalla completa.
+      abrirRedireccionWhatsapp({ nombre: asesor.nombre, rol: asesor.rol, emoji: asesor.emoji, tel: asesor.tel, mensaje }, () => {
+        showToast('ti-brand-whatsapp', `Te redirigimos a WhatsApp con ${asesor.nombre}. Quedó un registro en Mensajes.`, 'success');
+      });
     }, 700);
   }, 1300);
 }
@@ -4006,7 +4193,38 @@ function markModuleDone(n) {
    revisar cuando quiera, con acceso directo a Casa Academy para ver el detalle.
    ══════════════════════════════════ */
 const MODULO_TOAST_LABEL = { 1:'entender cómo funciona un crédito', 2:'simular tu crédito', 3:'buscar propiedades en tu rango' };
-const PASO_ACADEMIA_LABEL = { contacted_prop:'contactar a un asesor inmobiliario', contacted_hipo:'contactar a un asesor hipotecario' };
+// Un solo lugar con la etiqueta de cada paso del checklist que NO es uno de los 3
+// módulos principales (esos usan notificarModuloCompletado / la pantalla de logro).
+// Todo paso completado por su cuenta, la primera vez, deja un aviso — sin excepción,
+// para que la bandeja sea un registro consistente de todo el recorrido.
+const PASO_ACADEMIA_LABEL = {
+  registered: 'crear tu cuenta',
+  profile_done: 'completar tu perfil',
+  shared_sim: 'compartir tu simulación',
+  added_to_sim: 'sumar una propiedad a tu simulación',
+  faved: 'guardar un favorito',
+  contacted_prop: 'contactar a un asesor inmobiliario',
+  contacted_hipo: 'contactar a un asesor hipotecario',
+};
+
+// Marca un paso del checklist y avisa por notificación si recién se completó ahora
+// (markStep ya es idempotente — no vuelve a avisar si ya estaba hecho).
+function marcarPasoAcademia(key) {
+  if (markStep(key)) notificarPasoAcademia(key);
+}
+
+// 'registered' y 'profile_done' a veces se completan juntos en el mismo instante
+// (el formulario de registro pide nombre y teléfono en un solo paso) — avisar los
+// dos por separado ahí sería redundante, así que se combinan en un solo aviso.
+function notificarRegistroYPerfil(nuevoRegistrado, nuevoPerfil) {
+  if (nuevoRegistrado && nuevoPerfil) {
+    pushNotification({ icon:'ti-school', iconBg:'var(--bg-success)', iconColor:'var(--text-success)', title:'Paso completado en Casa Academy', body:'Completaste el paso de crear tu cuenta y completar tu perfil.', route:'academia' });
+  } else if (nuevoRegistrado) {
+    notificarPasoAcademia('registered');
+  } else if (nuevoPerfil) {
+    notificarPasoAcademia('profile_done');
+  }
+}
 
 const NOTIF_ROUTES = {
   academia: () => { renderAcademia(); goScreen('screen-academia'); },
