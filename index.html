@@ -474,6 +474,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .acct-prop-row-tag{display:inline-block;font-size:10px;font-weight:600;background:var(--accent-blue);color:#fff;border-radius:4px;padding:1px 6px;margin-top:4px}
 .acct-prop-row-cta{display:none}
 .acct-prop-row-chevron{font-size:16px;color:var(--text-muted);flex-shrink:0}
+.acct-prop-row-blocked{cursor:default}
+.acct-prop-row-blocked:hover{background:transparent}
+.prop-unavailable-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--text-warning);background:var(--bg-warning);border-radius:6px;padding:3px 7px;margin-top:5px;width:fit-content}
+.acct-prop-row-remove-btn{flex-shrink:0;font-size:12px;font-weight:600;color:var(--text-danger);background:var(--surface-0);border:1.5px solid var(--border-danger);border-radius:8px;padding:7px 12px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.acct-prop-row-remove-btn:hover{background:var(--bg-danger)}
 #dt-mega-menu{display:none}
 #mega-backdrop{display:none}
 
@@ -2151,14 +2156,20 @@ const PROPS = [
   {id:1,price:2800000,area:65,rec:2,ban:1,zona:'Narvarte',tipo:'Departamento',tags:['Bien conectado','Metro Insurgentes'],lat:19.4043,lng:-99.1663,desc:'Departamento luminoso con acabados modernos. A dos cuadras del metro Insurgentes y con excelente acceso a transporte público. Edificio con seguridad 24h y áreas comunes.'},
   {id:2,price:3100000,area:72,rec:2,ban:2,zona:'Del Valle',tipo:'Departamento',tags:['Amplio','Estacionamiento'],lat:19.3837,lng:-99.1680,desc:'Amplio departamento en una de las colonias más cotizadas de la ciudad. Incluye lugar de estacionamiento cubierto y bodega. Acceso a parques y mercados locales.'},
   {id:3,price:3400000,area:85,rec:3,ban:2,zona:'Coyoacán',tipo:'Departamento',tags:['Familiar','Jardín compartido'],lat:19.3467,lng:-99.1617,desc:'Ideal para familia. Cuenta con jardín compartido arbolado y terraza privada. Colonia tranquila con alta calidad de vida y comercios a pie.'},
-  {id:4,price:3600000,area:90,rec:3,ban:2,zona:'Benito Juárez',tipo:'Departamento',tags:['Premium','Roof garden'],lat:19.3984,lng:-99.1664,desc:'Departamento de lujo con acceso a roof garden compartido con vista panorámica. Acabados de primer nivel, cocina integral y cajón de estacionamiento.'},
+  {id:4,price:3600000,area:90,rec:3,ban:2,zona:'Benito Juárez',tipo:'Departamento',tags:['Premium','Roof garden'],lat:19.3984,lng:-99.1664,desc:'Departamento de lujo con acceso a roof garden compartido con vista panorámica. Acabados de primer nivel, cocina integral y cajón de estacionamiento.',disponible:false},
   {id:5,price:2700000,area:50,rec:1,ban:1,zona:'Narvarte',tipo:'Departamento',tags:['Ideal para invertir','Estudio'],lat:19.4021,lng:-99.1645,desc:'Estudio moderno y funcional, ideal como inversión o para vivir solo. Excelente plusvalía en la zona. Edificio nuevo con elevador y seguridad.'},
   {id:6,price:2950000,area:68,rec:2,ban:1,zona:'Portales',tipo:'Departamento',tags:['Tranquilo','Planta baja'],lat:19.3765,lng:-99.1568,desc:'Departamento en planta baja con salida a patio privado. Colonia Portales en plena consolidación, con excelente conectividad y ambiente de barrio.'},
   {id:7,price:3200000,area:115,rec:3,ban:2,zona:'Coyoacán',tipo:'Casa',tags:['Con jardín','Privada'],lat:19.3490,lng:-99.1650,desc:'Casa en privada con vigilancia. Jardín propio de 30 m², cochera cubierta y cuarto de servicio. A dos cuadras del centro de Coyoacán.'},
-  {id:8,price:3500000,area:130,rec:3,ban:3,zona:'Del Valle',tipo:'Casa',tags:['Amplia','Cochera doble'],lat:19.3815,lng:-99.1700,desc:'Casa amplia con cochera para dos autos. Tres recámaras con baño completo, sala de estar y terraza. Remodelada en 2024 con materiales de alta calidad.'},
+  {id:8,price:3500000,area:130,rec:3,ban:3,zona:'Del Valle',tipo:'Casa',tags:['Amplia','Cochera doble'],lat:19.3815,lng:-99.1700,desc:'Casa amplia con cochera para dos autos. Tres recámaras con baño completo, sala de estar y terraza. Remodelada en 2024 con materiales de alta calidad.',disponible:false},
   {id:9,price:3150000,area:78,rec:2,ban:2,zona:'Benito Juárez',tipo:'Departamento',tags:['Nuevo','Vista al parque'],lat:19.3965,lng:-99.1640,desc:'Departamento estreno con vista al Parque Hundido. Cocina abierta, ventanas de piso a techo y dos cajones de estacionamiento.'},
   {id:10,price:2600000,area:55,rec:1,ban:1,zona:'Portales',tipo:'Departamento',tags:['Luminoso','Balcón'],lat:19.3748,lng:-99.1582,desc:'Departamento luminoso con balcón al jardín interior. Piso 3 de 6, elevador. Colonia segura y con excelente transporte público.'},
 ];
+// Una propiedad puede salir del catálogo activo (disponible:false) sin desaparecer
+// de los lugares donde ya quedó referenciada — favoritos, simulaciones, contactos
+// por WhatsApp. Esos lugares la siguen mostrando bloqueada, con badge y opción de
+// quitarla; el catálogo navegable (grilla, mapa, búsqueda) no la vuelve a listar.
+function propDisponible(p) { return !!p && p.disponible !== false; }
+
 let activeFilters = {zona:null, tipo:null, rec:null};
 let searchQuery = '';
 let currentView = 'list';
@@ -2355,6 +2366,24 @@ function propCardHTML(p) {
 }
 
 function propListItemHTML(p, showRemoveFav = false) {
+  // Si salió del catálogo (propDisponible false), sigue en la lista pero bloqueada:
+  // sin click-through a una ficha que ya no existe, con badge y opción de quitarla.
+  if (!propDisponible(p)) {
+    const quitarBtn = showRemoveFav
+      ? `<button onclick="event.stopPropagation();toggleFav(${p.id});renderFavs()" class="acct-prop-row-remove-btn">Eliminar</button>`
+      : '';
+    return `<div class="acct-prop-row acct-prop-row-blocked">
+      <div class="acct-prop-row-img" style="padding:0;overflow:hidden;filter:grayscale(1);opacity:.5">
+        <img src="img/prop-${((p.id-1)%10)+1}.jpg" alt="" style="width:100%;height:100%;object-fit:cover">
+      </div>
+      <div class="acct-prop-row-body" style="opacity:.65">
+        <div class="acct-prop-row-price">${fmt(p.price)}</div>
+        <div class="acct-prop-row-meta">${p.zona} · ${p.tipo} · ${p.rec} rec · ${p.area}m²</div>
+        <span class="prop-unavailable-badge"><i class="ti ti-lock" style="font-size:11px"></i> Ya no está disponible</span>
+      </div>
+      ${quitarBtn}
+    </div>`;
+  }
   const tag = p.tags && p.tags[0] ? `<span class="acct-prop-row-tag">${p.tags[0]}</span>` : '';
   const favBtn = showRemoveFav
     ? `<button onclick="event.stopPropagation();toggleFav(${p.id});renderFavs()" style="width:32px;height:32px;border-radius:8px;border:0.5px solid var(--border);background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;color:#e53935"><i class="ti ti-heart-filled" style="font-size:15px"></i></button>`
@@ -2417,7 +2446,7 @@ function renderSims() {
 
     const refPropHTML = linkedProps.length ? `
       <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Propiedades (${linkedProps.length})</div>
-      ${linkedProps.map(rp => `
+      ${linkedProps.map(rp => propDisponible(rp) ? `
       <div class="acct-prop-row" style="padding:10px 12px;border-radius:10px;background:var(--surface-1);margin-bottom:6px" onclick="openPropDetail(${rp.id})">
         <div class="acct-prop-row-img" style="width:56px;height:46px;border-radius:6px;overflow:hidden;flex-shrink:0"><img src="img/prop-${((rp.id-1)%10)+1}.jpg" style="width:100%;height:100%;object-fit:cover"></div>
         <div class="acct-prop-row-body">
@@ -2428,6 +2457,15 @@ function renderSims() {
           <button class="acct-prop-row-cta" onclick="event.stopPropagation();openPropDetail(${rp.id})">Ver ficha</button>
           <button onclick="event.stopPropagation();removePropFromSim('${s.id}',${rp.id})" style="width:28px;height:28px;border-radius:6px;border:0.5px solid var(--border);background:var(--surface-2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-muted)" title="Quitar propiedad"><i class="ti ti-trash" style="font-size:13px"></i></button>
         </div>
+      </div>` : `
+      <div class="acct-prop-row acct-prop-row-blocked" style="padding:10px 12px;border-radius:10px;background:var(--surface-1);margin-bottom:6px">
+        <div class="acct-prop-row-img" style="width:56px;height:46px;border-radius:6px;overflow:hidden;flex-shrink:0;filter:grayscale(1);opacity:.5"><img src="img/prop-${((rp.id-1)%10)+1}.jpg" style="width:100%;height:100%;object-fit:cover"></div>
+        <div class="acct-prop-row-body" style="opacity:.65">
+          <div class="acct-prop-row-price" style="font-size:14px">${fmt(rp.price)}</div>
+          <div class="acct-prop-row-meta">${rp.zona} · ${rp.tipo} · ${rp.rec} rec · ${rp.area}m²</div>
+          <span class="prop-unavailable-badge"><i class="ti ti-lock" style="font-size:11px"></i> Ya no está disponible</span>
+        </div>
+        <button onclick="event.stopPropagation();removePropFromSim('${s.id}',${rp.id})" class="acct-prop-row-remove-btn">Eliminar</button>
       </div>`).join('')}` : '';
 
     return `<div class="sim-history-card" style="margin-bottom:16px">
@@ -2525,7 +2563,7 @@ function openLinkSimPicker(propId) {
 }
 
 function renderOpps() {
-  const oppProps = PROPS.filter(p => p.tags && (p.tags.includes('Nueva') || p.tags.includes('Nuevo')));
+  const oppProps = PROPS.filter(propDisponible).filter(p => p.tags && (p.tags.includes('Nueva') || p.tags.includes('Nuevo')));
   const grid = document.getElementById('opp-grid');
   if (!oppProps.length) { grid.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:12px">✨</div><div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:6px">Sin oportunidades por ahora</div><div style="font-size:13px;color:var(--text-muted)">Completa una simulación para ver propiedades disponibles</div></div>'; return; }
   grid.innerHTML = `<div class="list-card acct-prop-list">${oppProps.map(p => propListItemHTML(p)).join('')}</div>`;
@@ -3783,7 +3821,7 @@ function verContactoWA(id) {
   const c = WA_CONTACTS.find(x => x.id === id);
   if (!c) return;
   const propRef = c.propId ? PROPS.find(p => p.id === c.propId) : null;
-  const ctxHTML = propRef ? `
+  const ctxHTML = !propRef ? '' : propDisponible(propRef) ? `
     <div class="acct-prop-row" style="padding:10px 12px;border-radius:10px;background:var(--surface-1);margin-bottom:16px;cursor:pointer" onclick="closeSheet();openPropDetail(${propRef.id})">
       <div class="acct-prop-row-img" style="width:56px;height:46px;border-radius:6px;overflow:hidden;flex-shrink:0"><img src="img/prop-${((propRef.id-1)%10)+1}.jpg" style="width:100%;height:100%;object-fit:cover"></div>
       <div class="acct-prop-row-body">
@@ -3791,7 +3829,16 @@ function verContactoWA(id) {
         <div class="acct-prop-row-meta">${propRef.zona} · ${propRef.tipo}</div>
       </div>
       <i class="ti ti-chevron-right acct-prop-row-chevron"></i>
-    </div>` : '';
+    </div>` : `
+    <div class="acct-prop-row acct-prop-row-blocked" style="padding:10px 12px;border-radius:10px;background:var(--surface-1);margin-bottom:16px">
+      <div class="acct-prop-row-img" style="width:56px;height:46px;border-radius:6px;overflow:hidden;flex-shrink:0;filter:grayscale(1);opacity:.5"><img src="img/prop-${((propRef.id-1)%10)+1}.jpg" style="width:100%;height:100%;object-fit:cover"></div>
+      <div class="acct-prop-row-body" style="opacity:.65">
+        <div class="acct-prop-row-price" style="font-size:14px">${fmt(propRef.price)}</div>
+        <div class="acct-prop-row-meta">${propRef.zona} · ${propRef.tipo}</div>
+        <span class="prop-unavailable-badge"><i class="ti ti-lock" style="font-size:11px"></i> Ya no está disponible</span>
+      </div>
+      <button onclick="event.stopPropagation();quitarPropDeContactoWA('${c.id}')" class="acct-prop-row-remove-btn">Eliminar</button>
+    </div>`;
   const body = document.getElementById('wa-detail-body');
   if (!body) return;
   body.innerHTML = `
@@ -3815,6 +3862,18 @@ function verContactoWA(id) {
   openSheet('sheet-wa-detail');
 }
 
+// Quita solo la referencia a la propiedad de un contacto (la propiedad ya salió del
+// catálogo); el registro de contacto con el asesor se conserva íntegro.
+function quitarPropDeContactoWA(id) {
+  const c = WA_CONTACTS.find(x => x.id === id);
+  if (!c) return;
+  c.propId = null;
+  saveWaContacts();
+  renderMensajes();
+  verContactoWA(id);
+  showToast('ti-trash', 'Propiedad quitada del contacto');
+}
+
 function renderMensajes() {
   const el = document.getElementById('mensajes-content');
   if (!el) return;
@@ -3824,15 +3883,18 @@ function renderMensajes() {
   }
   const rows = WA_CONTACTS.map(c => {
     const propRef = c.propId ? PROPS.find(p => p.id === c.propId) : null;
+    const propBlocked = propRef && !propDisponible(propRef);
     const tipoLabel = c.asesorRol || (c.tipo === 'hipotecario' ? 'Asesor hipotecario' : 'Asesor inmobiliario');
     const ctx = propRef
       ? `${propRef.tipo} en ${propRef.zona} · ${fmt(propRef.price)}`
       : (c.simId ? 'Sobre tu simulación' : '');
+    const blockedBadge = propBlocked ? `<span class="prop-unavailable-badge" style="margin-top:4px"><i class="ti ti-lock" style="font-size:10px"></i> Propiedad ya no disponible</span>` : '';
     return `<div class="msg-thread-item" onclick="verContactoWA('${c.id}')">
       <div class="msg-thread-avatar">${c.asesorEmoji}</div>
       <div class="msg-thread-body">
         <div class="msg-thread-name">${c.asesorNombre} <span style="font-size:11px;font-weight:400;color:var(--text-muted)">· ${tipoLabel}</span></div>
         <div class="msg-thread-preview"><i class="ti ti-brand-whatsapp" style="font-size:12px;color:#25D366"></i> ${c.telefono}${ctx ? ' · '+ctx : ''}</div>
+        ${blockedBadge}
       </div>
       <div class="msg-thread-meta"><span>${c.fecha}</span></div>
     </div>`;
@@ -4420,7 +4482,10 @@ function switchView(view){
 
 function getFilteredProps(){
   const max = simData.propMax || 3600000;
-  let show = PROPS.filter(p => p.price <= max * 1.1);
+  // Una propiedad marcada disponible:false salió del catálogo — no vuelve a listarse
+  // acá (grilla, mapa, búsqueda), aunque siga referenciada en favoritos/simulaciones/
+  // mensajes (ver propDisponible).
+  let show = PROPS.filter(propDisponible).filter(p => p.price <= max * 1.1);
   if(searchQuery) show = show.filter(p=>p.zona.toLowerCase().includes(searchQuery)||p.tipo.toLowerCase().includes(searchQuery)||p.desc.toLowerCase().includes(searchQuery));
   if(activeFilters.zona) show = show.filter(p=>p.zona===activeFilters.zona);
   if(activeFilters.tipo) show = show.filter(p=>p.tipo===activeFilters.tipo);
@@ -4430,7 +4495,7 @@ function getFilteredProps(){
   if(chipFilters.minRec) show = show.filter(p=>p.rec>=chipFilters.minRec);
   if(chipFilters.minPrice) show = show.filter(p=>p.price>=chipFilters.minPrice);
   if(chipFilters.maxPrice) show = show.filter(p=>p.price<=chipFilters.maxPrice);
-  return show.length ? show : PROPS.slice(0,3);
+  return show.length ? show : PROPS.filter(propDisponible).slice(0,3);
 }
 
 function renderProps() {
@@ -4726,7 +4791,7 @@ function openPropDetail(id){
   });
 
   // propiedades relacionadas — mínimo 10 items repitiendo para llenar carrusel
-  const relBase = PROPS.filter(x=>x.id!==id);
+  const relBase = PROPS.filter(propDisponible).filter(x=>x.id!==id);
   const related = Array.from({length:10}, (_,i) => relBase[i % relBase.length]);
   const relCard = r => `
     <div class="detail-related-card" onclick="openPropDetail(${r.id})">
