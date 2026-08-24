@@ -957,34 +957,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </aside>
-    <div class="content">
-      <div class="list-card">
-        <div class="list-item" onclick="renderSims();goScreen('screen-simulaciones')">
-          <div class="list-item-icon" style="background:var(--bg-success)"><i class="ti ti-circle-check" style="color:var(--text-success)"></i></div>
-          <div class="list-item-body"><div class="list-item-title">Simulación guardada</div><div class="list-item-sub">Tu simulación de $3,200,000 quedó registrada</div></div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div class="list-item-meta">Hoy</div><div class="notif-dot"></div></div>
-        </div>
-        <div class="list-item" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})">
-          <div class="list-item-icon" style="background:var(--bg-warning)"><i class="ti ti-sparkles" style="color:var(--text-warning)"></i></div>
-          <div class="list-item-body"><div class="list-item-title">Nueva oportunidad</div><div class="list-item-sub">Una propiedad en Narvarte hace match con tu simulación</div></div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div class="list-item-meta">Hoy</div><div class="notif-dot"></div></div>
-        </div>
-        <div class="list-item" onclick="openPropDetail(3)">
-          <div class="list-item-icon"><i class="ti ti-building"></i></div>
-          <div class="list-item-body"><div class="list-item-title">Propiedad actualizada</div><div class="list-item-sub">Ámsterdam 145 en Del Valle bajó de precio</div></div>
-          <div class="list-item-meta">Ayer</div>
-        </div>
-        <div class="list-item" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})">
-          <div class="list-item-icon"><i class="ti ti-file-text"></i></div>
-          <div class="list-item-body"><div class="list-item-title">Módulo completado</div><div class="list-item-sub">Completaste el módulo de Educación financiera</div></div>
-          <div class="list-item-meta">Lun</div>
-        </div>
-        <div class="list-item" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})">
-          <div class="list-item-icon"><i class="ti ti-bell"></i></div>
-          <div class="list-item-body"><div class="list-item-title">Bienvenido a Casa Academy</div><div class="list-item-sub">Empieza tu camino hacia tu casa</div></div>
-          <div class="list-item-meta">Mar 28</div>
-        </div>
-      </div>
+    <div class="content" id="notif-content">
+      <!-- renderNotificaciones() escribe aquí -->
     </div>
     </div><!-- /dt-acct-wrap -->
   </div>
@@ -2057,6 +2031,15 @@ let entryPoint = 1;
 let simData = {ingreso:0, enganche:0, plazo:10, propMax:0, cuotaReal:0, pct:0};
 let simRefPropId = null; // prop que originó la simulación desde ficha de producto
 
+// Verdadero mientras el usuario recorre a propósito el camino guiado de Casa Academy
+// (entró por un "momento" en el inicio, o retomó un módulo puntual desde la sección
+// Academia). Solo en ese caso tiene sentido interrumpir con la pantalla de logro al
+// completar un módulo — si no, completar el módulo es un efecto secundario de una
+// acción normal (ver una propiedad, simular) y se avisa con un toast liviano. No se
+// persiste a propósito: cada sesión nueva arranca en false, así que si alguien
+// abandonó el recorrido y vuelve otro día, no le reaparece la pantalla de la nada.
+let enFlujoAcademia = false;
+
 const PROPS = [
   {id:1,price:2800000,area:65,rec:2,ban:1,zona:'Narvarte',tipo:'Departamento',tags:['Bien conectado','Metro Insurgentes'],lat:19.4043,lng:-99.1663,desc:'Departamento luminoso con acabados modernos. A dos cuadras del metro Insurgentes y con excelente acceso a transporte público. Edificio con seguridad 24h y áreas comunes.'},
   {id:2,price:3100000,area:72,rec:2,ban:2,zona:'Del Valle',tipo:'Departamento',tags:['Amplio','Estacionamiento'],lat:19.3837,lng:-99.1680,desc:'Amplio departamento en una de las colonias más cotizadas de la ciudad. Incluye lugar de estacionamiento cubierto y bodega. Acceso a parques y mercados locales.'},
@@ -2099,11 +2082,22 @@ const DEMO_SEED_SIMS = [
   { id:'S002', fecha:'28 may 2026', ingreso:28000, enganche:250000, plazo:20, propMax:2800000, cuota:15200, props:[4,5] },
 ];
 
+// Semilla de notificaciones: la cuenta demo arranca con un ejemplo más nutrido; cualquier
+// cuenta nueva arranca solo con el saludo de bienvenida.
+const DEMO_SEED_NOTIFICATIONS = [
+  { id:'ndemo1', icon:'ti-circle-check', iconBg:'var(--bg-success)', iconColor:'var(--text-success)', title:'Simulación guardada', body:'Tu simulación de $3,200,000 quedó registrada', fecha:'Hoy', leido:false, route:'simulaciones' },
+  { id:'ndemo2', icon:'ti-sparkles', iconBg:'var(--bg-warning)', iconColor:'var(--text-warning)', title:'Nueva oportunidad', body:'Una propiedad en Narvarte hace match con tu simulación', fecha:'Hoy', leido:false, route:'academia' },
+  { id:'ndemo3', icon:'ti-building', iconBg:null, iconColor:null, title:'Propiedad actualizada', body:'Ámsterdam 145 en Del Valle bajó de precio', fecha:'Ayer', leido:true, route:null, propId:2 },
+  { id:'ndemo5', icon:'ti-bell', iconBg:null, iconColor:null, title:'Bienvenido a Casa Academy', body:'Empieza tu camino hacia tu casa', fecha:'28 may 2026', leido:true, route:'academia' },
+];
+const WELCOME_NOTIFICATION = { icon:'ti-bell', iconBg:null, iconColor:null, title:'Bienvenido a Casa Academy', body:'Empieza tu camino hacia tu casa', fecha:'Hoy', leido:false, route:'academia' };
+
 function favsKey()    { return currentUser ? 'bbva_favs_'    + currentUser.email.toLowerCase() : null; }
 function simsKey()    { return currentUser ? 'bbva_sims_'    + currentUser.email.toLowerCase() : null; }
 function modulesKey() { return currentUser ? 'bbva_modules_' + currentUser.email.toLowerCase() : null; }
 function stepsKey()   { return currentUser ? 'bbva_steps_'   + currentUser.email.toLowerCase() : null; }
 function waKey()       { return currentUser ? 'bbva_wa_'      + currentUser.email.toLowerCase() : null; }
+function notifKey()   { return currentUser ? 'bbva_notifs_' + currentUser.email.toLowerCase() : null; }
 
 function saveFavs() {
   const key = favsKey();
@@ -2124,6 +2118,10 @@ function saveSteps() {
 function saveWaContacts() {
   const key = waKey();
   if (key) localStorage.setItem(key, JSON.stringify(WA_CONTACTS));
+}
+function saveNotifications() {
+  const key = notifKey();
+  if (key) localStorage.setItem(key, JSON.stringify(NOTIFICATIONS));
 }
 
 // Recarga FAVS_IDS/SIM_HISTORY/moduleDone/STEPS_DONE/WA_CONTACTS para el usuario activo
@@ -2170,6 +2168,22 @@ function loadUserScopedData() {
   const waK = waKey();
   if (waK) {
     try { (JSON.parse(localStorage.getItem(waK)) || []).forEach(c => WA_CONTACTS.push(c)); } catch {}
+  }
+
+  NOTIFICATIONS.length = 0;
+  const nKey = notifKey();
+  if (nKey) {
+    let savedNotifs = null;
+    try { savedNotifs = JSON.parse(localStorage.getItem(nKey)); } catch {}
+    if (savedNotifs) {
+      savedNotifs.forEach(n => NOTIFICATIONS.push(n));
+    } else if (currentUser.email.toLowerCase() === 'natalia@email.com') {
+      DEMO_SEED_NOTIFICATIONS.forEach(n => NOTIFICATIONS.push({...n}));
+      saveNotifications();
+    } else {
+      NOTIFICATIONS.push({ id:'n'+Date.now(), ...WELCOME_NOTIFICATION });
+      saveNotifications();
+    }
   }
 
   // La Academy (screen-edu) mantiene su propio estado de desbloqueo progresivo en el
@@ -2739,6 +2753,7 @@ function closeDrawer() {
 function goMoment(n) {
   const allDone = moduleDone[1] && moduleDone[2] && moduleDone[3];
   if (allDone) { renderAcademia(); goScreen('screen-academia'); return; }
+  enFlujoAcademia = true;
   entryPoint = n;
   if (n === 1) goScreen('screen-edu');
   else if (n === 2) goScreen('screen-sim');
@@ -2788,10 +2803,12 @@ const moduleDone = { 1: false, 2: false, 3: false };
 const STEPS_DONE = {};
 const EDU_READ = {cat:false,tasa:false,enganche:false};
 let WA_CONTACTS = []; // registro de contactos por WhatsApp — se llena por cuenta en loadUserScopedData()
+let NOTIFICATIONS = []; // bandeja de notificaciones — se llena por cuenta en loadUserScopedData()
 function markStep(key) {
-  if (STEPS_DONE[key]) return;
+  if (STEPS_DONE[key]) return false;
   STEPS_DONE[key] = true;
   saveSteps();
+  return true;
 }
 
 // ── Session management ──
@@ -3151,15 +3168,15 @@ const ACADEMY_SECTIONS = [
     { key:'profile_done', title:'Completa tu perfil',          sub:'Agrega tu información de contacto',         cta:'Ir al perfil',      ctaAction:"goScreen('screen-perfil')",                 ctaDone:'Ver perfil',        ctaDoneAction:"goScreen('screen-perfil')" },
   ]},
   { id:'aprende', label:'Aprende', icon:'ti-book', steps:[
-    { key:'edu_done',   title:'Entiende cómo funciona',       sub:'CAT, tipos de tasa y enganche',             cta:'Empezar módulo',    ctaAction:"goScreen('screen-edu')",                    ctaDone:'Repasar',           ctaDoneAction:"goScreen('screen-edu')" },
+    { key:'edu_done',   achModule:1, title:'Entiende cómo funciona',       sub:'CAT, tipos de tasa y enganche',             cta:'Empezar módulo',    ctaAction:"enFlujoAcademia=true;goScreen('screen-edu')",                    ctaDone:'Repasar',           ctaDoneAction:"goScreen('screen-edu')" },
   ]},
   { id:'simula', label:'Simula', icon:'ti-calculator', steps:[
-    { key:'sim_done',     title:'Haz tu primera simulación',  sub:'Calcula cuánto puedes pagar',                cta:'Simular ahora',     ctaAction:"requireAuth(()=>navTo('screen-sim','nav-sim'))",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
+    { key:'sim_done',     achModule:2, title:'Haz tu primera simulación',  sub:'Calcula cuánto puedes pagar',                cta:'Simular ahora',     ctaAction:"requireAuth(()=>{enFlujoAcademia=true;navTo('screen-sim','nav-sim')})",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
     { key:'shared_sim',   title:'Compartí tu simulación',      sub:'Enviásela a alguien de confianza',          cta:'Ir a simulaciones', ctaAction:"renderSims();goScreen('screen-simulaciones')", ctaDone:'Compartida ✓',   ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
     { key:'added_to_sim', title:'Agrega una propiedad a tu simulación', sub:'Vincula lo que te gusta con tu capacidad', cta:'Ver propiedades',  ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
   ]},
   { id:'explora', label:'Explora', icon:'ti-building', steps:[
-    { key:'viewed_prop',  title:'Abrí la ficha de una propiedad', sub:'Conocé todos los detalles',             cta:'Ver propiedades',   ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Seguir explorando', ctaDoneAction:"navTo('screen-props','nav-props')" },
+    { key:'viewed_prop',  achModule:3, title:'Abrí la ficha de una propiedad', sub:'Conocé todos los detalles',             cta:'Ver propiedades',   ctaAction:"enFlujoAcademia=true;navTo('screen-props','nav-props')",          ctaDone:'Seguir explorando', ctaDoneAction:"navTo('screen-props','nav-props')" },
     { key:'faved',        title:'Guardá un favorito',            sub:'Marcá las propiedades que más te gustan', cta:'Ver propiedades',   ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver favoritos',     ctaDoneAction:"renderFavs();goScreen('screen-favoritos')" },
   ]},
   { id:'conecta', label:'Conéctate', icon:'ti-headset', steps:[
@@ -3525,7 +3542,7 @@ function contactarPorWhatsapp({ tipo, asesor, propId, simId, mensaje, stepKey })
       hora: now.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}),
     });
     saveWaContacts();
-    if (stepKey) markStep(stepKey);
+    if (stepKey && markStep(stepKey)) notificarPasoAcademia(stepKey);
     if (document.querySelector('.screen.active')?.id === 'screen-mensajes') renderMensajes();
     if (statusEl) statusEl.innerHTML = '<i class="ti ti-circle-check" style="font-size:16px;color:var(--text-success)"></i><span>Contacto registrado</span>';
     setTimeout(() => {
@@ -3654,7 +3671,10 @@ function renderAcademia() {
               <div style="font-size:13px;font-weight:${done?'400':'500'};color:${done?'var(--text-muted)':'var(--text-primary)'};text-decoration:${done?'line-through':'none'}">${st.title}</div>
               ${!done?`<div style="font-size:11px;color:var(--text-muted);margin-top:2px">${st.sub}</div>`:''}
             </div>
-            <button onclick="${done ? st.ctaDoneAction : st.ctaAction}" style="font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;border:0.5px solid var(--border-strong);background:${done?'var(--surface-1)':'var(--text-primary)'};color:${done?'var(--text-muted)':'var(--surface-2)'};cursor:pointer;white-space:nowrap;font-family:var(--font-sans);flex-shrink:0">${done ? st.ctaDone : st.cta}</button>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+              ${(done && st.achModule) ? `<button onclick="showAchievement(${st.achModule})" title="Ver constancia del logro" style="width:28px;height:28px;border-radius:6px;border:0.5px solid var(--border-strong);background:var(--surface-1);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted)"><i class="ti ti-award" style="font-size:14px"></i></button>` : ''}
+              <button onclick="${done ? st.ctaDoneAction : st.ctaAction}" style="font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;border:0.5px solid var(--border-strong);background:${done?'var(--surface-1)':'var(--text-primary)'};color:${done?'var(--text-muted)':'var(--surface-2)'};cursor:pointer;white-space:nowrap;font-family:var(--font-sans)">${done ? st.ctaDone : st.cta}</button>
+            </div>
           </div>`;
         }).join('')}
       </div>
@@ -3718,6 +3738,7 @@ function goScreen(id, isBack = false) {
     if (id === 'screen-props') renderProps();
     if (id === 'screen-academia') renderAcademia();
     if (id === 'screen-edu') initEduScreen();
+    if (id === 'screen-notificaciones') renderNotificaciones();
     document.querySelectorAll('.dt-acct-item[data-screen]').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
   });
 }
@@ -3939,18 +3960,107 @@ const ACH_DATA = {
     note: 'Cuando quieras dar el siguiente paso, un asesor BBVA puede acompañarte.',
     pct: 100, counter: '3 de 3 módulos',
     pills: ['done','done','done'],
-    ctaLabel: 'Ver detalles de la propiedad →', ctaFn: () => {},
+    // openPropDetail() sobrescribe ctaFn con la propiedad puntual que completó el
+    // módulo; este es el respaldo genérico para cuando se ve como constancia desde la
+    // sección Academia sin ese contexto (p. ej. recién arrancada la sesión).
+    ctaLabel: 'Ver propiedades →', ctaFn: () => navTo('screen-props','nav-props'),
   },
 };
 
 const PILL_LABELS = ['Entiende','Simula','Busca'];
 
-function showAchievement(n) {
+// Marca un módulo como completo (persistiendo el cambio) sin tocar la pantalla.
+// Devuelve true si recién se completó ahora (para poder avisar solo la primera vez).
+function markModuleDone(n) {
+  const yaEstaba = moduleDone[n];
   moduleDone[n] = true;
   saveModules();
   if (n === 1) markStep('edu_done');
   if (n === 2) markStep('sim_done');
   if (n === 3) markStep('viewed_prop');
+  return !yaEstaba;
+}
+
+/* ══════════════════════════════════
+   NOTIFICACIONES
+   Cuando un módulo o paso de Casa Academy se completa fuera del recorrido guiado
+   (ver enFlujoAcademia), no tiene sentido interrumpir con una pantalla ni con un
+   toast — ni siquiera un toast se siente bien si la persona no lo está haciendo a
+   propósito. En cambio, queda un aviso en la bandeja de notificaciones que puede
+   revisar cuando quiera, con acceso directo a Casa Academy para ver el detalle.
+   ══════════════════════════════════ */
+const MODULO_TOAST_LABEL = { 1:'entender cómo funciona un crédito', 2:'simular tu crédito', 3:'buscar propiedades en tu rango' };
+const PASO_ACADEMIA_LABEL = { contacted_prop:'contactar a un asesor inmobiliario', contacted_hipo:'contactar a un asesor hipotecario' };
+
+const NOTIF_ROUTES = {
+  academia: () => { renderAcademia(); goScreen('screen-academia'); },
+  simulaciones: () => { renderSims(); goScreen('screen-simulaciones'); },
+  mensajes: () => { renderMensajes(); goScreen('screen-mensajes'); },
+};
+
+function pushNotification({ icon, iconBg, iconColor, title, body, route, propId }) {
+  NOTIFICATIONS.unshift({
+    id: 'n' + Date.now() + Math.random().toString(36).slice(2, 6),
+    icon: icon || 'ti-bell', iconBg: iconBg || null, iconColor: iconColor || null,
+    title, body,
+    fecha: new Date().toLocaleDateString('es-MX', { day:'numeric', month:'short', year:'numeric' }),
+    leido: false,
+    route: route || null, propId: propId || null,
+  });
+  saveNotifications();
+  if (document.querySelector('.screen.active')?.id === 'screen-notificaciones') renderNotificaciones();
+}
+
+// Se llama en vez de mostrar la pantalla de logro cuando el módulo n se completó
+// fuera del recorrido consciente de Casa Academy (ver markModuleDone / enFlujoAcademia).
+function notificarModuloCompletado(n) {
+  const todoListo = moduleDone[1] && moduleDone[2] && moduleDone[3];
+  const title = todoListo ? '¡Completaste Casa Academy!' : 'Módulo completado';
+  const body = todoListo
+    ? 'Terminaste los 3 módulos. Podés repasarlos cuando quieras.'
+    : `Completaste el módulo de ${MODULO_TOAST_LABEL[n]} en Casa Academy.`;
+  pushNotification({ icon:'ti-school', iconBg:'var(--bg-success)', iconColor:'var(--text-success)', title, body, route:'academia' });
+}
+
+// Igual que notificarModuloCompletado, pero para pasos del checklist que no son uno
+// de los 3 módulos principales (por ahora, contactar a cada tipo de asesor).
+function notificarPasoAcademia(key) {
+  const label = PASO_ACADEMIA_LABEL[key];
+  if (!label) return;
+  pushNotification({ icon:'ti-school', iconBg:'var(--bg-success)', iconColor:'var(--text-success)', title:'Paso completado en Casa Academy', body:`Completaste el paso de ${label}.`, route:'academia' });
+}
+
+function renderNotificaciones() {
+  const el = document.getElementById('notif-content');
+  if (!el) return;
+  if (!NOTIFICATIONS.length) {
+    el.innerHTML = `<div class="empty-state"><i class="ti ti-bell-off"></i><p>Sin notificaciones por ahora</p></div>`;
+    return;
+  }
+  const rows = NOTIFICATIONS.map(n => {
+    const iconStyle = n.iconBg ? `background:${n.iconBg}` : '';
+    const iconColorStyle = n.iconColor ? `color:${n.iconColor}` : '';
+    const dot = !n.leido ? '<div class="notif-dot"></div>' : '';
+    return `<div class="list-item" onclick="abrirNotificacion('${n.id}')">
+      <div class="list-item-icon" style="${iconStyle}"><i class="ti ${n.icon}" style="${iconColorStyle}"></i></div>
+      <div class="list-item-body"><div class="list-item-title">${n.title}</div><div class="list-item-sub">${n.body}</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div class="list-item-meta">${n.fecha}</div>${dot}</div>
+    </div>`;
+  }).join('');
+  el.innerHTML = `<div class="list-card">${rows}</div>`;
+}
+
+function abrirNotificacion(id) {
+  const n = NOTIFICATIONS.find(x => x.id === id);
+  if (!n) return;
+  if (!n.leido) { n.leido = true; saveNotifications(); }
+  if (n.propId) { openPropDetail(n.propId); return; }
+  if (n.route && NOTIF_ROUTES[n.route]) { NOTIF_ROUTES[n.route](); return; }
+  renderNotificaciones();
+}
+
+function showAchievement(n) {
+  markModuleDone(n);
   const d = ACH_DATA[n];
   document.getElementById('ach-icon').textContent = d.icon;
   document.getElementById('ach-title').textContent = d.title;
@@ -3967,10 +4077,6 @@ function showAchievement(n) {
   setTimeout(() => { document.getElementById('ach-bar').style.width = d.pct + '%'; }, 200);
 }
 
-function goToPropDetail(id) {
-  openPropDetail(id);
-}
-
 function completeModule2() {
   const today = new Date().toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'});
   // props arranca vacío: una propiedad se suma a una simulación solo cuando el usuario
@@ -3982,14 +4088,23 @@ function completeModule2() {
     props: simRefPropId ? [simRefPropId] : [], refProp:simRefPropId || null
   });
   saveSimHistory();
-  const wasRef = !!simRefPropId;
   simRefPropId = null;
-  const wasDone = moduleDone[2];
-  if(!wasDone){ showAchievement(2); } else { renderSims(); goScreen('screen-simulaciones'); }
+  // Confirmar una simulación completa el Módulo 2. Si el usuario está conscientemente
+  // recorriendo Casa Academy (entró por un "momento" o retomó el módulo desde ahí), la
+  // pantalla de logro tiene sentido y corresponde. Si no, es un efecto secundario de una
+  // acción normal (quería ver cuánto puede pagar) y basta un toast liviano.
+  const moduloDosRecienCompletado = markModuleDone(2);
+  if (moduloDosRecienCompletado && enFlujoAcademia) {
+    showAchievement(2);
+    return;
+  }
+  renderSims();
+  goScreen('screen-simulaciones');
   requestAnimationFrame(() => {
     const first = document.querySelector('#sims-content .sim-history-card');
     if(first){ first.classList.add('sim-new'); setTimeout(()=>first.classList.remove('sim-new'),2500); }
   });
+  if (moduloDosRecienCompletado) notificarModuloCompletado(2);
 }
 
 function viewPropsForSim(propMax) {
@@ -4228,8 +4343,13 @@ function openPropDetail(id){
     const btn = document.getElementById(btnId);
     if (btn) updateFavIcon(btn.querySelector('i'), faved);
   });
-  if(!moduleDone[3]){
-    ACH_DATA[3].ctaFn = () => goToPropDetail(id);
+  // Abrir una ficha completa el Módulo 3. Igual que con el Módulo 2: si está
+  // conscientemente en el recorrido de Casa Academy, la pantalla de logro corresponde;
+  // si no (p. ej. volvió días después a buscar una propiedad sin acordarse de la
+  // Academia), no lo interrumpimos — mostramos la ficha y avisamos con un toast liviano.
+  const moduloTresRecienCompletado = markModuleDone(3);
+  if (moduloTresRecienCompletado && enFlujoAcademia) {
+    ACH_DATA[3].ctaFn = () => openPropDetail(id);
     showAchievement(3);
     return;
   }
@@ -4369,6 +4489,8 @@ function openPropDetail(id){
   const detailScreen = document.getElementById('screen-prop-detail');
   if(detailScreen) detailScreen.scrollTop = 0;
   goScreen('screen-prop-detail');
+
+  if (moduloTresRecienCompletado) notificarModuloCompletado(3);
 }
 
 document.addEventListener('click', function(e) {
