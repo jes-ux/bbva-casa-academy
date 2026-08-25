@@ -519,6 +519,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   /* ── Screens — padding handled by #app ── */
   .screen{padding-top:0}
   .app-breadcrumb-inline{padding:16px 40px 0}
+  /* Pantallas con sidebar de cuenta (Perfil, Favoritos, etc.): el breadcrumb es
+     hijo directo de .screen, ANTES del sidebar en el flujo — sin este corrimiento
+     quedaría como una franja de ancho completo por encima del sidebar, pisándolo
+     visualmente. Se alinea en cambio con el arranque real de .content (ancho del
+     sidebar + su padding), nunca superpuesto al menú lateral. */
+  .app-breadcrumb-inline.has-acct-sidebar{padding-left:276px}
 
   /* desktop nav */
   .dt-nav{display:flex;align-items:center;gap:6px;justify-content:center}
@@ -3045,7 +3051,12 @@ function paintBreadcrumb(screenEl) {
   if (!show || id === 'screen-prop-detail') return;
   const bc = document.createElement('div');
   bc.id = 'app-breadcrumb-dynamic';
-  bc.className = 'app-breadcrumb-inline';
+  // En pantallas con sidebar de cuenta, el breadcrumb sigue siendo el primer hijo
+  // de .screen (para no alterar el orden en mobile, donde no hay sidebar), pero en
+  // escritorio necesita correrse para alinearse con .content — nunca quedar como
+  // una franja por encima del sidebar (ver regla has-acct-sidebar en CSS).
+  const hasAcctSidebar = !!screenEl.querySelector(':scope > .dt-acct-wrap');
+  bc.className = 'app-breadcrumb-inline' + (hasAcctSidebar ? ' has-acct-sidebar' : '');
   bc.innerHTML = buildBreadcrumbTrailHTML();
   screenEl.prepend(bc);
 }
