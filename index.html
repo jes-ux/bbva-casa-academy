@@ -2964,6 +2964,11 @@ function initHeaderScroll(screen) {
 const ROOT_SCREENS = new Set(['screen-0','screen-academia','screen-login','screen-registro']);
 // pantallas de auth sin header/bottom-nav — tampoco tiene sentido un breadcrumb ahí
 const NOHEADER_SCREENS = new Set(['screen-login','screen-registro','screen-forgot-password','screen-check-email','screen-new-password','screen-google-auth']);
+// Accesos directos del menú de cuenta (sidebar de escritorio y drawer mobile): son
+// secciones top-level elegidas desde el mismo menú global, no una jerarquía de
+// navegación. Saltar de una a otra (p. ej. Perfil -> Mensajes) no debería ir apilando
+// breadcrumb como si fuera un drill-down — se reinicia a solo "Inicio" en goScreen().
+const ACCOUNT_MENU_SCREENS = new Set(['screen-perfil','screen-favoritos','screen-simulaciones','screen-mensajes','screen-notificaciones','screen-academia','screen-oportunidades','screen-configuracion']);
 
 let navHistory = [];
 
@@ -3019,7 +3024,7 @@ function screenLabel(id) {
 // nativo varias veces seguidas.
 function buildBreadcrumbTrailHTML() {
   return navHistory.map((sid, idx) =>
-    `<button class="bc-item" onclick="goToBreadcrumb(${idx})">${screenLabel(sid)}</button><i class="ti ti-chevron-right"></i>`
+    `${idx > 0 ? '<i class="ti ti-chevron-right"></i>' : ''}<button class="bc-item" onclick="goToBreadcrumb(${idx})">${screenLabel(sid)}</button>`
   ).join('');
 }
 function goToBreadcrumb(idx) {
@@ -4084,7 +4089,13 @@ function showSkeleton(targetId, cb) {
 function goScreen(id, isBack = false) {
   closeDrawer();
   const current = document.querySelector('.screen.active')?.id;
-  if (!isBack && current && current !== id) navHistory.push(current);
+  if (!isBack && current && current !== id) {
+    if (ACCOUNT_MENU_SCREENS.has(current) && ACCOUNT_MENU_SCREENS.has(id)) {
+      navHistory = ['screen-0'];
+    } else {
+      navHistory.push(current);
+    }
+  }
   showSkeleton(id, () => {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const s = document.getElementById(id);
