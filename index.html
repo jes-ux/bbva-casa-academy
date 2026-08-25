@@ -265,7 +265,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
 /* ── Property detail ── */
 .prop-detail-hero{height:240px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border-bottom:0.5px solid var(--border)}
-.detail-breadcrumb,.app-breadcrumb-inline{display:flex;align-items:center;gap:4px;padding:10px 20px;font-size:11px;color:var(--text-muted);flex-shrink:0;flex-wrap:wrap}
+.detail-breadcrumb{display:flex;align-items:center;gap:4px;padding:10px 20px;font-size:11px;color:var(--text-muted);flex-shrink:0;flex-wrap:wrap}
+/* Vive como primer hijo de .content (flex column con gap propio): sin padding propio
+   para no duplicar el inset que .content ya aplica, así queda perfectamente alineado
+   con el resto del contenido sin importar la pantalla. */
+.app-breadcrumb-inline{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted);flex-shrink:0;flex-wrap:wrap;grid-column:1/-1}
 .detail-breadcrumb i,.app-breadcrumb-inline i{font-size:10px}
 .bc-item{background:none;border:none;padding:0;margin:0;font:inherit;font-family:inherit;font-size:11px;font-weight:500;color:var(--text-secondary);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .bc-item:hover{color:var(--text-primary);text-decoration:underline}
@@ -518,13 +522,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   /* ── Screens — padding handled by #app ── */
   .screen{padding-top:0}
-  .app-breadcrumb-inline{padding:16px 40px 0}
-  /* Pantallas con sidebar de cuenta (Perfil, Favoritos, etc.): el breadcrumb es
-     hijo directo de .screen, ANTES del sidebar en el flujo — sin este corrimiento
-     quedaría como una franja de ancho completo por encima del sidebar, pisándolo
-     visualmente. Se alinea en cambio con el arranque real de .content (ancho del
-     sidebar + su padding), nunca superpuesto al menú lateral. */
-  .app-breadcrumb-inline.has-acct-sidebar{padding-left:276px}
 
   /* desktop nav */
   .dt-nav{display:flex;align-items:center;gap:6px;justify-content:center}
@@ -2469,6 +2466,9 @@ function renderSims() {
   const container = document.getElementById('sims-content');
   if(!SIM_HISTORY.length){
     container.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:12px">📋</div><div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:6px">Sin simulaciones aún</div><div style="font-size:13px;color:var(--text-muted)">Usa el simulador para ver cuánto puedes pagar</div></div>';
+    // container ES .content (id="sims-content") — cualquier innerHTML acá se lleva
+    // puesto un breadcrumb que hubiese quedado prendido antes, hay que repintarlo.
+    paintBreadcrumb(document.getElementById('screen-simulaciones'));
     return;
   }
   container.innerHTML = SIM_HISTORY.map(s => {
@@ -2530,6 +2530,7 @@ function renderSims() {
       </div>
     </div>`;
   }).join('');
+  paintBreadcrumb(document.getElementById('screen-simulaciones'));
 }
 
 function removePropFromSim(simId, propId) {
@@ -2970,11 +2971,6 @@ function initHeaderScroll(screen) {
 const ROOT_SCREENS = new Set(['screen-0','screen-academia','screen-login','screen-registro']);
 // pantallas de auth sin header/bottom-nav — tampoco tiene sentido un breadcrumb ahí
 const NOHEADER_SCREENS = new Set(['screen-login','screen-registro','screen-forgot-password','screen-check-email','screen-new-password','screen-google-auth']);
-// Accesos directos del menú de cuenta (sidebar de escritorio y drawer mobile): son
-// secciones top-level elegidas desde el mismo menú global, no una jerarquía de
-// navegación. Saltar de una a otra (p. ej. Perfil -> Mensajes) no debería ir apilando
-// breadcrumb como si fuera un drill-down — se reinicia a solo "Inicio" en goScreen().
-const ACCOUNT_MENU_SCREENS = new Set(['screen-perfil','screen-favoritos','screen-simulaciones','screen-mensajes','screen-notificaciones','screen-academia','screen-oportunidades','screen-configuracion']);
 
 let navHistory = [];
 
@@ -3024,41 +3020,61 @@ function screenLabel(id) {
   return SCREEN_LABELS[id] || id;
 }
 
-// Breadcrumb: solo los pasos ANTERIORES a donde está el usuario (navHistory), nunca la
-// pantalla actual. Cada paso es interactivo — clickearlo salta ahí y descarta del
-// historial todo lo que quedaba entre medio, igual que si se hubiese vuelto con el back
-// nativo varias veces seguidas.
-function buildBreadcrumbTrailHTML() {
-  return navHistory.map((sid, idx) =>
-    `${idx > 0 ? '<i class="ti ti-chevron-right"></i>' : ''}<button class="bc-item" onclick="goToBreadcrumb(${idx})">${screenLabel(sid)}</button>`
+// El breadcrumb es la ruta estructural desde Inicio hasta la pantalla actual — SIEMPRE
+// la misma para una pantalla dada, sin importar por dónde haya navegado el usuario para
+// llegar (eso es responsabilidad del botón de volver / navHistory, no del breadcrumb).
+// screen-prop-detail cuelga de screen-props, screen-edu de screen-academia; el resto
+// cuelga directo de Inicio. Una pantalla sin padre acá (null/no-listada) es una raíz y
+// no muestra breadcrumb.
+const SCREEN_PARENT = {
+  'screen-props': 'screen-0',
+  'screen-prop-detail': 'screen-props',
+  'screen-sim': 'screen-0',
+  'screen-favoritos': 'screen-0',
+  'screen-simulaciones': 'screen-0',
+  'screen-notificaciones': 'screen-0',
+  'screen-configuracion': 'screen-0',
+  'screen-mensajes': 'screen-0',
+  'screen-oportunidades': 'screen-0',
+  'screen-perfil': 'screen-0',
+  'screen-edu': 'screen-academia',
+};
+function breadcrumbChain(id) {
+  const chain = [];
+  let p = SCREEN_PARENT[id];
+  while (p) { chain.unshift(p); p = SCREEN_PARENT[p]; }
+  return chain;
+}
+function buildBreadcrumbTrailHTML(chain) {
+  return chain.map((sid, idx) =>
+    `${idx > 0 ? '<i class="ti ti-chevron-right"></i>' : ''}<button class="bc-item" onclick="goToBreadcrumb('${sid}')">${screenLabel(sid)}</button>`
   ).join('');
 }
-function goToBreadcrumb(idx) {
-  const target = navHistory[idx];
-  navHistory = navHistory.slice(0, idx);
-  goScreen(target, true);
+function goToBreadcrumb(id) {
+  if (id === 'screen-0') { navTo('screen-0','nav-inicio'); return; }
+  goScreen(id);
 }
 function paintBreadcrumb(screenEl) {
   document.getElementById('app-breadcrumb-dynamic')?.remove();
   const id = screenEl.id;
-  const show = navHistory.length > 0 && !ROOT_SCREENS.has(id) && !NOHEADER_SCREENS.has(id);
+  const chain = breadcrumbChain(id);
+  const show = chain.length > 0 && !NOHEADER_SCREENS.has(id);
   // screen-prop-detail ya trae su propio contenedor de breadcrumb en el HTML
   const detailSlot = document.getElementById('detail-breadcrumb');
   if (detailSlot) {
     detailSlot.style.display = (id === 'screen-prop-detail' && show) ? 'flex' : 'none';
-    if (id === 'screen-prop-detail') detailSlot.innerHTML = show ? buildBreadcrumbTrailHTML() : '';
+    if (id === 'screen-prop-detail') detailSlot.innerHTML = show ? buildBreadcrumbTrailHTML(chain) : '';
   }
   if (!show || id === 'screen-prop-detail') return;
+  // Se inyecta dentro de .content (nunca como hijo directo de .screen) para que el
+  // sidebar de cuenta (Perfil, Favoritos, etc.) quede intacto de punta a punta, sin que
+  // el breadcrumb le recorte ni le tape ni un píxel — solo empuja el contenido central.
+  const target = screenEl.querySelector('.content') || screenEl;
   const bc = document.createElement('div');
   bc.id = 'app-breadcrumb-dynamic';
-  // En pantallas con sidebar de cuenta, el breadcrumb sigue siendo el primer hijo
-  // de .screen (para no alterar el orden en mobile, donde no hay sidebar), pero en
-  // escritorio necesita correrse para alinearse con .content — nunca quedar como
-  // una franja por encima del sidebar (ver regla has-acct-sidebar en CSS).
-  const hasAcctSidebar = !!screenEl.querySelector(':scope > .dt-acct-wrap');
-  bc.className = 'app-breadcrumb-inline' + (hasAcctSidebar ? ' has-acct-sidebar' : '');
-  bc.innerHTML = buildBreadcrumbTrailHTML();
-  screenEl.prepend(bc);
+  bc.className = 'app-breadcrumb-inline';
+  bc.innerHTML = buildBreadcrumbTrailHTML(chain);
+  target.prepend(bc);
 }
 
 // módulos completados y checklist de la academia — se llenan por cuenta en loadUserScopedData()
@@ -4000,6 +4016,9 @@ function renderMensajes() {
   if (!el) return;
   if (!WA_CONTACTS.length) {
     el.innerHTML = `<div class="empty-state"><i class="ti ti-brand-whatsapp"></i><p>Aún no contactaste a ningún asesor<br>Contactá desde la ficha de una propiedad o desde tu simulación</p></div>`;
+    // el ES .content (id="mensajes-content"): repintar el breadcrumb que este innerHTML
+    // se llevó puesto.
+    paintBreadcrumb(document.getElementById('screen-mensajes'));
     return;
   }
   const rows = WA_CONTACTS.map(c => {
@@ -4021,6 +4040,7 @@ function renderMensajes() {
     </div>`;
   }).join('');
   el.innerHTML = `<div class="list-card msg-thread-list">${rows}</div>`;
+  paintBreadcrumb(document.getElementById('screen-mensajes'));
 }
 
 function renderAcademia() {
@@ -4100,13 +4120,7 @@ function showSkeleton(targetId, cb) {
 function goScreen(id, isBack = false) {
   closeDrawer();
   const current = document.querySelector('.screen.active')?.id;
-  if (!isBack && current && current !== id) {
-    if (ACCOUNT_MENU_SCREENS.has(current) && ACCOUNT_MENU_SCREENS.has(id)) {
-      navHistory = ['screen-0'];
-    } else {
-      navHistory.push(current);
-    }
-  }
+  if (!isBack && current && current !== id) navHistory.push(current);
   showSkeleton(id, () => {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const s = document.getElementById(id);
@@ -4471,6 +4485,9 @@ function renderNotificaciones() {
   if (!el) return;
   if (!NOTIFICATIONS.length) {
     el.innerHTML = `<div class="empty-state"><i class="ti ti-bell-off"></i><p>Sin notificaciones por ahora</p></div>`;
+    // el ES .content (id="notif-content"): repintar el breadcrumb que este innerHTML
+    // se llevó puesto.
+    paintBreadcrumb(document.getElementById('screen-notificaciones'));
     return;
   }
   const rows = NOTIFICATIONS.map(n => {
@@ -4484,6 +4501,7 @@ function renderNotificaciones() {
     </div>`;
   }).join('');
   el.innerHTML = `<div class="list-card">${rows}</div>`;
+  paintBreadcrumb(document.getElementById('screen-notificaciones'));
 }
 
 function abrirNotificacion(id) {
