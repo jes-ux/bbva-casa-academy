@@ -645,6 +645,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   /* ── PROPS LIST ── */
   #screen-props .content{max-width:none;padding:0}
+  /* .content pierde su padding acá porque el body de 2 columnas necesita ir a pantalla
+     completa (cada sección adentro maneja el suyo, ver #list-controls/#props-count más
+     abajo) — el breadcrumb necesita el suyo propio en vez de heredar el de .content. */
+  #screen-props .app-breadcrumb-inline{padding:16px 40px 0}
   .props-section{display:flex;flex-direction:column;gap:0}
   .props-section > div:first-child{display:none} /* título oculto en desktop */
   #profile-pills{display:none}
