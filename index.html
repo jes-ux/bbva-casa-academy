@@ -1256,7 +1256,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <input type="text" placeholder="Ej. Natalia García" id="reg-nombre" autocomplete="name" oninput="regP2Check()">
           </div>
           <div class="onb-field">
-            <label>Teléfono</label>
+            <label>Teléfono
+              <span class="tt" onclick="showTooltip(event,'Así no te lo volvemos a pedir cada vez que contactes a un asesor.')">
+                <i class="ti ti-info-circle" style="font-size:13px;color:var(--text-muted)"></i>
+              </span>
+            </label>
             <input type="tel" placeholder="+52 55 0000 0000" id="reg-tel" autocomplete="tel" oninput="regP2Check()">
           </div>
           <div class="onb-field">
