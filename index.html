@@ -2744,7 +2744,7 @@ function renderSims() {
       <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px">
         ${hipoBadgeHTML}
         <button class="btn-primary" style="width:100%;font-size:14px;padding:12px" onclick="viewPropsForSim(${s.propMax})">${ctaLabel} →</button>
-        <button class="btn-secondary" style="width:100%;font-size:14px;padding:11px;display:flex;align-items:center;justify-content:center;gap:7px" onclick="requireAuth(()=>contactarHipotecario(${JSON.stringify(s).replace(/"/g,'&quot;')}))"><i class="ti ti-headset" style="font-size:15px"></i> Contactar a un asesor hipotecario</button>
+        <button class="btn-secondary" style="width:100%;font-size:14px;padding:11px;display:flex;align-items:center;justify-content:center;gap:7px" onclick="requireAuth(()=>contactarHipotecario(${JSON.stringify(s).replace(/"/g,'&quot;')}))"><i class="ti ti-headset" style="font-size:15px"></i> Contactar asesor hipotecario</button>
       </div>
     </div>`;
   }).join('');
@@ -3855,7 +3855,7 @@ const ACADEMY_SECTIONS = [
   ]},
   { id:'conecta', label:'Conéctate', icon:'ti-headset', steps:[
     { key:'contacted_prop', title:'Contactá a un asesor inmobiliario', sub:'Abrí una ficha de propiedad y tocá "Contactar asesor inmobiliario"', cta:'Ver propiedades', ctaAction:"navTo('screen-props','nav-props')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
-    { key:'contacted_hipo', title:'Contactá a un asesor hipotecario',  sub:'Desde una simulación, tocá "Contactar a un asesor hipotecario"', cta:'Ver simulaciones', ctaAction:"renderSims();goScreen('screen-simulaciones')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
+    { key:'contacted_hipo', title:'Contactá a un asesor hipotecario',  sub:'Desde una simulación, tocá "Contactar asesor hipotecario"', cta:'Ver simulaciones', ctaAction:"renderSims();goScreen('screen-simulaciones')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
   ]},
 ];
 
