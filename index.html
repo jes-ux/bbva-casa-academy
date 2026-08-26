@@ -73,6 +73,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .home-tab{padding:8px 18px;border-radius:20px;border:0.5px solid var(--border);background:var(--surface-2);font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;font-family:var(--font-sans)}
 .home-tab.active{background:var(--text-primary);color:var(--surface-2);border-color:var(--text-primary)}
 .home-search-block{display:flex;flex-direction:column;gap:14px}
+/* Módulo "Explora por tipo de propiedad" */
+.home-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.home-type-card{background:var(--surface-2);border:none;border-radius:14px;padding:18px 14px;text-align:center;cursor:pointer;box-shadow:var(--card-shadow);font-family:var(--font-sans);transition:box-shadow .15s}
+.home-type-icon{width:44px;height:44px;border-radius:12px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:20px;color:var(--text-primary)}
+.home-type-label{font-size:14px;font-weight:600;color:var(--text-primary)}
+.home-type-count{font-size:12px;color:var(--text-muted);margin-top:2px}
+/* Módulo "Explora por zona" */
+.home-zonas-grid{display:grid;grid-template-columns:1fr;gap:0 24px}
+.home-zona-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:0.5px solid var(--border);background:none;border-left:none;border-right:none;border-top:none;text-align:left;width:100%;cursor:pointer;font-family:var(--font-sans)}
+.home-zona-name{font-size:14px;color:var(--text-primary);font-weight:500}
+.home-zona-count{font-size:12px;color:var(--text-muted);flex-shrink:0}
 .dt-chip-wrap{position:relative}
 .dt-chip-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:200;min-width:160px;padding:4px;flex-direction:column}
 .dt-chip-menu.open{display:flex}
@@ -616,6 +627,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .moments{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   .moment-card{flex-direction:column;align-items:flex-start;padding:24px 20px;gap:14px}
   .moment-card .ti-chevron-right{display:none}
+
+  .home-type-grid{grid-template-columns:repeat(4,1fr)}
+  .home-zonas-grid{grid-template-columns:repeat(3,1fr)}
 
   /* ── PROPS LIST ── */
   #screen-props .content{max-width:none;padding:0}
@@ -1454,6 +1468,25 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
           <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
         </div>
+      </div>
+
+      <!-- Explora por tipo de propiedad -->
+      <div class="detail-section" style="padding:32px 0 0">
+        <div class="detail-section-title">Explora por tipo de propiedad</div>
+        <div class="home-type-grid" id="home-type-grid"><!-- renderHomeTipos() --></div>
+      </div>
+
+      <!-- Explora por zona -->
+      <div class="detail-section" style="padding:32px 0 0">
+        <div class="detail-section-title">Explora por zona</div>
+        <div class="home-tabs" id="home-zona-tabs" style="flex-wrap:wrap;margin-bottom:16px">
+          <button class="home-tab active" onclick="setHomeZonaTipo('', this)">Todos</button>
+          <button class="home-tab" onclick="setHomeZonaTipo('Departamento', this)">Departamentos</button>
+          <button class="home-tab" onclick="setHomeZonaTipo('Casa', this)">Casas</button>
+          <button class="home-tab" onclick="setHomeZonaTipo('Local comercial', this)">Locales comerciales</button>
+          <button class="home-tab" onclick="setHomeZonaTipo('Oficina', this)">Oficinas</button>
+        </div>
+        <div class="home-zonas-grid" id="home-zonas-grid"><!-- renderHomeZonas() --></div>
       </div>
     </div>
   </div>
@@ -2998,6 +3031,64 @@ function setHomeTipo(val){
   document.getElementById('home-tipo-label').textContent = val || 'Todos los tipos';
   chipFilters.tipo = val;
   document.getElementById('menu-home-tipo').classList.remove('open');
+}
+
+// ── Módulo home "Explora por tipo de propiedad" ──
+const HOME_TIPO_DEFS = [
+  {val:'Departamento', label:'Departamentos', icon:'ti-building'},
+  {val:'Casa', label:'Casas', icon:'ti-home'},
+  {val:'Oficina', label:'Oficinas', icon:'ti-briefcase'},
+  {val:'Local comercial', label:'Locales comerciales', icon:'ti-building-store'},
+];
+function renderHomeTipos() {
+  const grid = document.getElementById('home-type-grid');
+  if (!grid) return;
+  grid.innerHTML = HOME_TIPO_DEFS.map(t => {
+    const count = PROPS.filter(propDisponible).filter(p => p.tipo === t.val).length;
+    return `<button class="home-type-card" onclick="goToTipo('${t.val}')">
+      <div class="home-type-icon"><i class="ti ${t.icon}"></i></div>
+      <div class="home-type-label">${t.label}</div>
+      <div class="home-type-count">${count} propiedad${count!==1?'es':''}</div>
+    </button>`;
+  }).join('');
+}
+function goToTipo(tipo) {
+  chipFilters.tipo = tipo;
+  searchQuery = '';
+  const inp = document.getElementById('props-search'); if (inp) inp.value = '';
+  navTo('screen-props', 'nav-props');
+}
+
+// ── Módulo home "Explora por zona" ──
+let homeZonaTipo = '';
+function renderHomeZonas() {
+  const grid = document.getElementById('home-zonas-grid');
+  if (!grid) return;
+  const counts = {};
+  PROPS.filter(propDisponible).filter(p => !homeZonaTipo || p.tipo === homeZonaTipo).forEach(p => {
+    counts[p.zona] = (counts[p.zona] || 0) + 1;
+  });
+  const zonas = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+  if (!zonas.length) {
+    grid.innerHTML = '<div style="font-size:13px;color:var(--text-muted)">Sin propiedades de este tipo por ahora.</div>';
+    return;
+  }
+  grid.innerHTML = zonas.map(z => `
+    <button class="home-zona-row" onclick="goToZona('${z}')">
+      <span class="home-zona-name">${z}</span>
+      <span class="home-zona-count">${counts[z]}</span>
+    </button>`).join('');
+}
+function setHomeZonaTipo(val, btn) {
+  homeZonaTipo = val;
+  document.querySelectorAll('#home-zona-tabs .home-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHomeZonas();
+}
+function goToZona(zona) {
+  setSearchZone(zona);
+  chipFilters.tipo = homeZonaTipo;
+  navTo('screen-props', 'nav-props');
 }
 
 function toggleChipMenu(id){
@@ -5331,6 +5422,8 @@ document.addEventListener('click', function(e) {
 updateHeaderAvatar();
 if (isLoggedIn) { renderPerfil(); }
 initHeaderScroll(document.getElementById('screen-0'));
+renderHomeTipos();
+renderHomeZonas();
 </script>
 </body>
 </html>
