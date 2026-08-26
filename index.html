@@ -1699,7 +1699,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
               <button class="dt-filter-chip" onclick="toggleChipMenu('menu-op')"><span id="chip-op-label">Comprar</span> <i class="ti ti-chevron-down"></i></button>
               <div class="dt-chip-menu" id="menu-op">
                 <button onclick="setChipOp('Comprar')">Comprar</button>
-                <button onclick="setChipOp('Rentar')">Rentar</button>
                 <button onclick="setChipOp('Preventa')">Preventa</button>
               </div>
             </div>
@@ -1710,6 +1709,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
                 <button onclick="setChipTipo('Departamento')">Departamento</button>
                 <button onclick="setChipTipo('Casa')">Casa</button>
                 <button onclick="setChipTipo('Local comercial')">Local comercial</button>
+                <button onclick="setChipTipo('Terreno')">Terreno</button>
                 <button onclick="setChipTipo('Oficina')">Oficina</button>
               </div>
             </div>
@@ -1733,10 +1733,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
                 <button onclick="setChipPrecio(5000000,0)">Más de $5M</button>
               </div>
             </div>
-            <button class="dt-filter-chip" id="filter-btn-desktop" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal"></i> Más filtros<span id="filter-badge-desktop" style="display:none;background:#e53935;color:#fff;border-radius:10px;font-size:10px;font-weight:700;padding:1px 5px;margin-left:4px"></span></button>
+            <div class="dt-chip-wrap" style="margin-left:auto">
+              <button class="dt-filter-chip" onclick="toggleChipMenu('menu-orden')"><i class="ti ti-arrows-sort" style="font-size:13px"></i> <span id="chip-orden-label">Ordenar</span> <i class="ti ti-chevron-down"></i></button>
+              <div class="dt-chip-menu" id="menu-orden" style="right:0;left:auto">
+                <button data-val="relevantes" onclick="setChipOrder('relevantes')">Relevantes</button>
+                <button data-val="precio_asc" onclick="setChipOrder('precio_asc')">Menor precio</button>
+                <button data-val="precio_desc" onclick="setChipOrder('precio_desc')">Mayor precio</button>
+              </div>
+            </div>
           </div>
           <div id="list-controls-row2" style="display:flex;align-items:center;justify-content:space-between">
-            <button class="sheet-link" onclick="openSheet('sheet-ordenar')"><i class="ti ti-arrows-sort" style="font-size:13px"></i> Ordenar</button>
+            <button class="sheet-link" onclick="openOrdenSheet()"><i class="ti ti-arrows-sort" style="font-size:13px"></i> Ordenar</button>
             <button class="sheet-link" onclick="switchView('map')" id="map-toggle-btn"><i class="ti ti-map-pin" style="font-size:13px"></i> Ver en mapa</button>
           </div>
         </div>
@@ -1750,7 +1757,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
               <input type="text" placeholder="Buscar zona, colonia..." onkeydown="if(event.key==='Enter'){onSearch(this.value);this.blur();}" id="map-search">
             </div>
             <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openSheet('sheet-filtros')"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
-            <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openSheet('sheet-ordenar')"><i class="ti ti-arrows-sort" style="font-size:18px"></i></button>
+            <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openOrdenSheet()"><i class="ti ti-arrows-sort" style="font-size:18px"></i></button>
             <button onclick="switchView('list')" class="filter-icon-btn" style="background:var(--text-primary);color:var(--surface-2);flex-shrink:0"><i class="ti ti-x" style="font-size:18px"></i></button>
           </div>
           <!-- carrusel sticky bottom -->
@@ -1988,11 +1995,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="sheet-section">
       <div class="sheet-section-title">Tipo de propiedad</div>
       <div class="sheet-chips" id="sheet-chips-tipo">
-        <button class="sheet-chip" data-val="Departamento" onclick="toggleChip(this)">Departamento</button>
-        <button class="sheet-chip" data-val="Casa" onclick="toggleChip(this)">Casa</button>
-        <button class="sheet-chip" data-val="Local comercial" onclick="toggleChip(this)">Local comercial</button>
-        <button class="sheet-chip" data-val="Terreno" onclick="toggleChip(this)">Terreno</button>
-        <button class="sheet-chip" data-val="Oficina" onclick="toggleChip(this)">Oficina</button>
+        <button class="sheet-chip" data-val="Departamento" onclick="toggleChipExclusive(this,'sheet-chips-tipo')">Departamento</button>
+        <button class="sheet-chip" data-val="Casa" onclick="toggleChipExclusive(this,'sheet-chips-tipo')">Casa</button>
+        <button class="sheet-chip" data-val="Local comercial" onclick="toggleChipExclusive(this,'sheet-chips-tipo')">Local comercial</button>
+        <button class="sheet-chip" data-val="Terreno" onclick="toggleChipExclusive(this,'sheet-chips-tipo')">Terreno</button>
+        <button class="sheet-chip" data-val="Oficina" onclick="toggleChipExclusive(this,'sheet-chips-tipo')">Oficina</button>
       </div>
     </div>
     <div class="sheet-section">
@@ -2028,17 +2035,13 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
   </div>
   <div class="sheet-body" style="padding:0 20px">
-    <div onclick="selectOrder(this)" class="sheet-radio-row"><span class="sheet-radio-label">Relevantes</span><div class="sheet-radio selected"></div></div>
-    <div onclick="selectOrder(this)" class="sheet-radio-row"><span class="sheet-radio-label">Menor precio</span><div class="sheet-radio"></div></div>
-    <div onclick="selectOrder(this)" class="sheet-radio-row"><span class="sheet-radio-label">Recientes</span><div class="sheet-radio"></div></div>
-    <div onclick="selectOrder(this)" class="sheet-radio-row"><span class="sheet-radio-label">Mayor precio</span><div class="sheet-radio"></div></div>
-    <div onclick="selectOrder(this)" class="sheet-radio-row"><span class="sheet-radio-label">Más vistos</span><div class="sheet-radio"></div></div>
-    <div onclick="selectOrder(this)" class="sheet-radio-row"><span class="sheet-radio-label">Bajaron de precio</span><div class="sheet-radio"></div></div>
-    <div onclick="selectOrder(this)" class="sheet-radio-row" style="border-bottom:none"><span class="sheet-radio-label">Mejores anunciantes</span><div class="sheet-radio"></div></div>
+    <div onclick="selectOrder(this)" data-val="relevantes" class="sheet-radio-row"><span class="sheet-radio-label">Relevantes</span><div class="sheet-radio selected"></div></div>
+    <div onclick="selectOrder(this)" data-val="precio_asc" class="sheet-radio-row"><span class="sheet-radio-label">Menor precio</span><div class="sheet-radio"></div></div>
+    <div onclick="selectOrder(this)" data-val="precio_desc" class="sheet-radio-row" style="border-bottom:none"><span class="sheet-radio-label">Mayor precio</span><div class="sheet-radio"></div></div>
   </div>
   <div class="sheet-footer">
-    <button class="btn-secondary" onclick="closeSheet()">Eliminar filtros</button>
-    <button class="btn-primary" style="width:auto;padding:13px 24px" onclick="closeSheet()">Ver resultados</button>
+    <button class="btn-secondary" onclick="closeSheet()">Cancelar</button>
+    <button class="btn-primary" style="width:auto;padding:13px 24px" onclick="applySheetOrder()">Ver resultados</button>
   </div>
 </div>
 
@@ -2199,7 +2202,6 @@ const PROPS = [
 // quitarla; el catálogo navegable (grilla, mapa, búsqueda) no la vuelve a listar.
 function propDisponible(p) { return !!p && p.disponible !== false; }
 
-let activeFilters = {zona:null, tipo:null, rec:null};
 let searchQuery = '';
 let currentView = 'list';
 let leafletMap = null;
@@ -2615,6 +2617,10 @@ function setHomeTab(btn) {
 
 /* ── chip dropdowns ── */
 let chipFilters = {tipo:'', minRec:0, minPrice:0, maxPrice:0};
+// 'relevantes' = orden del catálogo tal cual. Las demás opciones que existían acá
+// (Recientes, Más vistos, Bajaron de precio, Mejores anunciantes) no tienen ningún dato
+// real detrás en este prototipo — se sacaron para no dejar un selector que no hace nada.
+let sortOrder = 'relevantes';
 
 function openMega(){
   document.getElementById('dt-mega-menu').classList.add('open');
@@ -2875,6 +2881,14 @@ function setChipPrecio(min, max){
   document.getElementById('menu-precio').classList.remove('open');
   renderProps();
 }
+function setChipOrder(val){
+  const labels = {relevantes:'Ordenar', precio_asc:'Menor precio', precio_desc:'Mayor precio'};
+  document.getElementById('chip-orden-label').textContent = labels[val] || 'Ordenar';
+  sortOrder = val;
+  document.querySelectorAll('#menu-orden button').forEach(b => b.classList.toggle('selected', b.dataset.val===val));
+  document.getElementById('menu-orden').classList.remove('open');
+  renderProps();
+}
 
 function openSheet(id) {
   document.getElementById(id).classList.add('open');
@@ -2888,7 +2902,6 @@ function openShareSheet() {
   document.querySelector('#sheet-share .sheet-title').textContent = 'Compartir propiedad';
   openSheet('sheet-share');
 }
-function toggleChip(el) { el.classList.toggle('active'); }
 function toggleChipExclusive(el, groupId) {
   const active = el.classList.contains('active');
   document.querySelectorAll(`#${groupId} .sheet-chip`).forEach(c => c.classList.remove('active'));
@@ -2896,14 +2909,14 @@ function toggleChipExclusive(el, groupId) {
 }
 let sheetActiveCount = 0;
 function applySheetFilters() {
-  const tipos = [...document.querySelectorAll('#sheet-chips-tipo .sheet-chip.active')].map(c => c.dataset.val);
+  const tipoEl = document.querySelector('#sheet-chips-tipo .sheet-chip.active');
   const recEl = document.querySelector('#sheet-chips-rec .sheet-chip.active');
   const precioEl = document.querySelector('#sheet-chips-precio .sheet-chip.active');
-  chipFilters.tipo = tipos.length === 1 ? tipos[0] : '';
+  chipFilters.tipo = tipoEl ? tipoEl.dataset.val : '';
   chipFilters.minRec = recEl ? parseInt(recEl.dataset.val) : 0;
   chipFilters.minPrice = precioEl ? parseInt(precioEl.dataset.min) : 0;
   chipFilters.maxPrice = precioEl && precioEl.dataset.max !== '0' ? parseInt(precioEl.dataset.max) : 0;
-  sheetActiveCount = (tipos.length === 1 ? 1 : 0) + (recEl ? 1 : 0) + (precioEl ? 1 : 0);
+  sheetActiveCount = (tipoEl ? 1 : 0) + (recEl ? 1 : 0) + (precioEl ? 1 : 0);
   closeSheet();
   renderProps();
 }
@@ -2911,12 +2924,30 @@ function clearSheetFilters() {
   document.querySelectorAll('#sheet-chips-tipo .sheet-chip, #sheet-chips-rec .sheet-chip, #sheet-chips-precio .sheet-chip').forEach(c => c.classList.remove('active'));
   chipFilters.tipo = ''; chipFilters.minRec = 0; chipFilters.minPrice = 0; chipFilters.maxPrice = 0;
   sheetActiveCount = 0;
+  const tipoLabel = document.getElementById('chip-tipo-label'); if (tipoLabel) tipoLabel.textContent = 'Tipo';
+  const recLabel = document.getElementById('chip-rec-label'); if (recLabel) recLabel.textContent = 'Recámaras';
+  const precioLabel = document.getElementById('chip-precio-label'); if (precioLabel) precioLabel.textContent = 'Precio';
+  document.querySelectorAll('#menu-tipo button, #menu-rec button, #menu-precio button').forEach(b => b.classList.remove('selected'));
   closeSheet();
   renderProps();
 }
 function selectOrder(row) {
   row.closest('.sheet-body').querySelectorAll('.sheet-radio').forEach(r => r.classList.remove('selected'));
   row.querySelector('.sheet-radio').classList.add('selected');
+}
+// Sincroniza la sheet con el orden ya aplicado (por si se abrió, se cambió desde el
+// dropdown de escritorio, y se vuelve a abrir) antes de mostrarla.
+function openOrdenSheet() {
+  document.querySelectorAll('#sheet-ordenar .sheet-radio-row').forEach(row => {
+    row.querySelector('.sheet-radio').classList.toggle('selected', row.dataset.val === sortOrder);
+  });
+  openSheet('sheet-ordenar');
+}
+function applySheetOrder() {
+  const row = document.querySelector('#sheet-ordenar .sheet-radio.selected')?.closest('.sheet-radio-row');
+  sortOrder = row ? row.dataset.val : 'relevantes';
+  closeSheet();
+  renderProps();
 }
 function clearSearch() {
   document.getElementById('props-search').value = '';
@@ -4579,18 +4610,13 @@ function goToAchievement() {
   renderAcademia(); goScreen('screen-academia');
 }
 
+// El badge rojo es solo del ícono de filtros mobile — en desktop cada dropdown (Tipo,
+// Recámaras, Precio) ya muestra su propia selección en el label, así que un contador
+// aparte ahí sería información duplicada, no un aviso nuevo.
 function updateFilterBadge() {
-  const dtCount = (chipFilters.tipo ? 1 : 0) + (chipFilters.minRec ? 1 : 0) + (chipFilters.minPrice || chipFilters.maxPrice ? 1 : 0) + (searchQuery ? 1 : 0);
   const mobCount = sheetActiveCount + (searchQuery ? 1 : 0);
   const mob = document.getElementById('filter-badge-mobile');
-  const dt  = document.getElementById('filter-badge-desktop');
   if (mob) mob.style.display = mobCount ? 'block' : 'none';
-  if (dt)  { dt.style.display = dtCount ? 'inline' : 'none'; dt.textContent = dtCount; }
-}
-
-function toggleFilter(key, val){
-  activeFilters[key] = activeFilters[key]===val ? null : val;
-  renderProps();
 }
 
 function onSearch(q){
@@ -4636,14 +4662,12 @@ function getFilteredProps(){
   // mensajes (ver propDisponible).
   let show = PROPS.filter(propDisponible).filter(p => p.price <= max);
   if(searchQuery) show = show.filter(p=>p.zona.toLowerCase().includes(searchQuery)||p.tipo.toLowerCase().includes(searchQuery)||p.desc.toLowerCase().includes(searchQuery));
-  if(activeFilters.zona) show = show.filter(p=>p.zona===activeFilters.zona);
-  if(activeFilters.tipo) show = show.filter(p=>p.tipo===activeFilters.tipo);
-  if(activeFilters.rec) show = activeFilters.rec===3 ? show.filter(p=>p.rec>=3) : show.filter(p=>p.rec===activeFilters.rec);
-  // chip filters (desktop)
   if(chipFilters.tipo) show = show.filter(p=>p.tipo===chipFilters.tipo);
   if(chipFilters.minRec) show = show.filter(p=>p.rec>=chipFilters.minRec);
   if(chipFilters.minPrice) show = show.filter(p=>p.price>=chipFilters.minPrice);
   if(chipFilters.maxPrice) show = show.filter(p=>p.price<=chipFilters.maxPrice);
+  if(sortOrder==='precio_asc') show = [...show].sort((a,b)=>a.price-b.price);
+  else if(sortOrder==='precio_desc') show = [...show].sort((a,b)=>b.price-a.price);
   // Sin resultados es un estado real, no un error a esconder: renderProps() lo muestra
   // como tal (con salida clara) en vez de rellenar con propiedades que no aplican.
   return show;
@@ -4652,7 +4676,7 @@ function getFilteredProps(){
 function renderProps() {
   updateFilterBadge();
   const hasSim = isLoggedIn && simData.propMax > 0 && !searchQuery;
-  const hasExtraFilters = !!(chipFilters.tipo || chipFilters.minRec || chipFilters.minPrice || chipFilters.maxPrice || activeFilters.zona || activeFilters.tipo || activeFilters.rec);
+  const hasExtraFilters = !!(chipFilters.tipo || chipFilters.minRec || chipFilters.minPrice || chipFilters.maxPrice);
   const titleEl = document.querySelector('#screen-props .props-section > div:first-child h2');
   const bajadaEl = document.querySelector('#screen-props .props-section > div:first-child .bajada');
   const pillsEl = document.getElementById('profile-pills');
@@ -4704,8 +4728,16 @@ function propsEmptyStateHTML(hasSim, hasFilters) {
 function clearAllPropFilters() {
   document.querySelectorAll('#sheet-chips-tipo .sheet-chip, #sheet-chips-rec .sheet-chip, #sheet-chips-precio .sheet-chip').forEach(c => c.classList.remove('active'));
   chipFilters.tipo = ''; chipFilters.minRec = 0; chipFilters.minPrice = 0; chipFilters.maxPrice = 0;
-  activeFilters.zona = null; activeFilters.tipo = null; activeFilters.rec = null;
+  sortOrder = 'relevantes';
   sheetActiveCount = 0;
+  // Sincroniza también los dropdowns rápidos de escritorio (Tipo/Recámaras/Precio/
+  // Ordenar) — comparten el mismo estado que la sheet mobile, así que si no se les
+  // resetea el label acá quedan mostrando una selección que ya no está activa.
+  const tipoLabel = document.getElementById('chip-tipo-label'); if (tipoLabel) tipoLabel.textContent = 'Tipo';
+  const recLabel = document.getElementById('chip-rec-label'); if (recLabel) recLabel.textContent = 'Recámaras';
+  const precioLabel = document.getElementById('chip-precio-label'); if (precioLabel) precioLabel.textContent = 'Precio';
+  const ordenLabel = document.getElementById('chip-orden-label'); if (ordenLabel) ordenLabel.textContent = 'Ordenar';
+  document.querySelectorAll('#menu-tipo button, #menu-rec button, #menu-precio button, #menu-orden button').forEach(b => b.classList.remove('selected'));
   renderProps();
 }
 
