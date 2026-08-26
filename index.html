@@ -89,6 +89,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .home-footer-links button{background:none;border:none;padding:0;font-size:12px;color:var(--text-secondary);cursor:pointer;font-family:var(--font-sans);text-align:left}
 .home-footer-links button:hover{color:var(--text-primary);text-decoration:underline}
 .home-footer-copy{font-size:11px;color:var(--text-muted);line-height:1.6;margin-top:16px}
+/* Franjas de Inicio: alternan fondo para separar módulos sin agregar más chrome */
+.home-band-gray{background:var(--surface-0)}
+.home-band-white{background:var(--surface-2)}
+.home-band-inner{display:flex;flex-direction:column;gap:28px;padding:32px 20px}
+.home-band-inner.is-last{padding-bottom:80px}
 .dt-chip-wrap{position:relative}
 .dt-chip-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:200;min-width:160px;padding:4px;flex-direction:column}
 .dt-chip-menu.open{display:flex}
@@ -635,6 +640,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   .home-type-grid{grid-template-columns:repeat(4,1fr)}
   .home-zonas-grid{grid-template-columns:repeat(3,1fr)}
+  .home-band-inner{padding:40px;max-width:900px;width:100%;margin:0 auto}
+  .home-band-inner.is-last{padding-bottom:40px}
 
   /* ── PROPS LIST ── */
   #screen-props .content{max-width:none;padding:0}
@@ -1444,45 +1451,51 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         </button>
       </div>
     </div>
-    <div class="content">
-      <div class="hero" style="padding-top:0;text-align:center">
-        <h1>¿Qué tan cerca estás de acceder a tu propiedad?</h1>
+    <div class="home-band home-band-gray">
+      <div class="home-band-inner">
+        <div class="hero" style="padding-top:0;text-align:center">
+          <h1>¿Qué tan cerca estás de acceder a tu propiedad?</h1>
+        </div>
+        <div class="moments">
+          <div class="moment-card" onclick="goMoment(1)">
+            <div class="moment-icon">🤔</div>
+            <div class="moment-text">
+              <strong>Estoy empezando a informarme</strong>
+              <span>Quiero entender cómo funciona un crédito hipotecario</span>
+            </div>
+            <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
+          </div>
+          <div class="moment-card" onclick="goMoment(2)">
+            <div class="moment-icon">🧮</div>
+            <div class="moment-text">
+              <strong>Ya sé lo que quiero, quiero simular</strong>
+              <span>Tengo idea de mi ingreso y quiero ver números</span>
+            </div>
+            <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
+          </div>
+          <div class="moment-card" onclick="goMoment(3)">
+            <div class="moment-icon">🏡</div>
+            <div class="moment-text">
+              <strong>Ya simulé, quiero ver propiedades</strong>
+              <span>Tengo mi rango y quiero buscar opciones reales</span>
+            </div>
+            <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
+          </div>
+        </div>
       </div>
-      <div class="moments">
-        <div class="moment-card" onclick="goMoment(1)">
-          <div class="moment-icon">🤔</div>
-          <div class="moment-text">
-            <strong>Estoy empezando a informarme</strong>
-            <span>Quiero entender cómo funciona un crédito hipotecario</span>
-          </div>
-          <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
-        </div>
-        <div class="moment-card" onclick="goMoment(2)">
-          <div class="moment-icon">🧮</div>
-          <div class="moment-text">
-            <strong>Ya sé lo que quiero, quiero simular</strong>
-            <span>Tengo idea de mi ingreso y quiero ver números</span>
-          </div>
-          <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
-        </div>
-        <div class="moment-card" onclick="goMoment(3)">
-          <div class="moment-icon">🏡</div>
-          <div class="moment-text">
-            <strong>Ya simulé, quiero ver propiedades</strong>
-            <span>Tengo mi rango y quiero buscar opciones reales</span>
-          </div>
-          <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
-        </div>
-      </div>
+    </div>
 
-      <!-- Explora por tipo de propiedad -->
-      <div class="detail-section" style="padding:32px 0 0">
+    <!-- Explora por tipo de propiedad -->
+    <div class="home-band home-band-white">
+      <div class="home-band-inner">
         <div class="detail-section-title">Explora por tipo de propiedad</div>
         <div class="home-type-grid" id="home-type-grid"><!-- renderHomeTipos() --></div>
       </div>
+    </div>
 
-      <!-- Explora por zona -->
-      <div class="detail-section" style="padding:32px 0 0">
+    <!-- Explora por zona -->
+    <div class="home-band home-band-gray">
+      <div class="home-band-inner">
         <div class="detail-section-title">Explora por zona</div>
         <div class="home-tabs" id="home-zona-tabs" style="flex-wrap:wrap;margin-bottom:16px">
           <button class="home-tab active" onclick="setHomeZonaTipo('', this)">Todos</button>
@@ -1493,16 +1506,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         </div>
         <div class="home-zonas-grid" id="home-zonas-grid"><!-- renderHomeZonas() --></div>
       </div>
+    </div>
 
-      <!-- Footer -->
-      <div class="detail-section" style="padding:32px 0 24px;border-top:0.5px solid var(--border);margin-top:8px">
+    <!-- Footer -->
+    <div class="home-band home-band-white">
+      <div class="home-band-inner is-last" style="border-top:0.5px solid var(--border);padding-top:32px">
         <div class="home-footer-links">
           <button onclick="void(0)">Términos y Condiciones</button>
           <button onclick="void(0)">Aviso de Privacidad</button>
-          <button onclick="void(0)">Trabaja con nosotros</button>
           <button onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})">Educación financiera</button>
           <button onclick="void(0)">Centro de ayuda</button>
-          <button onclick="void(0)">CONDUSEF</button>
           <button onclick="void(0)">Seguridad y protección de datos</button>
           <button onclick="void(0)">Preguntas frecuentes</button>
         </div>
