@@ -84,6 +84,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .home-zona-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:0.5px solid var(--border);background:none;border-left:none;border-right:none;border-top:none;text-align:left;width:100%;cursor:pointer;font-family:var(--font-sans)}
 .home-zona-name{font-size:14px;color:var(--text-primary);font-weight:500}
 .home-zona-count{font-size:12px;color:var(--text-muted);flex-shrink:0}
+/* Footer de Inicio */
+.home-footer-links{display:flex;flex-wrap:wrap;gap:8px 20px}
+.home-footer-links button{background:none;border:none;padding:0;font-size:12px;color:var(--text-secondary);cursor:pointer;font-family:var(--font-sans);text-align:left}
+.home-footer-links button:hover{color:var(--text-primary);text-decoration:underline}
+.home-footer-copy{font-size:11px;color:var(--text-muted);line-height:1.6;margin-top:16px}
 .dt-chip-wrap{position:relative}
 .dt-chip-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:200;min-width:160px;padding:4px;flex-direction:column}
 .dt-chip-menu.open{display:flex}
@@ -1487,6 +1492,24 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <button class="home-tab" onclick="setHomeZonaTipo('Oficina', this)">Oficinas</button>
         </div>
         <div class="home-zonas-grid" id="home-zonas-grid"><!-- renderHomeZonas() --></div>
+      </div>
+
+      <!-- Footer -->
+      <div class="detail-section" style="padding:32px 0 24px;border-top:0.5px solid var(--border);margin-top:8px">
+        <div class="home-footer-links">
+          <button onclick="void(0)">Términos y Condiciones</button>
+          <button onclick="void(0)">Aviso de Privacidad</button>
+          <button onclick="void(0)">Trabaja con nosotros</button>
+          <button onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})">Educación financiera</button>
+          <button onclick="void(0)">Centro de ayuda</button>
+          <button onclick="void(0)">CONDUSEF</button>
+          <button onclick="void(0)">Seguridad y protección de datos</button>
+          <button onclick="void(0)">Preguntas frecuentes</button>
+        </div>
+        <div class="home-footer-copy">
+          © 2026 BBVA México, S.A., Institución de Banca Múltiple, Grupo Financiero BBVA México.<br>
+          Av. Paseo de la Reforma 510, Col. Juárez, CP 06600, Ciudad de México
+        </div>
       </div>
     </div>
   </div>
