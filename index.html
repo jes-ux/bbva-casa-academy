@@ -1900,7 +1900,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div id="detail-sim-banner-m" style="margin-top:12px"></div>
           <div id="detail-contact-badge-m" style="margin-top:10px"></div>
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>contactarInmobiliario(currentPropId))">
-            <i class="ti ti-headset"></i> Contacta al asesor
+            <i class="ti ti-headset"></i> Contactar asesor inmobiliario
           </button>
         </div>
         <!-- Descubre la propiedad -->
@@ -1966,7 +1966,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div id="detail-sim-banner-dt" style="margin-top:12px"></div>
           <div id="detail-contact-badge-dt" style="margin-top:10px"></div>
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>contactarInmobiliario(currentPropId))">
-            <i class="ti ti-headset"></i> Contacta al asesor
+            <i class="ti ti-headset"></i> Contactar asesor inmobiliario
           </button>
         </div>
       </div><!-- /.dt-detail-sidebar -->
@@ -3854,7 +3854,7 @@ const ACADEMY_SECTIONS = [
     { key:'faved',        title:'Guardá un favorito',            sub:'Marcá las propiedades que más te gustan', cta:'Ver propiedades',   ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver favoritos',     ctaDoneAction:"renderFavs();goScreen('screen-favoritos')" },
   ]},
   { id:'conecta', label:'Conéctate', icon:'ti-headset', steps:[
-    { key:'contacted_prop', title:'Contactá a un asesor inmobiliario', sub:'Abrí una ficha de propiedad y tocá "Contacta al asesor"', cta:'Ver propiedades', ctaAction:"navTo('screen-props','nav-props')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
+    { key:'contacted_prop', title:'Contactá a un asesor inmobiliario', sub:'Abrí una ficha de propiedad y tocá "Contactar asesor inmobiliario"', cta:'Ver propiedades', ctaAction:"navTo('screen-props','nav-props')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
     { key:'contacted_hipo', title:'Contactá a un asesor hipotecario',  sub:'Desde una simulación, tocá "Contactar a un asesor hipotecario"', cta:'Ver simulaciones', ctaAction:"renderSims();goScreen('screen-simulaciones')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
   ]},
 ];
