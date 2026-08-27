@@ -3626,6 +3626,15 @@ function goMoment(n) {
   if (n === 5) { goScreen('screen-tut-contacto-hipo'); return; }
   const allDone = moduleDone[1] && moduleDone[2] && moduleDone[3];
   if (allDone) { renderAcademia(); goScreen('screen-academia'); return; }
+  // Si el módulo puntual de este momento ya está completo (aunque no estén los 3),
+  // no tiene sentido volver a mostrar la teoría como si fuera la primera vez: se
+  // muestra la pantalla de logro de ESE módulo (resume qué se logró y da un CTA para
+  // seguir adelante — ej. "Ver mi simulación"). El tutorial sigue existiendo y
+  // accesible como siempre (desde Academia, "Repasar"); acá solo deja de ser el
+  // destino por defecto una vez que ese módulo puntual ya se completó.
+  if (n === 1 && moduleDone[1]) { showAchievement(1); return; }
+  if (n === 2 && moduleDone[2]) { showAchievement(2); return; }
+  if (n === 3 && moduleDone[3]) { showAchievement(3); return; }
   // Módulo 1 no depende de este flag (su logro siempre se muestra, es parte del quiz
   // que el usuario ya está haciendo a propósito) — se arma recién cuando continúa hacia
   // el Módulo 2 desde esa pantalla de logro. proximoModuloConsciente para 2 y 3 lo fija
