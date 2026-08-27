@@ -2090,6 +2090,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
           <div id="detail-sim-banner-dt" style="margin-top:12px"></div>
           <div id="detail-contact-badge-dt" style="margin-top:10px"></div>
+          <button class="detail-cta-btn" style="margin-top:10px" onclick="requireAuth(()=>{simRefPropId=currentPropId;goScreen('screen-sim')})"><i class="ti ti-calculator"></i> Simular crédito</button>
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>contactarInmobiliario(currentPropId))">
             <i class="ti ti-headset"></i> Contactar asesor inmobiliario
           </button>
