@@ -1761,6 +1761,113 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
   </div>
 
+  <!-- TUTORIALES DE ACADEMIA — teoría corta antes del paso práctico de cada sección
+       (mismo espíritu que Módulo 1: primero se entiende, después se hace). Cuelgan de
+       screen-academia, igual que screen-edu. -->
+  <div id="screen-tut-explora" class="screen">
+    <div class="content">
+      <div class="edu-section">
+        <div>
+          <h2>¿Cómo buscás tu propiedad ideal?</h2>
+          <p class="bajada">Antes de sumergirte en el catálogo, estos tips te ayudan a encontrar justo lo que buscás sin perder tiempo.</p>
+        </div>
+        <div class="concept-card" style="cursor:default">
+          <div class="concept-header"><div class="concept-title">Usá los filtros</div></div>
+          <div class="concept-body open">Filtrá por tipo, precio, recámaras, baños y amenidades para quedarte solo con las propiedades que realmente aplican a lo que buscás.</div>
+        </div>
+        <div class="concept-card" style="cursor:default">
+          <div class="concept-header"><div class="concept-title">Guardá tus favoritas</div></div>
+          <div class="concept-body open">Marcá con el corazón las que te interesan para volver a verlas después y compararlas con calma.</div>
+        </div>
+        <div class="concept-card" style="cursor:default">
+          <div class="concept-header"><div class="concept-title">Mirá el mapa</div></div>
+          <div class="concept-body open">Activá la vista de mapa para ver dónde está cada propiedad respecto a lo que te importa: trabajo, escuelas, transporte.</div>
+        </div>
+      </div>
+    </div>
+    <div class="cta-area">
+      <button class="btn-primary" onclick="proximoModuloConsciente=3;navTo('screen-props','nav-props')">Ver propiedades</button>
+    </div>
+  </div>
+
+  <div id="screen-tut-simula" class="screen">
+    <div class="content">
+      <div class="edu-section">
+        <div>
+          <h2>¿Cómo simulás tu crédito?</h2>
+          <p class="bajada">El simulador te da un resultado inmediato con solo tres datos — no hace falta que sean exactos, después podés ajustarlos.</p>
+        </div>
+        <div class="concept-card" style="cursor:default">
+          <div class="concept-header"><div class="concept-title">Tu ingreso y tu enganche</div></div>
+          <div class="concept-body open">Ingresá cuánto ganás al mes y cuánto tenés ahorrado para el enganche. Con eso alcanza para una primera estimación.</div>
+        </div>
+        <div class="concept-card" style="cursor:default">
+          <div class="concept-header"><div class="concept-title">Elegí el plazo</div></div>
+          <div class="concept-body open">A más años, cuota mensual más baja pero más intereses en total. A menos años, al revés — probá distintas combinaciones.</div>
+        </div>
+        <div class="concept-card" style="cursor:default">
+          <div class="concept-header"><div class="concept-title">Resultado al instante</div></div>
+          <div class="concept-body open">Vas a ver tu capacidad de compra estimada y la cuota mensual aproximada apenas completes los datos.</div>
+        </div>
+      </div>
+    </div>
+    <div class="cta-area">
+      <button class="btn-primary" onclick="requireAuth(()=>{proximoModuloConsciente=2;navTo('screen-sim','nav-sim')})">Simular ahora</button>
+    </div>
+  </div>
+
+  <div id="screen-tut-contacto-inmo" class="screen">
+    <div class="content">
+      <div class="edu-section">
+        <div>
+          <h2>¿Cómo contactás a un asesor inmobiliario?</h2>
+          <p class="bajada">Contactar a un asesor es gratis y no te compromete a nada — es la forma de resolver dudas puntuales de una propiedad.</p>
+        </div>
+        <div class="concept-card" style="cursor:default">
+          <div class="concept-header"><div class="concept-title">Desde la ficha de la propiedad</div></div>
+          <div class="concept-body open">Abrí la propiedad que te interesa y tocá el botón "Contactar asesor inmobiliario".</div>
+        </div>
+        <div class="concept-card" style="cursor:default">
+          <div class="concept-header"><div class="concept-title">Un asesor especializado</div></div>
+          <div class="concept-body open">Te responde por WhatsApp alguien que conoce esa propiedad en particular, no un genérico.</div>
+        </div>
+        <div class="concept-card" style="cursor:default">
+          <div class="concept-header"><div class="concept-title">Contale qué necesitás</div></div>
+          <div class="concept-body open">Podés preguntar por una visita, por el estado legal, por gastos adicionales — lo que te haga falta para decidir.</div>
+        </div>
+      </div>
+    </div>
+    <div class="cta-area">
+      <button class="btn-primary" onclick="navTo('screen-props','nav-props')">Ver propiedades</button>
+    </div>
+  </div>
+
+  <div id="screen-tut-contacto-hipo" class="screen">
+    <div class="content">
+      <div class="edu-section">
+        <div>
+          <h2>¿Cómo contactás a un asesor hipotecario?</h2>
+          <p class="bajada">Desde una simulación guardada podés resolver con un especialista cualquier duda sobre tu crédito.</p>
+        </div>
+        <div class="concept-card" style="cursor:default">
+          <div class="concept-header"><div class="concept-title">Desde una simulación</div></div>
+          <div class="concept-body open">Abrí cualquier simulación guardada y tocá "Contactar asesor hipotecario".</div>
+        </div>
+        <div class="concept-card" style="cursor:default">
+          <div class="concept-header"><div class="concept-title">Con tus números a mano</div></div>
+          <div class="concept-body open">El asesor recibe automáticamente tu capacidad estimada y tu cuota mensual, así no tenés que explicar todo de cero.</div>
+        </div>
+        <div class="concept-card" style="cursor:default">
+          <div class="concept-header"><div class="concept-title">Para resolver dudas del crédito</div></div>
+          <div class="concept-body open">Tasas, requisitos, documentación — todo lo que necesites confirmar antes de avanzar.</div>
+        </div>
+      </div>
+    </div>
+    <div class="cta-area">
+      <button class="btn-primary" onclick="renderSims();goScreen('screen-simulaciones')">Ver simulaciones</button>
+    </div>
+  </div>
+
   <!-- LOGRO (reutilizable) -->
   <div id="screen-achievement" class="screen">
     <div class="content" style="justify-content:center">
@@ -3573,6 +3680,10 @@ const SCREEN_LABELS = {
   'screen-check-email': 'Verifica tu correo',
   'screen-configuracion': 'Configuración',
   'screen-edu': 'Módulo 1: Educación financiera',
+  'screen-tut-explora': '¿Cómo buscás tu propiedad ideal?',
+  'screen-tut-simula': '¿Cómo simulás tu crédito?',
+  'screen-tut-contacto-inmo': '¿Cómo contactás a un asesor inmobiliario?',
+  'screen-tut-contacto-hipo': '¿Cómo contactás a un asesor hipotecario?',
   'screen-faq': 'Ayuda y preguntas frecuentes',
   'screen-favoritos': 'Favoritos',
   'screen-forgot-password': 'Recuperar contraseña',
@@ -3604,10 +3715,10 @@ function screenLabel(id) {
 // El breadcrumb es la ruta estructural desde Inicio hasta la pantalla actual — SIEMPRE
 // la misma para una pantalla dada, sin importar por dónde haya navegado el usuario para
 // llegar (eso es responsabilidad del botón de volver / navHistory, no del breadcrumb).
-// screen-prop-detail cuelga de screen-props, screen-edu de screen-academia,
-// screen-faq-detail de screen-faq (solo se usa en mobile); el resto cuelga directo
-// de Inicio. Una pantalla sin padre acá (null/no-listada) es una raíz y no muestra
-// breadcrumb.
+// screen-prop-detail cuelga de screen-props, screen-edu y los tutoriales de Academia
+// (screen-tut-*) cuelgan de screen-academia, screen-faq-detail de screen-faq (solo se
+// usa en mobile); el resto cuelga directo de Inicio. Una pantalla sin padre acá
+// (null/no-listada) es una raíz y no muestra breadcrumb.
 const SCREEN_PARENT = {
   'screen-props': 'screen-0',
   'screen-prop-detail': 'screen-props',
@@ -3620,6 +3731,10 @@ const SCREEN_PARENT = {
   'screen-oportunidades': 'screen-0',
   'screen-perfil': 'screen-0',
   'screen-edu': 'screen-academia',
+  'screen-tut-explora': 'screen-academia',
+  'screen-tut-simula': 'screen-academia',
+  'screen-tut-contacto-inmo': 'screen-academia',
+  'screen-tut-contacto-hipo': 'screen-academia',
   'screen-faq': 'screen-0',
   'screen-faq-detail': 'screen-faq',
 };
@@ -4034,17 +4149,17 @@ const ACADEMY_SECTIONS = [
     { key:'edu_done',   achModule:1, title:'Entendé cómo funciona',       sub:'CAT, tipos de tasa y enganche',             cta:'Empezar módulo',    ctaAction:"proximoModuloConsciente=null;goScreen('screen-edu')",                    ctaDone:'Repasar',           ctaDoneAction:"goScreen('screen-edu')" },
   ]},
   { id:'simula', label:'Simula', icon:'ti-calculator', steps:[
-    { key:'sim_done',     achModule:2, title:'Hacé tu primera simulación',  sub:'Calculá cuánto podés pagar',                cta:'Simular ahora',     ctaAction:"requireAuth(()=>{proximoModuloConsciente=2;navTo('screen-sim','nav-sim')})",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
+    { key:'sim_done',     achModule:2, title:'Hacé tu primera simulación',  sub:'Calculá cuánto podés pagar',                cta:'Simular ahora',     ctaAction:"goScreen('screen-tut-simula')",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
     { key:'shared_sim',   title:'Compartí tu simulación',      sub:'Enviásela a alguien de confianza',          cta:'Ir a simulaciones', ctaAction:"renderSims();goScreen('screen-simulaciones')", ctaDone:'Compartida ✓',   ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
     { key:'added_to_sim', title:'Agregá una propiedad a tu simulación', sub:'Vinculá lo que te gusta con tu capacidad', cta:'Ver propiedades',  ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
   ]},
   { id:'explora', label:'Explora', icon:'ti-building', steps:[
-    { key:'viewed_prop',  achModule:3, title:'Abrí la ficha de una propiedad', sub:'Conocé todos los detalles',             cta:'Ver propiedades',   ctaAction:"proximoModuloConsciente=3;navTo('screen-props','nav-props')",          ctaDone:'Seguir explorando', ctaDoneAction:"navTo('screen-props','nav-props')" },
+    { key:'viewed_prop',  achModule:3, title:'Abrí la ficha de una propiedad', sub:'Conocé todos los detalles',             cta:'Ver propiedades',   ctaAction:"goScreen('screen-tut-explora')",          ctaDone:'Seguir explorando', ctaDoneAction:"navTo('screen-props','nav-props')" },
     { key:'faved',        title:'Guardá un favorito',            sub:'Marcá las propiedades que más te gustan', cta:'Ver propiedades',   ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver favoritos',     ctaDoneAction:"renderFavs();goScreen('screen-favoritos')" },
   ]},
   { id:'conecta', label:'Conéctate', icon:'ti-headset', steps:[
-    { key:'contacted_prop', title:'Contactá a un asesor inmobiliario', sub:'Abrí una ficha de propiedad y tocá "Contactar asesor inmobiliario"', cta:'Ver propiedades', ctaAction:"navTo('screen-props','nav-props')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
-    { key:'contacted_hipo', title:'Contactá a un asesor hipotecario',  sub:'Desde una simulación, tocá "Contactar asesor hipotecario"', cta:'Ver simulaciones', ctaAction:"renderSims();goScreen('screen-simulaciones')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
+    { key:'contacted_prop', title:'Contactá a un asesor inmobiliario', sub:'Abrí una ficha de propiedad y tocá "Contactar asesor inmobiliario"', cta:'Ver propiedades', ctaAction:"goScreen('screen-tut-contacto-inmo')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
+    { key:'contacted_hipo', title:'Contactá a un asesor hipotecario',  sub:'Desde una simulación, tocá "Contactar asesor hipotecario"', cta:'Ver simulaciones', ctaAction:"goScreen('screen-tut-contacto-hipo')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
   ]},
 ];
 
