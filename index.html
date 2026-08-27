@@ -84,7 +84,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .home-zona-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:0.5px solid var(--border);background:none;border-left:none;border-right:none;border-top:none;text-align:left;width:100%;cursor:pointer;font-family:var(--font-sans)}
 .home-zona-name{font-size:14px;color:var(--text-primary);font-weight:500}
 .home-zona-count{font-size:12px;color:var(--text-muted);flex-shrink:0}
-/* Módulo "Ayuda y preguntas frecuentes" */
+/* Módulo "Ayuda y preguntas frecuentes"
+   Mobile: título centrado (.mobile-only más arriba) + lista simple, igual que el
+   resto de las franjas de Inicio. Desktop: layout de 2 columnas — la intro editorial
+   (.faq-home-intro) reemplaza a ese título y describe qué es BBVA Inmobiliaria. */
+.faq-home-wrap{display:flex;flex-direction:column;width:100%}
+.faq-home-intro{display:none}
+.faq-home-title{font-size:32px;font-weight:700;color:var(--text-primary);line-height:1.2;margin:10px 0 16px}
+.faq-home-desc{font-size:15px;color:var(--text-secondary);line-height:1.7}
 .home-faq-list{display:flex;flex-direction:column}
 .home-faq-viewall{width:100%;margin-top:6px;padding:13px;border:0.5px solid var(--border-strong);border-radius:10px;background:none;color:var(--text-primary);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font-sans)}
 .home-faq-viewall:hover{background:var(--surface-1)}
@@ -337,6 +344,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .faq-nav-item:active{background:var(--surface-1)}
 .faq-nav-item i{color:var(--text-muted);font-size:14px;flex-shrink:0}
 .faq-main{display:none}
+/* Ícono circular de las preguntas destacadas en Inicio (#home-faq-list) — reemplaza
+   la flecha simple de .faq-nav-item por un "+" en círculo, más editorial. */
+.faq-home-icon{width:32px;height:32px;border-radius:50%;border:0.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;color:var(--text-primary)}
 .faq-q-title{font-size:20px;font-weight:700;color:var(--text-primary);line-height:1.3;margin-bottom:14px}
 .faq-a-body{font-size:15px;color:var(--text-secondary);line-height:1.7}
 .detail-attrs{display:flex;flex-direction:column;gap:0}
@@ -678,6 +688,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   #home-tipo-band .home-band-inner,
   #home-zona-band .home-band-inner,
   #home-faq-band .home-band-inner{max-width:1240px}
+
+  /* Ayuda y preguntas frecuentes: layout de 2 columnas en desktop — intro editorial
+     (qué es BBVA Inmobiliaria) a la izquierda, preguntas destacadas a la derecha con
+     filas propias encuadradas (en vez de la card única con divisores de mobile). */
+  .faq-home-intro{display:block}
+  .faq-home-wrap{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+  .faq-home-desc{max-width:420px}
+  #home-faq-list .faq-sidebar{border:none;background:none;border-radius:0;gap:14px}
+  #home-faq-list .faq-nav-item{border:0.5px solid var(--border);border-radius:14px;padding:20px 24px;background:var(--surface-2)}
+  #home-faq-list .faq-nav-item:hover{border-color:var(--border-stronger);background:var(--surface-1)}
+  #home-faq-list .faq-nav-item span{font-size:15px;font-weight:600}
 
   /* ── PROPS LIST ── */
   #screen-props .content{max-width:none;padding:0}
@@ -1599,8 +1620,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <!-- Ayuda y preguntas frecuentes -->
     <div class="home-band home-band-white" id="home-faq-band">
       <div class="home-band-inner">
-        <div class="detail-section-title home-section-title">Ayuda y preguntas frecuentes</div>
-        <div class="home-faq-list" id="home-faq-list"><!-- renderHomeFaq() --></div>
+        <!-- Mobile: título centrado simple, igual al resto de las secciones de Inicio.
+             Desktop: lo reemplaza la intro editorial de .faq-home-intro (ver abajo). -->
+        <div class="detail-section-title home-section-title mobile-only" style="width:100%">Ayuda y preguntas frecuentes</div>
+        <div class="faq-home-wrap">
+          <div class="faq-home-intro">
+            <div class="moment-label">Preguntas frecuentes</div>
+            <h2 class="faq-home-title">¿Qué es BBVA Inmobiliaria?</h2>
+            <p class="faq-home-desc">BBVA Inmobiliaria es la plataforma de BBVA México que te acompaña de punta a punta hacia tu próxima propiedad: aprendé cómo funciona un crédito hipotecario en Academia BBVA, simulá tu capacidad de pago, explorá propiedades verificadas en todo el país y conectá con asesores inmobiliarios e hipotecarios reales — todo en un mismo lugar.</p>
+          </div>
+          <div class="home-faq-list" id="home-faq-list"><!-- renderHomeFaq() --></div>
+        </div>
         <button class="home-faq-viewall" onclick="goScreen('screen-faq')">Ver todas las preguntas <i class="ti ti-chevron-right"></i></button>
       </div>
     </div>
@@ -3234,13 +3264,13 @@ function faqAnswerHTML(f) {
 }
 
 // Selección destacada en el módulo de Inicio — el resto solo aparece en screen-faq.
-const HOME_FAQ_HIGHLIGHTS = ['cat', 'enganche', 'capacidad', 'contacto_inmobiliario'];
+const HOME_FAQ_HIGHLIGHTS = ['cat', 'enganche', 'capacidad', 'contacto_inmobiliario', 'contacto_hipotecario'];
 function renderHomeFaq() {
   const el = document.getElementById('home-faq-list');
   if (!el) return;
   el.innerHTML = `<div class="faq-sidebar">${HOME_FAQ_HIGHLIGHTS.map(id => {
     const f = FAQ_DATA.find(x => x.id === id);
-    return `<button class="faq-nav-item" onclick="openFaq('${f.id}')"><span>${f.q}</span><i class="ti ti-chevron-right"></i></button>`;
+    return `<button class="faq-nav-item" onclick="openFaq('${f.id}')"><span>${f.q}</span><span class="faq-home-icon"><i class="ti ti-plus"></i></span></button>`;
   }).join('')}</div>`;
 }
 
