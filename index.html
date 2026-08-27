@@ -853,12 +853,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   /* ── MAP SCREEN ── */
   #screen-mapa .screen{padding-top:0}
 
-  /* ── CTA AREA ── */
+  /* ── CTA AREA ──
+     position:static hace que el botón termine pegado al borde inferior real de la
+     pantalla (el .content de arriba absorbe todo el alto con flex:1) — el padding-bottom
+     generoso de acá le da aire en vez de dejarlo tocando el borde. flex-column porque
+     algunas pantallas (tutoriales de Academia) apilan un botón secundario debajo. */
   .cta-area{
     position:static;border-top:none;background:none;
-    padding:0;margin-top:8px;display:flex;justify-content:center;
+    padding:0 0 56px;margin-top:24px;display:flex;flex-direction:column;align-items:center;gap:12px;
   }
   .cta-area .btn-primary{width:auto;min-width:300px;padding:18px 48px;font-size:16px;box-shadow:0 6px 20px rgba(0,0,0,.16)}
+  .cta-area .btn-outline{width:auto;min-width:300px;padding:0 48px}
 
   /* ── DRAWER as sidebar overlay still works ── */
   #drawer{width:320px}
@@ -1761,111 +1766,36 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
   </div>
 
-  <!-- TUTORIALES DE ACADEMIA — teoría corta antes del paso práctico de cada sección
-       (mismo espíritu que Módulo 1: primero se entiende, después se hace). Cuelgan de
-       screen-academia, igual que screen-edu. -->
-  <div id="screen-tut-explora" class="screen">
-    <div class="content">
-      <div class="edu-section">
-        <div>
-          <h2>¿Cómo buscás tu propiedad ideal?</h2>
-          <p class="bajada">Antes de sumergirte en el catálogo, estos tips te ayudan a encontrar justo lo que buscás sin perder tiempo.</p>
-        </div>
-        <div class="concept-card" style="cursor:default">
-          <div class="concept-header"><div class="concept-title">Usá los filtros</div></div>
-          <div class="concept-body open">Filtrá por tipo, precio, recámaras, baños y amenidades para quedarte solo con las propiedades que realmente aplican a lo que buscás.</div>
-        </div>
-        <div class="concept-card" style="cursor:default">
-          <div class="concept-header"><div class="concept-title">Guardá tus favoritas</div></div>
-          <div class="concept-body open">Marcá con el corazón las que te interesan para volver a verlas después y compararlas con calma.</div>
-        </div>
-        <div class="concept-card" style="cursor:default">
-          <div class="concept-header"><div class="concept-title">Mirá el mapa</div></div>
-          <div class="concept-body open">Activá la vista de mapa para ver dónde está cada propiedad respecto a lo que te importa: trabajo, escuelas, transporte.</div>
-        </div>
-      </div>
-    </div>
-    <div class="cta-area">
-      <button class="btn-primary" onclick="proximoModuloConsciente=3;navTo('screen-props','nav-props')">Ver propiedades</button>
-    </div>
-  </div>
-
+  <!-- TUTORIALES DE ACADEMIA — teoría (3 tips) + mini-check antes del paso práctico de
+       cada sección (mismo formato que Módulo 1: primero se entiende, después se hace).
+       Cuelgan de screen-academia, igual que screen-edu. Contenido dinámico vía
+       renderModuleScreen(key) — ver MODULES más abajo en el script. -->
   <div id="screen-tut-simula" class="screen">
     <div class="content">
-      <div class="edu-section">
-        <div>
-          <h2>¿Cómo simulás tu crédito?</h2>
-          <p class="bajada">El simulador te da un resultado inmediato con solo tres datos — no hace falta que sean exactos, después podés ajustarlos.</p>
-        </div>
-        <div class="concept-card" style="cursor:default">
-          <div class="concept-header"><div class="concept-title">Tu ingreso y tu enganche</div></div>
-          <div class="concept-body open">Ingresá cuánto ganás al mes y cuánto tenés ahorrado para el enganche. Con eso alcanza para una primera estimación.</div>
-        </div>
-        <div class="concept-card" style="cursor:default">
-          <div class="concept-header"><div class="concept-title">Elegí el plazo</div></div>
-          <div class="concept-body open">A más años, cuota mensual más baja pero más intereses en total. A menos años, al revés — probá distintas combinaciones.</div>
-        </div>
-        <div class="concept-card" style="cursor:default">
-          <div class="concept-header"><div class="concept-title">Resultado al instante</div></div>
-          <div class="concept-body open">Vas a ver tu capacidad de compra estimada y la cuota mensual aproximada apenas completes los datos.</div>
-        </div>
-      </div>
+      <div class="edu-section" id="module-content-simula"><!-- renderModuleScreen('simula') --></div>
     </div>
-    <div class="cta-area">
-      <button class="btn-primary" onclick="requireAuth(()=>{proximoModuloConsciente=2;navTo('screen-sim','nav-sim')})">Simular ahora</button>
+    <div class="cta-area" id="module-cta-simula"></div>
+  </div>
+
+  <div id="screen-tut-explora" class="screen">
+    <div class="content">
+      <div class="edu-section" id="module-content-explora"><!-- renderModuleScreen('explora') --></div>
     </div>
+    <div class="cta-area" id="module-cta-explora"></div>
   </div>
 
   <div id="screen-tut-contacto-inmo" class="screen">
     <div class="content">
-      <div class="edu-section">
-        <div>
-          <h2>¿Cómo contactás a un asesor inmobiliario?</h2>
-          <p class="bajada">Contactar a un asesor es gratis y no te compromete a nada — es la forma de resolver dudas puntuales de una propiedad.</p>
-        </div>
-        <div class="concept-card" style="cursor:default">
-          <div class="concept-header"><div class="concept-title">Desde la ficha de la propiedad</div></div>
-          <div class="concept-body open">Abrí la propiedad que te interesa y tocá el botón "Contactar asesor inmobiliario".</div>
-        </div>
-        <div class="concept-card" style="cursor:default">
-          <div class="concept-header"><div class="concept-title">Un asesor especializado</div></div>
-          <div class="concept-body open">Te responde por WhatsApp alguien que conoce esa propiedad en particular, no un genérico.</div>
-        </div>
-        <div class="concept-card" style="cursor:default">
-          <div class="concept-header"><div class="concept-title">Contale qué necesitás</div></div>
-          <div class="concept-body open">Podés preguntar por una visita, por el estado legal, por gastos adicionales — lo que te haga falta para decidir.</div>
-        </div>
-      </div>
+      <div class="edu-section" id="module-content-contactoInmo"><!-- renderModuleScreen('contactoInmo') --></div>
     </div>
-    <div class="cta-area">
-      <button class="btn-primary" onclick="navTo('screen-props','nav-props')">Ver propiedades</button>
-    </div>
+    <div class="cta-area" id="module-cta-contactoInmo"></div>
   </div>
 
   <div id="screen-tut-contacto-hipo" class="screen">
     <div class="content">
-      <div class="edu-section">
-        <div>
-          <h2>¿Cómo contactás a un asesor hipotecario?</h2>
-          <p class="bajada">Desde una simulación guardada podés resolver con un especialista cualquier duda sobre tu crédito.</p>
-        </div>
-        <div class="concept-card" style="cursor:default">
-          <div class="concept-header"><div class="concept-title">Desde una simulación</div></div>
-          <div class="concept-body open">Abrí cualquier simulación guardada y tocá "Contactar asesor hipotecario".</div>
-        </div>
-        <div class="concept-card" style="cursor:default">
-          <div class="concept-header"><div class="concept-title">Con tus números a mano</div></div>
-          <div class="concept-body open">El asesor recibe automáticamente tu capacidad estimada y tu cuota mensual, así no tenés que explicar todo de cero.</div>
-        </div>
-        <div class="concept-card" style="cursor:default">
-          <div class="concept-header"><div class="concept-title">Para resolver dudas del crédito</div></div>
-          <div class="concept-body open">Tasas, requisitos, documentación — todo lo que necesites confirmar antes de avanzar.</div>
-        </div>
-      </div>
+      <div class="edu-section" id="module-content-contactoHipo"><!-- renderModuleScreen('contactoHipo') --></div>
     </div>
-    <div class="cta-area">
-      <button class="btn-primary" onclick="renderSims();goScreen('screen-simulaciones')">Ver simulaciones</button>
-    </div>
+    <div class="cta-area" id="module-cta-contactoHipo"></div>
   </div>
 
   <!-- LOGRO (reutilizable) -->
@@ -2735,12 +2665,12 @@ function loadUserScopedData() {
     }
   }
 
-  [1,2,3].forEach(n => moduleDone[n] = false);
+  [1,2,3,4,5].forEach(n => moduleDone[n] = false);
   const mKey = modulesKey();
   if (mKey) {
     try {
       const savedModules = JSON.parse(localStorage.getItem(mKey)) || {};
-      [1,2,3].forEach(n => moduleDone[n] = !!savedModules[n]);
+      [1,2,3,4,5].forEach(n => moduleDone[n] = !!savedModules[n]);
     } catch {}
   }
 
@@ -2904,7 +2834,7 @@ function renderFavs() {
 function renderSims() {
   const container = document.getElementById('sims-content');
   if(!SIM_HISTORY.length){
-    container.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:12px">📋</div><div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:6px">Sin simulaciones aún</div><div style="font-size:13px;color:var(--text-muted)">Usa el simulador para ver cuánto puedes pagar</div></div>';
+    container.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:12px">📋</div><div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:6px">Sin simulaciones aún</div><div style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Usa el simulador para ver cuánto puedes pagar</div><button class="detail-cta-btn" style="width:auto;padding:0 24px" onclick="requireAuth(()=>navTo(\'screen-sim\',\'nav-sim\'))"><i class="ti ti-calculator"></i> Simular crédito</button></div>';
     // container ES .content (id="sims-content") — cualquier innerHTML acá se lleva
     // puesto un breadcrumb que hubiese quedado prendido antes, hay que repintarlo.
     paintBreadcrumb(document.getElementById('screen-simulaciones'));
@@ -3612,37 +3542,29 @@ function closeDrawer() {
   document.getElementById('drawer-overlay').classList.remove('open');
 }
 
+// n 1-5 mapea 1:1 a los 5 módulos con logro (moduleDone[n] / ACH_DATA[n]) — desde que
+// contactar a un asesor inmobiliario/hipotecario también son módulos con teoría propia
+// (MODULES.contactoInmo/contactoHipo), los 5 momentos de Inicio siguen exactamente la
+// misma lógica, sin casos especiales para 4 y 5.
 function goMoment(n) {
-  // Los 5 momentos usan las mismas pantallas de tutorial que el checklist de Academia
-  // BBVA. "Ya sé lo que quiero" describe en qué punto del camino estás, no que te
-  // saltees la teoría — todos los puntos de entrada (Inicio o Academia) pasan por el
-  // mismo tutorial antes de llegar al paso práctico.
   entryPoint = n;
-  // 4 y 5 (contactar asesor inmobiliario/hipotecario) no son "módulos" con logro propio
-  // como 1/2/3 — son los pasos de cierre de la sección Conéctate de Academia BBVA, y
-  // siguen siendo una acción válida aunque ya hayas terminado los 3 módulos principales,
-  // así que no pasan por el atajo de "todo listo → Academia" de acá abajo.
-  if (n === 4) { goScreen('screen-tut-contacto-inmo'); return; }
-  if (n === 5) { goScreen('screen-tut-contacto-hipo'); return; }
-  const allDone = moduleDone[1] && moduleDone[2] && moduleDone[3];
+  const allDone = moduleDone[1] && moduleDone[2] && moduleDone[3] && moduleDone[4] && moduleDone[5];
   if (allDone) { renderAcademia(); goScreen('screen-academia'); return; }
-  // Si el módulo puntual de este momento ya está completo (aunque no estén los 3),
-  // no tiene sentido volver a mostrar la teoría como si fuera la primera vez: se
-  // muestra la pantalla de logro de ESE módulo (resume qué se logró y da un CTA para
-  // seguir adelante — ej. "Ver mi simulación"). El tutorial sigue existiendo y
-  // accesible como siempre (desde Academia, "Repasar"); acá solo deja de ser el
-  // destino por defecto una vez que ese módulo puntual ya se completó.
-  if (n === 1 && moduleDone[1]) { showAchievement(1); return; }
-  if (n === 2 && moduleDone[2]) { showAchievement(2); return; }
-  if (n === 3 && moduleDone[3]) { showAchievement(3); return; }
-  // Módulo 1 no depende de este flag (su logro siempre se muestra, es parte del quiz
-  // que el usuario ya está haciendo a propósito) — se arma recién cuando continúa hacia
-  // el Módulo 2 desde esa pantalla de logro. proximoModuloConsciente para 2 y 3 lo fija
-  // el propio botón final de cada tutorial (screen-tut-simula/screen-tut-explora), no
-  // acá — así es una única fuente de verdad sin importar por dónde se entró.
+  // Si el módulo puntual de este momento ya está completo (aunque no estén los 5), no
+  // tiene sentido volver a mostrar la teoría como si fuera la primera vez: se muestra
+  // la pantalla de logro de ESE módulo (resume qué se logró y da un CTA para seguir
+  // adelante). El tutorial sigue existiendo y accesible como siempre (desde Academia,
+  // "Repasar"); acá solo deja de ser el destino por defecto una vez completado.
+  if (moduleDone[n]) { showAchievement(n); return; }
+  // proximoModuloConsciente para 2-5 lo fija el propio botón final de cada tutorial
+  // (o el propio flujo de contacto por WhatsApp para 4/5), no acá — así es una única
+  // fuente de verdad sin importar por dónde se entró. Módulo 1 es la excepción: su
+  // logro se arma con su propio quiz, no con este flag.
   if (n === 1) { proximoModuloConsciente = null; goScreen('screen-edu'); }
   else if (n === 2) goScreen('screen-tut-simula');
-  else goScreen('screen-tut-explora');
+  else if (n === 3) goScreen('screen-tut-explora');
+  else if (n === 4) goScreen('screen-tut-contacto-inmo');
+  else goScreen('screen-tut-contacto-hipo');
 }
 
 
@@ -3791,7 +3713,7 @@ function paintBreadcrumb(screenEl) {
 }
 
 // módulos completados y checklist de la academia — se llenan por cuenta en loadUserScopedData()
-const moduleDone = { 1: false, 2: false, 3: false };
+const moduleDone = { 1: false, 2: false, 3: false, 4: false, 5: false };
 const STEPS_DONE = {};
 const EDU_READ = {cat:false,tasa:false,enganche:false};
 let WA_CONTACTS = []; // registro de contactos por WhatsApp — se llena por cuenta en loadUserScopedData()
@@ -4153,6 +4075,275 @@ function doNewPassword() {
   goScreen('screen-login');
 }
 
+// ── Módulos de Academia con teoría (3 tips) + mini-check (2 a 5) ──
+// El Módulo 1 (educación financiera) vive en su propio mecanismo dedicado en
+// screen-edu — ya probado, no se toca. Los módulos 2 a 5 comparten este sistema
+// genérico: mismo componente visual (concept-card + mini-check) que Módulo 1, pero
+// data-driven, para no repetir 4 veces el mismo bloque de HTML/JS a mano.
+// MODULE_ORDER define el recorrido de "seguir con la teoría sin hacer la prueba
+// práctica" — cada módulo, al terminar su mini-check, ofrece pasar directo al
+// siguiente sin necesidad de hacer la acción real primero.
+const MODULE_ORDER = ['simula', 'explora', 'contactoInmo', 'contactoHipo'];
+const MODULES = {
+  simula: {
+    achModule: 2,
+    screenId: 'screen-tut-simula',
+    title: '¿Cómo simulás tu crédito?',
+    bajada: 'El simulador te da un resultado inmediato con solo tres datos — no hace falta que sean exactos, después podés ajustarlos.',
+    concepts: [
+      { title: 'Tu ingreso y tu enganche', body: 'Ingresá cuánto ganás al mes y cuánto tenés ahorrado para el enganche. Con eso alcanza para una primera estimación.' },
+      { title: 'Elegí el plazo', body: 'A más años, cuota mensual más baja pero más intereses en total. A menos años, al revés — probá distintas combinaciones.' },
+      { title: 'Resultado al instante', body: 'Vas a ver tu capacidad de compra estimada y la cuota mensual aproximada apenas completes los datos.' },
+    ],
+    quiz: [
+      { q: '¿Qué datos te pide el simulador para darte un resultado?', options: [
+        { t: 'Tu historial crediticio completo', correct: false },
+        { t: 'Tu ingreso, tu enganche y el plazo', correct: true },
+        { t: 'El precio exacto de la propiedad', correct: false },
+      ]},
+      { q: '¿Qué pasa si elegís un plazo más largo?', options: [
+        { t: 'La cuota mensual sube', correct: false },
+        { t: 'No cambia nada', correct: false },
+        { t: 'La cuota mensual baja, pero pagás más intereses en total', correct: true },
+      ]},
+      { q: '¿Cuándo ves el resultado de tu simulación?', options: [
+        { t: 'Después de que un asesor te llame', correct: false },
+        { t: 'Al instante, apenas completás los datos', correct: true },
+        { t: 'A las 24 horas', correct: false },
+      ]},
+    ],
+    doneMsg: 'Entendiste cómo funciona el simulador. Ya podés calcular tu capacidad',
+    ctaLabel: 'Simular ahora',
+    ctaAction: "requireAuth(()=>{proximoModuloConsciente=2;navTo('screen-sim','nav-sim')})",
+  },
+  explora: {
+    achModule: 3,
+    screenId: 'screen-tut-explora',
+    title: '¿Cómo buscás tu propiedad ideal?',
+    bajada: 'Antes de sumergirte en el catálogo, estos tips te ayudan a encontrar justo lo que buscás sin perder tiempo.',
+    concepts: [
+      { title: 'Usá los filtros', body: 'Filtrá por tipo, precio, recámaras, baños y amenidades para quedarte solo con las propiedades que realmente aplican a lo que buscás.' },
+      { title: 'Guardá tus favoritas', body: 'Marcá con el corazón las que te interesan para volver a verlas después y compararlas con calma.' },
+      { title: 'Mirá el mapa', body: 'Activá la vista de mapa para ver dónde está cada propiedad respecto a lo que te importa: trabajo, escuelas, transporte.' },
+    ],
+    quiz: [
+      { q: '¿Para qué sirven los filtros?', options: [
+        { t: 'Para ordenar por fecha de publicación', correct: false },
+        { t: 'Para quedarte solo con las propiedades que aplican a lo que buscás', correct: true },
+        { t: 'Para contactar a un asesor', correct: false },
+      ]},
+      { q: '¿Qué hace el ícono de corazón en una propiedad?', options: [
+        { t: 'La reporta', correct: false },
+        { t: 'La comparte por WhatsApp', correct: false },
+        { t: 'La guarda en tus favoritas', correct: true },
+      ]},
+      { q: '¿Para qué sirve la vista de mapa?', options: [
+        { t: 'Para simular tu crédito', correct: false },
+        { t: 'Para ver dónde está cada propiedad respecto a lo que te importa', correct: true },
+        { t: 'Para ver el historial de precios', correct: false },
+      ]},
+    ],
+    doneMsg: 'Ya sabés cómo encontrar justo lo que buscás. Explorá el catálogo',
+    ctaLabel: 'Ver propiedades',
+    ctaAction: "proximoModuloConsciente=3;navTo('screen-props','nav-props')",
+  },
+  contactoInmo: {
+    achModule: 4,
+    screenId: 'screen-tut-contacto-inmo',
+    title: '¿Cómo contactás a un asesor inmobiliario?',
+    bajada: 'Contactar a un asesor es gratis y no te compromete a nada — es la forma de resolver dudas puntuales de una propiedad.',
+    concepts: [
+      { title: 'Desde la ficha de la propiedad', body: 'Abrí la propiedad que te interesa y tocá el botón "Contactar asesor inmobiliario".' },
+      { title: 'Un asesor especializado', body: 'Te responde por WhatsApp alguien que conoce esa propiedad en particular, no un genérico.' },
+      { title: 'Contale qué necesitás', body: 'Podés preguntar por una visita, por el estado legal, por gastos adicionales — lo que te haga falta para decidir.' },
+    ],
+    quiz: [
+      { q: '¿Desde dónde contactás a un asesor inmobiliario?', options: [
+        { t: 'Desde una simulación', correct: false },
+        { t: 'Desde la ficha de la propiedad que te interesa', correct: true },
+        { t: 'Desde Configuración', correct: false },
+      ]},
+      { q: '¿Quién te responde?', options: [
+        { t: 'Un chatbot genérico', correct: false },
+        { t: 'Un asesor especializado en esa propiedad puntual', correct: true },
+        { t: 'Nadie, es automático', correct: false },
+      ]},
+      { q: '¿Contactar a un asesor te compromete a algo?', options: [
+        { t: 'Sí, firmás un contrato', correct: false },
+        { t: 'No, es gratis y sin compromiso', correct: true },
+        { t: 'Sí, tenés que pagar una seña', correct: false },
+      ]},
+    ],
+    doneMsg: 'Ya sabés cómo resolver dudas de una propiedad con un especialista',
+    ctaLabel: 'Ver propiedades',
+    ctaAction: "proximoModuloConsciente=4;navTo('screen-props','nav-props')",
+  },
+  contactoHipo: {
+    achModule: 5,
+    screenId: 'screen-tut-contacto-hipo',
+    title: '¿Cómo contactás a un asesor hipotecario?',
+    bajada: 'Desde una simulación guardada podés resolver con un especialista cualquier duda sobre tu crédito.',
+    concepts: [
+      { title: 'Desde una simulación', body: 'Abrí cualquier simulación guardada y tocá "Contactar asesor hipotecario".' },
+      { title: 'Con tus números a mano', body: 'El asesor recibe automáticamente tu capacidad estimada y tu cuota mensual, así no tenés que explicar todo de cero.' },
+      { title: 'Para resolver dudas del crédito', body: 'Tasas, requisitos, documentación — todo lo que necesites confirmar antes de avanzar.' },
+    ],
+    quiz: [
+      { q: '¿Desde dónde contactás a un asesor hipotecario?', options: [
+        { t: 'Desde la ficha de una propiedad', correct: false },
+        { t: 'Desde una simulación guardada', correct: true },
+        { t: 'Desde Favoritos', correct: false },
+      ]},
+      { q: '¿Qué recibe automáticamente el asesor?', options: [
+        { t: 'Tu identificación oficial', correct: false },
+        { t: 'Tu capacidad estimada y tu cuota mensual', correct: true },
+        { t: 'Nada, tenés que explicarle todo de cero', correct: false },
+      ]},
+      { q: '¿Qué dudas podés resolver con él?', options: [
+        { t: 'El precio de una propiedad puntual', correct: false },
+        { t: 'Tasas, requisitos y documentación del crédito', correct: true },
+        { t: 'Problemas técnicos de la app', correct: false },
+      ]},
+    ],
+    doneMsg: 'Ya sabés cómo resolver dudas de tu crédito con un especialista',
+    ctaLabel: 'Ver simulaciones',
+    ctaAction: "proximoModuloConsciente=5;renderSims();goScreen('screen-simulaciones')",
+  },
+};
+
+// Mapa inverso screenId → key, para que goScreen() sepa qué módulo renderizar sin
+// tener que listar los 4 ids a mano en cada lugar que lo necesite.
+const MODULE_KEY_BY_SCREEN = {};
+MODULE_ORDER.forEach(k => { MODULE_KEY_BY_SCREEN[MODULES[k].screenId] = k; });
+
+// MODULE_READ[key] = [bool,bool,bool] — se recalcula desde cero cada vez que se entra
+// a la pantalla (ver renderModuleScreen), igual que EDU_READ en screen-edu: si el
+// módulo ya está completo se muestra todo desbloqueado para repasar libremente, si no
+// arranca bloqueado sin arrastrar avance de una visita anterior sin terminar.
+const MODULE_READ = {};
+MODULE_ORDER.forEach(k => { MODULE_READ[k] = [false, false, false]; });
+
+function renderModuleScreen(key) {
+  const m = MODULES[key];
+  const done = moduleDone[m.achModule];
+  MODULE_READ[key] = done ? [true, true, true] : [false, false, false];
+  const readArr = MODULE_READ[key];
+  const allRead = readArr.every(Boolean);
+  const contentEl = document.getElementById('module-content-' + key);
+  const ctaEl = document.getElementById('module-cta-' + key);
+  if (!contentEl) return;
+
+  contentEl.innerHTML = `
+    <div>
+      <h2>${m.title}</h2>
+      <p class="bajada">${m.bajada}</p>
+    </div>
+    ${m.concepts.map((c, i) => {
+      const isRead = readArr[i];
+      const isLocked = i > 0 && !readArr[i - 1];
+      return `<div class="concept-card${isLocked ? ' edu-locked' : ''}" id="mcard-${key}-${i}" onclick="openModuleConcept('${key}',${i})">
+        <div class="concept-header">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="edu-step-num${isRead ? ' done' : ''}" id="mstepnum-${key}-${i}">${isRead ? '<i class="ti ti-check" style="font-size:11px"></i>' : (i + 1)}</span>
+            <div class="concept-title">${c.title}</div>
+          </div>
+        </div>
+        <div class="concept-body${isRead ? ' open' : ''}" id="mconcept-${key}-${i}">${c.body}</div>
+      </div>`;
+    }).join('')}
+    <div class="mini-check${allRead ? ' unlocked' : ' edu-locked'}" id="mini-check-${key}">
+      <h3>Mini check — 3 preguntas</h3>
+      <p id="mmc-sub-${key}" style="font-size:12px;color:var(--text-muted);display:${allRead ? 'none' : ''}">Leé los 3 temas para desbloquear</p>
+      <div id="mmc-locked-${key}" style="font-size:13px;color:var(--text-muted);margin-top:8px;display:${allRead ? 'none' : 'flex'};align-items:center;gap:6px"><i class="ti ti-lock" style="font-size:15px"></i> Completá los 3 temas primero</div>
+      <div id="mquiz-wrap-${key}" style="display:${allRead ? 'block' : 'none'}">
+        <p style="font-size:12px;color:var(--text-muted)">No es un examen, es confirmación de avance</p>
+        <div id="mquiz-${key}">
+          ${m.quiz.map((q, qi) => `<div class="question" id="mq-${key}-${qi}" style="display:${(done || qi > 0) ? 'none' : 'flex'}">
+            <p>${q.q}</p>
+            <div class="options">
+              ${q.options.map(o => `<div class="option" onclick="answerModuleQuiz('${key}',${qi},${o.correct},this)"><i class="ti ti-circle"></i> ${o.t}</div>`).join('')}
+            </div>
+          </div>`).join('')}
+          <div id="mquiz-done-${key}" style="display:${done ? 'block' : 'none'};text-align:center;padding:10px 0;font-size:14px;color:var(--text-secondary)">${m.doneMsg}</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (ctaEl) ctaEl.innerHTML = done ? moduleCtaButtonsHTML(key) : '';
+}
+
+// Los botones (CTA práctico + "seguir con la teoría") solo aparecen una vez resuelto
+// el mini-check — antes de eso no hay nada que hacer todavía salvo leer.
+function moduleCtaButtonsHTML(key) {
+  const m = MODULES[key];
+  const idx = MODULE_ORDER.indexOf(key);
+  const nextKey = MODULE_ORDER[idx + 1];
+  const seguirBtn = nextKey
+    ? `<button class="btn-outline" onclick="goToModuleTutorial('${nextKey}')">Seguir con la teoría, sin hacerlo ahora</button>`
+    : '';
+  return `<button class="btn-primary" onclick="${m.ctaAction}">${m.ctaLabel}</button>${seguirBtn}`;
+}
+
+// Navega directo a la teoría del siguiente módulo (sin pasar por su pantalla de logro)
+// — es la salida del botón "seguir con la teoría, sin hacerlo ahora".
+function goToModuleTutorial(key) {
+  proximoModuloConsciente = null;
+  goScreen(MODULES[key].screenId);
+}
+
+function openModuleConcept(key, idx) {
+  const body = document.getElementById(`mconcept-${key}-${idx}`);
+  if (!body) return;
+  const isOpen = body.classList.contains('open');
+  MODULES[key].concepts.forEach((_, i) => document.getElementById(`mconcept-${key}-${i}`)?.classList.remove('open'));
+  if (isOpen) return;
+  body.classList.add('open');
+  const readArr = MODULE_READ[key];
+  if (readArr[idx]) return;
+  readArr[idx] = true;
+  const num = document.getElementById(`mstepnum-${key}-${idx}`);
+  if (num) { num.classList.add('done'); num.innerHTML = '<i class="ti ti-check" style="font-size:11px"></i>'; }
+  const nextCard = document.getElementById(`mcard-${key}-${idx + 1}`);
+  if (nextCard) nextCard.classList.remove('edu-locked');
+  if (readArr.every(Boolean)) {
+    const mc = document.getElementById(`mini-check-${key}`);
+    const lockedMsg = document.getElementById(`mmc-locked-${key}`);
+    const sub = document.getElementById(`mmc-sub-${key}`);
+    const wrap = document.getElementById(`mquiz-wrap-${key}`);
+    if (mc) mc.classList.remove('edu-locked');
+    if (mc) mc.classList.add('unlocked');
+    if (lockedMsg) lockedMsg.style.display = 'none';
+    if (sub) sub.style.display = 'none';
+    if (wrap) wrap.style.display = 'block';
+  }
+}
+
+function answerModuleQuiz(key, qIdx, correct, el) {
+  if (!correct) {
+    el.classList.add('wrong');
+    el.querySelector('i').className = 'ti ti-circle-x';
+    el.style.pointerEvents = 'none';
+    return;
+  }
+  const opts = el.parentElement.querySelectorAll('.option');
+  opts.forEach(o => o.style.pointerEvents = 'none');
+  el.classList.add('correct');
+  el.querySelector('i').className = 'ti ti-circle-check';
+  const total = MODULES[key].quiz.length;
+  setTimeout(() => {
+    if (qIdx < total - 1) {
+      document.getElementById(`mq-${key}-${qIdx}`).style.display = 'none';
+      document.getElementById(`mq-${key}-${qIdx + 1}`).style.display = 'flex';
+    } else {
+      document.getElementById(`mq-${key}-${qIdx}`).style.display = 'none';
+      document.getElementById(`mquiz-done-${key}`).style.display = 'block';
+      const ctaEl = document.getElementById('module-cta-' + key);
+      if (ctaEl) ctaEl.innerHTML = moduleCtaButtonsHTML(key);
+    }
+  }, 700);
+}
+
 // ── ACADEMY_SECTIONS definition ──
 const ACADEMY_SECTIONS = [
   { id:'onboarding', label:'Empieza', icon:'ti-user-plus', steps:[
@@ -4172,8 +4363,8 @@ const ACADEMY_SECTIONS = [
     { key:'faved',        title:'Guardá un favorito',            sub:'Marcá las propiedades que más te gustan', cta:'Ver propiedades',   ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver favoritos',     ctaDoneAction:"renderFavs();goScreen('screen-favoritos')" },
   ]},
   { id:'conecta', label:'Conéctate', icon:'ti-headset', steps:[
-    { key:'contacted_prop', title:'Contactá a un asesor inmobiliario', sub:'Abrí una ficha de propiedad y tocá "Contactar asesor inmobiliario"', cta:'Ver propiedades', ctaAction:"goScreen('screen-tut-contacto-inmo')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
-    { key:'contacted_hipo', title:'Contactá a un asesor hipotecario',  sub:'Desde una simulación, tocá "Contactar asesor hipotecario"', cta:'Ver simulaciones', ctaAction:"goScreen('screen-tut-contacto-hipo')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
+    { key:'contacted_prop', achModule:4, title:'Contactá a un asesor inmobiliario', sub:'Abrí una ficha de propiedad y tocá "Contactar asesor inmobiliario"', cta:'Ver propiedades', ctaAction:"goScreen('screen-tut-contacto-inmo')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
+    { key:'contacted_hipo', achModule:5, title:'Contactá a un asesor hipotecario',  sub:'Desde una simulación, tocá "Contactar asesor hipotecario"', cta:'Ver simulaciones', ctaAction:"goScreen('screen-tut-contacto-hipo')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
   ]},
 ];
 
@@ -4619,16 +4810,30 @@ function contactarPorWhatsapp({ tipo, asesor, propId, simId, mensaje, stepKey })
       hora: now.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}),
     });
     saveWaContacts();
-    if (stepKey && markStep(stepKey)) notificarPasoAcademia(stepKey);
+    // contacted_prop/contacted_hipo son los módulos 4 y 5 (con su propia teoría +
+    // mini-check en MODULES.contactoInmo/contactoHipo) — mismo patrón que confirmarSim()
+    // para el Módulo 2 y openPropDetail() para el Módulo 3: si este contacto era
+    // justo el paso que el recorrido consciente esperaba, corresponde la pantalla de
+    // logro; si no, un aviso liviano alcanza.
+    const achModule = stepKey === 'contacted_prop' ? 4 : stepKey === 'contacted_hipo' ? 5 : null;
+    const esperabaEsteModulo = achModule && proximoModuloConsciente === achModule;
+    if (achModule) proximoModuloConsciente = null;
+    const recienCompletado = achModule ? markModuleDone(achModule) : (stepKey ? markStep(stepKey) : false);
+    if (!achModule && recienCompletado) notificarPasoAcademia(stepKey);
     if (document.querySelector('.screen.active')?.id === 'screen-mensajes') renderMensajes();
     if (statusEl) statusEl.innerHTML = '<i class="ti ti-circle-check" style="font-size:16px;color:var(--text-success)"></i><span>Contacto registrado</span>';
     setTimeout(() => {
       closeSheet();
-      // El toast de confirmación se muestra recién cuando "se vuelve" de WhatsApp:
-      // en desktop eso es inmediato (la pestaña nueva no bloquea esta), en mobile
-      // recién al cerrar el overlay de pantalla completa.
+      // El toast de confirmación (o la pantalla de logro) se muestra recién cuando "se
+      // vuelve" de WhatsApp: en desktop eso es inmediato (la pestaña nueva no bloquea
+      // esta), en mobile recién al cerrar el overlay de pantalla completa.
       abrirRedireccionWhatsapp({ nombre: asesor.nombre, rol: asesor.rol, emoji: asesor.emoji, tel: asesor.tel, mensaje }, () => {
+        if (achModule && recienCompletado && esperabaEsteModulo) {
+          showAchievement(achModule);
+          return;
+        }
         showToast('ti-brand-whatsapp', `Te redirigimos a WhatsApp con ${asesor.nombre}. Quedó un registro en Mensajes.`, 'success');
+        if (achModule && recienCompletado) notificarModuloCompletado(achModule);
       });
     }, 700);
   }, 1300);
@@ -4758,7 +4963,7 @@ function renderMensajes() {
 
 function renderAcademia() {
   const allSteps = ACADEMY_SECTIONS.flatMap(s => s.steps);
-  const doneCount = allSteps.filter(st => STEPS_DONE[st.key] || (st.key==='edu_done' && moduleDone[1]) || (st.key==='sim_done' && moduleDone[2]) || (st.key==='viewed_prop' && moduleDone[3])).length;
+  const doneCount = allSteps.filter(st => stepIsDone(st.key)).length;
   const total = allSteps.length;
   document.getElementById('acad-counter').textContent = `${doneCount} de ${total} pasos`;
   document.getElementById('acad-bar').style.width = Math.round(doneCount / total * 100) + '%';
@@ -4804,6 +5009,8 @@ function stepIsDone(key) {
   if (key === 'edu_done' && moduleDone[1]) return true;
   if (key === 'sim_done' && moduleDone[2]) return true;
   if (key === 'viewed_prop' && moduleDone[3]) return true;
+  if (key === 'contacted_prop' && moduleDone[4]) return true;
+  if (key === 'contacted_hipo' && moduleDone[5]) return true;
   return false;
 }
 
@@ -4857,6 +5064,7 @@ function goScreen(id, isBack = false) {
     if (id === 'screen-edu') initEduScreen();
     if (id === 'screen-notificaciones') renderNotificaciones();
     if (id === 'screen-faq') initFaqScreen();
+    if (MODULE_KEY_BY_SCREEN[id]) renderModuleScreen(MODULE_KEY_BY_SCREEN[id]);
     document.querySelectorAll('.dt-acct-item[data-screen]').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
   });
 }
@@ -5055,42 +5263,63 @@ function simular() {
   ra.style.display = 'flex';
 }
 
+// 5 módulos en total (antes eran 3: educación, simula, explora — ahora se suman
+// contactar asesor inmobiliario e hipotecario, cada uno con su propia teoría y
+// mini-check en MODULES). pct/counter/pills de acá abajo reflejan ese total real; el
+// ctaFn de cada uno encadena a la TEORÍA del siguiente módulo (no salta directo a la
+// acción práctica), salvo el último, que cierra yendo al resumen de Academia.
 const ACH_DATA = {
   1: {
     icon: '🎓',
     title: 'Módulo 1 completado',
     body: 'Ya entendés qué es el CAT, cómo funcionan las tasas y para qué sirve el enganche. Eso te pone por delante del 70% de los compradores de primera vez',
     note: '',
-    pct: 33, counter: '1 de 3 módulos',
-    pills: ['done','pending','pending'],
-    ctaLabel: 'Simular mi capacidad →', ctaFn: () => { proximoModuloConsciente = 2; goScreen('screen-sim'); },
+    pct: 20, counter: '1 de 5 módulos',
+    pills: ['done','pending','pending','pending','pending'],
+    ctaLabel: 'Simular mi capacidad →', ctaFn: () => goScreen('screen-tut-simula'),
   },
   2: {
     icon: '📊',
     title: '¡Simulación lista!',
     body: 'Ya sabés cuánto podés pagar. Tu capacidad estimada y cuota mensual van a aparecer en cada propiedad para que compares fácil.',
     note: 'Podés volver a simular cuando quieras ajustar los números.',
-    pct: 66, counter: '2 de 3 módulos',
-    pills: ['done','done','pending'],
-    // Rearma el recorrido consciente: si desde acá va a ver propiedades en su rango,
-    // completar el Módulo 3 todavía cuenta como continuación del mismo recorrido.
-    ctaLabel: 'Ver mi simulación →', ctaFn: () => { proximoModuloConsciente = 3; renderSims(); goScreen('screen-simulaciones'); },
+    pct: 40, counter: '2 de 5 módulos',
+    pills: ['done','done','pending','pending','pending'],
+    ctaLabel: 'Buscar tu propiedad →', ctaFn: () => goScreen('screen-tut-explora'),
   },
   3: {
     icon: '🏠',
-    title: '¡Todo listo!',
-    body: 'Recorriste los tres módulos. Ya tenés los conceptos, la simulación y un panorama real de propiedades en tu rango',
+    title: '¡Ya sabés explorar el catálogo!',
+    body: 'Ya tenés los conceptos, tu simulación y sabés cómo encontrar justo lo que buscás. Cuando quieras, un asesor te puede ayudar con una propiedad puntual.',
     note: 'Cuando quieras dar el siguiente paso, un asesor BBVA puede acompañarte.',
-    pct: 100, counter: '3 de 3 módulos',
-    pills: ['done','done','done'],
+    pct: 60, counter: '3 de 5 módulos',
+    pills: ['done','done','done','pending','pending'],
     // openPropDetail() sobrescribe ctaFn con la propiedad puntual que completó el
     // módulo; este es el respaldo genérico para cuando se ve como constancia desde la
     // sección Academia sin ese contexto (p. ej. recién arrancada la sesión).
-    ctaLabel: 'Ver propiedades →', ctaFn: () => navTo('screen-props','nav-props'),
+    ctaLabel: 'Contactar a un asesor →', ctaFn: () => goScreen('screen-tut-contacto-inmo'),
+  },
+  4: {
+    icon: '🤝',
+    title: '¡Contactaste a un asesor inmobiliario!',
+    body: 'Un asesor especializado en esa propiedad ya tiene tu consulta y te va a responder por WhatsApp. Mientras tanto, seguí explorando otras opciones.',
+    note: 'Podés contactar a más de un asesor si querés comparar propiedades distintas.',
+    pct: 80, counter: '4 de 5 módulos',
+    pills: ['done','done','done','done','pending'],
+    ctaLabel: 'Seguir con el crédito →', ctaFn: () => goScreen('screen-tut-contacto-hipo'),
+  },
+  5: {
+    icon: '🏁',
+    title: '¡Terminaste Academia BBVA!',
+    body: 'Recorriste los 5 módulos: ya sabés cómo funciona un crédito, cómo simular, cómo explorar propiedades y cómo contactar a los asesores indicados. Tenés todo lo necesario para dar el siguiente paso.',
+    note: 'Podés repasar cualquier módulo cuando quieras desde Academia BBVA.',
+    pct: 100, counter: '5 de 5 módulos',
+    pills: ['done','done','done','done','done'],
+    ctaLabel: 'Ver mi progreso →', ctaFn: () => { renderAcademia(); goScreen('screen-academia'); },
   },
 };
 
-const PILL_LABELS = ['Entiende','Simula','Busca'];
+const PILL_LABELS = ['Entiende','Simula','Explora','Contacta','Decide'];
 
 // Marca un módulo como completo (persistiendo el cambio) sin tocar la pantalla.
 // Devuelve true si recién se completó ahora (para poder avisar solo la primera vez).
@@ -5101,6 +5330,8 @@ function markModuleDone(n) {
   if (n === 1) markStep('edu_done');
   if (n === 2) markStep('sim_done');
   if (n === 3) markStep('viewed_prop');
+  if (n === 4) markStep('contacted_prop');
+  if (n === 5) markStep('contacted_hipo');
   return !yaEstaba;
 }
 
@@ -5112,19 +5343,17 @@ function markModuleDone(n) {
    propósito. En cambio, queda un aviso en la bandeja de notificaciones que puede
    revisar cuando quiera, con acceso directo a Academia BBVA para ver el detalle.
    ══════════════════════════════════ */
-const MODULO_TOAST_LABEL = { 1:'entender cómo funciona un crédito', 2:'simular tu crédito', 3:'buscar propiedades en tu rango' };
-// Un solo lugar con la etiqueta de cada paso del checklist que NO es uno de los 3
-// módulos principales (esos usan notificarModuloCompletado / la pantalla de logro).
-// Todo paso completado por su cuenta, la primera vez, deja un aviso — sin excepción,
-// para que la bandeja sea un registro consistente de todo el recorrido.
+const MODULO_TOAST_LABEL = { 1:'entender cómo funciona un crédito', 2:'simular tu crédito', 3:'buscar propiedades en tu rango', 4:'contactar a un asesor inmobiliario', 5:'contactar a un asesor hipotecario' };
+// Un solo lugar con la etiqueta de cada paso del checklist que NO es uno de los 5
+// módulos con teoría + mini-check (esos usan notificarModuloCompletado / la pantalla
+// de logro). Todo paso completado por su cuenta, la primera vez, deja un aviso — sin
+// excepción, para que la bandeja sea un registro consistente de todo el recorrido.
 const PASO_ACADEMIA_LABEL = {
   registered: 'crear tu cuenta',
   profile_done: 'completar tu perfil',
   shared_sim: 'compartir tu simulación',
   added_to_sim: 'sumar una propiedad a tu simulación',
   faved: 'guardar un favorito',
-  contacted_prop: 'contactar a un asesor inmobiliario',
-  contacted_hipo: 'contactar a un asesor hipotecario',
 };
 
 // Marca un paso del checklist y avisa por notificación si recién se completó ahora
@@ -5181,16 +5410,16 @@ function updateNotifBadge() {
 // Se llama en vez de mostrar la pantalla de logro cuando el módulo n se completó
 // fuera del recorrido consciente de Academia BBVA (ver markModuleDone / proximoModuloConsciente).
 function notificarModuloCompletado(n) {
-  const todoListo = moduleDone[1] && moduleDone[2] && moduleDone[3];
+  const todoListo = moduleDone[1] && moduleDone[2] && moduleDone[3] && moduleDone[4] && moduleDone[5];
   const title = todoListo ? '¡Completaste Academia BBVA!' : 'Módulo completado';
   const body = todoListo
-    ? 'Terminaste los 3 módulos. Podés repasarlos cuando quieras.'
+    ? 'Terminaste los 5 módulos. Podés repasarlos cuando quieras.'
     : `Completaste el módulo de ${MODULO_TOAST_LABEL[n]} en Academia BBVA.`;
   pushNotification({ icon:'ti-school', iconBg:'var(--bg-success)', iconColor:'var(--text-success)', title, body, route:'academia' });
 }
 
 // Igual que notificarModuloCompletado, pero para pasos del checklist que no son uno
-// de los 3 módulos principales (por ahora, contactar a cada tipo de asesor).
+// de los 5 módulos con teoría + mini-check.
 function notificarPasoAcademia(key) {
   const label = PASO_ACADEMIA_LABEL[key];
   if (!label) return;
@@ -5289,12 +5518,17 @@ function viewPropsForSim(propMax) {
   navTo('screen-props','nav-props');
 }
 
+// Pantalla de TEORÍA de cada uno de los 5 módulos con logro (achModule → screenId) —
+// se usa para "retomar en el siguiente módulo pendiente" sin saltarse su tutorial.
+const ACH_TUTORIAL_SCREEN = { 1: 'screen-edu', 2: MODULES.simula.screenId, 3: MODULES.explora.screenId, 4: MODULES.contactoInmo.screenId, 5: MODULES.contactoHipo.screenId };
+
 function goToAchievement() {
   if (!moduleDone[1]) { showAchievement(1); return; }
-  // Módulo 1 ya estaba hecho de antes (esto es un repaso del quiz) — retomar en el
-  // siguiente paso pendiente en vez de mandar siempre al módulo 2.
-  if (!moduleDone[2]) { goScreen('screen-sim'); return; }
-  if (!moduleDone[3]) { goScreen('screen-props'); return; }
+  // Módulo 1 ya estaba hecho de antes (esto es un repaso del quiz) — retomar en la
+  // teoría del siguiente módulo pendiente en vez de mandar siempre al 2.
+  for (let n = 2; n <= 5; n++) {
+    if (!moduleDone[n]) { goScreen(ACH_TUTORIAL_SCREEN[n]); return; }
+  }
   renderAcademia(); goScreen('screen-academia');
 }
 
