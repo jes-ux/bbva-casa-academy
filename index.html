@@ -639,10 +639,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .screen{height:auto;min-height:calc(100dvh - 64px);overflow:visible;padding-top:0}
   .content{padding:40px;max-width:900px;width:100%;margin:0 auto}
 
-  /* ── HOME ── */
+  /* ── HOME ──
+     Más al estilo Google: el buscador es el foco del primer scroll, centrado
+     verticalmente con aire de sobra alrededor, y el siguiente módulo (momentos)
+     solo se asoma un poco abajo — no compite por atención en la misma pantalla. */
   .home-hero{
-    padding:56px 40px 48px;border-radius:0;
-    display:flex;flex-direction:column;align-items:center;text-align:center;
+    padding:40px 40px;border-radius:0;
+    display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center;
+    gap:36px;
+    min-height:calc(100dvh - 64px - 130px);
   }
   .home-hero-title{font-size:48px;line-height:1.15;max-width:680px}
   .home-tabs{justify-content:center;gap:8px}
