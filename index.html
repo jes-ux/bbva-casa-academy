@@ -3613,22 +3613,27 @@ function closeDrawer() {
 }
 
 function goMoment(n) {
+  // Los 5 momentos usan las mismas pantallas de tutorial que el checklist de Academia
+  // BBVA. "Ya sé lo que quiero" describe en qué punto del camino estás, no que te
+  // saltees la teoría — todos los puntos de entrada (Inicio o Academia) pasan por el
+  // mismo tutorial antes de llegar al paso práctico.
+  entryPoint = n;
   // 4 y 5 (contactar asesor inmobiliario/hipotecario) no son "módulos" con logro propio
   // como 1/2/3 — son los pasos de cierre de la sección Conéctate de Academia BBVA, y
   // siguen siendo una acción válida aunque ya hayas terminado los 3 módulos principales,
   // así que no pasan por el atajo de "todo listo → Academia" de acá abajo.
-  if (n === 4) { entryPoint = 4; navTo('screen-props','nav-props'); return; }
-  if (n === 5) { entryPoint = 5; renderSims(); goScreen('screen-simulaciones'); return; }
+  if (n === 4) { goScreen('screen-tut-contacto-inmo'); return; }
+  if (n === 5) { goScreen('screen-tut-contacto-hipo'); return; }
   const allDone = moduleDone[1] && moduleDone[2] && moduleDone[3];
   if (allDone) { renderAcademia(); goScreen('screen-academia'); return; }
   // Módulo 1 no depende de este flag (su logro siempre se muestra, es parte del quiz
   // que el usuario ya está haciendo a propósito) — se arma recién cuando continúa hacia
-  // el Módulo 2 desde esa pantalla de logro. Entrar por 2 o 3 sí apunta directo.
-  proximoModuloConsciente = n === 1 ? null : n;
-  entryPoint = n;
-  if (n === 1) goScreen('screen-edu');
-  else if (n === 2) goScreen('screen-sim');
-  else goScreen('screen-props');
+  // el Módulo 2 desde esa pantalla de logro. proximoModuloConsciente para 2 y 3 lo fija
+  // el propio botón final de cada tutorial (screen-tut-simula/screen-tut-explora), no
+  // acá — así es una única fuente de verdad sin importar por dónde se entró.
+  if (n === 1) { proximoModuloConsciente = null; goScreen('screen-edu'); }
+  else if (n === 2) goScreen('screen-tut-simula');
+  else goScreen('screen-tut-explora');
 }
 
 
