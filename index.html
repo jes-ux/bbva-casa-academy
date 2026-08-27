@@ -2085,10 +2085,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
     <div class="sheet-section">
-      <div class="sheet-section-title">Características</div>
-      <input class="sheet-input" id="sheet-caract" type="text" placeholder="Ej.: roof garden, pet friendly, jardín...">
-    </div>
-    <div class="sheet-section">
       <div class="sheet-section-title">Superficie</div>
       <div class="sheet-unit-row">
         <select class="sheet-input" id="sheet-area-unit" style="flex:0 0 90px">
@@ -2831,7 +2827,7 @@ function setHomeTab(btn) {
 // estac es string ('', '0', '1'..'4') en vez de número: "0" significa "sin cajón" y es
 // un valor real a filtrar, así que no puede compartir la falsía con "sin filtro".
 let chipFilters = {
-  tipo:'', minRec:0, estac:'', minPrice:0, maxPrice:0, minArea:0, maxArea:0, caract:'',
+  tipo:'', minRec:0, estac:'', minPrice:0, maxPrice:0, minArea:0, maxArea:0,
   minBan:0, amenities:[], vista:'', tour360:false, video:false, planos:false,
   antiguedad:'', fechaPub:'',
 };
@@ -3208,7 +3204,6 @@ function applySheetFilters() {
   // área de cada propiedad.
   const areaMinVal = unit === 'ft2' ? Math.round(rawMin / FT2_PER_M2) : rawMin;
   const areaMaxVal = unit === 'ft2' ? Math.round(rawMax / FT2_PER_M2) : rawMax;
-  const caractVal = document.getElementById('sheet-caract').value.trim().toLowerCase();
   const amenitiesVal = [...document.querySelectorAll('#sheet-filtros .sheet-check-row input:checked')].map(c => c.value);
   const vistaEl = document.querySelector('#sheet-vista .sheet-radio.selected')?.closest('.sheet-radio-row');
   const antiguedadEl = document.querySelector('#sheet-antiguedad .sheet-radio.selected')?.closest('.sheet-radio-row');
@@ -3223,7 +3218,6 @@ function applySheetFilters() {
   chipFilters.estac = estacEl ? estacEl.dataset.val : '';
   chipFilters.minArea = areaMinVal;
   chipFilters.maxArea = areaMaxVal;
-  chipFilters.caract = caractVal;
   chipFilters.amenities = amenitiesVal;
   chipFilters.vista = vistaEl ? vistaEl.dataset.val : '';
   chipFilters.antiguedad = antiguedadEl ? antiguedadEl.dataset.val : '';
@@ -3238,7 +3232,7 @@ function applySheetFilters() {
   if (tipoLabel) tipoLabel.textContent = chipFilters.tipo || 'Tipo';
   document.querySelectorAll('#menu-tipo button').forEach(b => b.classList.toggle('selected', b.dataset.val === chipFilters.tipo || (!chipFilters.tipo && b.textContent === 'Cualquier tipo')));
 
-  sheetActiveCount = (tipoEl?1:0) + (recEl?1:0) + (banEl?1:0) + (estacEl?1:0) + (areaMinVal||areaMaxVal?1:0) + (caractVal?1:0)
+  sheetActiveCount = (tipoEl?1:0) + (recEl?1:0) + (banEl?1:0) + (estacEl?1:0) + (areaMinVal||areaMaxVal?1:0)
     + amenitiesVal.length + (chipFilters.vista?1:0) + (chipFilters.antiguedad?1:0)
     + (chipFilters.fechaPub?1:0) + (tour360Val||videoVal||planosVal?1:0);
   closeSheet();
@@ -3250,12 +3244,11 @@ function clearSheetFilters() {
   document.querySelectorAll('#sheet-vista .sheet-radio-row, #sheet-antiguedad .sheet-radio-row, #sheet-fecha-pub .sheet-radio-row').forEach(row => {
     row.querySelector('.sheet-radio').classList.toggle('selected', row.dataset.val === '');
   });
-  document.getElementById('sheet-caract').value = '';
   document.getElementById('sheet-area-min').value = '';
   document.getElementById('sheet-area-max').value = '';
   document.getElementById('sheet-area-unit').value = 'm2';
   chipFilters.tipo = ''; chipFilters.minRec = 0; chipFilters.minBan = 0; chipFilters.estac = '';
-  chipFilters.minPrice = 0; chipFilters.maxPrice = 0; chipFilters.minArea = 0; chipFilters.maxArea = 0; chipFilters.caract = '';
+  chipFilters.minPrice = 0; chipFilters.maxPrice = 0; chipFilters.minArea = 0; chipFilters.maxArea = 0;
   chipFilters.amenities = []; chipFilters.vista = '';
   chipFilters.tour360 = false; chipFilters.video = false; chipFilters.planos = false;
   chipFilters.antiguedad = ''; chipFilters.fechaPub = '';
@@ -3296,7 +3289,6 @@ function openFiltrosSheet() {
   document.getElementById('sheet-area-unit').value = 'm2';
   document.getElementById('sheet-area-min').value = chipFilters.minArea || '';
   document.getElementById('sheet-area-max').value = chipFilters.maxArea || '';
-  document.getElementById('sheet-caract').value = chipFilters.caract || '';
   document.querySelectorAll('#sheet-filtros .sheet-check-row input').forEach(c => c.checked = chipFilters.amenities.includes(c.value));
   document.querySelectorAll('#sheet-vista .sheet-radio-row').forEach(row => row.querySelector('.sheet-radio').classList.toggle('selected', row.dataset.val === chipFilters.vista));
   document.querySelectorAll('#sheet-antiguedad .sheet-radio-row').forEach(row => row.querySelector('.sheet-radio').classList.toggle('selected', row.dataset.val === chipFilters.antiguedad));
@@ -5039,7 +5031,6 @@ function getFilteredProps(){
   if(chipFilters.maxPrice) show = show.filter(p=>p.price<=chipFilters.maxPrice);
   if(chipFilters.minArea) show = show.filter(p=>p.area>=chipFilters.minArea);
   if(chipFilters.maxArea) show = show.filter(p=>p.area<=chipFilters.maxArea);
-  if(chipFilters.caract) show = show.filter(p=>p.tags.some(t=>t.toLowerCase().includes(chipFilters.caract)));
   // Amenidades: la propiedad tiene que tener TODAS las marcadas (AND) — es el criterio
   // habitual para "angostar" resultados con checkboxes de amenidades.
   if(chipFilters.amenities.length) show = show.filter(p => chipFilters.amenities.every(a => p.amenities.includes(a)));
@@ -5068,7 +5059,7 @@ function renderProps() {
   updateFilterBadge();
   const hasSim = isLoggedIn && simData.propMax > 0 && !searchQuery;
   const hasExtraFilters = !!(chipFilters.tipo || chipFilters.minRec || chipFilters.minBan || chipFilters.estac !== '' || chipFilters.minPrice || chipFilters.maxPrice
-    || chipFilters.minArea || chipFilters.maxArea || chipFilters.caract || chipFilters.amenities.length || chipFilters.vista
+    || chipFilters.minArea || chipFilters.maxArea || chipFilters.amenities.length || chipFilters.vista
     || chipFilters.tour360 || chipFilters.video || chipFilters.planos || chipFilters.antiguedad || chipFilters.fechaPub);
   const titleEl = document.querySelector('#screen-props .props-section > div:first-child h2');
   const bajadaEl = document.querySelector('#screen-props .props-section > div:first-child .bajada');
