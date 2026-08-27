@@ -1535,7 +1535,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="content">
       <div class="edu-section">
         <div>
-          <h2>Antes de elegir, entiende qué estás firmando</h2>
+          <h2>Antes de elegir, entendé qué estás firmando</h2>
           <p class="bajada">Un crédito hipotecario es el compromiso financiero más grande que vas a asumir. Queremos que lo entiendas de principio a fin, no que confíes a ciegas</p>
         </div>
 
@@ -1550,7 +1550,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
           <div class="concept-body" id="cat">
             El <span class="tt" onclick="showTooltip(event,'Costo Anual Total. El indicador oficial que mide cuánto te cuesta realmente un crédito al año.')">CAT</span> te dice el costo real de tu crédito, no solo la tasa de interés. Incluye comisiones, seguros y todos los cargos.<br><br>
-            Siempre comparé por CAT, no por tasa.
+            Siempre compará por CAT, no por tasa.
           </div>
         </div>
 
@@ -1599,8 +1599,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <!-- Mini-check -->
       <div class="mini-check edu-locked" id="mini-check-block">
         <h3>Mini check — 3 preguntas</h3>
-        <p style="font-size:12px;color:var(--text-muted)">Leé los 3 temas para desbloquear</p>
-        <div id="mini-check-locked-msg" style="font-size:13px;color:var(--text-muted);margin-top:8px;display:flex;align-items:center;gap:6px"><i class="ti ti-lock" style="font-size:15px"></i> Completa los 3 temas primero</div>
+        <p id="mini-check-sub" style="font-size:12px;color:var(--text-muted)">Leé los 3 temas para desbloquear</p>
+        <div id="mini-check-locked-msg" style="font-size:13px;color:var(--text-muted);margin-top:8px;display:flex;align-items:center;gap:6px"><i class="ti ti-lock" style="font-size:15px"></i> Completá los 3 temas primero</div>
         <div id="quiz-container-wrap" style="display:none">
         <p style="font-size:12px;color:var(--text-muted)">No es un examen, es confirmación de avance</p>
         <div id="quiz-container">
@@ -1629,7 +1629,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
           </div>
           <div id="quiz-done" style="display:none;text-align:center;padding:10px 0;font-size:14px;color:var(--text-secondary)">
-            Entendiste los conceptos clave. Ya puedes simular tu capacidad
+            Entendiste los conceptos clave. Ya podés simular tu capacidad
           </div>
         </div>
         </div><!-- /quiz-container-wrap -->
@@ -3820,16 +3820,16 @@ function doNewPassword() {
 // ── ACADEMY_SECTIONS definition ──
 const ACADEMY_SECTIONS = [
   { id:'onboarding', label:'Empieza', icon:'ti-user-plus', steps:[
-    { key:'registered',   title:'Crea tu cuenta',              sub:'Regístrate en BBVA Inmobiliaria',           cta:'Registrarme',       ctaAction:"goScreen('screen-registro')",               ctaDone:'Ver perfil',        ctaDoneAction:"goScreen('screen-perfil')" },
-    { key:'profile_done', title:'Completa tu perfil',          sub:'Agrega tu información de contacto',         cta:'Ir al perfil',      ctaAction:"goScreen('screen-perfil')",                 ctaDone:'Ver perfil',        ctaDoneAction:"goScreen('screen-perfil')" },
+    { key:'registered',   title:'Creá tu cuenta',              sub:'Registrate en BBVA Inmobiliaria',           cta:'Registrarme',       ctaAction:"goScreen('screen-registro')",               ctaDone:'Ver perfil',        ctaDoneAction:"goScreen('screen-perfil')" },
+    { key:'profile_done', title:'Completá tu perfil',          sub:'Agregá tu información de contacto',         cta:'Ir al perfil',      ctaAction:"goScreen('screen-perfil')",                 ctaDone:'Ver perfil',        ctaDoneAction:"goScreen('screen-perfil')" },
   ]},
   { id:'aprende', label:'Aprende', icon:'ti-book', steps:[
-    { key:'edu_done',   achModule:1, title:'Entiende cómo funciona',       sub:'CAT, tipos de tasa y enganche',             cta:'Empezar módulo',    ctaAction:"proximoModuloConsciente=null;goScreen('screen-edu')",                    ctaDone:'Repasar',           ctaDoneAction:"goScreen('screen-edu')" },
+    { key:'edu_done',   achModule:1, title:'Entendé cómo funciona',       sub:'CAT, tipos de tasa y enganche',             cta:'Empezar módulo',    ctaAction:"proximoModuloConsciente=null;goScreen('screen-edu')",                    ctaDone:'Repasar',           ctaDoneAction:"goScreen('screen-edu')" },
   ]},
   { id:'simula', label:'Simula', icon:'ti-calculator', steps:[
-    { key:'sim_done',     achModule:2, title:'Haz tu primera simulación',  sub:'Calcula cuánto puedes pagar',                cta:'Simular ahora',     ctaAction:"requireAuth(()=>{proximoModuloConsciente=2;navTo('screen-sim','nav-sim')})",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
+    { key:'sim_done',     achModule:2, title:'Hacé tu primera simulación',  sub:'Calculá cuánto podés pagar',                cta:'Simular ahora',     ctaAction:"requireAuth(()=>{proximoModuloConsciente=2;navTo('screen-sim','nav-sim')})",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
     { key:'shared_sim',   title:'Compartí tu simulación',      sub:'Enviásela a alguien de confianza',          cta:'Ir a simulaciones', ctaAction:"renderSims();goScreen('screen-simulaciones')", ctaDone:'Compartida ✓',   ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
-    { key:'added_to_sim', title:'Agrega una propiedad a tu simulación', sub:'Vincula lo que te gusta con tu capacidad', cta:'Ver propiedades',  ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
+    { key:'added_to_sim', title:'Agregá una propiedad a tu simulación', sub:'Vinculá lo que te gusta con tu capacidad', cta:'Ver propiedades',  ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
   ]},
   { id:'explora', label:'Explora', icon:'ti-building', steps:[
     { key:'viewed_prop',  achModule:3, title:'Abrí la ficha de una propiedad', sub:'Conocé todos los detalles',             cta:'Ver propiedades',   ctaAction:"proximoModuloConsciente=3;navTo('screen-props','nav-props')",          ctaDone:'Seguir explorando', ctaDoneAction:"navTo('screen-props','nav-props')" },
@@ -4544,11 +4544,14 @@ function initEduScreen() {
     const mc = document.getElementById('mini-check-block');
     const locked = document.getElementById('mini-check-locked-msg');
     const wrap = document.getElementById('quiz-container-wrap');
-    const sub = mc?.querySelector('p');
+    // El subtítulo de "desbloqueado" ya vive fijo en el <p> de adentro de
+    // quiz-container-wrap — este de acá es solo el de "bloqueado", así que se oculta en
+    // vez de reescribirle el texto (si no, quedan los dos <p> diciendo lo mismo).
+    const sub = document.getElementById('mini-check-sub');
     if (mc) { mc.classList.add('unlocked'); mc.classList.remove('edu-locked'); }
     if (locked) locked.style.display = 'none';
     if (wrap) wrap.style.display = 'block';
-    if (sub) sub.textContent = 'No es un examen, es confirmación de avance';
+    if (sub) sub.style.display = 'none';
     ['q1','q2','q3'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
     const done = document.getElementById('quiz-done');
     if (done) done.style.display = 'block';
@@ -4566,11 +4569,11 @@ function initEduScreen() {
     const mc = document.getElementById('mini-check-block');
     const locked = document.getElementById('mini-check-locked-msg');
     const wrap = document.getElementById('quiz-container-wrap');
-    const sub = mc?.querySelector('p');
+    const sub = document.getElementById('mini-check-sub');
     if (mc) { mc.classList.add('edu-locked'); mc.classList.remove('unlocked'); }
     if (locked) locked.style.display = '';
     if (wrap) wrap.style.display = 'none';
-    if (sub) sub.textContent = 'Leé los 3 temas para desbloquear';
+    if (sub) sub.style.display = '';
     const q1 = document.getElementById('q1'); if (q1) q1.style.display = '';
     const q2 = document.getElementById('q2'); if (q2) q2.style.display = 'none';
     const q3 = document.getElementById('q3'); if (q3) q3.style.display = 'none';
@@ -4610,11 +4613,11 @@ function openConcept(id) {
         const mc = document.getElementById('mini-check-block');
         const locked = document.getElementById('mini-check-locked-msg');
         const wrap = document.getElementById('quiz-container-wrap');
-        const sub = mc?.querySelector('p');
+        const sub = document.getElementById('mini-check-sub');
         if (mc) { mc.classList.add('unlocked'); mc.classList.remove('edu-locked'); }
         if (locked) locked.style.display = 'none';
         if (wrap) wrap.style.display = 'block';
-        if (sub) sub.textContent = 'No es un examen, es confirmación de avance';
+        if (sub) sub.style.display = 'none';
       }
     }
   }
@@ -4719,7 +4722,7 @@ const ACH_DATA = {
   1: {
     icon: '🎓',
     title: 'Módulo 1 completado',
-    body: 'Ya entiendes qué es el CAT, cómo funcionan las tasas y para qué sirve el enganche. Eso te pone por delante del 70% de los compradores de primera vez',
+    body: 'Ya entendés qué es el CAT, cómo funcionan las tasas y para qué sirve el enganche. Eso te pone por delante del 70% de los compradores de primera vez',
     note: 'Elegiste comparar por CAT. Lo vamos a usar cuando veamos tus opciones.',
     pct: 33, counter: '1 de 3 módulos',
     pills: ['done','pending','pending'],
@@ -4739,7 +4742,7 @@ const ACH_DATA = {
   3: {
     icon: '🏠',
     title: '¡Todo listo!',
-    body: 'Recorriste los tres módulos. Ya tienes los conceptos, la simulación y un panorama real de propiedades en tu rango',
+    body: 'Recorriste los tres módulos. Ya tenés los conceptos, la simulación y un panorama real de propiedades en tu rango',
     note: 'Cuando quieras dar el siguiente paso, un asesor BBVA puede acompañarte.',
     pct: 100, counter: '3 de 3 módulos',
     pills: ['done','done','done'],
