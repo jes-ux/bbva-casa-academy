@@ -84,6 +84,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .home-zona-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:0.5px solid var(--border);background:none;border-left:none;border-right:none;border-top:none;text-align:left;width:100%;cursor:pointer;font-family:var(--font-sans)}
 .home-zona-name{font-size:14px;color:var(--text-primary);font-weight:500}
 .home-zona-count{font-size:12px;color:var(--text-muted);flex-shrink:0}
+/* Módulo "Ayuda y preguntas frecuentes" */
+.home-faq-list{display:flex;flex-direction:column}
+.home-faq-viewall{width:100%;margin-top:6px;padding:13px;border:0.5px solid var(--border-strong);border-radius:10px;background:none;color:var(--text-primary);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font-sans)}
+.home-faq-viewall:hover{background:var(--surface-1)}
 /* Footer de Inicio */
 .home-footer-links{display:flex;flex-wrap:wrap;gap:8px 20px}
 .home-footer-links button{background:none;border:none;padding:0;font-size:12px;color:var(--text-secondary);cursor:pointer;font-family:var(--font-sans);text-align:left}
@@ -320,6 +324,19 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 /* Los títulos de sección de Inicio siguen el mismo criterio que los títulos
    principales (.hero h1): centrados, tanto en mobile como en desktop. */
 .home-section-title{text-align:center}
+/* ── FAQ (Ayuda y preguntas frecuentes) ──
+   Mobile: .faq-sidebar es la pantalla completa (la lista de preguntas) y tocar una
+   navega a screen-faq-detail. Desktop: .faq-sidebar queda fija a la izquierda y
+   .faq-main muestra la respuesta de la pregunta activa sin cambiar de pantalla. */
+.faq-wrap{display:flex;flex-direction:column}
+.faq-sidebar{display:flex;flex-direction:column;background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+.faq-nav-item{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:15px 16px;border:none;border-bottom:0.5px solid var(--border);background:none;font-size:14px;color:var(--text-primary);text-align:left;cursor:pointer;font-family:var(--font-sans);line-height:1.4}
+.faq-nav-item:last-child{border-bottom:none}
+.faq-nav-item:active{background:var(--surface-1)}
+.faq-nav-item i{color:var(--text-muted);font-size:14px;flex-shrink:0}
+.faq-main{display:none}
+.faq-q-title{font-size:20px;font-weight:700;color:var(--text-primary);line-height:1.3;margin-bottom:14px}
+.faq-a-body{font-size:15px;color:var(--text-secondary);line-height:1.7}
 .detail-attrs{display:flex;flex-direction:column;gap:0}
 .detail-attr{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:0.5px solid var(--border);font-size:14px;color:var(--text-primary)}
 .detail-attr i{font-size:18px;color:var(--text-muted);width:22px;text-align:center}
@@ -640,14 +657,20 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .moments{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
   .moment-card{flex-direction:column;align-items:flex-start;padding:20px 18px;gap:12px}
   .moment-card .ti-chevron-right{display:none}
-  /* Esta franja necesita más ancho que el resto de las secciones de Inicio (900px)
-     para que los 5 momentos entren en una sola línea sin apretarse */
-  #home-moments-band .home-band-inner{max-width:1240px}
 
-  .home-type-grid{grid-template-columns:repeat(4,1fr)}
-  .home-zonas-grid{grid-template-columns:repeat(3,1fr)}
-  .home-band-inner{padding:40px;max-width:900px;width:100%;margin:0 auto}
+  .home-type-grid{grid-template-columns:repeat(4,1fr);gap:20px}
+  .home-zonas-grid{grid-template-columns:repeat(3,1fr);gap:16px 32px}
+  .home-zona-row{padding:13px 0}
+  .home-band-inner{padding:56px 40px;max-width:900px;width:100%;margin:0 auto}
   .home-band-inner.is-last{padding-bottom:40px}
+  /* Momentos, Explora por tipo, Explora por zona y Ayuda comparten un ancho más generoso
+     que el resto de las secciones de Inicio (900px) — a este último lo necesitaban los 5
+     momentos para entrar en una sola línea, y se unifica acá para que las franjas no salten
+     de ancho entre sí */
+  #home-moments-band .home-band-inner,
+  #home-tipo-band .home-band-inner,
+  #home-zona-band .home-band-inner,
+  #home-faq-band .home-band-inner{max-width:1240px}
 
   /* ── PROPS LIST ── */
   #screen-props .content{max-width:none;padding:0}
@@ -724,6 +747,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   /* ── ACADEMIA ── */
   #screen-academia .content{max-width:760px}
   #acad-modules{display:grid;grid-template-columns:1fr;gap:12px}
+
+  /* ── FAQ (Ayuda y preguntas frecuentes) ── */
+  #screen-faq .content{max-width:1100px}
+  .faq-wrap{flex-direction:row;align-items:flex-start;gap:40px}
+  .faq-sidebar{width:300px;flex-shrink:0;background:none;border:none;border-radius:0;border-right:0.5px solid var(--border);position:sticky;top:80px;align-self:start}
+  .faq-nav-item{border-bottom:none;padding:11px 20px 11px 0;border-radius:8px 0 0 8px}
+  .faq-nav-item:hover{background:var(--surface-1);color:var(--text-primary)}
+  .faq-nav-item.active{font-weight:600;background:var(--surface-1)}
+  .faq-main{display:block;flex:1;padding-top:4px}
 
   /* ── PROPERTY DETAIL ── */
   #screen-prop-detail .screen-scroll-inner{
@@ -1126,6 +1158,26 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div><!-- /dt-acct-wrap -->
   </div>
 
+  <!-- AYUDA Y PREGUNTAS FRECUENTES -->
+  <div id="screen-faq" class="screen">
+    <div class="content">
+      <div class="detail-section-title">Ayuda y preguntas frecuentes</div>
+      <div class="faq-wrap">
+        <div class="faq-sidebar" id="faq-sidebar"><!-- renderFaqSidebar() --></div>
+        <div class="faq-main" id="faq-main"><!-- solo desktop: respuesta de la pregunta activa --></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detalle de una pregunta puntual — solo se usa en mobile, donde no entra el
+       menú lista de la izquierda; en desktop la respuesta se muestra directo en
+       #faq-main dentro de screen-faq, sin cambiar de pantalla. -->
+  <div id="screen-faq-detail" class="screen">
+    <div class="content">
+      <div id="faq-detail-content"><!-- faqAnswerHTML() --></div>
+    </div>
+  </div>
+
   <!-- MENSAJES -->
   <div id="screen-mensajes" class="screen">
     <div class="progress-bar-container mobile-only" id="mensajes-title-bar" style="border-bottom:none;padding-bottom:0">
@@ -1512,7 +1564,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Explora por tipo de propiedad -->
-    <div class="home-band home-band-white">
+    <div class="home-band home-band-white" id="home-tipo-band">
       <div class="home-band-inner">
         <div class="detail-section-title home-section-title">Explora por tipo de propiedad</div>
         <div class="home-type-grid" id="home-type-grid"><!-- renderHomeTipos() --></div>
@@ -1520,7 +1572,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Explora por zona -->
-    <div class="home-band home-band-gray">
+    <div class="home-band home-band-gray" id="home-zona-band">
       <div class="home-band-inner">
         <div class="detail-section-title home-section-title">Explora por zona</div>
         <div class="home-tabs" id="home-zona-tabs" style="flex-wrap:wrap;margin-bottom:16px">
@@ -1534,6 +1586,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
 
+    <!-- Ayuda y preguntas frecuentes -->
+    <div class="home-band home-band-white" id="home-faq-band">
+      <div class="home-band-inner">
+        <div class="detail-section-title home-section-title">Ayuda y preguntas frecuentes</div>
+        <div class="home-faq-list" id="home-faq-list"><!-- renderHomeFaq() --></div>
+        <button class="home-faq-viewall" onclick="goScreen('screen-faq')">Ver todas las preguntas <i class="ti ti-chevron-right"></i></button>
+      </div>
+    </div>
+
     <!-- Footer -->
     <div class="home-band home-band-white">
       <div class="home-band-inner is-last" style="border-top:0.5px solid var(--border);padding-top:32px">
@@ -1541,9 +1602,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <button onclick="void(0)">Términos y Condiciones</button>
           <button onclick="void(0)">Aviso de Privacidad</button>
           <button onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})">Educación financiera</button>
-          <button onclick="void(0)">Centro de ayuda</button>
+          <button onclick="goScreen('screen-faq')">Centro de ayuda</button>
           <button onclick="void(0)">Seguridad y protección de datos</button>
-          <button onclick="void(0)">Preguntas frecuentes</button>
+          <button onclick="goScreen('screen-faq')">Preguntas frecuentes</button>
         </div>
         <div class="home-footer-copy">
           © 2026 BBVA México, S.A., Institución de Banca Múltiple, Grupo Financiero BBVA México.<br>
@@ -3139,6 +3200,74 @@ function goToZona(zona) {
   navTo('screen-props', 'nav-props');
 }
 
+// ── Módulo "Ayuda y preguntas frecuentes" ──
+// No es un acordeón: cada pregunta lleva a screen-faq, donde vive el detalle. En
+// desktop entra un menú lista fijo a la izquierda con TODAS las preguntas (como el
+// sidebar del detalle de propiedad); en mobile ese menú no entra, así que la lista
+// ES la pantalla completa y tocar una pregunta empuja screen-faq-detail (con su
+// flecha de volver de siempre) en vez de expandir nada in-place.
+const FAQ_DATA = [
+  { id:'cat', q:'¿Qué es el CAT y por qué es importante?', a:'El CAT (Costo Anual Total) resume en un solo número cuánto te cuesta realmente un crédito al año, incluyendo comisiones y seguros. Compará créditos por CAT, no solo por tasa: dos créditos con la misma tasa pueden salir muy distinto una vez que sumás todos los cargos.' },
+  { id:'enganche', q:'¿Cuánto enganche necesito para comprar una propiedad?', a:'Generalmente entre el 10% y el 20% del valor de la propiedad. A mayor enganche, menor el monto que financiás y menos intereses pagás en total durante el crédito.' },
+  { id:'tasas', q:'¿Qué diferencia hay entre tasa fija, variable y creciente?', a:'La tasa fija mantiene tu cuota igual durante todo el crédito. La variable empieza más baja pero puede subir con la inflación. La creciente arranca baja y sube gradualmente — ideal si esperás que tu ingreso crezca con el tiempo.' },
+  { id:'capacidad', q:'¿Cómo se calcula mi capacidad de pago?', a:'Con tu ingreso mensual, tu enganche disponible y el plazo que elijas, el simulador estima cuánto podés pagar de cuota mensual y el valor máximo de propiedad al que podés acceder.' },
+  { id:'simular_gratis', q:'¿Simular mi crédito me compromete a algo?', a:'No. Simular es gratis y no te compromete a nada — es solo una herramienta para conocer tu capacidad de pago antes de tomar cualquier decisión.' },
+  { id:'compartir_sim', q:'¿Puedo compartir mi simulación con otra persona?', a:'Sí. Desde Simulaciones podés compartir cualquier simulación por WhatsApp o copiando el enlace, para decidir en pareja o en familia.' },
+  { id:'contacto_inmobiliario', q:'¿Cómo contacto a un asesor inmobiliario?', a:'Abrí la ficha de la propiedad que te interesa y tocá "Contactar asesor inmobiliario". Un asesor especializado en esa propiedad te responde por WhatsApp.' },
+  { id:'contacto_hipotecario', q:'¿Cómo contacto a un asesor hipotecario?', a:'Desde cualquier simulación guardada, tocá "Contactar asesor hipotecario" para resolver dudas sobre tu crédito con un especialista.' },
+  { id:'documentos', q:'¿Qué documentos necesito para solicitar un crédito hipotecario?', a:'Identificación oficial, comprobante de domicilio, comprobantes de ingresos recientes y tu historial crediticio. Un asesor hipotecario te confirma la lista completa según tu caso.' },
+];
+let currentFaqId = FAQ_DATA[0].id;
+
+function faqAnswerHTML(f) {
+  return `<div class="faq-q-title">${f.q}</div><div class="faq-a-body">${f.a}</div>`;
+}
+
+// Selección destacada en el módulo de Inicio — el resto solo aparece en screen-faq.
+const HOME_FAQ_HIGHLIGHTS = ['cat', 'enganche', 'capacidad', 'contacto_inmobiliario'];
+function renderHomeFaq() {
+  const el = document.getElementById('home-faq-list');
+  if (!el) return;
+  el.innerHTML = `<div class="faq-sidebar">${HOME_FAQ_HIGHLIGHTS.map(id => {
+    const f = FAQ_DATA.find(x => x.id === id);
+    return `<button class="faq-nav-item" onclick="openFaq('${f.id}')"><span>${f.q}</span><i class="ti ti-chevron-right"></i></button>`;
+  }).join('')}</div>`;
+}
+
+function renderFaqSidebar() {
+  const el = document.getElementById('faq-sidebar');
+  if (!el) return;
+  const desktop = window.innerWidth >= 900;
+  el.innerHTML = FAQ_DATA.map(f =>
+    `<button class="faq-nav-item${desktop && f.id === currentFaqId ? ' active' : ''}" onclick="openFaq('${f.id}')"><span>${f.q}</span><i class="ti ti-chevron-right"></i></button>`
+  ).join('');
+}
+
+// En desktop el menú lista y la respuesta conviven en screen-faq (se actualiza el
+// panel de la derecha sin navegar); en mobile no hay lugar para el menú, así que
+// cada pregunta empuja screen-faq-detail como una pantalla propia.
+function openFaq(id) {
+  currentFaqId = id;
+  if (window.innerWidth >= 900) {
+    if (document.querySelector('.screen.active')?.id !== 'screen-faq') { goScreen('screen-faq'); return; }
+    renderFaqSidebar();
+    const main = document.getElementById('faq-main');
+    if (main) main.innerHTML = faqAnswerHTML(FAQ_DATA.find(f => f.id === id));
+  } else {
+    const detail = document.getElementById('faq-detail-content');
+    if (detail) detail.innerHTML = faqAnswerHTML(FAQ_DATA.find(f => f.id === id));
+    goScreen('screen-faq-detail');
+  }
+}
+
+function initFaqScreen() {
+  renderFaqSidebar();
+  if (window.innerWidth >= 900) {
+    const main = document.getElementById('faq-main');
+    if (main) main.innerHTML = faqAnswerHTML(FAQ_DATA.find(f => f.id === currentFaqId) || FAQ_DATA[0]);
+  }
+}
+
 function toggleChipMenu(id){
   const isOpen = document.getElementById(id).classList.contains('open');
   document.querySelectorAll('.dt-chip-menu').forEach(m => m.classList.remove('open'));
@@ -3403,6 +3532,7 @@ const SCREEN_LABELS = {
   'screen-check-email': 'Verifica tu correo',
   'screen-configuracion': 'Configuración',
   'screen-edu': 'Módulo 1: Educación financiera',
+  'screen-faq': 'Ayuda y preguntas frecuentes',
   'screen-favoritos': 'Favoritos',
   'screen-forgot-password': 'Recuperar contraseña',
   'screen-google-auth': 'Iniciar con Google',
@@ -3423,15 +3553,20 @@ function screenLabel(id) {
     const p = PROPS.find(x => x.id === currentPropId);
     return p ? `${p.tipo} en ${p.zona}` : 'Propiedad';
   }
+  if (id === 'screen-faq-detail') {
+    const f = FAQ_DATA.find(x => x.id === currentFaqId);
+    return f ? f.q : 'Pregunta';
+  }
   return SCREEN_LABELS[id] || id;
 }
 
 // El breadcrumb es la ruta estructural desde Inicio hasta la pantalla actual — SIEMPRE
 // la misma para una pantalla dada, sin importar por dónde haya navegado el usuario para
 // llegar (eso es responsabilidad del botón de volver / navHistory, no del breadcrumb).
-// screen-prop-detail cuelga de screen-props, screen-edu de screen-academia; el resto
-// cuelga directo de Inicio. Una pantalla sin padre acá (null/no-listada) es una raíz y
-// no muestra breadcrumb.
+// screen-prop-detail cuelga de screen-props, screen-edu de screen-academia,
+// screen-faq-detail de screen-faq (solo se usa en mobile); el resto cuelga directo
+// de Inicio. Una pantalla sin padre acá (null/no-listada) es una raíz y no muestra
+// breadcrumb.
 const SCREEN_PARENT = {
   'screen-props': 'screen-0',
   'screen-prop-detail': 'screen-props',
@@ -3444,6 +3579,8 @@ const SCREEN_PARENT = {
   'screen-oportunidades': 'screen-0',
   'screen-perfil': 'screen-0',
   'screen-edu': 'screen-academia',
+  'screen-faq': 'screen-0',
+  'screen-faq-detail': 'screen-faq',
 };
 function breadcrumbChain(id) {
   const chain = [];
@@ -4549,6 +4686,7 @@ function goScreen(id, isBack = false) {
     if (id === 'screen-academia') renderAcademia();
     if (id === 'screen-edu') initEduScreen();
     if (id === 'screen-notificaciones') renderNotificaciones();
+    if (id === 'screen-faq') initFaqScreen();
     document.querySelectorAll('.dt-acct-item[data-screen]').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
   });
 }
@@ -5474,6 +5612,7 @@ if (isLoggedIn) { renderPerfil(); }
 initHeaderScroll(document.getElementById('screen-0'));
 renderHomeTipos();
 renderHomeZonas();
+renderHomeFaq();
 </script>
 </body>
 </html>
