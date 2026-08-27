@@ -1817,6 +1817,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
     <div class="cta-area">
       <button class="btn-primary" id="ach-cta"></button>
+      <button class="btn-outline" id="ach-cta-secondary" style="display:none"></button>
     </div>
   </div>
 
@@ -4338,10 +4339,25 @@ function answerModuleQuiz(key, qIdx, correct, el) {
     } else {
       document.getElementById(`mq-${key}-${qIdx}`).style.display = 'none';
       document.getElementById(`mquiz-done-${key}`).style.display = 'block';
-      const ctaEl = document.getElementById('module-cta-' + key);
-      if (ctaEl) ctaEl.innerHTML = moduleCtaButtonsHTML(key);
+      // Mismo ritmo que el Módulo 1 (answer() → setTimeout(goToAchievement, 1200)):
+      // se ve el mensaje de "listo" un instante y recién después se pasa a la
+      // pantalla de logro — así queda claro que ESO fue lo que se acaba de completar.
+      setTimeout(() => goToModuleAchievement(key), 1200);
     }
   }, 700);
+}
+
+// Se llama al terminar el mini-check de un módulo (2 a 5). Si es la primera vez,
+// guarda el progreso YA (markModuleDone) y muestra la pantalla de logro — antes esto
+// no pasaba y quedaba la sensación de que el recorrido no se guardaba en ningún lado.
+// Si el módulo ya estaba completo de antes (repaso del quiz), no vuelve a festejar:
+// solo deja los botones de siempre en la propia pantalla del tutorial.
+function goToModuleAchievement(key) {
+  const m = MODULES[key];
+  const justCompleted = markModuleDone(m.achModule);
+  if (justCompleted) { showAchievement(m.achModule); return; }
+  const ctaEl = document.getElementById('module-cta-' + key);
+  if (ctaEl) ctaEl.innerHTML = moduleCtaButtonsHTML(key);
 }
 
 // ── ACADEMY_SECTIONS definition ──
@@ -5265,9 +5281,14 @@ function simular() {
 
 // 5 módulos en total (antes eran 3: educación, simula, explora — ahora se suman
 // contactar asesor inmobiliario e hipotecario, cada uno con su propia teoría y
-// mini-check en MODULES). pct/counter/pills de acá abajo reflejan ese total real; el
-// ctaFn de cada uno encadena a la TEORÍA del siguiente módulo (no salta directo a la
-// acción práctica), salvo el último, que cierra yendo al resumen de Academia.
+// mini-check en MODULES). Esta pantalla es la confirmación de haber TERMINADO la
+// teoría + mini-check de ese módulo (se dispara desde answerModuleQuiz/
+// goToModuleAchievement apenas se resuelve el quiz, no hace falta además haber hecho
+// la acción real) — por eso el título/cuerpo describen COMPRENSIÓN, no un resultado
+// ya obtenido. ctaFn es la acción práctica real de ESE módulo (simular, buscar,
+// contactar); secondaryFn (2 a 4) deja seguir a la teoría del siguiente módulo sin
+// obligar a hacerla ahora. El Módulo 1 no tiene acción propia que saltear, y el
+// último no tiene siguiente módulo — por eso ninguno de los dos tiene secondaryFn.
 const ACH_DATA = {
   1: {
     icon: '🎓',
@@ -5280,33 +5301,36 @@ const ACH_DATA = {
   },
   2: {
     icon: '📊',
-    title: '¡Simulación lista!',
-    body: 'Ya sabés cuánto podés pagar. Tu capacidad estimada y cuota mensual van a aparecer en cada propiedad para que compares fácil.',
-    note: 'Podés volver a simular cuando quieras ajustar los números.',
+    title: '¡Ya sabés cómo simular tu crédito!',
+    body: 'Entendiste qué datos hacen falta —tu ingreso, tu enganche y el plazo— y cómo se calcula tu capacidad de pago. Cuando quieras, probalo con tus números reales.',
+    note: 'Podés simular las veces que quieras para ajustar los números.',
     pct: 40, counter: '2 de 5 módulos',
     pills: ['done','done','pending','pending','pending'],
-    ctaLabel: 'Buscar tu propiedad →', ctaFn: () => goScreen('screen-tut-explora'),
+    ctaLabel: 'Simular ahora →', ctaFn: () => requireAuth(() => navTo('screen-sim','nav-sim')),
+    secondaryLabel: 'Seguir con la teoría, sin simular ahora', secondaryFn: () => goScreen('screen-tut-explora'),
   },
   3: {
     icon: '🏠',
     title: '¡Ya sabés explorar el catálogo!',
-    body: 'Ya tenés los conceptos, tu simulación y sabés cómo encontrar justo lo que buscás. Cuando quieras, un asesor te puede ayudar con una propiedad puntual.',
+    body: 'Entendiste cómo usar los filtros, guardar tus favoritas y ver el mapa para encontrar justo lo que buscás sin perder tiempo.',
     note: 'Cuando quieras dar el siguiente paso, un asesor BBVA puede acompañarte.',
     pct: 60, counter: '3 de 5 módulos',
     pills: ['done','done','done','pending','pending'],
     // openPropDetail() sobrescribe ctaFn con la propiedad puntual que completó el
-    // módulo; este es el respaldo genérico para cuando se ve como constancia desde la
-    // sección Academia sin ese contexto (p. ej. recién arrancada la sesión).
-    ctaLabel: 'Contactar a un asesor →', ctaFn: () => goScreen('screen-tut-contacto-inmo'),
+    // módulo (si esta pantalla se dispara al abrir una ficha sin haber hecho antes el
+    // quiz); este es el respaldo genérico para cuando se dispara desde el quiz mismo.
+    ctaLabel: 'Ver propiedades →', ctaFn: () => navTo('screen-props','nav-props'),
+    secondaryLabel: 'Seguir con la teoría, sin buscar ahora', secondaryFn: () => goScreen('screen-tut-contacto-inmo'),
   },
   4: {
     icon: '🤝',
-    title: '¡Contactaste a un asesor inmobiliario!',
-    body: 'Un asesor especializado en esa propiedad ya tiene tu consulta y te va a responder por WhatsApp. Mientras tanto, seguí explorando otras opciones.',
+    title: '¡Ya sabés cómo contactar a un asesor inmobiliario!',
+    body: 'Entendiste que podés escribirle desde la ficha de cualquier propiedad, sin compromiso, para resolver dudas puntuales.',
     note: 'Podés contactar a más de un asesor si querés comparar propiedades distintas.',
     pct: 80, counter: '4 de 5 módulos',
     pills: ['done','done','done','done','pending'],
-    ctaLabel: 'Seguir con el crédito →', ctaFn: () => goScreen('screen-tut-contacto-hipo'),
+    ctaLabel: 'Ver propiedades →', ctaFn: () => navTo('screen-props','nav-props'),
+    secondaryLabel: 'Seguir con la teoría, sin contactar ahora', secondaryFn: () => goScreen('screen-tut-contacto-hipo'),
   },
   5: {
     icon: '🏁',
@@ -5315,7 +5339,7 @@ const ACH_DATA = {
     note: 'Podés repasar cualquier módulo cuando quieras desde Academia BBVA.',
     pct: 100, counter: '5 de 5 módulos',
     pills: ['done','done','done','done','done'],
-    ctaLabel: 'Ver mi progreso →', ctaFn: () => { renderAcademia(); goScreen('screen-academia'); },
+    ctaLabel: 'Ver simulaciones →', ctaFn: () => { renderSims(); goScreen('screen-simulaciones'); },
   },
 };
 
@@ -5475,6 +5499,17 @@ function showAchievement(n) {
   const btn = document.getElementById('ach-cta');
   btn.textContent = d.ctaLabel;
   btn.onclick = d.ctaFn;
+  // Secundario opcional ("seguir con la teoría, sin hacerlo ahora") — lo tienen los
+  // módulos 2 a 4, que encadenan a la teoría del siguiente sin obligar a hacer la
+  // acción real; el Módulo 1 (sin acción propia que saltear) y el último no lo tienen.
+  const btn2 = document.getElementById('ach-cta-secondary');
+  if (d.secondaryLabel) {
+    btn2.textContent = d.secondaryLabel;
+    btn2.onclick = d.secondaryFn;
+    btn2.style.display = '';
+  } else {
+    btn2.style.display = 'none';
+  }
   goScreen('screen-achievement');
   setTimeout(() => { document.getElementById('ach-bar').style.width = d.pct + '%'; }, 200);
 }
