@@ -322,8 +322,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .detail-section{padding:20px 20px 0;flex-shrink:0}
 .detail-section-title{font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:14px}
 /* Los títulos de sección de Inicio siguen el mismo criterio que los títulos
-   principales (.hero h1): centrados, tanto en mobile como en desktop. */
-.home-section-title{text-align:center}
+   principales (.hero h1): mismo tamaño y peso, centrados, tanto en mobile como en
+   desktop — para que no se sientan como una etiqueta chica al lado de "¿Qué tan
+   cerca estás de acceder a tu propiedad?". */
+.home-section-title{text-align:center;font-size:26px;font-weight:700;line-height:1.2}
 /* ── FAQ (Ayuda y preguntas frecuentes) ──
    Mobile: .faq-sidebar es la pantalla completa (la lista de preguntas) y tocar una
    navega a screen-faq-detail. Desktop: .faq-sidebar queda fija a la izquierda y
@@ -748,14 +750,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   #screen-academia .content{max-width:760px}
   #acad-modules{display:grid;grid-template-columns:1fr;gap:12px}
 
-  /* ── FAQ (Ayuda y preguntas frecuentes) ── */
+  /* ── FAQ (Ayuda y preguntas frecuentes) ──
+     Todo acá va scopeado a #screen-faq: .faq-sidebar/.faq-nav-item se reutilizan tal
+     cual en el preview de Inicio (#home-faq-list), y esas 4 preguntas destacadas deben
+     seguir viéndose como la card de lista normal, no como el sidebar angosto de acá. */
   #screen-faq .content{max-width:1100px}
-  .faq-wrap{flex-direction:row;align-items:flex-start;gap:40px}
-  .faq-sidebar{width:300px;flex-shrink:0;background:none;border:none;border-radius:0;border-right:0.5px solid var(--border);position:sticky;top:80px;align-self:start}
-  .faq-nav-item{border-bottom:none;padding:11px 20px 11px 0;border-radius:8px 0 0 8px}
-  .faq-nav-item:hover{background:var(--surface-1);color:var(--text-primary)}
-  .faq-nav-item.active{font-weight:600;background:var(--surface-1)}
-  .faq-main{display:block;flex:1;padding-top:4px}
+  #screen-faq .faq-wrap{flex-direction:row;align-items:flex-start;gap:40px}
+  #screen-faq .faq-sidebar{width:300px;flex-shrink:0;background:none;border:none;border-radius:0;border-right:0.5px solid var(--border);position:sticky;top:80px;align-self:start}
+  #screen-faq .faq-nav-item{border-bottom:none;padding:11px 20px 11px 0;border-radius:8px 0 0 8px}
+  #screen-faq .faq-nav-item:hover{background:var(--surface-1);color:var(--text-primary)}
+  #screen-faq .faq-nav-item.active{font-weight:600;background:var(--surface-1)}
+  #screen-faq .faq-main{display:block;flex:1;padding-top:4px}
 
   /* ── PROPERTY DETAIL ── */
   #screen-prop-detail .screen-scroll-inner{
