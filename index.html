@@ -317,6 +317,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .btn-outline{display:flex;align-items:center;justify-content:center;gap:6px;height:40px;border-radius:8px;border:0.5px solid var(--text-primary);background:transparent;color:var(--text-primary);font-size:14px;font-weight:500;cursor:pointer}
 .detail-section{padding:20px 20px 0;flex-shrink:0}
 .detail-section-title{font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:14px}
+/* Los títulos de sección de Inicio siguen el mismo criterio que los títulos
+   principales (.hero h1): centrados, tanto en mobile como en desktop. */
+.home-section-title{text-align:center}
 .detail-attrs{display:flex;flex-direction:column;gap:0}
 .detail-attr{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:0.5px solid var(--border);font-size:14px;color:var(--text-primary)}
 .detail-attr i{font-size:18px;color:var(--text-muted);width:22px;text-align:center}
@@ -1511,7 +1514,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <!-- Explora por tipo de propiedad -->
     <div class="home-band home-band-white">
       <div class="home-band-inner">
-        <div class="detail-section-title">Explora por tipo de propiedad</div>
+        <div class="detail-section-title home-section-title">Explora por tipo de propiedad</div>
         <div class="home-type-grid" id="home-type-grid"><!-- renderHomeTipos() --></div>
       </div>
     </div>
@@ -1519,7 +1522,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <!-- Explora por zona -->
     <div class="home-band home-band-gray">
       <div class="home-band-inner">
-        <div class="detail-section-title">Explora por zona</div>
+        <div class="detail-section-title home-section-title">Explora por zona</div>
         <div class="home-tabs" id="home-zona-tabs" style="flex-wrap:wrap;margin-bottom:16px">
           <button class="home-tab active" onclick="setHomeZonaTipo('', this)">Todos</button>
           <button class="home-tab" onclick="setHomeZonaTipo('Departamento', this)">Departamentos</button>
