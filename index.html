@@ -632,10 +632,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .home-input input{border-radius:var(--radius)}
   .home-search-btn{border-radius:var(--radius);padding:0 28px;white-space:nowrap}
 
-  /* moment cards → row of 3 on desktop */
-  .moments{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  .moment-card{flex-direction:column;align-items:flex-start;padding:24px 20px;gap:14px}
+  /* moment cards → row de 5 en desktop (informarme, simular, ver propiedades,
+     contactar inmobiliario, contactar hipotecario: cierra el recorrido completo) */
+  .moments{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .moment-card{flex-direction:column;align-items:flex-start;padding:20px 18px;gap:12px}
   .moment-card .ti-chevron-right{display:none}
+  /* Esta franja necesita más ancho que el resto de las secciones de Inicio (900px)
+     para que los 5 momentos entren en una sola línea sin apretarse */
+  #home-moments-band .home-band-inner{max-width:1240px}
 
   .home-type-grid{grid-template-columns:repeat(4,1fr)}
   .home-zonas-grid{grid-template-columns:repeat(3,1fr)}
@@ -1454,7 +1458,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         </button>
       </div>
     </div>
-    <div class="home-band home-band-gray">
+    <div class="home-band home-band-gray" id="home-moments-band">
       <div class="home-band-inner">
         <div class="hero" style="padding-top:0;text-align:center">
           <h1>¿Qué tan cerca estás de acceder a tu propiedad?</h1>
@@ -1481,6 +1485,22 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <div class="moment-text">
               <strong>Ya simulé, quiero ver propiedades</strong>
               <span>Tengo mi rango y quiero buscar opciones reales</span>
+            </div>
+            <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
+          </div>
+          <div class="moment-card" onclick="goMoment(4)">
+            <div class="moment-icon">🧑‍💼</div>
+            <div class="moment-text">
+              <strong>Quiero hablar con un asesor inmobiliario</strong>
+              <span>Tengo dudas sobre una propiedad puntual</span>
+            </div>
+            <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
+          </div>
+          <div class="moment-card" onclick="goMoment(5)">
+            <div class="moment-icon">🏦</div>
+            <div class="moment-text">
+              <strong>Quiero hablar con un asesor hipotecario</strong>
+              <span>Tengo dudas sobre mi crédito</span>
             </div>
             <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
           </div>
@@ -3313,6 +3333,12 @@ function closeDrawer() {
 }
 
 function goMoment(n) {
+  // 4 y 5 (contactar asesor inmobiliario/hipotecario) no son "módulos" con logro propio
+  // como 1/2/3 — son los pasos de cierre de la sección Conéctate de Academia BBVA, y
+  // siguen siendo una acción válida aunque ya hayas terminado los 3 módulos principales,
+  // así que no pasan por el atajo de "todo listo → Academia" de acá abajo.
+  if (n === 4) { entryPoint = 4; navTo('screen-props','nav-props'); return; }
+  if (n === 5) { entryPoint = 5; renderSims(); goScreen('screen-simulaciones'); return; }
   const allDone = moduleDone[1] && moduleDone[2] && moduleDone[3];
   if (allDone) { renderAcademia(); goScreen('screen-academia'); return; }
   // Módulo 1 no depende de este flag (su logro siempre se muestra, es parte del quiz
