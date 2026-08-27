@@ -3549,13 +3549,17 @@ function closeDrawer() {
 // misma lógica, sin casos especiales para 4 y 5.
 function goMoment(n) {
   entryPoint = n;
-  const allDone = moduleDone[1] && moduleDone[2] && moduleDone[3] && moduleDone[4] && moduleDone[5];
-  if (allDone) { renderAcademia(); goScreen('screen-academia'); return; }
-  // Si el módulo puntual de este momento ya está completo (aunque no estén los 5), no
-  // tiene sentido volver a mostrar la teoría como si fuera la primera vez: se muestra
-  // la pantalla de logro de ESE módulo (resume qué se logró y da un CTA para seguir
-  // adelante). El tutorial sigue existiendo y accesible como siempre (desde Academia,
-  // "Repasar"); acá solo deja de ser el destino por defecto una vez completado.
+  // Si el módulo puntual de este momento ya está completo, no tiene sentido volver a
+  // mostrar la teoría como si fuera la primera vez ni mandar a la pantalla general de
+  // Academia (ahí conviven los 5 módulos, no responde a "qué pasó con ESTE"): se
+  // muestra la pantalla de logro de ESE módulo puntual, resumiendo qué se logró y con
+  // un CTA para seguir adelante. Esto vale módulo por módulo, sin importar cuántos de
+  // los otros 4 estén completos — antes acá había un atajo de "los 5 completos → ir a
+  // Academia" que pisaba este caso y mandaba a la pantalla general igual, generando
+  // fricción justo en el caso de uso más común (alguien que ya terminó todo y vuelve
+  // a un momento puntual desde Inicio). El tutorial sigue existiendo y accesible como
+  // siempre (desde Academia, "Repasar"); acá solo deja de ser el destino por defecto
+  // una vez completado.
   if (moduleDone[n]) { showAchievement(n); return; }
   // proximoModuloConsciente para 2-5 lo fija el propio botón final de cada tutorial
   // (o el propio flujo de contacto por WhatsApp para 4/5), no acá — así es una única
@@ -4826,30 +4830,22 @@ function contactarPorWhatsapp({ tipo, asesor, propId, simId, mensaje, stepKey })
       hora: now.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}),
     });
     saveWaContacts();
-    // contacted_prop/contacted_hipo son los módulos 4 y 5 (con su propia teoría +
-    // mini-check en MODULES.contactoInmo/contactoHipo) — mismo patrón que confirmarSim()
-    // para el Módulo 2 y openPropDetail() para el Módulo 3: si este contacto era
-    // justo el paso que el recorrido consciente esperaba, corresponde la pantalla de
-    // logro; si no, un aviso liviano alcanza.
-    const achModule = stepKey === 'contacted_prop' ? 4 : stepKey === 'contacted_hipo' ? 5 : null;
-    const esperabaEsteModulo = achModule && proximoModuloConsciente === achModule;
-    if (achModule) proximoModuloConsciente = null;
-    const recienCompletado = achModule ? markModuleDone(achModule) : (stepKey ? markStep(stepKey) : false);
-    if (!achModule && recienCompletado) notificarPasoAcademia(stepKey);
+    // contacted_prop/contacted_hipo son un paso más del checklist (como shared_sim o
+    // faved) — se marcan por haber hecho el contacto de VERDAD, sin relación con
+    // moduleDone[4]/[5] (que solo trackea si se entendió la teoría de cómo contactar,
+    // vía el mini-check de MODULES.contactoInmo/contactoHipo). Mezclar ambas cosas
+    // hacía que Academia mostrara "listo" con solo haber leído la teoría, aunque nunca
+    // se hubiese contactado a nadie de verdad.
+    if (stepKey && markStep(stepKey)) notificarPasoAcademia(stepKey);
     if (document.querySelector('.screen.active')?.id === 'screen-mensajes') renderMensajes();
     if (statusEl) statusEl.innerHTML = '<i class="ti ti-circle-check" style="font-size:16px;color:var(--text-success)"></i><span>Contacto registrado</span>';
     setTimeout(() => {
       closeSheet();
-      // El toast de confirmación (o la pantalla de logro) se muestra recién cuando "se
-      // vuelve" de WhatsApp: en desktop eso es inmediato (la pestaña nueva no bloquea
-      // esta), en mobile recién al cerrar el overlay de pantalla completa.
+      // El toast de confirmación se muestra recién cuando "se vuelve" de WhatsApp:
+      // en desktop eso es inmediato (la pestaña nueva no bloquea esta), en mobile
+      // recién al cerrar el overlay de pantalla completa.
       abrirRedireccionWhatsapp({ nombre: asesor.nombre, rol: asesor.rol, emoji: asesor.emoji, tel: asesor.tel, mensaje }, () => {
-        if (achModule && recienCompletado && esperabaEsteModulo) {
-          showAchievement(achModule);
-          return;
-        }
         showToast('ti-brand-whatsapp', `Te redirigimos a WhatsApp con ${asesor.nombre}. Quedó un registro en Mensajes.`, 'success');
-        if (achModule && recienCompletado) notificarModuloCompletado(achModule);
       });
     }, 700);
   }, 1300);
@@ -5020,13 +5016,16 @@ function renderAcademia() {
   }).join('');
 }
 
+// edu_done es el único paso del checklist que depende de moduleDone: el Módulo 1 no
+// tiene una acción real separada de su teoría. sim_done/viewed_prop/contacted_prop/
+// contacted_hipo dependen SOLO de STEPS_DONE (la acción real: simular de verdad, ver
+// una propiedad, contactar de verdad) — si dependieran de moduleDone[2..5], Academia
+// mostraría "listo" con solo haber entendido la teoría, aunque la simulación/contacto
+// no exista (STEPS_DONE se marca en completeModule2()/openPropDetail()/
+// contactarPorWhatsapp(), no acá).
 function stepIsDone(key) {
   if (STEPS_DONE[key]) return true;
   if (key === 'edu_done' && moduleDone[1]) return true;
-  if (key === 'sim_done' && moduleDone[2]) return true;
-  if (key === 'viewed_prop' && moduleDone[3]) return true;
-  if (key === 'contacted_prop' && moduleDone[4]) return true;
-  if (key === 'contacted_hipo' && moduleDone[5]) return true;
   return false;
 }
 
@@ -5351,11 +5350,14 @@ function markModuleDone(n) {
   const yaEstaba = moduleDone[n];
   moduleDone[n] = true;
   saveModules();
+  // Solo el Módulo 1 marca su paso del checklist acá: entender la teoría ES su única
+  // acción, no hay nada más "real" que hacer después. Los módulos 2 a 5 SÍ tienen una
+  // acción real separada (simular, ver una propiedad, contactar a un asesor) — marcar
+  // su paso del checklist acá haría que Academia mostrara "listo" con solo haber
+  // entendido la teoría, aunque la acción real nunca haya pasado (esos pasos se
+  // marcan en su propio lugar: completeModule2(), openPropDetail(),
+  // contactarPorWhatsapp()).
   if (n === 1) markStep('edu_done');
-  if (n === 2) markStep('sim_done');
-  if (n === 3) markStep('viewed_prop');
-  if (n === 4) markStep('contacted_prop');
-  if (n === 5) markStep('contacted_hipo');
   return !yaEstaba;
 }
 
@@ -5367,17 +5369,22 @@ function markModuleDone(n) {
    propósito. En cambio, queda un aviso en la bandeja de notificaciones que puede
    revisar cuando quiera, con acceso directo a Academia BBVA para ver el detalle.
    ══════════════════════════════════ */
-const MODULO_TOAST_LABEL = { 1:'entender cómo funciona un crédito', 2:'simular tu crédito', 3:'buscar propiedades en tu rango', 4:'contactar a un asesor inmobiliario', 5:'contactar a un asesor hipotecario' };
-// Un solo lugar con la etiqueta de cada paso del checklist que NO es uno de los 5
-// módulos con teoría + mini-check (esos usan notificarModuloCompletado / la pantalla
-// de logro). Todo paso completado por su cuenta, la primera vez, deja un aviso — sin
-// excepción, para que la bandeja sea un registro consistente de todo el recorrido.
+const MODULO_TOAST_LABEL = { 1:'entender cómo funciona un crédito', 2:'simular tu crédito', 3:'buscar propiedades en tu rango' };
+// Un solo lugar con la etiqueta de cada paso del checklist que NO es uno de los
+// módulos con logro por acción real (esos usan notificarModuloCompletado / la
+// pantalla de logro). contacted_prop/contacted_hipo son un paso más acá: se marcan
+// por el contacto real por WhatsApp, sin relación con el mini-check de MODULES
+// (que solo trackea si se entendió la teoría). Todo paso completado por su cuenta,
+// la primera vez, deja un aviso — sin excepción, para que la bandeja sea un
+// registro consistente de todo el recorrido.
 const PASO_ACADEMIA_LABEL = {
   registered: 'crear tu cuenta',
   profile_done: 'completar tu perfil',
   shared_sim: 'compartir tu simulación',
   added_to_sim: 'sumar una propiedad a tu simulación',
   faved: 'guardar un favorito',
+  contacted_prop: 'contactar a un asesor inmobiliario',
+  contacted_hipo: 'contactar a un asesor hipotecario',
 };
 
 // Marca un paso del checklist y avisa por notificación si recién se completó ahora
@@ -5526,6 +5533,12 @@ function completeModule2() {
   });
   saveSimHistory();
   simRefPropId = null;
+  // sim_done es el paso del checklist ("Hacé tu primera simulación") — se marca acá,
+  // en la acción real, independiente de moduleDone[2] (que solo trackea si se
+  // entendió la teoría vía el mini-check). Si dependiera de moduleDone[2], Academia
+  // mostraría el paso como hecho con solo haber leído la teoría, sin simulación real.
+  // (El aviso de "módulo completado" ya lo maneja notificarModuloCompletado más abajo.)
+  markStep('sim_done');
   // Confirmar una simulación completa el Módulo 2. Si el usuario está conscientemente
   // recorriendo Academia BBVA y este era justo el paso que esperaba (proximoModuloConsciente
   // === 2), la pantalla de logro corresponde. Si no —simuló por su cuenta, o venía
