@@ -1093,7 +1093,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="drawer-item" onclick="requireAuth(()=>{renderMensajes();goScreen('screen-mensajes')})"><i class="ti ti-message"></i> Mensajes</button>
       <button class="drawer-item" data-screen="screen-notificaciones" onclick="closeDrawer();goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="drawer-item" onclick="closeDrawer();renderAcademia();goScreen('screen-academia')"><i class="ti ti-school"></i> Academia BBVA</button>
-      <button class="drawer-item" onclick="closeDrawer();renderOpps();goScreen('screen-oportunidades')"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="drawer-item" onclick="closeDrawer();goScreen('screen-faq')"><i class="ti ti-help-circle"></i> Ayuda</button>
       <button class="drawer-item" onclick="closeDrawer();renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
     </div>
     <div class="drawer-section" style="border-top:0.5px solid var(--border)">
@@ -1124,6 +1124,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-faq" onclick="goScreen('screen-faq')"><i class="ti ti-help-circle"></i> Ayuda y preguntas frecuentes</button>
       <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
@@ -1166,6 +1167,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-faq" onclick="goScreen('screen-faq')"><i class="ti ti-help-circle"></i> Ayuda y preguntas frecuentes</button>
       <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
@@ -1194,6 +1196,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-faq" onclick="goScreen('screen-faq')"><i class="ti ti-help-circle"></i> Ayuda y preguntas frecuentes</button>
       <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
@@ -1220,6 +1223,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-faq" onclick="goScreen('screen-faq')"><i class="ti ti-help-circle"></i> Ayuda y preguntas frecuentes</button>
       <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
@@ -1248,6 +1252,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-faq" onclick="goScreen('screen-faq')"><i class="ti ti-help-circle"></i> Ayuda y preguntas frecuentes</button>
       <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
@@ -1312,6 +1317,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-faq" onclick="goScreen('screen-faq')"><i class="ti ti-help-circle"></i> Ayuda y preguntas frecuentes</button>
       <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
@@ -1340,6 +1346,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-faq" onclick="goScreen('screen-faq')"><i class="ti ti-help-circle"></i> Ayuda y preguntas frecuentes</button>
       <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
@@ -1370,6 +1377,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-faq" onclick="goScreen('screen-faq')"><i class="ti ti-help-circle"></i> Ayuda y preguntas frecuentes</button>
       <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
@@ -1652,7 +1660,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <button class="dt-nav-btn" id="dtnav-props" onclick="toggleMega()">Propiedades <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
       </div>
       <button class="dt-nav-btn" id="dtnav-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))">Simula tu Crédito</button>
-      <button class="dt-nav-btn" id="dtnav-opps" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})">Oportunidades</button>
+      <button class="dt-nav-btn" id="dtnav-ayuda" onclick="goScreen('screen-faq')">Ayuda</button>
     </nav>
     <!-- desktop user actions: hidden on mobile -->
     <div class="dt-user" id="dt-user-anon">
