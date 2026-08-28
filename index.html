@@ -1747,6 +1747,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <button class="home-tab" onclick="setHomeZonaTipo('Oficina', this)">Oficinas</button>
         </div>
         <div class="home-zonas-grid" id="home-zonas-grid"><!-- renderHomeZonas() --></div>
+        <button class="home-faq-viewall" onclick="verTodasLasZonas()">Ver todas las zonas <i class="ti ti-chevron-right"></i></button>
       </div>
     </div>
 
@@ -3450,6 +3451,16 @@ function setHomeZonaTipo(val, btn) {
 }
 function goToZona(zona) {
   setSearchZone(zona);
+  chipFilters.tipo = homeZonaTipo;
+  navTo('screen-props', 'nav-props');
+}
+// "Ver todas las zonas" del módulo Home: mismo destino que tocar una zona puntual
+// (Propiedades, respetando el tipo elegido en las tabs de arriba), pero sin acotar a
+// ninguna zona en particular — se limpia la búsqueda en vez de setearla.
+function verTodasLasZonas() {
+  searchQuery = '';
+  const inp = document.getElementById('props-search');
+  if (inp) inp.value = '';
   chipFilters.tipo = homeZonaTipo;
   navTo('screen-props', 'nav-props');
 }
