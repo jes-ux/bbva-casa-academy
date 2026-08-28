@@ -748,6 +748,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   #home-tipo-band .home-band-inner,
   #home-carousel-zonas-band .home-band-inner,
   #home-zona-band .home-band-inner,
+  #home-carousel-recientes-band .home-band-inner,
   #home-precios-band .home-band-inner,
   #home-carousel-ultimo-band .home-band-inner,
   #home-faq-band .home-band-inner,
@@ -1799,6 +1800,21 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         </div>
         <div class="home-zonas-grid" id="home-zonas-grid"><!-- renderHomeZonas() --></div>
         <button class="home-faq-viewall" onclick="verTodasLasZonas()">Ver todas las zonas <i class="ti ti-chevron-right"></i></button>
+      </div>
+    </div>
+
+    <!-- Recién publicadas (carrusel de fotos, toda la ciudad) -->
+    <div class="home-band home-band-white" id="home-carousel-recientes-band">
+      <div class="home-band-inner">
+        <div class="carousel-head">
+          <div class="detail-section-title home-section-title">Recién publicadas</div>
+          <button class="carousel-viewmore" onclick="verMasRecientes()">Ver más <i class="ti ti-arrow-right"></i></button>
+        </div>
+        <div class="carousel-wrap">
+          <div class="carousel-scroll" id="carousel-recientes"><!-- renderCarouselRecientes() --></div>
+          <button class="carousel-arrow prev" onclick="scrollCarousel('carousel-recientes',-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
+          <button class="carousel-arrow next" onclick="scrollCarousel('carousel-recientes',1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+        </div>
       </div>
     </div>
 
@@ -3598,6 +3614,29 @@ function renderCarouselUltimo() {
     </button>`).join('');
 }
 
+// "Recién publicadas": las propiedades más nuevas de TODA la ciudad (no de una sola
+// zona, a diferencia de "Lo último en X") — complementa al resto de los carruseles
+// mostrando variedad de zonas en vez de profundizar en una sola.
+function renderCarouselRecientes() {
+  const el = document.getElementById('carousel-recientes');
+  if (!el) return;
+  const props = PROPS.filter(propDisponible).sort((a, b) => a.diasPublicado - b.diasPublicado).slice(0, 10);
+  el.innerHTML = props.map(p => `
+    <button class="carousel-card" style="background-image:url('${propImgSrc(p.id)}')" onclick="openPropDetail(${p.id})">
+      <div class="carousel-card-overlay">
+        <div class="carousel-card-price">${fmt(p.price)}</div>
+        <div class="carousel-card-sub">${p.tipo} · ${p.rec} rec · ${p.zona}</div>
+      </div>
+    </button>`).join('');
+}
+function verMasRecientes() {
+  searchQuery = '';
+  const inp = document.getElementById('props-search');
+  if (inp) inp.value = '';
+  chipFilters.tipo = '';
+  navTo('screen-props', 'nav-props');
+}
+
 // ── Precios por zona (índice de precios) ──
 // Todo el catálogo está en Ciudad de México y solo existe UN campo de ubicación por
 // propiedad (`zona`, la colonia) — no hay una agrupación real de "zonas" más amplias
@@ -3816,6 +3855,7 @@ function updatePzSegmentResult() {
 // ES la pantalla completa y tocar una pregunta empuja screen-faq-detail (con su
 // flecha de volver de siempre) en vez de expandir nada in-place.
 const FAQ_DATA = [
+  { id:'que_es', q:'¿Qué es BBVA Inmobiliaria?', a:'BBVA Inmobiliaria es la plataforma de BBVA México que te acompaña de punta a punta hacia tu próxima propiedad: aprendé cómo funciona un crédito hipotecario en Academia BBVA, simulá tu capacidad de pago, explorá propiedades verificadas en todo el país y conectá con asesores inmobiliarios e hipotecarios reales — todo en un mismo lugar.' },
   { id:'cat', q:'¿Qué es el CAT y por qué es importante?', a:'El CAT (Costo Anual Total) resume en un solo número cuánto te cuesta realmente un crédito al año, incluyendo comisiones y seguros. Compará créditos por CAT, no solo por tasa: dos créditos con la misma tasa pueden salir muy distinto una vez que sumás todos los cargos.' },
   { id:'enganche', q:'¿Cuánto enganche necesito para comprar una propiedad?', a:'Generalmente entre el 10% y el 20% del valor de la propiedad. A mayor enganche, menor el monto que financiás y menos intereses pagás en total durante el crédito.' },
   { id:'tasas', q:'¿Qué diferencia hay entre tasa fija, variable y creciente?', a:'La tasa fija mantiene tu cuota igual durante todo el crédito. La variable empieza más baja pero puede subir con la inflación. La creciente arranca baja y sube gradualmente — ideal si esperás que tu ingreso crezca con el tiempo.' },
@@ -6658,6 +6698,7 @@ initHeaderScroll(document.getElementById('screen-0'));
 renderHomeTipos();
 renderHomeZonas();
 renderCarouselZonas();
+renderCarouselRecientes();
 renderHomePrecios();
 renderCarouselUltimo();
 renderHomeFaq();
