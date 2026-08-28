@@ -65,7 +65,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .route-connector{flex:1;max-width:28px;height:0.5px;background:var(--border);margin-top:15px}
 .route-meta{display:flex;gap:16px;border-top:0.5px solid var(--border);padding-top:12px}
 .route-meta-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-muted)}
-.cta-area{padding:12px 20px 16px;position:sticky;bottom:56px;z-index:10;background:var(--surface-2);border-top:0.5px solid var(--border)}
+.cta-area{padding:12px 20px 16px;position:sticky;bottom:56px;z-index:10;background:var(--surface-2);border-top:0.5px solid var(--border);display:flex;flex-direction:column;gap:10px}
+/* El primario y el secundario de una misma pantalla (p.ej. los tutoriales y logros de
+   Academia) deben ocupar exactamente el mismo ancho y alto — .btn-outline trae, de otras
+   reglas de la hoja de estilos pensadas para otros botones (chips, filtros), una altura
+   fija y una tipografía más chica; acá se pisan explícitamente para que ambos botones
+   den el mismo peso visual. */
+.cta-area .btn-outline{height:auto;padding:15px;font-size:16px;font-weight:600;line-height:normal;border-radius:var(--radius);margin-top:0}
+/* .btn-primary no trae borde propio — se le agrega uno transparente del mismo grosor
+   que el de .btn-outline para que ambos midan exactamente lo mismo de alto. */
+.cta-area .btn-primary{border:0.5px solid transparent}
 .home-hero{padding:48px 24px 40px;background:var(--surface-2);border-bottom:0.5px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;gap:28px}
 .home-hero-title{font-size:32px;font-weight:700;line-height:1.15;color:var(--text-primary);text-align:center}
 .home-hero-title em{font-style:italic}
@@ -862,8 +871,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     position:static;border-top:none;background:none;
     padding:0 0 56px;margin-top:24px;display:flex;flex-direction:column;align-items:center;gap:12px;
   }
-  .cta-area .btn-primary{width:auto;min-width:300px;padding:18px 48px;font-size:16px;box-shadow:0 6px 20px rgba(0,0,0,.16)}
-  .cta-area .btn-outline{width:auto;min-width:300px;padding:0 48px}
+  /* width:100% + max-width fijo (en vez de min-width con ancho automático) para que el
+     primario y el secundario midan siempre lo mismo sin importar cuánto más largo sea
+     el texto de uno respecto al otro (el secundario, "Seguir con la teoría, sin...",
+     siempre es más largo que el del primario). */
+  .cta-area .btn-primary{width:100%;max-width:420px;padding:18px 48px;font-size:16px;box-shadow:0 6px 20px rgba(0,0,0,.16);border:0.5px solid transparent}
+  .cta-area .btn-outline{width:100%;max-width:420px;padding:18px 48px;font-size:16px;height:auto;font-weight:600;line-height:normal;border-radius:var(--radius)}
 
   /* ── DRAWER as sidebar overlay still works ── */
   #drawer{width:320px}
@@ -1805,15 +1818,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <div class="achievement-icon" id="ach-icon"></div>
         <h2 id="ach-title"></h2>
         <p class="achievement-body" id="ach-body"></p>
+        <div class="module-progress-pills" id="ach-pills"></div>
+        <button id="ach-repasar" onclick="" style="background:none;border:none;color:var(--text-muted);font-size:13px;text-decoration:underline;cursor:pointer;font-family:var(--font-sans);padding:4px"></button>
         <div class="achievement-bar-wrap">
           <div class="achievement-bar-meta">
             <span>Tu progreso</span><span id="ach-counter"></span>
           </div>
           <div class="achievement-bar"><div class="achievement-bar-fill" id="ach-bar" style="width:0%"></div></div>
         </div>
-        <div class="module-progress-pills" id="ach-pills"></div>
         <div class="transition-note" id="ach-note"></div>
-        <button id="ach-repasar" onclick="" style="margin-top:14px;background:none;border:none;color:var(--text-muted);font-size:13px;text-decoration:underline;cursor:pointer;font-family:var(--font-sans);padding:4px"></button>
       </div>
     </div>
     <div class="cta-area">
@@ -5320,7 +5333,7 @@ const ACH_DATA = {
     icon: '📊',
     title: '¡Ya sabés cómo simular tu crédito!',
     body: 'Entendiste qué datos hacen falta —tu ingreso, tu enganche y el plazo— y cómo se calcula tu capacidad de pago. Cuando quieras, probalo con tus números reales.',
-    note: 'Podés simular las veces que quieras para ajustar los números.',
+    note: '',
     pct: 40, counter: '2 de 5 módulos',
     pills: ['done','done','pending','pending','pending'],
     ctaLabel: 'Simular ahora →', ctaFn: () => requireAuth(() => navTo('screen-sim','nav-sim')),
@@ -5330,7 +5343,7 @@ const ACH_DATA = {
     icon: '🏠',
     title: '¡Ya sabés explorar el catálogo!',
     body: 'Entendiste cómo usar los filtros, guardar tus favoritas y ver el mapa para encontrar justo lo que buscás sin perder tiempo.',
-    note: 'Cuando quieras dar el siguiente paso, un asesor BBVA puede acompañarte.',
+    note: '',
     pct: 60, counter: '3 de 5 módulos',
     pills: ['done','done','done','pending','pending'],
     // openPropDetail() sobrescribe ctaFn con la propiedad puntual que completó el
@@ -5343,7 +5356,7 @@ const ACH_DATA = {
     icon: '🤝',
     title: '¡Ya sabés cómo contactar a un asesor inmobiliario!',
     body: 'Entendiste que podés escribirle desde la ficha de cualquier propiedad, sin compromiso, para resolver dudas puntuales.',
-    note: 'Podés contactar a más de un asesor si querés comparar propiedades distintas.',
+    note: '',
     pct: 80, counter: '4 de 5 módulos',
     pills: ['done','done','done','done','pending'],
     ctaLabel: 'Ver propiedades →', ctaFn: () => navTo('screen-props','nav-props'),
