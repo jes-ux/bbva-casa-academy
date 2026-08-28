@@ -93,6 +93,23 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .home-zona-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:0.5px solid var(--border);background:none;border-left:none;border-right:none;border-top:none;text-align:left;width:100%;cursor:pointer;font-family:var(--font-sans)}
 .home-zona-name{font-size:14px;color:var(--text-primary);font-weight:500}
 .home-zona-count{font-size:12px;color:var(--text-muted);flex-shrink:0}
+/* Carruseles de fotos ("Zonas destacadas", "Lo último en X") — mismo mecanismo que un
+   carrusel de portal inmobiliario (scroll horizontal con snap + flechas en desktop,
+   swipe nativo en mobile), pero con la estética clara/sans-serif del resto de la app en
+   vez del look oscuro de la referencia. */
+.carousel-head{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:14px}
+.carousel-head .home-section-title{text-align:left;font-size:20px;margin-bottom:0}
+.carousel-viewmore{background:none;border:none;font-size:13px;font-weight:600;color:var(--text-primary);cursor:pointer;display:flex;align-items:center;gap:4px;font-family:var(--font-sans);white-space:nowrap;flex-shrink:0}
+.carousel-viewmore i{font-size:13px}
+.carousel-wrap{position:relative;width:100%}
+.carousel-scroll{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:4px;scrollbar-width:none;-ms-overflow-style:none}
+.carousel-scroll::-webkit-scrollbar{display:none}
+.carousel-card{flex:0 0 auto;width:200px;height:150px;border-radius:14px;border:none;padding:0;cursor:pointer;scroll-snap-align:start;position:relative;overflow:hidden;background-size:cover;background-position:center;font-family:var(--font-sans);box-shadow:var(--card-shadow)}
+.carousel-card-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;text-align:left;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.72) 100%)}
+.carousel-card-title{font-size:15px;font-weight:700;color:#fff;line-height:1.25}
+.carousel-card-price{font-size:15px;font-weight:700;color:#fff}
+.carousel-card-sub{font-size:11px;color:rgba(255,255,255,.88);margin-top:2px;line-height:1.4}
+.carousel-arrow{display:none}
 /* Módulo "Ayuda y preguntas frecuentes"
    Mobile: título centrado (.mobile-only más arriba) + lista simple, igual que el
    resto de las franjas de Inicio. Desktop: layout de 2 columnas — la intro editorial
@@ -712,6 +729,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .home-type-grid{grid-template-columns:repeat(4,1fr);gap:20px}
   .home-zonas-grid{grid-template-columns:repeat(3,1fr);gap:16px 32px}
   .home-zona-row{padding:13px 0}
+  .carousel-card{width:260px;height:190px}
+  .carousel-arrow{
+    display:flex;align-items:center;justify-content:center;position:absolute;top:50%;
+    transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:none;
+    background:var(--surface-2);box-shadow:0 4px 16px rgba(0,0,0,.18);cursor:pointer;
+    color:var(--text-primary);z-index:2;
+  }
+  .carousel-arrow.prev{left:-20px}
+  .carousel-arrow.next{right:-20px}
   .home-band-inner{padding:56px 40px;max-width:900px;width:100%;margin:0 auto}
   .home-band-inner.is-last{padding-bottom:40px}
   /* Momentos, Explora por tipo, Explora por zona y Ayuda comparten un ancho más generoso
@@ -720,8 +746,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
      de ancho entre sí */
   #home-moments-band .home-band-inner,
   #home-tipo-band .home-band-inner,
+  #home-carousel-zonas-band .home-band-inner,
   #home-zona-band .home-band-inner,
   #home-precios-band .home-band-inner,
+  #home-carousel-ultimo-band .home-band-inner,
   #home-faq-band .home-band-inner,
   #home-footer-band .home-band-inner{max-width:1240px}
 
@@ -1735,6 +1763,21 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
 
+    <!-- Zonas destacadas (carrusel de fotos) -->
+    <div class="home-band home-band-white" id="home-carousel-zonas-band">
+      <div class="home-band-inner">
+        <div class="carousel-head">
+          <div class="detail-section-title home-section-title">Zonas destacadas</div>
+          <button class="carousel-viewmore" onclick="verTodasLasZonas()">Ver más <i class="ti ti-arrow-right"></i></button>
+        </div>
+        <div class="carousel-wrap">
+          <div class="carousel-scroll" id="carousel-zonas"><!-- renderCarouselZonas() --></div>
+          <button class="carousel-arrow prev" onclick="scrollCarousel('carousel-zonas',-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
+          <button class="carousel-arrow next" onclick="scrollCarousel('carousel-zonas',1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+
     <!-- Explora por zona -->
     <div class="home-band home-band-gray" id="home-zona-band">
       <div class="home-band-inner">
@@ -1758,6 +1801,21 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <p class="bajada" style="margin-top:-8px;text-align:center">Precio de venta por m² en cada zona, según las propiedades publicadas.</p>
         <div class="home-zonas-grid" id="home-precios-grid" style="margin-top:8px"><!-- renderHomePrecios() --></div>
         <button class="home-faq-viewall" onclick="renderPreciosDirectorio();goScreen('screen-precios')">Ver todas las zonas <i class="ti ti-chevron-right"></i></button>
+      </div>
+    </div>
+
+    <!-- Lo último en [zona] (carrusel de fotos) -->
+    <div class="home-band home-band-gray" id="home-carousel-ultimo-band">
+      <div class="home-band-inner">
+        <div class="carousel-head">
+          <div class="detail-section-title home-section-title" id="carousel-ultimo-title">Lo último</div>
+          <button class="carousel-viewmore" id="carousel-ultimo-viewmore">Ver más <i class="ti ti-arrow-right"></i></button>
+        </div>
+        <div class="carousel-wrap">
+          <div class="carousel-scroll" id="carousel-ultimo"><!-- renderCarouselUltimo() --></div>
+          <button class="carousel-arrow prev" onclick="scrollCarousel('carousel-ultimo',-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
+          <button class="carousel-arrow next" onclick="scrollCarousel('carousel-ultimo',1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+        </div>
       </div>
     </div>
 
@@ -3463,6 +3521,69 @@ function verTodasLasZonas() {
   if (inp) inp.value = '';
   chipFilters.tipo = homeZonaTipo;
   navTo('screen-props', 'nav-props');
+}
+
+// ── Carruseles de fotos de Home ──
+// Mismo scroll horizontal para los dos: una flecha (desktop) hace scrollBy() de casi un
+// ancho completo del contenedor; en mobile no hay flechas, el swipe nativo alcanza.
+function scrollCarousel(id, dir) {
+  const el = document.getElementById(id);
+  if (el) el.scrollBy({ left: dir * el.clientWidth * 0.9, behavior: 'smooth' });
+}
+
+// "Zonas destacadas": las zonas con más propiedades activas, cada una con la foto de su
+// primera propiedad disponible — no hay fotografía real de "la zona" en sí, así que se
+// reusa la misma foto que ya ve el usuario en el catálogo para esa propiedad.
+function topZonasDestacadas(n) {
+  const counts = {}, repProp = {};
+  PROPS.filter(propDisponible).forEach(p => {
+    counts[p.zona] = (counts[p.zona] || 0) + 1;
+    if (!repProp[p.zona]) repProp[p.zona] = p;
+  });
+  return Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, n).map(z => ({
+    zona: z, count: counts[z], repProp: repProp[z],
+    tipos: [...new Set(PROPS.filter(p => p.zona === z && propDisponible(p)).map(p => p.tipo))],
+  }));
+}
+function renderCarouselZonas() {
+  const el = document.getElementById('carousel-zonas');
+  if (!el) return;
+  const zonas = topZonasDestacadas(8);
+  el.innerHTML = zonas.map(z => `
+    <button class="carousel-card" style="background-image:url('${propImgSrc(z.repProp.id)}')" onclick="goToZona('${z.zona}')">
+      <div class="carousel-card-overlay">
+        <div class="carousel-card-title">${z.zona}</div>
+        <div class="carousel-card-sub">${z.tipos.slice(0, 2).join(' · ')} · ${z.count} ${z.count === 1 ? 'propiedad' : 'propiedades'}</div>
+      </div>
+    </button>`).join('');
+}
+
+// "Lo último en X": la zona con la publicación más reciente (menor diasPublicado) de
+// todo el catálogo — no es una zona fija hardcodeada, se recalcula de los datos reales.
+function zonaMasReciente() {
+  const disponibles = PROPS.filter(propDisponible);
+  if (!disponibles.length) return null;
+  return disponibles.reduce((min, p) => (p.diasPublicado < min.diasPublicado ? p : min)).zona;
+}
+let carouselUltimoZona = null;
+function renderCarouselUltimo() {
+  const el = document.getElementById('carousel-ultimo');
+  if (!el) return;
+  const zona = zonaMasReciente();
+  const band = document.getElementById('home-carousel-ultimo-band');
+  if (!zona) { if (band) band.style.display = 'none'; return; }
+  if (band) band.style.display = '';
+  carouselUltimoZona = zona;
+  document.getElementById('carousel-ultimo-title').textContent = 'Lo último en ' + zona;
+  document.getElementById('carousel-ultimo-viewmore').onclick = () => goToZona(carouselUltimoZona);
+  const props = PROPS.filter(p => p.zona === zona && propDisponible(p)).sort((a, b) => a.diasPublicado - b.diasPublicado).slice(0, 8);
+  el.innerHTML = props.map(p => `
+    <button class="carousel-card" style="background-image:url('${propImgSrc(p.id)}')" onclick="openPropDetail(${p.id})">
+      <div class="carousel-card-overlay">
+        <div class="carousel-card-price">${fmt(p.price)}</div>
+        <div class="carousel-card-sub">${p.tipo} · ${p.rec} rec · ${p.zona}</div>
+      </div>
+    </button>`).join('');
 }
 
 // ── Precios por zona (índice de precios) ──
@@ -6524,7 +6645,9 @@ if (isLoggedIn) { renderPerfil(); }
 initHeaderScroll(document.getElementById('screen-0'));
 renderHomeTipos();
 renderHomeZonas();
+renderCarouselZonas();
 renderHomePrecios();
+renderCarouselUltimo();
 renderHomeFaq();
 </script>
 </body>
