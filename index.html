@@ -721,6 +721,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   #home-moments-band .home-band-inner,
   #home-tipo-band .home-band-inner,
   #home-zona-band .home-band-inner,
+  #home-precios-band .home-band-inner,
   #home-faq-band .home-band-inner{max-width:1240px}
 
   /* Ayuda y preguntas frecuentes: layout de 2 columnas en desktop — intro editorial
@@ -863,6 +864,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .dt-acct-item.active{color:var(--text-primary);font-weight:600}
   .dt-acct-danger:hover{color:#e05252}
   .dt-acct-wrap .content{flex:1;max-width:1100px;padding:32px 56px}
+  /* Mismo ancho que la página de producto (#screen-prop-detail .screen-scroll-inner):
+     el contenedor mide 1160px, pero el texto de lectura (título/resumen) y la tarjeta
+     de precio se mantienen en una columna angosta legible — igual que la descripción
+     de una ficha de propiedad no se estira a los 1160px completos, solo el layout
+     general lo hace — y las grillas (mercado, segmento) sí usan todo el ancho. */
+  #screen-precio-zona .content{max-width:1160px;margin:0 auto;width:100%}
+  .pz-hero-text{max-width:640px}
+  .pz-price-card{max-width:420px}
+  .pz-market-grid{grid-template-columns:repeat(4,1fr)}
   /* hide mobile title header inside account screens */
   .dt-acct-wrap ~ .dt-mobile-title,
   .dt-mobile-title.mobile-only{display:none!important}
@@ -1349,12 +1359,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   <!-- PRECIOS POR ZONA — detalle de una zona puntual -->
   <div id="screen-precio-zona" class="screen">
-    <div class="content" style="max-width:640px;margin:0 auto;width:100%;padding-top:20px">
-      <h2 id="pz-titulo" style="font-size:22px;font-weight:700;color:var(--text-primary);margin-bottom:6px"></h2>
-      <p id="pz-subtitulo" style="font-size:13px;color:var(--text-muted);margin-bottom:14px"></p>
-      <p id="pz-resumen" style="font-size:15px;color:var(--text-secondary);line-height:1.6;margin-bottom:6px"></p>
-      <div id="pz-fecha" style="font-size:12px;color:var(--text-muted);margin-bottom:18px"></div>
-      <button class="btn-primary" id="pz-ver-props-btn" style="width:auto;padding:13px 28px;margin-bottom:24px">Ver propiedades en esta zona</button>
+    <div class="content">
+      <div class="pz-hero-text">
+        <h2 id="pz-titulo" style="font-size:22px;font-weight:700;color:var(--text-primary);margin-bottom:6px"></h2>
+        <p id="pz-subtitulo" style="font-size:13px;color:var(--text-muted);margin-bottom:14px"></p>
+        <p id="pz-resumen" style="font-size:15px;color:var(--text-secondary);line-height:1.6;margin-bottom:6px"></p>
+        <div id="pz-fecha" style="font-size:12px;color:var(--text-muted);margin-bottom:18px"></div>
+        <button class="btn-primary" id="pz-ver-props-btn" style="width:auto;padding:13px 28px;margin-bottom:24px">Ver propiedades en esta zona</button>
+      </div>
 
       <div class="pz-price-card">
         <div class="pz-price-label">Precio por m² (mediana)</div>
