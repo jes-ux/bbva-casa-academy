@@ -2687,6 +2687,18 @@ function loadUserScopedData() {
     try { (JSON.parse(localStorage.getItem(waK)) || []).forEach(c => WA_CONTACTS.push(c)); } catch {}
   }
 
+  // Autoreparación: sim_done/contacted_prop/contacted_hipo son "la acción real ya
+  // existe" — si quedaron marcados true en una cuenta cuya evidencia real (una
+  // simulación guardada, un contacto por WhatsApp) ya no está (por ejemplo, localStorage
+  // que arrastra un bug ya corregido de una versión anterior), Academia mostraría el
+  // check tildado con la lista real vacía para siempre. Se reconcilia acá, cada vez que
+  // se carga la cuenta, contra los datos reales recién cargados arriba.
+  let stepsReparados = false;
+  if (STEPS_DONE.sim_done && SIM_HISTORY.length === 0) { delete STEPS_DONE.sim_done; stepsReparados = true; }
+  if (STEPS_DONE.contacted_prop && !WA_CONTACTS.some(c => c.tipo === 'inmobiliario')) { delete STEPS_DONE.contacted_prop; stepsReparados = true; }
+  if (STEPS_DONE.contacted_hipo && !WA_CONTACTS.some(c => c.tipo === 'hipotecario')) { delete STEPS_DONE.contacted_hipo; stepsReparados = true; }
+  if (stepsReparados) saveSteps();
+
   NOTIFICATIONS.length = 0;
   const nKey = notifKey();
   if (nKey) {
@@ -5009,7 +5021,8 @@ function renderAcademia() {
               ${!done?`<div style="font-size:11px;color:var(--text-muted);margin-top:2px">${st.sub}</div>`:''}
             </div>
             <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-              ${(done && st.achModule) ? `<button onclick="showAchievement(${st.achModule})" title="Ver constancia del logro" style="width:28px;height:28px;border-radius:6px;border:0.5px solid var(--border-strong);background:var(--surface-1);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted)"><i class="ti ti-award" style="font-size:14px"></i></button>` : ''}
+              ${(st.achModule && st.key !== 'edu_done' && moduleDone[st.achModule]) ? `<button onclick="goScreen(ACH_TUTORIAL_SCREEN[${st.achModule}])" title="Repasar la teoría" style="width:28px;height:28px;border-radius:6px;border:0.5px solid var(--border-strong);background:var(--surface-1);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted)"><i class="ti ti-book" style="font-size:14px"></i></button>` : ''}
+              ${(st.achModule && moduleDone[st.achModule]) ? `<button onclick="showAchievement(${st.achModule})" title="Ver constancia del logro" style="width:28px;height:28px;border-radius:6px;border:0.5px solid var(--border-strong);background:var(--surface-1);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted)"><i class="ti ti-award" style="font-size:14px"></i></button>` : ''}
               <button onclick="${done ? st.ctaDoneAction : st.ctaAction}" style="font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;border:0.5px solid var(--border-strong);background:${done?'var(--surface-1)':'var(--text-primary)'};color:${done?'var(--text-muted)':'var(--surface-2)'};cursor:pointer;white-space:nowrap;font-family:var(--font-sans)">${done ? st.ctaDone : st.cta}</button>
             </div>
           </div>`;
