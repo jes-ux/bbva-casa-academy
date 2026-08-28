@@ -1875,6 +1875,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
                 <button class="plazo-btn" onclick="selectPlazo(this,25)">25 años</button>
               </div>
             </div>
+            <div class="sim-field">
+              <div class="toggle-row" style="padding:2px 0;border-bottom:none">
+                <div>
+                  <div class="toggle-label">Soy cliente BBVA México</div>
+                  <div class="toggle-sub">Accedé a una tasa preferencial en tu simulación</div>
+                </div>
+                <div class="toggle" id="toggle-cliente-bbva" onclick="toggleClienteBBVA(this)"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -2589,7 +2598,11 @@ let currentView = 'list';
 let leafletMap = null;
 let currentPropId = null;
 
-const TASA_ANUAL = 0.105;
+// Tasa pública vs. tasa preferencial para clientes BBVA México (1 punto menos) — el
+// toggle "Soy cliente BBVA México" del simulador alterna entre las dos (ver simular()).
+const TASA_ANUAL_PUBLICA = 0.105;
+const TASA_ANUAL_CLIENTE_BBVA = 0.095;
+let esClienteBBVA = false;
 
 function navTo(screenId, tabId) {
   navHistory = []; // bottom nav = nueva raíz, limpia el historial
@@ -2915,6 +2928,7 @@ function renderSims() {
       <div style="padding:10px 16px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:0.5px solid var(--border)">
         <span style="font-size:11px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--text-secondary)">Ingreso ${fmt(s.ingreso)}</span>
         <span style="font-size:11px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--text-secondary)">Enganche ${fmt(s.enganche)}</span>
+        ${s.clienteBBVA ? `<span style="font-size:11px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--text-secondary)"><i class="ti ti-building-bank" style="font-size:11px"></i> Cliente BBVA · tasa preferencial</span>` : ''}
       </div>
       <div style="padding:12px 16px">
         ${refPropHTML}
@@ -5289,6 +5303,12 @@ function selectPlazo(btn, p) {
   simular();
 }
 
+function toggleClienteBBVA(el) {
+  esClienteBBVA = !esClienteBBVA;
+  el.classList.toggle('on', esClienteBBVA);
+  simular();
+}
+
 function fmt(v) { return '$' + Math.round(v).toLocaleString('es-MX'); }
 
 function simular() {
@@ -5299,7 +5319,8 @@ function simular() {
   if (!ingreso || !enganche) { ra.style.display = 'none'; if(ph) ph.style.display = ''; return; }
   if(ph) ph.style.display = 'none';
 
-  const r = TASA_ANUAL / 12;
+  const tasaAplicada = esClienteBBVA ? TASA_ANUAL_CLIENTE_BBVA : TASA_ANUAL_PUBLICA;
+  const r = tasaAplicada / 12;
   const n = selectedPlazo * 12;
   const maxCuota = ingreso * 0.30;
   const credito = maxCuota * (1 - Math.pow(1 + r, -n)) / r;
@@ -5307,7 +5328,7 @@ function simular() {
   const cuotaReal = credito * r / (1 - Math.pow(1 + r, -n));
   const pct = Math.round(cuotaReal / ingreso * 100);
 
-  simData = { ingreso, enganche, plazo: selectedPlazo, propMax: Math.round(propMax), cuotaReal: Math.round(cuotaReal), pct };
+  simData = { ingreso, enganche, plazo: selectedPlazo, propMax: Math.round(propMax), cuotaReal: Math.round(cuotaReal), pct, clienteBBVA: esClienteBBVA, tasaAnual: tasaAplicada };
 
   document.getElementById('res-prop').textContent = fmt(propMax);
   document.getElementById('res-sub').innerHTML = 'Tu cuota mensual estimada sería de <strong>' + fmt(cuotaReal) + '</strong>';
@@ -5333,8 +5354,9 @@ function simular() {
   });
 
   const perfilEl = document.getElementById('perfil-resumen');
+  const tasaTexto = `tasa ${(tasaAplicada * 100).toFixed(1)}% anual${esClienteBBVA ? ' (preferencial cliente BBVA)' : ' (pública)'}`;
   document.getElementById('perfil-texto').textContent =
-    `${fmt(ingreso)} de ingreso · ${fmt(enganche)} de enganche · ${selectedPlazo} años · hasta ${fmt(propMax)}`;
+    `${fmt(ingreso)} de ingreso · ${fmt(enganche)} de enganche · ${selectedPlazo} años · hasta ${fmt(propMax)} · ${tasaTexto}`;
   perfilEl.style.display = 'block';
 
   document.getElementById('pill-monto').textContent = 'Hasta ' + fmt(propMax);
@@ -5602,6 +5624,7 @@ function completeModule2() {
     id:'S'+Date.now(), fecha:today,
     ingreso:simData.ingreso, enganche:simData.enganche, plazo:simData.plazo,
     propMax:simData.propMax, cuota:simData.cuotaReal,
+    clienteBBVA:simData.clienteBBVA, tasaAnual:simData.tasaAnual,
     props: simRefPropId ? [simRefPropId] : [], refProp:simRefPropId || null
   });
   saveSimHistory();
