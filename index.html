@@ -389,6 +389,31 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .list-card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
 .list-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:0.5px solid var(--border);-webkit-tap-highlight-color:transparent;cursor:pointer}
 .list-item:last-child{border-bottom:none}
+
+/* ── Precios por zona (screen-precio-zona) ── */
+.pz-price-card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:14px;padding:20px;margin-bottom:24px}
+.pz-price-label{font-size:12px;color:var(--text-muted)}
+.pz-price-value{font-size:32px;font-weight:700;color:var(--text-primary);margin-top:4px}
+.pz-price-compare{font-size:12px;color:var(--text-secondary);margin-top:6px;line-height:1.5}
+.pz-section{margin-bottom:28px}
+.pz-section-title{font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.pz-tag-referencial{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);background:var(--surface-1);border:0.5px solid var(--border);border-radius:20px;padding:2px 8px}
+.pz-disclaimer{font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.5}
+.pz-market-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pz-market-item{background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px}
+.pz-market-label{font-size:11px;color:var(--text-muted)}
+.pz-market-value{font-size:16px;font-weight:600;color:var(--text-primary);margin-top:2px}
+.pz-market-sub{font-size:11px;color:var(--text-muted);margin-top:1px}
+.pz-segment-controls{display:flex;flex-direction:column;gap:14px;margin-bottom:16px}
+.pz-segment-group-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.pz-segment-chips{display:flex;flex-wrap:wrap;gap:6px}
+.pz-chip{font-size:12px;font-weight:500;padding:6px 12px;border-radius:20px;border:0.5px solid var(--border-strong);background:var(--surface-2);color:var(--text-secondary);cursor:pointer;font-family:var(--font-sans)}
+.pz-chip.active{background:var(--text-primary);color:var(--surface-2);border-color:var(--text-primary)}
+.pz-segment-result{display:flex;gap:10px;flex-wrap:wrap}
+.pz-segment-stat{flex:1;min-width:110px;background:var(--surface-1);border-radius:10px;padding:12px 14px}
+.pz-segment-stat-label{font-size:11px;color:var(--text-muted)}
+.pz-segment-stat-value{font-size:16px;font-weight:600;color:var(--text-primary);margin-top:2px}
+.pz-segment-empty{font-size:13px;color:var(--text-muted);padding:8px 0}
 .list-item:active{background:var(--surface-1)}
 .list-item-icon{width:36px;height:36px;border-radius:var(--radius);background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;color:var(--text-secondary)}
 .list-item-body{flex:1;min-width:0}
@@ -1030,6 +1055,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="drawer-item" data-screen="screen-notificaciones" onclick="closeDrawer();goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="drawer-item" onclick="closeDrawer();renderAcademia();goScreen('screen-academia')"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="drawer-item" onclick="closeDrawer();renderOpps();goScreen('screen-oportunidades')"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="drawer-item" onclick="closeDrawer();renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
     </div>
     <div class="drawer-section" style="border-top:0.5px solid var(--border)">
       <button class="drawer-item" onclick="closeDrawer();navTo('screen-sim','nav-sim')"><i class="ti ti-calculator"></i> Simula tu crédito</button>
@@ -1059,6 +1085,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
@@ -1100,6 +1127,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
@@ -1127,6 +1155,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
@@ -1152,6 +1181,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
@@ -1179,6 +1209,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
@@ -1242,6 +1273,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
@@ -1269,6 +1301,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
       <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
       <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
       <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
       <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
@@ -1281,6 +1314,75 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div id="opp-grid"></div>
     </div>
     </div><!-- /dt-acct-wrap -->
+  </div>
+
+  <!-- PRECIOS POR ZONA — directorio (Ciudad de México y sus zonas) -->
+  <div id="screen-precios" class="screen">
+    <div class="progress-bar-container mobile-only" style="border-bottom:none;padding-bottom:0">
+      <div style="font-size:18px;font-weight:600;color:var(--text-primary);padding:4px 0">Precios por zona</div>
+    </div>
+    <div class="dt-acct-wrap">
+    <aside class="dt-acct-sidebar">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:0 20px 16px">Cuenta personal</div>
+      <button class="dt-acct-item" data-screen="screen-perfil" onclick="requireAuth(()=>goScreen('screen-perfil'))"><i class="ti ti-user"></i> Perfil</button>
+      <button class="dt-acct-item" data-screen="screen-favoritos" onclick="requireAuth(()=>{renderFavs();goScreen('screen-favoritos')})"><i class="ti ti-heart"></i> Favoritos</button>
+      <button class="dt-acct-item" data-screen="screen-simulaciones" onclick="renderSims();goScreen('screen-simulaciones')"><i class="ti ti-file-text"></i> Simulaciones</button>
+      <button class="dt-acct-item" data-screen="screen-mensajes" onclick="requireAuth(()=>{renderMensajes();goScreen('screen-mensajes')})"><i class="ti ti-message"></i> Mensajes</button>
+      <button class="dt-acct-item" data-screen="screen-notificaciones" onclick="goScreen('screen-notificaciones')"><i class="ti ti-bell"></i> Notificaciones</button>
+      <button class="dt-acct-item" data-screen="screen-academia" onclick="requireAuth(()=>{renderAcademia();goScreen('screen-academia')})"><i class="ti ti-school"></i> Academia BBVA</button>
+      <button class="dt-acct-item" data-screen="screen-oportunidades" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})"><i class="ti ti-sparkles"></i> Oportunidades</button>
+      <button class="dt-acct-item" data-screen="screen-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
+      <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
+      <button class="dt-acct-item" data-screen="screen-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simula tu crédito</button>
+      <button class="dt-acct-item" data-screen="screen-configuracion" onclick="goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
+      <div style="border-top:0.5px solid var(--border);margin:8px 0"></div>
+      <button class="dt-acct-item dt-acct-danger" onclick="doLogout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
+    </aside>
+    <div class="content">
+      <h2 style="font-size:22px;font-weight:700;color:var(--text-primary);margin-bottom:8px">Precios por zona</h2>
+      <p style="font-size:14px;color:var(--text-secondary);line-height:1.6">Precio de venta por m² en cada zona de Ciudad de México, según las propiedades publicadas en BBVA Inmobiliaria.</p>
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 4px">Ciudad de México</div>
+      <div id="precios-lista"></div>
+    </div>
+    </div><!-- /dt-acct-wrap -->
+  </div>
+
+  <!-- PRECIOS POR ZONA — detalle de una zona puntual -->
+  <div id="screen-precio-zona" class="screen">
+    <div class="content" style="max-width:640px;margin:0 auto;width:100%;padding-top:20px">
+      <h2 id="pz-titulo" style="font-size:22px;font-weight:700;color:var(--text-primary);margin-bottom:6px"></h2>
+      <p id="pz-subtitulo" style="font-size:13px;color:var(--text-muted);margin-bottom:14px"></p>
+      <p id="pz-resumen" style="font-size:15px;color:var(--text-secondary);line-height:1.6;margin-bottom:6px"></p>
+      <div id="pz-fecha" style="font-size:12px;color:var(--text-muted);margin-bottom:18px"></div>
+      <button class="btn-primary" id="pz-ver-props-btn" style="width:auto;padding:13px 28px;margin-bottom:24px">Ver propiedades en esta zona</button>
+
+      <div class="pz-price-card">
+        <div class="pz-price-label">Precio por m² (mediana)</div>
+        <div class="pz-price-value" id="pz-preciom2">$0/m²</div>
+        <div class="pz-price-compare" id="pz-comparacion"></div>
+      </div>
+
+      <div class="pz-section">
+        <div class="pz-section-title">Evolución de precios <span class="pz-tag-referencial">referencial</span></div>
+        <div id="pz-chart"></div>
+        <div class="pz-disclaimer">Estimación ilustrativa a modo de ejemplo — no refleja un histórico de precios real.</div>
+      </div>
+
+      <div class="pz-section">
+        <div class="pz-section-title">Datos de mercado</div>
+        <div class="pz-market-grid" id="pz-market-grid"></div>
+      </div>
+
+      <div class="pz-section">
+        <div class="pz-section-title">Explorá precios por segmento</div>
+        <div class="pz-segment-controls" id="pz-segment-controls"></div>
+        <div class="pz-segment-result" id="pz-segment-result"></div>
+      </div>
+
+      <div class="pz-section" style="text-align:center;padding-bottom:40px">
+        <button class="btn-outline" style="width:auto;padding:12px 32px" onclick="renderPreciosDirectorio();goScreen('screen-precios')">Ver otros lugares</button>
+      </div>
+    </div>
   </div>
 
   <!-- ACADEMIA -->
@@ -1510,6 +1612,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
       <button class="dt-nav-btn" id="dtnav-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))">Simula tu Crédito</button>
       <button class="dt-nav-btn" id="dtnav-opps" onclick="requireAuth(()=>{renderOpps();goScreen('screen-oportunidades')})">Oportunidades</button>
+      <button class="dt-nav-btn" id="dtnav-precios" onclick="renderPreciosDirectorio();goScreen('screen-precios')">Precios por zona</button>
     </nav>
     <!-- desktop user actions: hidden on mobile -->
     <div class="dt-user" id="dt-user-anon">
@@ -1632,6 +1735,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <button class="home-tab" onclick="setHomeZonaTipo('Oficina', this)">Oficinas</button>
         </div>
         <div class="home-zonas-grid" id="home-zonas-grid"><!-- renderHomeZonas() --></div>
+      </div>
+    </div>
+
+    <!-- Precios por zona -->
+    <div class="home-band home-band-white" id="home-precios-band">
+      <div class="home-band-inner">
+        <div class="detail-section-title home-section-title">Precios por zona</div>
+        <p class="bajada" style="margin-top:-8px">Precio de venta por m² en cada zona, según las propiedades publicadas.</p>
+        <div class="home-zonas-grid" id="home-precios-grid" style="margin-top:8px"><!-- renderHomePrecios() --></div>
+        <button class="home-faq-viewall" onclick="renderPreciosDirectorio();goScreen('screen-precios')">Ver todas las zonas <i class="ti ti-chevron-right"></i></button>
       </div>
     </div>
 
@@ -3329,6 +3442,217 @@ function goToZona(zona) {
   navTo('screen-props', 'nav-props');
 }
 
+// ── Precios por zona (índice de precios) ──
+// Todo el catálogo está en Ciudad de México y solo existe UN campo de ubicación por
+// propiedad (`zona`, la colonia) — no hay una agrupación real de "zonas" más amplias
+// entre la ciudad y la colonia, así que la jerarquía real es de 2 niveles: Ciudad de
+// México (fija) > zona/colonia. Acá se usa esa misma `zona` que ya usa "Explora por
+// zona" y los filtros — no es un dato nuevo, solo una vista distinta (precio en vez de
+// cantidad de propiedades).
+function median(nums) {
+  if (!nums.length) return 0;
+  const s = [...nums].sort((a, b) => a - b);
+  const mid = Math.floor(s.length / 2);
+  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+}
+// Precio por m² (mediana, para no dejar que una sola propiedad muy cara distorsione el
+// número), precio promedio y cantidad — de cualquier conjunto de propiedades: una zona
+// completa o un segmento filtrado dentro de ella (tipo/recámaras/estacionamiento/
+// características).
+function statsDe(props) {
+  const disponibles = props.filter(propDisponible);
+  if (!disponibles.length) return { count: 0, pricePerM2: 0, avgPrice: 0 };
+  const pricePerM2 = median(disponibles.map(p => p.price / p.area));
+  const avgPrice = Math.round(disponibles.reduce((s, p) => s + p.price, 0) / disponibles.length);
+  return { count: disponibles.length, pricePerM2: Math.round(pricePerM2), avgPrice };
+}
+function propsDeZona(zona) { return PROPS.filter(p => p.zona === zona); }
+// Zonas con al menos una propiedad disponible, ordenadas de más cara a más barata por
+// precio/m² — mismo criterio que un índice de precios real (ordenar por precio, no
+// alfabético ni por cantidad).
+function listaZonasConPrecio() {
+  const zonas = [...new Set(PROPS.filter(propDisponible).map(p => p.zona))];
+  return zonas.map(z => ({ zona: z, ...statsDe(propsDeZona(z)) })).sort((a, b) => b.pricePerM2 - a.pricePerM2);
+}
+function fechaDatosPrecios() {
+  return new Date().toLocaleDateString('es-MX', { month: 'long', year: 'numeric' });
+}
+
+function renderHomePrecios() {
+  const grid = document.getElementById('home-precios-grid');
+  if (!grid) return;
+  const lista = listaZonasConPrecio().slice(0, 9);
+  grid.innerHTML = lista.map(z => `
+    <button class="home-zona-row" onclick="verPreciosZona('${z.zona}')">
+      <span class="home-zona-name">${z.zona}</span>
+      <span class="home-zona-count">${fmt(z.pricePerM2)}/m²</span>
+    </button>`).join('');
+}
+function renderPreciosDirectorio() {
+  const el = document.getElementById('precios-lista');
+  if (!el) return;
+  const lista = listaZonasConPrecio();
+  el.innerHTML = `<div class="list-card">${lista.map(z => `
+    <button class="home-zona-row" style="padding:13px 16px" onclick="verPreciosZona('${z.zona}')">
+      <span class="home-zona-name">${z.zona}</span>
+      <span class="home-zona-count">${fmt(z.pricePerM2)}/m²</span>
+    </button>`).join('')}</div>`;
+}
+let currentPrecioZona = null;
+function verPreciosZona(zona) {
+  currentPrecioZona = zona;
+  goScreen('screen-precio-zona');
+}
+
+// Serie de 12 meses "ilustrativa" para el gráfico de evolución — no hay datos
+// históricos reales en la app (los precios son de un solo corte), así que se genera
+// una curva suave, determinística por zona (misma zona = siempre la misma curva, no
+// cambia en cada repintado) que termina exactamente en el precio actual real. Se
+// aclara siempre en el copy ("referencial"/"ilustrativa") que no es un histórico real.
+function seedFromString(s) {
+  let h = 0;
+  for (const c of s) h = (h * 31 + c.charCodeAt(0)) & 0xffffffff;
+  return Math.abs(h);
+}
+function serieIlustrativa(base, seed) {
+  let v = base * 0.92;
+  const out = [];
+  for (let i = 0; i < 12; i++) {
+    const r = Math.sin(seed + i * 12.9898) * 43758.5453;
+    const delta = (r - Math.floor(r) - 0.5) * 0.05; // variación pseudoaleatoria ±2.5%
+    v = v * (1 + delta) + (base - v) * 0.18; // tira suave hacia el precio actual
+    out.push(Math.round(v));
+  }
+  out[out.length - 1] = base; // el último mes coincide con el precio actual real
+  return out;
+}
+function buildSparklineSVG(serie) {
+  const w = 600, h = 140, pad = 10;
+  const min = Math.min(...serie), max = Math.max(...serie);
+  const range = (max - min) || 1;
+  const stepX = (w - pad * 2) / (serie.length - 1);
+  const pts = serie.map((v, i) => [pad + i * stepX, pad + (1 - (v - min) / range) * (h - pad * 2)]);
+  const path = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  const area = path + ` L${pts[pts.length - 1][0].toFixed(1)},${h - pad} L${pts[0][0].toFixed(1)},${h - pad} Z`;
+  const last = pts[pts.length - 1];
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:140px;display:block">
+    <path d="${area}" fill="var(--surface-1)"></path>
+    <path d="${path}" fill="none" stroke="var(--text-primary)" stroke-width="2"></path>
+    <circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="4" fill="var(--text-primary)"></circle>
+  </svg>`;
+}
+
+// Características más relevantes para explorar precios por segmento — un subconjunto
+// curado de las mismas amenidades que ya usan los filtros de Propiedades (chipFilters/
+// AMENITIES en el sheet de Filtros), no un vocabulario nuevo.
+const PZ_CARACTERISTICAS = ['Alberca', 'Balcón', 'Terraza', 'Gimnasio', 'Seguridad privada', 'Jardín privado', 'Amueblado', 'Aire acondicionado'];
+let pzSegmento = { tipo: '', minRec: 0, estac: '', amenities: [] };
+
+function renderPrecioZona() {
+  const zona = currentPrecioZona;
+  const props = propsDeZona(zona);
+  const stats = statsDe(props);
+  const statsCiudad = statsDe(PROPS);
+  const ranking = listaZonasConPrecio();
+  const idx = ranking.findIndex(z => z.zona === zona);
+  const diffPct = statsCiudad.pricePerM2 ? Math.round((stats.pricePerM2 / statsCiudad.pricePerM2 - 1) * 100) : 0;
+
+  document.getElementById('pz-titulo').textContent = 'Precios en ' + zona;
+  document.getElementById('pz-subtitulo').textContent = 'Según las propiedades publicadas en BBVA Inmobiliaria, Ciudad de México.';
+  document.getElementById('pz-resumen').innerHTML = `En <strong>${zona}</strong>, el m² cuesta <strong>${fmt(stats.pricePerM2)}</strong> (mediana) y hay <strong>${stats.count}</strong> ${stats.count === 1 ? 'propiedad disponible' : 'propiedades disponibles'}.`;
+  document.getElementById('pz-fecha').textContent = `Datos a ${fechaDatosPrecios()} · ${stats.count} ${stats.count === 1 ? 'propiedad' : 'propiedades'}`;
+  document.getElementById('pz-ver-props-btn').onclick = () => { setSearchZone(zona); navTo('screen-props', 'nav-props'); };
+  document.getElementById('pz-preciom2').textContent = fmt(stats.pricePerM2) + '/m²';
+  document.getElementById('pz-comparacion').textContent = statsCiudad.pricePerM2
+    ? `${diffPct >= 0 ? '+' : ''}${diffPct}% ${diffPct >= 0 ? 'por encima' : 'por debajo'} del promedio de Ciudad de México (${fmt(statsCiudad.pricePerM2)}/m²) · N.º ${idx + 1} de ${ranking.length} zonas`
+    : '';
+
+  const tipos = [...new Set(props.filter(propDisponible).map(p => p.tipo))];
+  const filas = [
+    { label: 'Propiedades activas', value: String(stats.count) },
+    { label: 'Precio promedio', value: fmt(stats.avgPrice) },
+    { label: 'Precio por m²', value: fmt(stats.pricePerM2) + '/m²' },
+    ...tipos.map(t => {
+      const s = statsDe(props.filter(p => p.tipo === t));
+      return { label: t, value: fmt(s.pricePerM2) + '/m²', sub: s.count + (s.count === 1 ? ' propiedad' : ' propiedades') };
+    }),
+  ];
+  document.getElementById('pz-market-grid').innerHTML = filas.map(f => `
+    <div class="pz-market-item">
+      <div class="pz-market-label">${f.label}</div>
+      <div class="pz-market-value">${f.value}</div>
+      ${f.sub ? `<div class="pz-market-sub">${f.sub}</div>` : ''}
+    </div>`).join('');
+
+  document.getElementById('pz-chart').innerHTML = buildSparklineSVG(serieIlustrativa(stats.pricePerM2 || 1, seedFromString(zona)));
+
+  renderSegmentExplorer(zona);
+}
+
+function renderSegmentExplorer(zona) {
+  pzSegmento = { tipo: '', minRec: 0, estac: '', amenities: [] }; // reinicia al entrar a una zona nueva
+  const props = propsDeZona(zona);
+  const tipos = [...new Set(props.filter(propDisponible).map(p => p.tipo))];
+  document.getElementById('pz-segment-controls').innerHTML = `
+    <div>
+      <div class="pz-segment-group-label">Tipo</div>
+      <div class="pz-segment-chips" data-grp="tipo">
+        <button class="pz-chip active" onclick="setPzSegmento('tipo','',this)">Todos</button>
+        ${tipos.map(t => `<button class="pz-chip" onclick="setPzSegmento('tipo','${t}',this)">${t}</button>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="pz-segment-group-label">Recámaras</div>
+      <div class="pz-segment-chips" data-grp="minRec">
+        <button class="pz-chip active" onclick="setPzSegmento('minRec',0,this)">Cualquiera</button>
+        ${[1, 2, 3, 4].map(n => `<button class="pz-chip" onclick="setPzSegmento('minRec',${n},this)">${n}${n === 4 ? '+' : ''}</button>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="pz-segment-group-label">Estacionamiento</div>
+      <div class="pz-segment-chips" data-grp="estac">
+        <button class="pz-chip active" onclick="setPzSegmento('estac','',this)">Cualquiera</button>
+        ${[1, 2].map(n => `<button class="pz-chip" onclick="setPzSegmento('estac',${n},this)">${n}+</button>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="pz-segment-group-label">Característica</div>
+      <div class="pz-segment-chips" data-grp="amenity">
+        ${PZ_CARACTERISTICAS.map(a => `<button class="pz-chip" onclick="togglePzAmenity('${a}',this)">${a}</button>`).join('')}
+      </div>
+    </div>`;
+  updatePzSegmentResult();
+}
+function setPzSegmento(key, val, btn) {
+  pzSegmento[key] = val;
+  btn.parentElement.querySelectorAll('.pz-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updatePzSegmentResult();
+}
+function togglePzAmenity(a, btn) {
+  const i = pzSegmento.amenities.indexOf(a);
+  if (i === -1) { pzSegmento.amenities.push(a); btn.classList.add('active'); }
+  else { pzSegmento.amenities.splice(i, 1); btn.classList.remove('active'); }
+  updatePzSegmentResult();
+}
+function updatePzSegmentResult() {
+  let props = propsDeZona(currentPrecioZona).filter(propDisponible);
+  if (pzSegmento.tipo) props = props.filter(p => p.tipo === pzSegmento.tipo);
+  if (pzSegmento.minRec) props = props.filter(p => p.rec >= pzSegmento.minRec);
+  if (pzSegmento.estac) props = props.filter(p => p.estac >= pzSegmento.estac);
+  if (pzSegmento.amenities.length) props = props.filter(p => pzSegmento.amenities.every(a => p.amenities && p.amenities.includes(a)));
+  const s = statsDe(props);
+  const el = document.getElementById('pz-segment-result');
+  if (!s.count) {
+    el.innerHTML = `<div class="pz-segment-empty">Sin propiedades que coincidan con este segmento en ${currentPrecioZona}.</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="pz-segment-stat"><div class="pz-segment-stat-label">Precio por m²</div><div class="pz-segment-stat-value">${fmt(s.pricePerM2)}/m²</div></div>
+    <div class="pz-segment-stat"><div class="pz-segment-stat-label">Precio promedio</div><div class="pz-segment-stat-value">${fmt(s.avgPrice)}</div></div>
+    <div class="pz-segment-stat"><div class="pz-segment-stat-label">Propiedades</div><div class="pz-segment-stat-value">${s.count}</div></div>`;
+}
+
 // ── Módulo "Ayuda y preguntas frecuentes" ──
 // No es un acordeón: cada pregunta lleva a screen-faq, donde vive el detalle. En
 // desktop entra un menú lista fijo a la izquierda con TODAS las preguntas (como el
@@ -3685,6 +4009,7 @@ const SCREEN_LABELS = {
   'screen-notificaciones': 'Notificaciones',
   'screen-oportunidades': 'Oportunidades',
   'screen-perfil': 'Perfil',
+  'screen-precios': 'Precios por zona',
   'screen-props': 'Propiedades',
   'screen-registro': 'Crear cuenta',
   'screen-sim': 'Simula tu crédito',
@@ -3714,6 +4039,7 @@ function screenLabel(id) {
     const f = FAQ_DATA.find(x => x.id === currentFaqId);
     return f ? f.q : 'Pregunta';
   }
+  if (id === 'screen-precio-zona') return currentPrecioZona || 'Zona';
   // Los 5 "momentos" de Academia usan su nombre corto (Entiende/Simula/Explora/
   // Contacta/Decide, el mismo de los pills de logro) en vez del título largo de
   // SCREEN_LABELS — son varios eslabones seguidos en la misma cadena y necesitan leerse
@@ -3742,6 +4068,8 @@ const SCREEN_PARENT = {
   'screen-mensajes': 'screen-0',
   'screen-oportunidades': 'screen-0',
   'screen-perfil': 'screen-0',
+  'screen-precios': 'screen-0',
+  'screen-precio-zona': 'screen-precios',
   'screen-faq': 'screen-0',
   'screen-faq-detail': 'screen-faq',
 };
@@ -5159,6 +5487,8 @@ function goScreen(id, isBack = false) {
     if (id === 'screen-edu') initEduScreen();
     if (id === 'screen-notificaciones') renderNotificaciones();
     if (id === 'screen-faq') initFaqScreen();
+    if (id === 'screen-precios') renderPreciosDirectorio();
+    if (id === 'screen-precio-zona') renderPrecioZona();
     if (MODULE_KEY_BY_SCREEN[id]) renderModuleScreen(MODULE_KEY_BY_SCREEN[id]);
     document.querySelectorAll('.dt-acct-item[data-screen]').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
   });
@@ -6171,6 +6501,7 @@ if (isLoggedIn) { renderPerfil(); }
 initHeaderScroll(document.getElementById('screen-0'));
 renderHomeTipos();
 renderHomeZonas();
+renderHomePrecios();
 renderHomeFaq();
 </script>
 </body>
