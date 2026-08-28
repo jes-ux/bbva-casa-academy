@@ -3667,6 +3667,20 @@ const SCREEN_LABELS = {
   'screen-simulaciones': 'Mis simulaciones',
   'screen-welcome': 'Bienvenida',
 };
+// Mapa inverso de ACH_TUTORIAL_SCREEN (screenId → nº de módulo 1-5), para el breadcrumb
+// dinámico del flujo de Academia (ver breadcrumbChain). Se declara literal, no derivado
+// de ACH_TUTORIAL_SCREEN/PILL_LABELS, porque esas dos se definen más abajo en el script.
+const ACADEMIA_SCREEN_STEP = {
+  'screen-edu': 1,
+  'screen-tut-simula': 2,
+  'screen-tut-explora': 3,
+  'screen-tut-contacto-inmo': 4,
+  'screen-tut-contacto-hipo': 5,
+};
+// Módulo (1-5) que muestra screen-achievement en este momento — lo fija showAchievement(n)
+// más abajo. Al ser una sola pantalla reutilizada por los 5 logros, el breadcrumb necesita
+// saber cuál está activo para armar la cadena de pasos anteriores.
+let achCurrentN = null;
 function screenLabel(id) {
   if (id === 'screen-prop-detail') {
     const p = PROPS.find(x => x.id === currentPropId);
@@ -3676,16 +3690,23 @@ function screenLabel(id) {
     const f = FAQ_DATA.find(x => x.id === currentFaqId);
     return f ? f.q : 'Pregunta';
   }
+  // Los 5 "momentos" de Academia usan su nombre corto (Entiende/Simula/Explora/
+  // Contacta/Decide, el mismo de los pills de logro) en vez del título largo de
+  // SCREEN_LABELS — son varios eslabones seguidos en la misma cadena y necesitan leerse
+  // de un vistazo, no el título completo de cada pantalla.
+  if (ACADEMIA_SCREEN_STEP[id]) return PILL_LABELS[ACADEMIA_SCREEN_STEP[id] - 1];
   return SCREEN_LABELS[id] || id;
 }
 
 // El breadcrumb es la ruta estructural desde Inicio hasta la pantalla actual — SIEMPRE
 // la misma para una pantalla dada, sin importar por dónde haya navegado el usuario para
 // llegar (eso es responsabilidad del botón de volver / navHistory, no del breadcrumb).
-// screen-prop-detail cuelga de screen-props, screen-edu y los tutoriales de Academia
-// (screen-tut-*) cuelgan de screen-academia, screen-faq-detail de screen-faq (solo se
+// screen-prop-detail cuelga de screen-props, screen-faq-detail de screen-faq (solo se
 // usa en mobile); el resto cuelga directo de Inicio. Una pantalla sin padre acá
-// (null/no-listada) es una raíz y no muestra breadcrumb.
+// (null/no-listada) es una raíz y no muestra breadcrumb. Los 5 "momentos" de Academia
+// (screen-edu/screen-tut-*/screen-achievement) son la excepción: en vez de colgar todos
+// derecho de screen-academia, breadcrumbChain() los arma aparte más abajo como una
+// secuencia (cada paso anterior es su propio eslabón, no solo "Academia BBVA" en bloque).
 const SCREEN_PARENT = {
   'screen-props': 'screen-0',
   'screen-prop-detail': 'screen-props',
@@ -3697,16 +3718,20 @@ const SCREEN_PARENT = {
   'screen-mensajes': 'screen-0',
   'screen-oportunidades': 'screen-0',
   'screen-perfil': 'screen-0',
-  'screen-edu': 'screen-academia',
-  'screen-tut-explora': 'screen-academia',
-  'screen-tut-simula': 'screen-academia',
-  'screen-tut-contacto-inmo': 'screen-academia',
-  'screen-tut-contacto-hipo': 'screen-academia',
-  'screen-achievement': 'screen-academia',
   'screen-faq': 'screen-0',
   'screen-faq-detail': 'screen-faq',
 };
 function breadcrumbChain(id) {
+  // Caso especial: los 5 "momentos" de Academia son un flujo secuencial (Entiende →
+  // Simula → Explora → Contacta → Decide), no una jerarquía fija — cada paso anterior al
+  // actual tiene que ser su propio link para volver directo a repasarlo, en vez de
+  // mandar siempre de vuelta al listado general de Academia.
+  const n = id === 'screen-achievement' ? achCurrentN : ACADEMIA_SCREEN_STEP[id];
+  if (n) {
+    const chain = ['screen-academia'];
+    for (let i = 1; i < n; i++) chain.push(ACH_TUTORIAL_SCREEN[i]);
+    return chain;
+  }
   const chain = [];
   let p = SCREEN_PARENT[id];
   while (p) { chain.unshift(p); p = SCREEN_PARENT[p]; }
@@ -5523,6 +5548,7 @@ function abrirNotificacion(id) {
 
 function showAchievement(n) {
   markModuleDone(n);
+  achCurrentN = n; // usado por breadcrumbChain() para armar la cadena de pasos anteriores
   const d = ACH_DATA[n];
   document.getElementById('ach-icon').textContent = d.icon;
   document.getElementById('ach-title').textContent = d.title;
