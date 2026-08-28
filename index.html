@@ -1813,6 +1813,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         </div>
         <div class="module-progress-pills" id="ach-pills"></div>
         <div class="transition-note" id="ach-note"></div>
+        <button id="ach-repasar" onclick="" style="margin-top:14px;background:none;border:none;color:var(--text-muted);font-size:13px;text-decoration:underline;cursor:pointer;font-family:var(--font-sans);padding:4px"></button>
       </div>
     </div>
     <div class="cta-area">
@@ -3688,6 +3689,7 @@ const SCREEN_PARENT = {
   'screen-tut-simula': 'screen-academia',
   'screen-tut-contacto-inmo': 'screen-academia',
   'screen-tut-contacto-hipo': 'screen-academia',
+  'screen-achievement': 'screen-academia',
   'screen-faq': 'screen-0',
   'screen-faq-detail': 'screen-faq',
 };
@@ -5533,6 +5535,12 @@ function showAchievement(n) {
   } else {
     btn2.style.display = 'none';
   }
+  // Acceso directo a repasar la teoría de ESTE módulo sin tener que volver antes a
+  // Academia BBVA — el logro ya certifica que se entendió, pero a veces se quiere
+  // volver a ver las tarjetas (p.ej. antes de simular con los propios números).
+  const repasarBtn = document.getElementById('ach-repasar');
+  repasarBtn.textContent = 'Repasar la teoría';
+  repasarBtn.onclick = () => goScreen(ACH_TUTORIAL_SCREEN[n]);
   goScreen('screen-achievement');
   setTimeout(() => { document.getElementById('ach-bar').style.width = d.pct + '%'; }, 200);
 }
