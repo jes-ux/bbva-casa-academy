@@ -3000,7 +3000,17 @@ function openLinkSimPicker(propId) {
 function renderOpps() {
   const oppProps = PROPS.filter(propDisponible).filter(p => p.tags && (p.tags.includes('Nueva') || p.tags.includes('Nuevo')));
   const grid = document.getElementById('opp-grid');
-  if (!oppProps.length) { grid.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:12px">✨</div><div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:6px">Sin oportunidades por ahora</div><div style="font-size:13px;color:var(--text-muted)">Completa una simulación para ver propiedades disponibles</div></div>'; return; }
+  if (!oppProps.length) {
+    // Mismo botón "Simular crédito" que el estado vacío de Simulaciones, sea porque
+    // todavía no hay ninguna simulación (para arrancar) o porque ya hay una pero ninguna
+    // propiedad coincide (para ajustar los números y ver si cambia el resultado) — en
+    // los dos casos la salida es la misma: ir a simular.
+    const sub = SIM_HISTORY.length === 0
+      ? 'Completa una simulación para ver propiedades disponibles'
+      : 'Ninguna propiedad coincide con tu simulación actual. Probá ajustando los números.';
+    grid.innerHTML = `<div class="empty-state"><div style="font-size:32px;margin-bottom:12px">✨</div><div style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:6px">Sin oportunidades por ahora</div><div style="font-size:13px;color:var(--text-muted);margin-bottom:16px">${sub}</div><button class="detail-cta-btn" style="width:auto;padding:0 24px" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simular crédito</button></div>`;
+    return;
+  }
   grid.innerHTML = `<div class="list-card acct-prop-list">${oppProps.map(p => propListItemHTML(p)).join('')}</div>`;
 }
 
