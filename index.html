@@ -4294,7 +4294,10 @@ function moduleCtaButtonsHTML(key) {
 // — es la salida del botón "seguir con la teoría, sin hacerlo ahora".
 function goToModuleTutorial(key) {
   proximoModuloConsciente = null;
-  goScreen(MODULES[key].screenId);
+  // Si la teoría del siguiente módulo ya está lista (repaso), va directo a su logro
+  // en vez de a las tarjetas — mismo criterio que goToModuleFlow/goMoment en
+  // cualquier otro punto de entrada.
+  goToModuleFlow(MODULES[key].achModule);
 }
 
 function openModuleConcept(key, idx) {
@@ -4374,17 +4377,17 @@ const ACADEMY_SECTIONS = [
     { key:'edu_done',   achModule:1, title:'Entendé cómo funciona',       sub:'CAT, tipos de tasa y enganche',             cta:'Empezar módulo',    ctaAction:"proximoModuloConsciente=null;goScreen('screen-edu')",                    ctaDone:'Repasar',           ctaDoneAction:"goScreen('screen-edu')" },
   ]},
   { id:'simula', label:'Simula', icon:'ti-calculator', steps:[
-    { key:'sim_done',     achModule:2, title:'Hacé tu primera simulación',  sub:'Calculá cuánto podés pagar',                cta:'Simular ahora',     ctaAction:"goScreen('screen-tut-simula')",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
+    { key:'sim_done',     achModule:2, title:'Hacé tu primera simulación',  sub:'Calculá cuánto podés pagar',                cta:'Simular ahora',     ctaAction:"goToModuleFlow(2)",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
     { key:'shared_sim',   title:'Compartí tu simulación',      sub:'Enviásela a alguien de confianza',          cta:'Ir a simulaciones', ctaAction:"renderSims();goScreen('screen-simulaciones')", ctaDone:'Compartida ✓',   ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
     { key:'added_to_sim', title:'Agregá una propiedad a tu simulación', sub:'Vinculá lo que te gusta con tu capacidad', cta:'Ver propiedades',  ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
   ]},
   { id:'explora', label:'Explora', icon:'ti-building', steps:[
-    { key:'viewed_prop',  achModule:3, title:'Abrí la ficha de una propiedad', sub:'Conocé todos los detalles',             cta:'Ver propiedades',   ctaAction:"goScreen('screen-tut-explora')",          ctaDone:'Seguir explorando', ctaDoneAction:"navTo('screen-props','nav-props')" },
+    { key:'viewed_prop',  achModule:3, title:'Abrí la ficha de una propiedad', sub:'Conocé todos los detalles',             cta:'Ver propiedades',   ctaAction:"goToModuleFlow(3)",          ctaDone:'Seguir explorando', ctaDoneAction:"navTo('screen-props','nav-props')" },
     { key:'faved',        title:'Guardá un favorito',            sub:'Marcá las propiedades que más te gustan', cta:'Ver propiedades',   ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver favoritos',     ctaDoneAction:"renderFavs();goScreen('screen-favoritos')" },
   ]},
   { id:'conecta', label:'Conéctate', icon:'ti-headset', steps:[
-    { key:'contacted_prop', achModule:4, title:'Contactá a un asesor inmobiliario', sub:'Abrí una ficha de propiedad y tocá "Contactar asesor inmobiliario"', cta:'Ver propiedades', ctaAction:"goScreen('screen-tut-contacto-inmo')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
-    { key:'contacted_hipo', achModule:5, title:'Contactá a un asesor hipotecario',  sub:'Desde una simulación, tocá "Contactar asesor hipotecario"', cta:'Ver simulaciones', ctaAction:"goScreen('screen-tut-contacto-hipo')", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
+    { key:'contacted_prop', achModule:4, title:'Contactá a un asesor inmobiliario', sub:'Abrí una ficha de propiedad y tocá "Contactar asesor inmobiliario"', cta:'Ver propiedades', ctaAction:"goToModuleFlow(4)", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
+    { key:'contacted_hipo', achModule:5, title:'Contactá a un asesor hipotecario',  sub:'Desde una simulación, tocá "Contactar asesor hipotecario"', cta:'Ver simulaciones', ctaAction:"goToModuleFlow(5)", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
   ]},
 ];
 
@@ -5296,7 +5299,7 @@ const ACH_DATA = {
     note: '',
     pct: 20, counter: '1 de 5 módulos',
     pills: ['done','pending','pending','pending','pending'],
-    ctaLabel: 'Simular mi capacidad →', ctaFn: () => goScreen('screen-tut-simula'),
+    ctaLabel: 'Simular mi capacidad →', ctaFn: () => goToModuleFlow(2),
   },
   2: {
     icon: '📊',
@@ -5306,7 +5309,7 @@ const ACH_DATA = {
     pct: 40, counter: '2 de 5 módulos',
     pills: ['done','done','pending','pending','pending'],
     ctaLabel: 'Simular ahora →', ctaFn: () => requireAuth(() => navTo('screen-sim','nav-sim')),
-    secondaryLabel: 'Seguir con la teoría, sin simular ahora', secondaryFn: () => goScreen('screen-tut-explora'),
+    secondaryLabel: 'Seguir con la teoría, sin simular ahora', secondaryFn: () => goToModuleFlow(3),
   },
   3: {
     icon: '🏠',
@@ -5319,7 +5322,7 @@ const ACH_DATA = {
     // módulo (si esta pantalla se dispara al abrir una ficha sin haber hecho antes el
     // quiz); este es el respaldo genérico para cuando se dispara desde el quiz mismo.
     ctaLabel: 'Ver propiedades →', ctaFn: () => navTo('screen-props','nav-props'),
-    secondaryLabel: 'Seguir con la teoría, sin buscar ahora', secondaryFn: () => goScreen('screen-tut-contacto-inmo'),
+    secondaryLabel: 'Seguir con la teoría, sin buscar ahora', secondaryFn: () => goToModuleFlow(4),
   },
   4: {
     icon: '🤝',
@@ -5329,7 +5332,7 @@ const ACH_DATA = {
     pct: 80, counter: '4 de 5 módulos',
     pills: ['done','done','done','done','pending'],
     ctaLabel: 'Ver propiedades →', ctaFn: () => navTo('screen-props','nav-props'),
-    secondaryLabel: 'Seguir con la teoría, sin contactar ahora', secondaryFn: () => goScreen('screen-tut-contacto-hipo'),
+    secondaryLabel: 'Seguir con la teoría, sin contactar ahora', secondaryFn: () => goToModuleFlow(5),
   },
   5: {
     icon: '🏁',
@@ -5569,6 +5572,17 @@ function viewPropsForSim(propMax) {
 // Pantalla de TEORÍA de cada uno de los 5 módulos con logro (achModule → screenId) —
 // se usa para "retomar en el siguiente módulo pendiente" sin saltarse su tutorial.
 const ACH_TUTORIAL_SCREEN = { 1: 'screen-edu', 2: MODULES.simula.screenId, 3: MODULES.explora.screenId, 4: MODULES.contactoInmo.screenId, 5: MODULES.contactoHipo.screenId };
+
+// Punto de entrada único para el CTA "pendiente" de sim_done/viewed_prop/contacted_prop/
+// contacted_hipo en el checklist de Academia (y para goMoment): si la TEORÍA de ese
+// módulo ya está lista (moduleDone[n]), no tiene sentido volver a mandar al tutorial
+// —ahí se ve "sin completar" aunque esté desbloqueado, porque se aterriza en las
+// tarjetas en vez de en la confirmación— así que va directo a la pantalla de logro
+// (desde donde el CTA principal sigue llevando a la acción real). Si la teoría
+// todavía no está lista, recién ahí corresponde el tutorial.
+function goToModuleFlow(n) {
+  if (moduleDone[n]) { showAchievement(n); } else { goScreen(ACH_TUTORIAL_SCREEN[n]); }
+}
 
 function goToAchievement() {
   if (!moduleDone[1]) { showAchievement(1); return; }
