@@ -3002,6 +3002,23 @@ function getSimBadge(propId, price) {
   return null;
 }
 
+// Estimación de enganche y cuota para mostrar en la card sin depender de que el usuario
+// ya haya simulado — usa un enganche del 20% (dentro del rango "10% a 20%" que ya
+// comunica el simulador) y la misma tasa/fórmula de amortización que simular(), a un
+// plazo estándar de 20 años (los plazos que soporta el simulador son 10/15/20/25, no
+// hay opción de 30). Si el usuario ya simuló, esto sigue siendo solo una referencia
+// genérica de la propiedad — no reemplaza su simulación real.
+const CARD_ENGANCHE_PCT = 0.20;
+const CARD_PLAZO_ANIOS = 20;
+function estimarFinanciamientoCard(price) {
+  const enganche = Math.round(price * CARD_ENGANCHE_PCT);
+  const credito = price - enganche;
+  const r = TASA_ANUAL_PUBLICA / 12;
+  const n = CARD_PLAZO_ANIOS * 12;
+  const cuota = Math.round(credito * r / (1 - Math.pow(1 + r, -n)));
+  return { enganche, cuota, plazo: CARD_PLAZO_ANIOS };
+}
+
 function propCardHTML(p) {
   const prof = CARD_PROFILES[(p.id - 1) % CARD_PROFILES.length];
   const isNew = p.tags.includes('Nuevo') || p.tags.includes('Nueva');
@@ -3012,6 +3029,7 @@ function propCardHTML(p) {
     ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:${simBadge.color};background:${simBadge.bg};border-radius:6px;padding:3px 7px;margin-bottom:6px;align-self:flex-start;width:fit-content;${simBadge.border?'border:1px solid currentColor;':''}"><i class="ti ${simBadge.icon}" style="font-size:10px"></i>${simBadge.label}</span>`
     : '';
   const imgSrc = propImgSrc(p.id);
+  const { enganche, cuota, plazo } = estimarFinanciamientoCard(p.price);
   return `<div class="prop-card" id="pcard-${p.id}" style="cursor:pointer" onclick="openPropDetail(${p.id})">
     <div class="prop-img" style="height:${prof.h}px;background:var(--surface-1)">
       <img src="${imgSrc}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
@@ -3024,6 +3042,7 @@ function propCardHTML(p) {
       <div class="prop-price">${fmt(p.price)}</div>
       <div class="prop-price-m2">${priceM2} / m²</div>
       <div class="prop-details">${p.rec} rec · ${p.ban} baño${p.ban>1?'s':''} · ${p.area} m²</div>
+      <div style="font-size:11px;color:var(--text-secondary);margin:0 0 7px;line-height:1.5">Enganche de ${fmt(enganche)} y cuota de ${fmt(cuota)} a ${plazo} años</div>
       <div style="font-size:10px;color:var(--text-muted);line-height:1.5;margin-bottom:8px">${prof.shortDesc}</div>
       <div class="prop-tags">${amenHtml}</div>
     </div></div>`;
