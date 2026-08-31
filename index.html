@@ -746,6 +746,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
      de ancho entre sí */
   #home-moments-band .home-band-inner,
   #home-tipo-band .home-band-inner,
+  #home-simula-band .home-band-inner,
   #home-carousel-zonas-band .home-band-inner,
   #home-zona-band .home-band-inner,
   #home-carousel-recientes-band .home-band-inner,
@@ -1772,6 +1773,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="home-band-inner">
         <div class="detail-section-title home-section-title">Explora por tipo de propiedad</div>
         <div class="home-type-grid" id="home-type-grid"><!-- renderHomeTipos() --></div>
+      </div>
+    </div>
+
+    <!-- Simulá tu crédito: texto + CTA al simulador, no el simulador embebido -->
+    <div class="home-band home-band-gray" id="home-simula-band">
+      <div class="home-band-inner" style="text-align:center;align-items:center">
+        <div class="moment-label">Antes de salir a buscar</div>
+        <div class="detail-section-title home-section-title">¿Cuánto podés pagar?</div>
+        <p class="bajada" style="max-width:480px;margin:0 auto">Con tu ingreso, tu enganche y el plazo que elijas, calculá en un minuto hasta cuánto podés considerar — así explorás con un rango real, no a ciegas.</p>
+        <button class="btn-primary" style="width:auto;padding:14px 32px;margin-top:8px;display:inline-flex;align-items:center;justify-content:center;gap:8px" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))"><i class="ti ti-calculator"></i> Simular mi crédito</button>
       </div>
     </div>
 
