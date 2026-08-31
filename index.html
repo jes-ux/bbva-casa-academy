@@ -1142,6 +1142,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div style="font-size:11px;color:var(--text-muted);margin-top:4px;display:flex;align-items:center;gap:4px"><i class="ti ti-camera" style="font-size:12px"></i> Cambiar foto</div>
         </div>
       </div>
+      <div id="perfil-email-verif-banner" style="display:none;background:var(--bg-warning);border-radius:12px;padding:14px 16px;margin:16px 0;gap:10px;align-items:flex-start">
+        <i class="ti ti-mail-exclamation" style="font-size:18px;color:var(--text-warning);flex-shrink:0;margin-top:1px"></i>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:var(--text-primary)">Confirmá tu correo electrónico</div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-top:2px">Te enviamos un enlace a <strong id="perfil-verif-email"></strong>. Podés seguir usando la app mientras tanto.</div>
+          <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+            <button onclick="confirmarEmail()" style="font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;border:none;background:var(--text-primary);color:var(--surface-2);cursor:pointer;font-family:var(--font-sans)">Abrir correo y confirmar</button>
+            <button onclick="reenviarConfirmacionEmail()" style="font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;border:0.5px solid var(--border-strong);background:none;color:var(--text-primary);cursor:pointer;font-family:var(--font-sans)">Reenviar enlace</button>
+          </div>
+        </div>
+      </div>
       <div class="section-screen">
         <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Datos personales</div>
         <div class="list-card">
@@ -4407,6 +4418,31 @@ function renderPerfil() {
     telEl.textContent = currentUser.tel || 'Agregar teléfono';
     telEl.style.color = currentUser.tel ? '' : 'var(--text-muted)';
   }
+  // Confirmación de correo diferida: no bloquea el registro (currentUser.emailVerified
+  // arranca en false solo para altas por email/contraseña — Google ya lo verifica, y
+  // undefined en cuentas viejas/demo de antes de este cambio cuenta como verificado, no
+  // hay que migrarlas a mano), pero se avisa acá y en Notificaciones hasta que se
+  // confirme — ver confirmarEmail().
+  const banner = el('perfil-email-verif-banner');
+  if (banner) {
+    banner.style.display = currentUser.emailVerified === false ? 'flex' : 'none';
+    const emailSpan = el('perfil-verif-email');
+    if (emailSpan) emailSpan.textContent = currentUser.email;
+  }
+}
+
+function confirmarEmail() {
+  // No hay bandeja de correo real en el prototipo — "Abrir correo y confirmar" simula
+  // directamente haber tocado el enlace del mail, mismo criterio que ya usa
+  // abrirCorreo() en el flujo de recuperar contraseña.
+  if (!currentUser) return;
+  currentUser.emailVerified = true;
+  saveSession(currentUser);
+  renderPerfil();
+  showToast('ti-circle-check', 'Correo confirmado', 'success');
+}
+function reenviarConfirmacionEmail() {
+  showToast('ti-circle-check', 'Enlace reenviado a ' + (currentUser?.email || ''), 'success');
 }
 
 function perfilEditarNombre() {
@@ -4544,7 +4580,10 @@ function doRegistro() {
   const nombre = document.getElementById('reg-nombre')?.value.trim() || '';
   // El teléfono ya no se pide acá — queda opcional, se agrega (si se quiere) desde Mi
   // perfil con perfilEditarTel().
-  currentUser = { email, nombre, tel:'', avatar:null };
+  // emailVerified arranca en false: el alta por correo/contraseña no prueba que el
+  // correo sea real. No bloquea el registro — se avisa en Notificaciones y en Mi perfil
+  // hasta que se confirme (ver confirmarEmail()), sin fecha de vencimiento.
+  currentUser = { email, nombre, tel:'', avatar:null, emailVerified:false };
   saveSession(currentUser);
   saveRegisteredUser(currentUser);
   isLoggedIn = true;
@@ -4553,6 +4592,7 @@ function doRegistro() {
   // "profile_done" — el teléfono es opcional y no es requisito para dar el perfil por
   // completo (si no, el checklist nunca lo marcaría solo).
   notificarRegistroYPerfil(markStep('registered'), markStep('profile_done'));
+  pushNotification({ icon:'ti-mail-exclamation', iconBg:'var(--bg-warning)', iconColor:'var(--text-warning)', title:'Confirmá tu correo electrónico', body:`Te enviamos un enlace a ${email} para confirmar tu cuenta.`, route:'perfil' });
   updateHeaderAvatar();
   renderPerfil();
   if (_pendingAction) {
@@ -4575,7 +4615,9 @@ function iniciarGoogleAuth(mode) {
 
 function completarGoogleAuth() {
   if (_googleAuthMode === 'registro') {
-    currentUser = { email:'usuario.google@gmail.com', nombre:'Usuario de Google', tel:'', avatar:null };
+    // Google ya verificó este correo como parte del login (a diferencia del alta por
+    // correo/contraseña) — no hace falta pedir una confirmación aparte.
+    currentUser = { email:'usuario.google@gmail.com', nombre:'Usuario de Google', tel:'', avatar:null, emailVerified:true };
     saveRegisteredUser(currentUser);
   } else {
     currentUser = GOOGLE_DEMO_USER;
@@ -6068,6 +6110,7 @@ const NOTIF_ROUTES = {
   simulaciones: () => { renderSims(); goScreen('screen-simulaciones'); },
   mensajes: () => { renderMensajes(); goScreen('screen-mensajes'); },
   props: () => navTo('screen-props','nav-props'),
+  perfil: () => { renderPerfil(); goScreen('screen-perfil'); },
 };
 
 function pushNotification({ icon, iconBg, iconColor, title, body, route, propId }) {
