@@ -5657,6 +5657,22 @@ function showSkeleton(targetId, cb) {
 }
 
 function goScreen(id, isBack = false) {
+  // Academia (checklist, teoría de cada módulo y sus logros) guarda el progreso por
+  // cuenta — moduleDone/STEPS_DONE se persisten con una key basada en currentUser.email
+  // (ver modulesKey()/stepsKey()) — así que sin sesión iniciada cualquier avance que se
+  // haga ahí no se guarda en ningún lado. Se exige sesión ACÁ, en el único punto por el
+  // que pasa cualquier navegación (tarjetas de "momento" en Home, el ítem del drawer,
+  // notificaciones, el encadenamiento entre logros/tutoriales), en vez de tener que
+  // repetir requireAuth() en cada botón que pueda llegar a alguna de estas pantallas —
+  // así no hay manera de colarse sin loguearse, ni siquiera desde un botón nuevo que se
+  // agregue más adelante y se olvide de envolverlo.
+  const esPantallaAcademia = id === 'screen-academia' || id === 'screen-edu' || id === 'screen-achievement' || !!MODULE_KEY_BY_SCREEN[id];
+  if (esPantallaAcademia && !isLoggedIn) {
+    _pendingAction = () => goScreen(id, isBack);
+    _pendingReturnScreen = document.querySelector('.screen.active')?.id || null;
+    goScreen('screen-login');
+    return;
+  }
   closeDrawer();
   const current = document.querySelector('.screen.active')?.id;
   if (!isBack && current && current !== id) navHistory.push(current);
