@@ -764,7 +764,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   /* Momentos, Explora por tipo, Explora por zona y Ayuda comparten un ancho más generoso
      que el resto de las secciones de Inicio (900px) — a este último lo necesitaban los 5
      momentos para entrar en una sola línea, y se unifica acá para que las franjas no salten
-     de ancho entre sí */
+     de ancho entre sí. Accesos rápidos entra en el mismo grupo: va justo arriba de esta
+     franja y necesita alinear su ancho con ella, si no la grilla salta de un renglón a otro. */
+  #home-quicklinks-band .home-band-inner,
   #home-moments-band .home-band-inner,
   #home-tipo-band .home-band-inner,
   #home-simula-band .home-band-inner,
@@ -1767,8 +1769,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <!-- Accesos rápidos — módulo propio, separado del buscador, para que el hero no
          pierda el aire que tenía. Todavía no llevan a ninguna pantalla, ver nota en el
          CSS de .home-quicklinks. Comparte el ancho/grilla de desktop con el resto de
-         los módulos de Inicio (ver selector de max-width:1240px más abajo). -->
-    <div class="home-band home-band-gray" id="home-quicklinks-band">
+         los módulos de Inicio (ver selector de max-width:1240px más arriba).
+         Fondo blanco (no gris) a propósito: sigue siendo parte del "primer pantallazo"
+         junto con el buscador — la idea es que estas cards asomen cortadas al pie de
+         la pantalla antes de scrollear (mismo criterio que .home-hero, que calcula su
+         alto para que el siguiente bloque se asome). Si esta franja fuera gris, se
+         pegaría con el gris de "momentos" de abajo y quedaría un bloque gris gigante
+         con un hueco vacío en el medio en vez de dos franjas bien diferenciadas. -->
+    <div class="home-band home-band-white" id="home-quicklinks-band">
       <div class="home-band-inner">
         <div class="home-quicklinks">
           <div class="quicklink-card">
