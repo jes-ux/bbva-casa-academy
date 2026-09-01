@@ -814,12 +814,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   /* layout 2 columnas: lista izquierda, mapa derecha */
   .dt-props-body{display:grid!important;grid-template-columns:1fr 360px;align-items:start}
   #props-count{padding:14px 32px 4px;font-size:13px}
-  .props-grid{columns:unset;padding:10px 32px 40px;display:flex;flex-direction:column;gap:10px}
-
-  /* cards horizontales */
-  .prop-card{display:flex;flex-direction:row;margin-bottom:0;border-radius:12px;min-height:120px}
-  .prop-img{width:180px;min-width:180px;height:auto!important;min-height:120px;align-self:stretch;border-bottom:none;border-right:0.5px solid var(--border);border-radius:0;flex-shrink:0}
-  .prop-info{flex:1;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+  /* Antes esto era 1 sola columna de cards horizontales anchas (imagen 180px fija +
+     info a lo ancho de todo el resto) — con el panel de lista ocupando ~900px+ en
+     desktop, esa info quedaba como 2-3 líneas cortas perdidas en una franja
+     gigantesca, con todo pegado a la izquierda y un espacio en blanco enorme a la
+     derecha. En vez de estirar la card, se multiplican: mismo masonry por columnas que
+     ya usa mobile (columns + break-inside:avoid), solo con más ancho por columna —
+     .prop-card/.prop-img/.prop-info vuelven a su layout vertical de base (imagen
+     arriba, info abajo), sin ningún override propio de escritorio. */
+  .props-grid{column-count:auto;column-width:280px;column-gap:16px;padding:10px 32px 40px}
 
   /* mini mapa sidebar */
   .dt-props-map-col{display:flex!important;flex-direction:column;position:sticky;top:121px;height:calc(100dvh - 121px);border-left:0.5px solid var(--border);overflow:hidden}
