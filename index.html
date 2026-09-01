@@ -2481,6 +2481,26 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   </div>
   <div class="sheet-body">
     <div class="sheet-section">
+      <div class="sheet-section-title">Zona <span style="font-weight:400;color:var(--text-muted)">(elegí una o más)</span></div>
+      <div class="sheet-check-grid" id="check-zonas">
+        <label class="sheet-check-row"><input type="checkbox" value="Benito Juárez"> Benito Juárez</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Condesa"> Condesa</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Coyoacán"> Coyoacán</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Del Valle"> Del Valle</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Doctores"> Doctores</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Escandón"> Escandón</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Iztapalapa Centro"> Iztapalapa Centro</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Narvarte"> Narvarte</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Nápoles"> Nápoles</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Polanco"> Polanco</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Portales"> Portales</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Roma Norte"> Roma Norte</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Santa Fe"> Santa Fe</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Tlalpan"> Tlalpan</label>
+        <label class="sheet-check-row"><input type="checkbox" value="Xochimilco"> Xochimilco</label>
+      </div>
+    </div>
+    <div class="sheet-section">
       <div class="sheet-section-title">Tipo de propiedad</div>
       <div class="sheet-chips" id="sheet-chips-tipo">
         <button class="sheet-chip" data-val="Departamento" onclick="toggleChipExclusive(this,'sheet-chips-tipo')">Departamento</button>
@@ -3284,7 +3304,7 @@ function setHomeTab(btn) {
 let chipFilters = {
   tipo:'', minRec:0, estac:'', minPrice:0, maxPrice:0, minArea:0, maxArea:0,
   minBan:0, amenities:[], vista:'', tour360:false, video:false, planos:false,
-  antiguedad:'', fechaPub:'',
+  antiguedad:'', fechaPub:'', zonas:[],
 };
 // 'relevantes' = orden del catálogo tal cual. Las demás opciones que existían acá
 // (Recientes, Más vistos, Bajaron de precio, Mejores anunciantes) no tienen ningún dato
@@ -4035,7 +4055,11 @@ function applySheetFilters() {
   // área de cada propiedad.
   const areaMinVal = unit === 'ft2' ? Math.round(rawMin / FT2_PER_M2) : rawMin;
   const areaMaxVal = unit === 'ft2' ? Math.round(rawMax / FT2_PER_M2) : rawMax;
-  const amenitiesVal = [...document.querySelectorAll('#sheet-filtros .sheet-check-row input:checked')].map(c => c.value);
+  // Zona vive en su propio grupo (#check-zonas) — se acota la lectura de "amenidades" a
+  // los 5 grupos que realmente lo son, si no las zonas marcadas terminarían mezcladas
+  // ahí adentro (mismo .sheet-check-row para el estilo de checkbox en los dos casos).
+  const amenitiesVal = [...document.querySelectorAll('#check-ambientes input:checked, #check-generales input:checked, #check-exteriores input:checked, #check-servicios input:checked, #check-amenidades input:checked')].map(c => c.value);
+  const zonasVal = [...document.querySelectorAll('#check-zonas input:checked')].map(c => c.value);
   const vistaEl = document.querySelector('#sheet-vista .sheet-radio.selected')?.closest('.sheet-radio-row');
   const antiguedadEl = document.querySelector('#sheet-antiguedad .sheet-radio.selected')?.closest('.sheet-radio-row');
   const fechaPubEl = document.querySelector('#sheet-fecha-pub .sheet-radio.selected')?.closest('.sheet-radio-row');
@@ -4050,6 +4074,7 @@ function applySheetFilters() {
   chipFilters.minArea = areaMinVal;
   chipFilters.maxArea = areaMaxVal;
   chipFilters.amenities = amenitiesVal;
+  chipFilters.zonas = zonasVal;
   chipFilters.vista = vistaEl ? vistaEl.dataset.val : '';
   chipFilters.antiguedad = antiguedadEl ? antiguedadEl.dataset.val : '';
   chipFilters.fechaPub = fechaPubEl ? fechaPubEl.dataset.val : '';
@@ -4064,7 +4089,7 @@ function applySheetFilters() {
   document.querySelectorAll('#menu-tipo button').forEach(b => b.classList.toggle('selected', b.dataset.val === chipFilters.tipo || (!chipFilters.tipo && b.textContent === 'Cualquier tipo')));
 
   sheetActiveCount = (tipoEl?1:0) + (recEl?1:0) + (banEl?1:0) + (estacEl?1:0) + (areaMinVal||areaMaxVal?1:0)
-    + amenitiesVal.length + (chipFilters.vista?1:0) + (chipFilters.antiguedad?1:0)
+    + amenitiesVal.length + zonasVal.length + (chipFilters.vista?1:0) + (chipFilters.antiguedad?1:0)
     + (chipFilters.fechaPub?1:0) + (tour360Val||videoVal||planosVal?1:0);
   closeSheet();
   renderProps();
@@ -4080,7 +4105,7 @@ function clearSheetFilters() {
   document.getElementById('sheet-area-unit').value = 'm2';
   chipFilters.tipo = ''; chipFilters.minRec = 0; chipFilters.minBan = 0; chipFilters.estac = '';
   chipFilters.minPrice = 0; chipFilters.maxPrice = 0; chipFilters.minArea = 0; chipFilters.maxArea = 0;
-  chipFilters.amenities = []; chipFilters.vista = '';
+  chipFilters.amenities = []; chipFilters.zonas = []; chipFilters.vista = '';
   chipFilters.tour360 = false; chipFilters.video = false; chipFilters.planos = false;
   chipFilters.antiguedad = ''; chipFilters.fechaPub = '';
   sheetActiveCount = 0;
@@ -4120,7 +4145,8 @@ function openFiltrosSheet() {
   document.getElementById('sheet-area-unit').value = 'm2';
   document.getElementById('sheet-area-min').value = chipFilters.minArea || '';
   document.getElementById('sheet-area-max').value = chipFilters.maxArea || '';
-  document.querySelectorAll('#sheet-filtros .sheet-check-row input').forEach(c => c.checked = chipFilters.amenities.includes(c.value));
+  document.querySelectorAll('#check-ambientes input, #check-generales input, #check-exteriores input, #check-servicios input, #check-amenidades input').forEach(c => c.checked = chipFilters.amenities.includes(c.value));
+  document.querySelectorAll('#check-zonas input').forEach(c => c.checked = chipFilters.zonas.includes(c.value));
   document.querySelectorAll('#sheet-vista .sheet-radio-row').forEach(row => row.querySelector('.sheet-radio').classList.toggle('selected', row.dataset.val === chipFilters.vista));
   document.querySelectorAll('#sheet-antiguedad .sheet-radio-row').forEach(row => row.querySelector('.sheet-radio').classList.toggle('selected', row.dataset.val === chipFilters.antiguedad));
   document.querySelectorAll('#sheet-fecha-pub .sheet-radio-row').forEach(row => row.querySelector('.sheet-radio').classList.toggle('selected', row.dataset.val === chipFilters.fechaPub));
@@ -6390,6 +6416,10 @@ function getFilteredProps(){
   // mensajes (ver propDisponible).
   let show = PROPS.filter(propDisponible).filter(p => p.price <= max);
   if(searchQuery) show = show.filter(p=>p.zona.toLowerCase().includes(searchQuery)||p.tipo.toLowerCase().includes(searchQuery)||p.desc.toLowerCase().includes(searchQuery));
+  // Búsqueda multizona: alcanza con que la propiedad esté en ALGUNA de las zonas
+  // marcadas (OR entre sí), como el resto de los filtros de esta sheet, se combina con
+  // AND — se puede elegir "Roma Norte + Condesa + Polanco" y ver las tres juntas.
+  if(chipFilters.zonas.length) show = show.filter(p=>chipFilters.zonas.includes(p.zona));
   if(chipFilters.tipo) show = show.filter(p=>p.tipo===chipFilters.tipo);
   if(chipFilters.minRec) show = show.filter(p=>p.rec>=chipFilters.minRec);
   if(chipFilters.minBan) show = show.filter(p=>p.ban>=chipFilters.minBan);
@@ -6429,7 +6459,7 @@ function renderProps() {
   updateFilterBadge();
   const hasSim = isLoggedIn && simData.propMax > 0 && !searchQuery;
   const hasExtraFilters = !!(chipFilters.tipo || chipFilters.minRec || chipFilters.minBan || chipFilters.estac !== '' || chipFilters.minPrice || chipFilters.maxPrice
-    || chipFilters.minArea || chipFilters.maxArea || chipFilters.amenities.length || chipFilters.vista
+    || chipFilters.minArea || chipFilters.maxArea || chipFilters.amenities.length || chipFilters.zonas.length || chipFilters.vista
     || chipFilters.tour360 || chipFilters.video || chipFilters.planos || chipFilters.antiguedad || chipFilters.fechaPub);
   const titleEl = document.querySelector('#screen-props .props-section > div:first-child h2');
   const bajadaEl = document.querySelector('#screen-props .props-section > div:first-child .bajada');
