@@ -2003,10 +2003,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
   </div>
 
-  <!-- TUTORIALES DE ACADEMIA — teoría (3 tips) + mini-check antes del paso práctico de
-       cada sección (mismo formato que Módulo 1: primero se entiende, después se hace).
-       Cuelgan de screen-academia, igual que screen-edu. Contenido dinámico vía
-       renderModuleScreen(key) — ver MODULES más abajo en el script. -->
+  <!-- TUTORIALES DE USO DE LA PLATAFORMA (Módulos 2-5 originales) — OCULTOS a pedido
+       del usuario: dejaron de estar linkeados desde Academia BBVA (ver ACADEMY_SECTIONS/
+       ACH_TUTORIAL_SCREEN/MODULE_ORDER más abajo), pero el HTML y el contenido en
+       MODULES quedan intactos por si hace falta reactivarlos más adelante — no se
+       borró nada, solo se dejó de navegar hacia acá. Reemplazados por los módulos de
+       contenido de crédito/inmobiliario de más abajo (screen-mod-*). -->
   <div id="screen-tut-simula" class="screen">
     <div class="content">
       <div class="edu-section" id="module-content-simula"><!-- renderModuleScreen('simula') --></div>
@@ -2033,6 +2035,38 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="edu-section" id="module-content-contactoHipo"><!-- renderModuleScreen('contactoHipo') --></div>
     </div>
     <div class="cta-area" id="module-cta-contactoHipo"></div>
+  </div>
+
+  <!-- MÓDULOS 2 A 5 — CONTENIDO DE CRÉDITO HIPOTECARIO E INMOBILIARIO (reemplazan a los
+       tutoriales de uso de la plataforma de arriba en el recorrido de Academia BBVA).
+       Mismo formato teoría + mini-check que Módulo 1 (screen-edu), data-driven vía
+       renderModuleScreen(key) — ver MODULES más abajo en el script. -->
+  <div id="screen-mod-enganche" class="screen">
+    <div class="content">
+      <div class="edu-section" id="module-content-enganchePlazos"><!-- renderModuleScreen('enganchePlazos') --></div>
+    </div>
+    <div class="cta-area" id="module-cta-enganchePlazos"></div>
+  </div>
+
+  <div id="screen-mod-requisitos" class="screen">
+    <div class="content">
+      <div class="edu-section" id="module-content-requisitos"><!-- renderModuleScreen('requisitos') --></div>
+    </div>
+    <div class="cta-area" id="module-cta-requisitos"></div>
+  </div>
+
+  <div id="screen-mod-gastos" class="screen">
+    <div class="content">
+      <div class="edu-section" id="module-content-gastosFiscales"><!-- renderModuleScreen('gastosFiscales') --></div>
+    </div>
+    <div class="cta-area" id="module-cta-gastosFiscales"></div>
+  </div>
+
+  <div id="screen-mod-mercado" class="screen">
+    <div class="content">
+      <div class="edu-section" id="module-content-mercado"><!-- renderModuleScreen('mercado') --></div>
+    </div>
+    <div class="cta-area" id="module-cta-mercado"></div>
   </div>
 
   <!-- LOGRO (reutilizable) -->
@@ -4296,33 +4330,28 @@ function closeDrawer() {
   document.getElementById('drawer-overlay').classList.remove('open');
 }
 
-// n 1-5 mapea 1:1 a los 5 módulos con logro (moduleDone[n] / ACH_DATA[n]) — desde que
-// contactar a un asesor inmobiliario/hipotecario también son módulos con teoría propia
-// (MODULES.contactoInmo/contactoHipo), los 5 momentos de Inicio siguen exactamente la
-// misma lógica, sin casos especiales para 4 y 5.
+// Las 5 tarjetas de "¿Qué tan cerca estás de acceder a tu propiedad?" en Inicio
+// describen una intención real de la persona ("quiero simular", "quiero ver
+// propiedades", "quiero hablar con un asesor..."), no "quiero aprender sobre esto" —
+// por eso 2 a 5 van directo a la acción real de la app, sin pasar por el tutorial de
+// uso de la plataforma (oculto, ver MODULES/ACADEMY_SECTIONS): antes esas tarjetas
+// mandaban primero a un mini-tutorial de "cómo simular/explorar/contactar", que ya no
+// tiene sentido como paso intermedio. Solo el momento 1 ("estoy empezando a
+// informarme") sigue apuntando a contenido — Módulo 1 de Academia BBVA, que es
+// justamente eso: entender cómo funciona un crédito.
 function goMoment(n) {
   entryPoint = n;
-  // Si el módulo puntual de este momento ya está completo, no tiene sentido volver a
-  // mostrar la teoría como si fuera la primera vez ni mandar a la pantalla general de
-  // Academia (ahí conviven los 5 módulos, no responde a "qué pasó con ESTE"): se
-  // muestra la pantalla de logro de ESE módulo puntual, resumiendo qué se logró y con
-  // un CTA para seguir adelante. Esto vale módulo por módulo, sin importar cuántos de
-  // los otros 4 estén completos — antes acá había un atajo de "los 5 completos → ir a
-  // Academia" que pisaba este caso y mandaba a la pantalla general igual, generando
-  // fricción justo en el caso de uso más común (alguien que ya terminó todo y vuelve
-  // a un momento puntual desde Inicio). El tutorial sigue existiendo y accesible como
-  // siempre (desde Academia, "Repasar"); acá solo deja de ser el destino por defecto
-  // una vez completado.
-  if (moduleDone[n]) { showAchievement(n); return; }
-  // proximoModuloConsciente para 2-5 lo fija el propio botón final de cada tutorial
-  // (o el propio flujo de contacto por WhatsApp para 4/5), no acá — así es una única
-  // fuente de verdad sin importar por dónde se entró. Módulo 1 es la excepción: su
-  // logro se arma con su propio quiz, no con este flag.
-  if (n === 1) { proximoModuloConsciente = null; goScreen('screen-edu'); }
-  else if (n === 2) goScreen('screen-tut-simula');
-  else if (n === 3) goScreen('screen-tut-explora');
-  else if (n === 4) goScreen('screen-tut-contacto-inmo');
-  else goScreen('screen-tut-contacto-hipo');
+  if (n === 1) {
+    if (moduleDone[1]) { showAchievement(1); return; }
+    proximoModuloConsciente = null;
+    goScreen('screen-edu');
+    return;
+  }
+  if (n === 2) { requireAuth(() => navTo('screen-sim', 'nav-sim')); return; }
+  if (n === 3) { navTo('screen-props', 'nav-props'); return; }
+  if (n === 4) { navTo('screen-props', 'nav-props'); return; }
+  renderSims();
+  goScreen('screen-simulaciones');
 }
 
 
@@ -4400,10 +4429,10 @@ const SCREEN_LABELS = {
 // de ACH_TUTORIAL_SCREEN/PILL_LABELS, porque esas dos se definen más abajo en el script.
 const ACADEMIA_SCREEN_STEP = {
   'screen-edu': 1,
-  'screen-tut-simula': 2,
-  'screen-tut-explora': 3,
-  'screen-tut-contacto-inmo': 4,
-  'screen-tut-contacto-hipo': 5,
+  'screen-mod-enganche': 2,
+  'screen-mod-requisitos': 3,
+  'screen-mod-gastos': 4,
+  'screen-mod-mercado': 5,
 };
 // Módulo (1-5) que muestra screen-achievement en este momento — lo fija showAchievement(n)
 // más abajo. Al ser una sola pantalla reutilizada por los 5 logros, el breadcrumb necesita
@@ -4937,7 +4966,15 @@ function doNewPassword() {
 // MODULE_ORDER define el recorrido de "seguir con la teoría sin hacer la prueba
 // práctica" — cada módulo, al terminar su mini-check, ofrece pasar directo al
 // siguiente sin necesidad de hacer la acción real primero.
-const MODULE_ORDER = ['simula', 'explora', 'contactoInmo', 'contactoHipo'];
+//
+// MODULE_ORDER apunta a los 4 módulos de CONTENIDO (enganchePlazos/requisitos/
+// gastosFiscales/mercado) — son los que arma el recorrido visible de Academia BBVA.
+// Los 4 tutoriales de uso de la plataforma (simula/explora/contactoInmo/contactoHipo,
+// definidos igual que siempre inmediatamente abajo) quedan fuera de MODULE_ORDER a
+// propósito: siguen existiendo en MODULES para no perder el contenido, pero al no
+// estar en este array dejan de aparecer en cualquier "seguir con la teoría" o
+// chequeo de MODULE_KEY_BY_SCREEN derivado de acá.
+const MODULE_ORDER = ['enganchePlazos', 'requisitos', 'gastosFiscales', 'mercado'];
 const MODULES = {
   simula: {
     achModule: 2,
@@ -5063,12 +5100,147 @@ const MODULES = {
     ctaLabel: 'Ver simulaciones',
     ctaAction: "proximoModuloConsciente=5;renderSims();goScreen('screen-simulaciones')",
   },
+
+  // ── Módulos 2 a 5 del recorrido vigente de Academia BBVA — contenido real de
+  // crédito hipotecario e inmobiliaria, no tutorial de la app. Fuentes: lo ya
+  // enseñado en Módulo 1 (CAT/tasas/enganche) más lo relevante de la página de
+  // Crédito Hipotecario de BBVA México (excluyendo remodelación, liquidez y mudar
+  // hipoteca, que no aplican a comprar una propiedad) y conocimiento general del
+  // mercado hipotecario mexicano.
+  enganchePlazos: {
+    achModule: 2,
+    screenId: 'screen-mod-enganche',
+    title: 'Enganche, plazos y tipo de hipoteca',
+    bajada: 'Ya sabés qué es el CAT y cómo funcionan las tasas. Ahora vamos a lo concreto: cuánto necesitás ahorrado y a cuántos años te conviene pedirlo.',
+    concepts: [
+      { title: '¿Cuánto enganche necesitás?', body: 'Generalmente entre el 10% y el 20% del valor de la propiedad. Si cotizás en Infonavit o Fovissste, podés usar el saldo de tu subcuenta de vivienda para completarlo, sumado a tu crédito bancario.' },
+      { title: '¿A cuántos años lo pedís?', body: 'Los plazos más comunes van de 5 a 20 años. A más años, cuota mensual más baja pero más intereses pagados en total — a menos años, al revés. Elegí el plazo pensando en tu ingreso, no solo en la cuota más chica.' },
+      { title: 'Hipoteca fija vs. creciente', body: 'En una hipoteca fija, tasa y cuota quedan pactadas desde el primer día y no cambian. En una creciente, arrancás con pagos más bajos que suben con el tiempo — conviene si esperás que tu ingreso crezca. En ambas, podés pagar antes o liquidar sin penalización, y los intereses son deducibles de impuestos.' },
+    ],
+    quiz: [
+      { q: '¿Cuál es un enganche típico para comprar una propiedad?', options: [
+        { t: 'Entre el 10% y el 20% del valor de la propiedad', correct: true },
+        { t: 'El 50% del valor de la propiedad', correct: false },
+        { t: 'No hace falta enganche', correct: false },
+      ]},
+      { q: '¿Qué pasa si elegís un plazo más largo?', options: [
+        { t: 'La cuota mensual sube', correct: false },
+        { t: 'La cuota mensual baja, pero pagás más intereses en total', correct: true },
+        { t: 'La tasa de interés baja automáticamente', correct: false },
+      ]},
+      { q: '¿Qué caracteriza a una hipoteca creciente?', options: [
+        { t: 'La cuota es siempre la misma', correct: false },
+        { t: 'Empieza con pagos más bajos que suben con el tiempo', correct: true },
+        { t: 'No se puede liquidar antes de tiempo', correct: false },
+      ]},
+    ],
+    doneMsg: 'Ya sabés cuánto enganche necesitás y qué plazo te conviene',
+    ctaLabel: 'Simular mi crédito',
+    ctaAction: "requireAuth(()=>navTo('screen-sim','nav-sim'))",
+  },
+  requisitos: {
+    achModule: 3,
+    screenId: 'screen-mod-requisitos',
+    title: 'Requisitos y documentación',
+    bajada: 'Antes de aplicar, conviene saber qué te van a pedir — así llegás preparado y no perdés tiempo en el camino.',
+    concepts: [
+      { title: 'Lo básico que te van a pedir', body: 'Identificación oficial, comprobante de domicilio, CURP y comprobante de tus ingresos — recibos de nómina si eres empleado, o declaraciones fiscales si eres independiente.' },
+      { title: 'Tu historial crediticio importa', body: 'El banco va a revisar tu historial en el Buró de Crédito. Pagar puntual tus tarjetas y otros créditos mejora tus posibilidades de aprobación y, muchas veces, la tasa que te ofrecen.' },
+      { title: '¿Podés pedirlo con alguien más?', body: 'Sí — se puede solicitar un crédito hipotecario de forma mancomunada con tu pareja, un familiar o un conocido, sumando ingresos para aumentar tu capacidad de compra.' },
+    ],
+    quiz: [
+      { q: '¿Qué institución concentra tu historial crediticio en México?', options: [
+        { t: 'El Buró de Crédito', correct: true },
+        { t: 'El Registro Público de la Propiedad', correct: false },
+        { t: 'El SAT', correct: false },
+      ]},
+      { q: '¿Podés solicitar un crédito hipotecario junto con otra persona?', options: [
+        { t: 'No, siempre es individual', correct: false },
+        { t: 'Sí, de forma mancomunada, sumando ingresos', correct: true },
+        { t: 'Solo si es tu cónyuge', correct: false },
+      ]},
+      { q: 'Si sos independiente, ¿qué comprobás en vez de recibos de nómina?', options: [
+        { t: 'Tus declaraciones fiscales', correct: true },
+        { t: 'No hace falta comprobar ingresos', correct: false },
+        { t: 'Tu historial académico', correct: false },
+      ]},
+    ],
+    doneMsg: 'Ya sabés qué te van a pedir para aprobarte el crédito',
+    ctaLabel: 'Ver propiedades',
+    ctaAction: "navTo('screen-props','nav-props')",
+  },
+  gastosFiscales: {
+    achModule: 4,
+    screenId: 'screen-mod-gastos',
+    title: 'Gastos adicionales y beneficios fiscales',
+    bajada: 'El enganche y la cuota mensual no son todo — hay otros gastos a presupuestar, y también un beneficio fiscal que conviene conocer.',
+    concepts: [
+      { title: 'Más allá del enganche', body: 'Sumá el avalúo de la propiedad, los gastos notariales y de escrituración, el Impuesto Sobre Adquisición de Inmuebles (ISAI) y la inscripción en el Registro Público de la Propiedad. Conviene tenerlos presupuestados desde el principio, no como sorpresa al firmar.' },
+      { title: 'Los intereses son deducibles', body: 'Los intereses reales que pagás por tu crédito hipotecario se pueden deducir en tu declaración anual de impuestos — vale la pena guardar los comprobantes de tu banco durante el año.' },
+      { title: 'Protegé tu patrimonio', body: 'Un crédito hipotecario suele incluir un seguro de vida y de daños obligatorio. Además, una vez que la propiedad es tuya, un seguro de hogar la protege ante daños e imprevistos del día a día.' },
+    ],
+    quiz: [
+      { q: 'Además del enganche, ¿qué otros gastos hay que presupuestar al comprar?', options: [
+        { t: 'Avalúo, notario/escrituración, ISAI y seguros', correct: true },
+        { t: 'Ninguno, el enganche lo cubre todo', correct: false },
+        { t: 'Solo el mantenimiento mensual', correct: false },
+      ]},
+      { q: '¿Los intereses de tu crédito hipotecario son deducibles de impuestos?', options: [
+        { t: 'No, nunca', correct: false },
+        { t: 'Sí, en tu declaración anual', correct: true },
+        { t: 'Solo si es tu segunda propiedad', correct: false },
+      ]},
+      { q: '¿Para qué sirve un seguro de hogar?', options: [
+        { t: 'Para bajar la tasa de tu crédito', correct: false },
+        { t: 'Para proteger tu propiedad ante daños e imprevistos', correct: true },
+        { t: 'Es obligatorio antes de firmar el crédito', correct: false },
+      ]},
+    ],
+    doneMsg: 'Ya sabés qué otros gastos considerar y qué podés deducir',
+    ctaLabel: 'Ver propiedades',
+    ctaAction: "navTo('screen-props','nav-props')",
+  },
+  mercado: {
+    achModule: 5,
+    screenId: 'screen-mod-mercado',
+    title: 'El mercado y cuándo decidir',
+    bajada: 'Con todo lo anterior ya podés pensar en el momento y en las opciones que te pueden convenir según tu situación.',
+    concepts: [
+      { title: '¿Cuándo es un buen momento?', body: 'No depende solo del precio de la propiedad — también de tu estabilidad de ingresos, de las tasas de interés vigentes y de cuánto llevás ahorrado para el enganche. Las tres cosas importan a la vez.' },
+      { title: 'Programas que pueden ayudarte', body: 'Si cotizás en Infonavit o Fovissste, podés usar el saldo de tu subcuenta de vivienda para complementar el enganche de un crédito bancario, o vincular tu crédito a un programa de apoyo — vale la pena revisarlo antes de descartarlo.' },
+      { title: 'Comprar en México desde el extranjero', body: 'Si vivís fuera de México, existen créditos a tasa fija en pesos mexicanos pensados específicamente para adquirir un patrimonio en el país sin necesidad de estar presente todo el proceso.' },
+    ],
+    quiz: [
+      { q: '¿Qué define si es un buen momento para comprar?', options: [
+        { t: 'Únicamente el precio de la propiedad', correct: false },
+        { t: 'Tu estabilidad de ingresos, las tasas vigentes y tu ahorro para el enganche', correct: true },
+        { t: 'Solo la zona donde está la propiedad', correct: false },
+      ]},
+      { q: 'Si cotizás en Infonavit o Fovissste, ¿qué podés hacer con tu subcuenta de vivienda?', options: [
+        { t: 'Nada, es independiente del crédito bancario', correct: false },
+        { t: 'Usarla para complementar el enganche de un crédito bancario', correct: true },
+        { t: 'Solo retirarla al jubilarte', correct: false },
+      ]},
+      { q: '¿Existen opciones pensadas para mexicanos que viven en el extranjero?', options: [
+        { t: 'No, hay que estar en México para todo el proceso', correct: false },
+        { t: 'Sí, créditos a tasa fija en pesos mexicanos', correct: true },
+        { t: 'Sí, pero solo para terrenos', correct: false },
+      ]},
+    ],
+    doneMsg: 'Ya conocés el mercado y qué opciones pueden ayudarte a decidir',
+    ctaLabel: 'Simular mi crédito',
+    ctaAction: "requireAuth(()=>navTo('screen-sim','nav-sim'))",
+  },
 };
 
 // Mapa inverso screenId → key, para que goScreen() sepa qué módulo renderizar sin
-// tener que listar los 4 ids a mano en cada lugar que lo necesite.
+// tener que listar los ids a mano en cada lugar que lo necesite. Se arma desde TODAS
+// las keys de MODULES (no solo MODULE_ORDER) — incluye también a los tutoriales de uso
+// ocultos (simula/explora/contactoInmo/contactoHipo), para que sigan reconocidos como
+// pantalla de Academia (auth-gate en goScreen) y renderizables si alguna vez se los
+// vuelve a linkear, aunque hoy nada navegue hacia ellos.
 const MODULE_KEY_BY_SCREEN = {};
-MODULE_ORDER.forEach(k => { MODULE_KEY_BY_SCREEN[MODULES[k].screenId] = k; });
+Object.keys(MODULES).forEach(k => { MODULE_KEY_BY_SCREEN[MODULES[k].screenId] = k; });
 
 // MODULE_READ[key] = [bool,bool,bool] — se recalcula desde cero cada vez que se entra
 // a la pantalla (ver renderModuleScreen), igual que EDU_READ en screen-edu: si el
@@ -5217,24 +5389,34 @@ function goToModuleAchievement(key) {
 }
 
 // ── ACADEMY_SECTIONS definition ──
+// 'simula'/'explora'/'conecta' quedan con hidden:true a pedido del usuario: mezclaban
+// el tutorial de uso de la plataforma con pasos de acción real (compartir simulación,
+// guardar favorito, contactar asesor). Se ocultan del render de Academia BBVA (ver
+// renderAcademia()) pero NO se borran — los datos y el checklist siguen intactos acá
+// por si hace falta reactivarlos más adelante. 'aprende' pasa a tener los 5 módulos de
+// contenido (antes solo tenía el Módulo 1) — es ahora el corazón de Academia BBVA.
 const ACADEMY_SECTIONS = [
   { id:'onboarding', label:'Empieza', icon:'ti-user-plus', steps:[
     { key:'registered',   title:'Creá tu cuenta',              sub:'Registrate en BBVA Inmobiliaria',           cta:'Registrarme',       ctaAction:"goScreen('screen-registro')",               ctaDone:'Ver perfil',        ctaDoneAction:"goScreen('screen-perfil')" },
     { key:'profile_done', title:'Completá tu perfil',          sub:'Agregá tu información de contacto',         cta:'Ir al perfil',      ctaAction:"goScreen('screen-perfil')",                 ctaDone:'Ver perfil',        ctaDoneAction:"goScreen('screen-perfil')" },
   ]},
   { id:'aprende', label:'Aprende', icon:'ti-book', steps:[
-    { key:'edu_done',   achModule:1, title:'Entendé cómo funciona',       sub:'CAT, tipos de tasa y enganche',             cta:'Empezar módulo',    ctaAction:"proximoModuloConsciente=null;goScreen('screen-edu')",                    ctaDone:'Repasar',           ctaDoneAction:"goScreen('screen-edu')" },
+    { key:'edu_done',  achModule:1, title:'Entendé cómo funciona un crédito',      sub:'CAT, tipos de tasa y enganche',                cta:'Empezar módulo', ctaAction:"proximoModuloConsciente=null;goScreen('screen-edu')", ctaDone:'Repasar', ctaDoneAction:"goScreen('screen-edu')" },
+    { key:'mod2_done', achModule:2, title:'Enganche, plazos y tipo de hipoteca',   sub:'Cuánto necesitás y a cuántos años pedirlo',    cta:'Empezar módulo', ctaAction:"goScreen(ACH_TUTORIAL_SCREEN[2])",                     ctaDone:'Repasar', ctaDoneAction:"goScreen(ACH_TUTORIAL_SCREEN[2])" },
+    { key:'mod3_done', achModule:3, title:'Requisitos y documentación',            sub:'Qué te van a pedir para aprobarte',            cta:'Empezar módulo', ctaAction:"goScreen(ACH_TUTORIAL_SCREEN[3])",                     ctaDone:'Repasar', ctaDoneAction:"goScreen(ACH_TUTORIAL_SCREEN[3])" },
+    { key:'mod4_done', achModule:4, title:'Gastos adicionales y beneficios fiscales', sub:'Lo que no es el enganche ni la cuota',      cta:'Empezar módulo', ctaAction:"goScreen(ACH_TUTORIAL_SCREEN[4])",                     ctaDone:'Repasar', ctaDoneAction:"goScreen(ACH_TUTORIAL_SCREEN[4])" },
+    { key:'mod5_done', achModule:5, title:'El mercado y cuándo decidir',           sub:'Programas, tasas y el momento indicado',       cta:'Empezar módulo', ctaAction:"goScreen(ACH_TUTORIAL_SCREEN[5])",                     ctaDone:'Repasar', ctaDoneAction:"goScreen(ACH_TUTORIAL_SCREEN[5])" },
   ]},
-  { id:'simula', label:'Simula', icon:'ti-calculator', steps:[
+  { id:'simula', label:'Simula', icon:'ti-calculator', hidden:true, steps:[
     { key:'sim_done',     achModule:2, title:'Hacé tu primera simulación',  sub:'Calculá cuánto podés pagar',                cta:'Simular ahora',     ctaAction:"goToModuleFlow(2)",                    ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
     { key:'shared_sim',   title:'Compartí tu simulación',      sub:'Enviásela a alguien de confianza',          cta:'Ir a simulaciones', ctaAction:"renderSims();goScreen('screen-simulaciones')", ctaDone:'Compartida ✓',   ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
     { key:'added_to_sim', title:'Agregá una propiedad a tu simulación', sub:'Vinculá lo que te gusta con tu capacidad', cta:'Ver propiedades',  ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver simulación',    ctaDoneAction:"renderSims();goScreen('screen-simulaciones')" },
   ]},
-  { id:'explora', label:'Explora', icon:'ti-building', steps:[
+  { id:'explora', label:'Explora', icon:'ti-building', hidden:true, steps:[
     { key:'viewed_prop',  achModule:3, title:'Abrí la ficha de una propiedad', sub:'Conocé todos los detalles',             cta:'Ver propiedades',   ctaAction:"goToModuleFlow(3)",          ctaDone:'Seguir explorando', ctaDoneAction:"navTo('screen-props','nav-props')" },
     { key:'faved',        title:'Guardá un favorito',            sub:'Marcá las propiedades que más te gustan', cta:'Ver propiedades',   ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver favoritos',     ctaDoneAction:"renderFavs();goScreen('screen-favoritos')" },
   ]},
-  { id:'conecta', label:'Conéctate', icon:'ti-headset', steps:[
+  { id:'conecta', label:'Conéctate', icon:'ti-headset', hidden:true, steps:[
     { key:'contacted_prop', achModule:4, title:'Contactá a un asesor inmobiliario', sub:'Abrí una ficha de propiedad y tocá "Contactar asesor inmobiliario"', cta:'Ver propiedades', ctaAction:"goToModuleFlow(4)", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
     { key:'contacted_hipo', achModule:5, title:'Contactá a un asesor hipotecario',  sub:'Desde una simulación, tocá "Contactar asesor hipotecario"', cta:'Ver simulaciones', ctaAction:"goToModuleFlow(5)", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
   ]},
@@ -5826,13 +6008,18 @@ function renderMensajes() {
 }
 
 function renderAcademia() {
-  const allSteps = ACADEMY_SECTIONS.flatMap(s => s.steps);
+  // Las secciones con hidden:true (simula/explora/conecta — el tutorial de uso de la
+  // plataforma) se filtran acá, no se borran del array: siguen existiendo en
+  // ACADEMY_SECTIONS con todos sus datos, listas para reactivarse el día que hagan
+  // falta, pero no cuentan para el contador global ni aparecen en pantalla.
+  const visibleSections = ACADEMY_SECTIONS.filter(s => !s.hidden);
+  const allSteps = visibleSections.flatMap(s => s.steps);
   const doneCount = allSteps.filter(st => stepIsDone(st.key)).length;
   const total = allSteps.length;
   document.getElementById('acad-counter').textContent = `${doneCount} de ${total} pasos`;
   document.getElementById('acad-bar').style.width = Math.round(doneCount / total * 100) + '%';
 
-  document.getElementById('acad-modules').innerHTML = ACADEMY_SECTIONS.map(sec => {
+  document.getElementById('acad-modules').innerHTML = visibleSections.map(sec => {
     const secDone = sec.steps.filter(st => stepIsDone(st.key)).length;
     const secTotal = sec.steps.length;
     const allSecDone = secDone === secTotal;
@@ -5858,7 +6045,7 @@ function renderAcademia() {
               ${!done?`<div style="font-size:11px;color:var(--text-muted);margin-top:2px">${st.sub}</div>`:''}
             </div>
             <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-              ${(st.achModule && st.key !== 'edu_done' && moduleDone[st.achModule]) ? `<button onclick="goScreen(ACH_TUTORIAL_SCREEN[${st.achModule}])" title="Repasar la teoría" style="width:28px;height:28px;border-radius:6px;border:0.5px solid var(--border-strong);background:var(--surface-1);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted)"><i class="ti ti-book" style="font-size:14px"></i></button>` : ''}
+              ${(st.achModule && st.ctaDone !== 'Repasar' && moduleDone[st.achModule]) ? `<button onclick="goScreen(ACH_TUTORIAL_SCREEN[${st.achModule}])" title="Repasar la teoría" style="width:28px;height:28px;border-radius:6px;border:0.5px solid var(--border-strong);background:var(--surface-1);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted)"><i class="ti ti-book" style="font-size:14px"></i></button>` : ''}
               ${(st.achModule && moduleDone[st.achModule]) ? `<button onclick="showAchievement(${st.achModule})" title="Ver constancia del logro" style="width:28px;height:28px;border-radius:6px;border:0.5px solid var(--border-strong);background:var(--surface-1);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted)"><i class="ti ti-award" style="font-size:14px"></i></button>` : ''}
               <button onclick="${done ? st.ctaDoneAction : st.ctaAction}" style="font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;border:0.5px solid var(--border-strong);background:${done?'var(--surface-1)':'var(--text-primary)'};color:${done?'var(--text-muted)':'var(--surface-2)'};cursor:pointer;white-space:nowrap;font-family:var(--font-sans)">${done ? st.ctaDone : st.cta}</button>
             </div>
@@ -5869,16 +6056,17 @@ function renderAcademia() {
   }).join('');
 }
 
-// edu_done es el único paso del checklist que depende de moduleDone: el Módulo 1 no
-// tiene una acción real separada de su teoría. sim_done/viewed_prop/contacted_prop/
-// contacted_hipo dependen SOLO de STEPS_DONE (la acción real: simular de verdad, ver
-// una propiedad, contactar de verdad) — si dependieran de moduleDone[2..5], Academia
-// mostraría "listo" con solo haber entendido la teoría, aunque la simulación/contacto
-// no exista (STEPS_DONE se marca en completeModule2()/openPropDetail()/
-// contactarPorWhatsapp(), no acá).
+// Los 5 pasos de la sección "Aprende" (edu_done, mod2_done..mod5_done) son contenido
+// puro: entender la teoría Y pasar su mini-check ES la única acción de cada uno, no
+// hay un paso real separado que hacer después — por eso los 5 dependen directo de
+// moduleDone[n]. (Las secciones sim_done/viewed_prop/contacted_prop/contacted_hipo que
+// sí dependían de una acción real separada — simular de verdad, ver una propiedad,
+// contactar de verdad — quedan ocultas junto con el resto del tutorial de uso de la
+// plataforma; ver ACADEMY_SECTIONS.)
+const ACADEMIA_CONTENT_STEP_MODULE = { edu_done:1, mod2_done:2, mod3_done:3, mod4_done:4, mod5_done:5 };
 function stepIsDone(key) {
   if (STEPS_DONE[key]) return true;
-  if (key === 'edu_done' && moduleDone[1]) return true;
+  if (ACADEMIA_CONTENT_STEP_MODULE[key] && moduleDone[ACADEMIA_CONTENT_STEP_MODULE[key]]) return true;
   return false;
 }
 
@@ -6175,68 +6363,63 @@ const ACH_DATA = {
     note: '',
     pct: 20, counter: '1 de 5 módulos',
     pills: ['done','pending','pending','pending','pending'],
-    ctaLabel: 'Simular mi capacidad →', ctaFn: () => goToModuleFlow(2),
+    ctaLabel: 'Seguir aprendiendo →', ctaFn: () => goToModuleFlow(2),
   },
   2: {
-    icon: '📊',
-    title: '¡Ya sabés cómo simular tu crédito!',
-    body: 'Entendiste qué datos hacen falta —tu ingreso, tu enganche y el plazo— y cómo se calcula tu capacidad de pago. Cuando quieras, probalo con tus números reales.',
+    icon: '📐',
+    title: '¡Ya sabés de enganche, plazos e hipotecas!',
+    body: 'Entendiste cuánto enganche necesitás, cómo elegir el plazo y la diferencia entre una hipoteca fija y una creciente. Cuando quieras, probalo con tus propios números.',
     note: '',
     pct: 40, counter: '2 de 5 módulos',
     pills: ['done','done','pending','pending','pending'],
-    ctaLabel: 'Simular ahora →', ctaFn: () => requireAuth(() => navTo('screen-sim','nav-sim')),
-    secondaryLabel: 'Seguir con la teoría, sin simular ahora', secondaryFn: () => goToModuleFlow(3),
+    ctaLabel: 'Seguir aprendiendo →', ctaFn: () => goToModuleFlow(3),
+    secondaryLabel: 'Simular con lo que ya sé', secondaryFn: () => requireAuth(() => navTo('screen-sim','nav-sim')),
   },
   3: {
-    icon: '🏠',
-    title: '¡Ya sabés explorar el catálogo!',
-    body: 'Entendiste cómo usar los filtros, guardar tus favoritas y ver el mapa para encontrar justo lo que buscás sin perder tiempo.',
+    icon: '📋',
+    title: '¡Ya sabés qué documentación te van a pedir!',
+    body: 'Entendiste los requisitos básicos, por qué importa tu historial en el Buró de Crédito y que podés solicitar el crédito junto con otra persona para sumar ingresos.',
     note: '',
     pct: 60, counter: '3 de 5 módulos',
     pills: ['done','done','done','pending','pending'],
-    // openPropDetail() sobrescribe ctaFn con la propiedad puntual que completó el
-    // módulo (si esta pantalla se dispara al abrir una ficha sin haber hecho antes el
-    // quiz); este es el respaldo genérico para cuando se dispara desde el quiz mismo.
-    ctaLabel: 'Ver propiedades →', ctaFn: () => navTo('screen-props','nav-props'),
-    secondaryLabel: 'Seguir con la teoría, sin buscar ahora', secondaryFn: () => goToModuleFlow(4),
+    ctaLabel: 'Seguir aprendiendo →', ctaFn: () => goToModuleFlow(4),
+    secondaryLabel: 'Ver propiedades', secondaryFn: () => navTo('screen-props','nav-props'),
   },
   4: {
-    icon: '🤝',
-    title: '¡Ya sabés cómo contactar a un asesor inmobiliario!',
-    body: 'Entendiste que podés escribirle desde la ficha de cualquier propiedad, sin compromiso, para resolver dudas puntuales.',
+    icon: '🧾',
+    title: '¡Ya sabés qué otros gastos considerar!',
+    body: 'Entendiste que hay que presupuestar avalúo, notario, ISAI y seguros más allá del enganche — y que los intereses de tu crédito son deducibles de impuestos.',
     note: '',
     pct: 80, counter: '4 de 5 módulos',
     pills: ['done','done','done','done','pending'],
-    ctaLabel: 'Ver propiedades →', ctaFn: () => navTo('screen-props','nav-props'),
-    secondaryLabel: 'Seguir con la teoría, sin contactar ahora', secondaryFn: () => goToModuleFlow(5),
+    ctaLabel: 'Seguir aprendiendo →', ctaFn: () => goToModuleFlow(5),
+    secondaryLabel: 'Ver propiedades', secondaryFn: () => navTo('screen-props','nav-props'),
   },
   5: {
     icon: '🏁',
     title: '¡Terminaste Academia BBVA!',
-    body: 'Recorriste los 5 módulos: ya sabés cómo funciona un crédito, cómo simular, cómo explorar propiedades y cómo contactar a los asesores indicados. Tenés todo lo necesario para dar el siguiente paso.',
+    body: 'Recorriste los 5 módulos: ya sabés cómo funciona un crédito, cuánto enganche necesitás, qué documentación te van a pedir, qué otros gastos considerar y cómo elegir el momento. Tenés todo lo necesario para dar el siguiente paso.',
     note: 'Podés repasar cualquier módulo cuando quieras desde Academia BBVA.',
     pct: 100, counter: '5 de 5 módulos',
     pills: ['done','done','done','done','done'],
-    ctaLabel: 'Ver simulaciones →', ctaFn: () => { renderSims(); goScreen('screen-simulaciones'); },
+    ctaLabel: 'Simular mi crédito →', ctaFn: () => requireAuth(() => navTo('screen-sim','nav-sim')),
+    secondaryLabel: 'Ver propiedades', secondaryFn: () => navTo('screen-props','nav-props'),
   },
 };
 
-const PILL_LABELS = ['Entiende','Simula','Explora','Contacta','Decide'];
+const PILL_LABELS = ['Entiende','Financia','Prepara','Presupuesta','Decide'];
 
 // Marca un módulo como completo (persistiendo el cambio) sin tocar la pantalla.
 // Devuelve true si recién se completó ahora (para poder avisar solo la primera vez).
+// Los 5 módulos son contenido puro (entender la teoría + pasar el mini-check ES la
+// única acción de cada uno, ver ACADEMIA_CONTENT_STEP_MODULE/stepIsDone) — por eso acá
+// se marca el paso del checklist de "Aprende" correspondiente a los 5, sin excepción.
+const ACADEMIA_CONTENT_STEP_KEY = { 1:'edu_done', 2:'mod2_done', 3:'mod3_done', 4:'mod4_done', 5:'mod5_done' };
 function markModuleDone(n) {
   const yaEstaba = moduleDone[n];
   moduleDone[n] = true;
   saveModules();
-  // Solo el Módulo 1 marca su paso del checklist acá: entender la teoría ES su única
-  // acción, no hay nada más "real" que hacer después. Los módulos 2 a 5 SÍ tienen una
-  // acción real separada (simular, ver una propiedad, contactar a un asesor) — marcar
-  // su paso del checklist acá haría que Academia mostrara "listo" con solo haber
-  // entendido la teoría, aunque la acción real nunca haya pasado (esos pasos se
-  // marcan en su propio lugar: completeModule2(), openPropDetail(),
-  // contactarPorWhatsapp()).
-  if (n === 1) markStep('edu_done');
+  if (ACADEMIA_CONTENT_STEP_KEY[n]) markStep(ACADEMIA_CONTENT_STEP_KEY[n]);
   return !yaEstaba;
 }
 
@@ -6248,14 +6431,14 @@ function markModuleDone(n) {
    propósito. En cambio, queda un aviso en la bandeja de notificaciones que puede
    revisar cuando quiera, con acceso directo a Academia BBVA para ver el detalle.
    ══════════════════════════════════ */
-const MODULO_TOAST_LABEL = { 1:'entender cómo funciona un crédito', 2:'simular tu crédito', 3:'buscar propiedades en tu rango' };
-// Un solo lugar con la etiqueta de cada paso del checklist que NO es uno de los
-// módulos con logro por acción real (esos usan notificarModuloCompletado / la
-// pantalla de logro). contacted_prop/contacted_hipo son un paso más acá: se marcan
-// por el contacto real por WhatsApp, sin relación con el mini-check de MODULES
-// (que solo trackea si se entendió la teoría). Todo paso completado por su cuenta,
-// la primera vez, deja un aviso — sin excepción, para que la bandeja sea un
-// registro consistente de todo el recorrido.
+const MODULO_TOAST_LABEL = { 1:'entender cómo funciona un crédito', 2:'enganche, plazos y tipo de hipoteca', 3:'requisitos y documentación', 4:'gastos adicionales y beneficios fiscales', 5:'el mercado y cuándo decidir' };
+// Un solo lugar con la etiqueta de cada paso del checklist que NO es uno de los 5
+// módulos de contenido de "Aprende" (esos usan notificarModuloCompletado / la
+// pantalla de logro). Los pasos de acción real de abajo (compartir simulación, sumar
+// una propiedad, guardar favorito, contactar asesor) quedan ocultos junto con el resto
+// del tutorial de uso de la plataforma — este diccionario se mantiene por si se
+// reactivan más adelante. Todo paso completado por su cuenta, la primera vez, deja un
+// aviso — sin excepción, para que la bandeja sea un registro consistente del recorrido.
 const PASO_ACADEMIA_LABEL = {
   registered: 'crear tu cuenta',
   profile_done: 'completar tu perfil',
@@ -6421,32 +6604,20 @@ function completeModule2() {
   });
   saveSimHistory();
   simRefPropId = null;
-  // sim_done es el paso del checklist ("Hacé tu primera simulación") — se marca acá,
-  // en la acción real, independiente de moduleDone[2] (que solo trackea si se
-  // entendió la teoría vía el mini-check). Si dependiera de moduleDone[2], Academia
-  // mostraría el paso como hecho con solo haber leído la teoría, sin simulación real.
-  // (El aviso de "módulo completado" ya lo maneja notificarModuloCompletado más abajo.)
-  markStep('sim_done');
-  // Confirmar una simulación completa el Módulo 2. Si el usuario está conscientemente
-  // recorriendo Academia BBVA y este era justo el paso que esperaba (proximoModuloConsciente
-  // === 2), la pantalla de logro corresponde. Si no —simuló por su cuenta, o venía
-  // apuntando a otro módulo— es un efecto secundario de una acción normal y basta un
-  // toast liviano. Se consume acá mismo pase lo que pase, así no queda "pendiente" y
-  // no contamina una simulación posterior que no tenga nada que ver.
-  const esperabaModulo2 = proximoModuloConsciente === 2;
+  // sim_done era el paso del checklist ("Hacé tu primera simulación") de la sección
+  // oculta "Simula" — se deja de marcar acá porque esa sección ya no se muestra (ver
+  // ACADEMY_SECTIONS). El Módulo 2 de Academia BBVA ahora es contenido propio (enganche,
+  // plazos, tipo de hipoteca) y se completa SOLO con su mini-check — confirmar una
+  // simulación real ya no tiene relación con moduleDone[2], así que tampoco se lo marca
+  // acá (antes esto disparaba la pantalla de logro del Módulo 2 solo por simular, sin
+  // haber pasado por su teoría — dejaba de cumplirse el formato "teoría y test").
   proximoModuloConsciente = null;
-  const moduloDosRecienCompletado = markModuleDone(2);
-  if (moduloDosRecienCompletado && esperabaModulo2) {
-    showAchievement(2);
-    return;
-  }
   renderSims();
   goScreen('screen-simulaciones');
   requestAnimationFrame(() => {
     const first = document.querySelector('#sims-content .sim-history-card');
     if(first){ first.classList.add('sim-new'); setTimeout(()=>first.classList.remove('sim-new'),2500); }
   });
-  if (moduloDosRecienCompletado) notificarModuloCompletado(2);
 }
 
 function viewPropsForSim(propMax) {
@@ -6456,7 +6627,10 @@ function viewPropsForSim(propMax) {
 
 // Pantalla de TEORÍA de cada uno de los 5 módulos con logro (achModule → screenId) —
 // se usa para "retomar en el siguiente módulo pendiente" sin saltarse su tutorial.
-const ACH_TUTORIAL_SCREEN = { 1: 'screen-edu', 2: MODULES.simula.screenId, 3: MODULES.explora.screenId, 4: MODULES.contactoInmo.screenId, 5: MODULES.contactoHipo.screenId };
+// Apunta a los 4 módulos de contenido nuevos (MODULES.simula/explora/contactoInmo/
+// contactoHipo — el tutorial de uso de la plataforma — quedan sin referenciar acá,
+// ocultos pero intactos en MODULES).
+const ACH_TUTORIAL_SCREEN = { 1: 'screen-edu', 2: MODULES.enganchePlazos.screenId, 3: MODULES.requisitos.screenId, 4: MODULES.gastosFiscales.screenId, 5: MODULES.mercado.screenId };
 
 // Punto de entrada único para el CTA "pendiente" de sim_done/viewed_prop/contacted_prop/
 // contacted_hipo en el checklist de Academia (y para goMoment): si la TEORÍA de ese
@@ -6800,27 +6974,18 @@ function openPropDetail(id){
   currentPropId = id;
   const p = PROPS.find(x=>x.id===id);
   if(!p) return;
-  markStep('viewed_prop');
+  // viewed_prop era el paso del checklist ("Abrí la ficha de una propiedad") de la
+  // sección oculta "Explora" — dejó de marcarse acá por la misma razón que sim_done en
+  // completeModule2(): esa sección ya no se muestra, y el Módulo 3 de Academia BBVA
+  // ahora es contenido propio (requisitos y documentación) que se completa solo con su
+  // mini-check, sin relación con abrir una ficha de verdad.
   // Actualizar íconos de corazón al abrir detalle
   const faved = FAVS_IDS.includes(id);
   ['detail-fav-dt','detail-fav-m'].forEach(btnId => {
     const btn = document.getElementById(btnId);
     if (btn) updateFavIcon(btn.querySelector('i'), faved);
   });
-  // Abrir una ficha completa el Módulo 3. Igual que con el Módulo 2: solo si este era
-  // justo el paso que el recorrido consciente esperaba (proximoModuloConsciente === 3)
-  // corresponde la pantalla de logro. Si no —p. ej. volvió días después a buscar una
-  // propiedad sin acordarse de la Academia, o venía en medio de otro módulo— no lo
-  // interrumpimos: mostramos la ficha y avisamos con un toast liviano. Se consume acá
-  // mismo pase lo que pase (ver nota en completeModule2).
-  const esperabaModulo3 = proximoModuloConsciente === 3;
   proximoModuloConsciente = null;
-  const moduloTresRecienCompletado = markModuleDone(3);
-  if (moduloTresRecienCompletado && esperabaModulo3) {
-    ACH_DATA[3].ctaFn = () => openPropDetail(id);
-    showAchievement(3);
-    return;
-  }
 
   // hero image
   const heroImg = document.getElementById('detail-hero-img');
@@ -6964,8 +7129,6 @@ function openPropDetail(id){
   const detailScreen = document.getElementById('screen-prop-detail');
   if(detailScreen) detailScreen.scrollTop = 0;
   goScreen('screen-prop-detail');
-
-  if (moduloTresRecienCompletado) notificarModuloCompletado(3);
 }
 
 document.addEventListener('click', function(e) {
