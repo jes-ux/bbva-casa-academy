@@ -266,6 +266,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 /* Mismo círculo que el corazón de favoritos, corrido a la izquierda para no pisarlo —
    acceso directo a simular el crédito para ESTA propiedad sin abrir la ficha primero. */
 .prop-fav.prop-sim-cta{right:44px}
+/* Card de la columna del mapa (mapListCardHTML) — mismo "shell" visual que .prop-card
+   pero SIN el override de layout horizontal que .prop-card recibe en desktop (ver
+   @media(min-width:900px) más abajo): siempre imagen arriba, ancho completo, para que
+   la columna angosta del sidebar no quede con contenido amontonado a la izquierda. */
+.map-list-card{border:none;border-radius:12px;overflow:hidden;-webkit-tap-highlight-color:transparent;width:100%;position:relative;box-shadow:var(--card-shadow);background:var(--surface-2);cursor:pointer}
 .prop-info{padding:10px}
 .prop-price{font-size:16px;font-weight:700;color:var(--text-primary);line-height:1.2}
 .prop-price-m2{font-size:10px;color:var(--text-muted);margin-top:1px}
@@ -824,7 +829,23 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   #map-wrap{
     top:64px!important;left:0!important;transform:none!important;
     max-width:none!important;width:100%!important;bottom:0!important;
+    display:flex!important;flex-direction:row;align-items:stretch;
   }
+  /* Columna vertical de la izquierda (antes era el carrusel horizontal del pie, ver
+     HTML) — mismo alto que el mapa, scroll propio, sin el gradiente/scroll-snap que
+     necesitaba como franja flotante encima del mapa en mobile. */
+  #map-list-col{
+    position:relative!important;flex-shrink:0;width:380px;height:100%;
+    background:var(--surface-0);border-right:0.5px solid var(--border);
+    padding:0;overflow-y:auto;inset:auto!important;
+  }
+  #map-carousel{
+    flex-direction:column;overflow-x:visible;overflow-y:visible;
+    scroll-snap-type:none;padding:16px;gap:14px;
+  }
+  /* El mapa (con su toolbar flotante y el badge de zonas adentro) ocupa el resto del
+     ancho — ya no comparte posicionamiento absoluto con la columna de la izquierda. */
+  #map-area{position:relative!important;inset:auto!important;flex:1;min-width:0;height:100%}
 
   /* ── SIMULATOR 2-col ── */
   .dt-sim-wrap{
@@ -2271,28 +2292,36 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <button class="sheet-link" onclick="switchView('map')" id="map-toggle-btn"><i class="ti ti-map-pin" style="font-size:13px"></i> Ver en mapa</button>
           </div>
         </div>
-        <!-- mapa fullscreen entre header y bottom nav -->
+        <!-- mapa fullscreen entre header y bottom nav — en mobile #map-wrap queda como
+             siempre (relative, todo posicionado absoluto adentro). En desktop
+             (@media min-width:900px) pasa a flex-row: #map-list-col es la columna
+             angosta de la izquierda con la lista vertical de cards, #map-area es el
+             mapa en sí ocupando el resto — así el toolbar flotante y el badge de zonas,
+             que viven DENTRO de #map-area, quedan acotados al mapa y no flotan sobre la
+             lista. Ver CSS en @media(min-width:900px). -->
         <div id="map-wrap" style="display:none;position:fixed;top:52px;left:50%;transform:translateX(-50%);width:100%;max-width:430px;bottom:56px;z-index:50">
-          <div id="map-container" style="position:absolute;inset:0"></div>
-          <!-- barra flotante top -->
-          <div style="position:absolute;top:12px;left:12px;right:12px;z-index:1000;display:flex;gap:6px;align-items:center;overflow:hidden">
-            <div class="search-bar" style="flex:1;min-width:0;margin:0;background:var(--surface-2)">
-              <i class="ti ti-search" style="flex-shrink:0"></i>
-              <input type="text" placeholder="Buscar zona, colonia..." onkeydown="if(event.key==='Enter'){onSearch(this.value);this.blur();}" id="map-search">
-            </div>
-            <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openFiltrosSheet()"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
-            <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openOrdenSheet()"><i class="ti ti-arrows-sort" style="font-size:18px"></i></button>
-            <button onclick="switchView('list')" class="filter-icon-btn" style="background:var(--text-primary);color:var(--surface-2);flex-shrink:0"><i class="ti ti-x" style="font-size:18px"></i></button>
-          </div>
-          <!-- badge de zonas tocadas en el mapa (tocá un círculo para sumar/sacar) -->
-          <div class="map-zonas-badge" style="display:none;position:absolute;top:60px;left:12px;z-index:1000;align-items:center;gap:8px;background:var(--surface-2);border-radius:20px;padding:7px 8px 7px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);font-size:12px;font-weight:600;color:var(--text-primary)">
-            <span class="map-zonas-count"></span>
-            <button onclick="limpiarZonasMapa()" style="background:var(--bg-2,#f2f2f0);border:0;border-radius:14px;padding:5px 10px;font-size:11px;font-weight:600;color:var(--text-primary);cursor:pointer">Limpiar</button>
-          </div>
-          <!-- carrusel sticky bottom -->
-          <div style="position:absolute;bottom:0;left:0;right:0;z-index:1000;padding:12px 0 16px;background:linear-gradient(to top,var(--surface-2) 55%,transparent)">
+          <!-- columna vertical (solo desktop) / carrusel horizontal (mobile, sin cambios) -->
+          <div id="map-list-col" style="position:absolute;bottom:0;left:0;right:0;z-index:1000;padding:12px 0 16px;background:linear-gradient(to top,var(--surface-2) 55%,transparent)">
             <div id="map-carousel" style="display:flex;gap:10px;overflow-x:auto;padding:4px 16px 4px 0;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scroll-padding-left:20px">
               <!-- cards se renderizan por JS -->
+            </div>
+          </div>
+          <div id="map-area" style="position:absolute;inset:0">
+            <div id="map-container" style="position:absolute;inset:0"></div>
+            <!-- barra flotante top -->
+            <div style="position:absolute;top:12px;left:12px;right:12px;z-index:1000;display:flex;gap:6px;align-items:center;overflow:hidden">
+              <div class="search-bar" style="flex:1;min-width:0;margin:0;background:var(--surface-2)">
+                <i class="ti ti-search" style="flex-shrink:0"></i>
+                <input type="text" placeholder="Buscar zona, colonia..." onkeydown="if(event.key==='Enter'){onSearch(this.value);this.blur();}" id="map-search">
+              </div>
+              <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openFiltrosSheet()"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
+              <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openOrdenSheet()"><i class="ti ti-arrows-sort" style="font-size:18px"></i></button>
+              <button onclick="switchView('list')" class="filter-icon-btn" style="background:var(--text-primary);color:var(--surface-2);flex-shrink:0"><i class="ti ti-x" style="font-size:18px"></i></button>
+            </div>
+            <!-- badge de zonas tocadas en el mapa (tocá un círculo para sumar/sacar) -->
+            <div class="map-zonas-badge" style="display:none;position:absolute;top:60px;left:12px;z-index:1000;align-items:center;gap:8px;background:var(--surface-2);border-radius:20px;padding:7px 8px 7px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);font-size:12px;font-weight:600;color:var(--text-primary)">
+              <span class="map-zonas-count"></span>
+              <button onclick="limpiarZonasMapa()" style="background:var(--bg-2,#f2f2f0);border:0;border-radius:14px;padding:5px 10px;font-size:11px;font-weight:600;color:var(--text-primary);cursor:pointer">Limpiar</button>
             </div>
           </div>
         </div>
@@ -3121,6 +3150,47 @@ function propCardHTML(p) {
       <div style="font-size:11px;color:var(--text-secondary);margin:0 0 7px;line-height:1.5">Enganche de ${fmt(enganche)} y cuota de ${fmt(cuota)} a ${plazo} años</div>
       <div style="font-size:10px;color:var(--text-muted);line-height:1.5;margin-bottom:8px">${prof.shortDesc}</div>
       <div class="prop-tags">${amenHtml}</div>
+    </div></div>`;
+}
+
+// Card de la columna vertical del mapa fullscreen en desktop (ver renderMapCarousel) —
+// mismo contenido completo que propCardHTML (nada de "versión resumida"), con los dos
+// íconos (favorito + simular) incluidos, pero con wrapper propio (.map-list-card, no
+// .prop-card) para no heredar el layout horizontal que .prop-card toma en desktop
+// (@media(min-width:900px) lo vuelve fila con imagen+info lado a lado — en una columna
+// angosta de sidebar eso es justo el problema de "todo amontonado a la izquierda y
+// vacío a la derecha" que había que evitar). Acá la imagen siempre va arriba, ancho
+// completo de la columna, y el click selecciona el pin en el mapa (como ya hacía el
+// carrusel mobile) en vez de abrir la ficha directo — para eso está el botón "Ver
+// ficha" al final, igual que la versión anterior de esta card.
+function mapListCardHTML(p) {
+  const prof = CARD_PROFILES[(p.id - 1) % CARD_PROFILES.length];
+  const isNew = p.tags.includes('Nuevo') || p.tags.includes('Nueva');
+  const priceM2 = fmt(Math.round(p.price / p.area));
+  const amenHtml = prof.amenities.map(a => `<span class="prop-tag">${a}</span>`).join('');
+  const simBadge = getSimBadge(p.id, p.price);
+  const simBadgeHTML = simBadge
+    ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:${simBadge.color};background:${simBadge.bg};border-radius:6px;padding:3px 7px;margin-bottom:6px;align-self:flex-start;width:fit-content;${simBadge.border?'border:1px solid currentColor;':''}"><i class="ti ${simBadge.icon}" style="font-size:10px"></i>${simBadge.label}</span>`
+    : '';
+  const imgSrc = propImgSrc(p.id);
+  const { enganche, cuota, plazo } = estimarFinanciamientoCard(p.price);
+  return `<div class="map-list-card" id="mcard-${p.id}" onclick="selectMapPin(${p.id})">
+    <div class="prop-img" style="height:160px;background:var(--surface-1)">
+      <img src="${imgSrc}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+      ${isNew ? '<span class="prop-badge">Nuevo</span>' : ''}
+      <div class="prop-fav prop-sim-cta" title="Simular crédito para esta propiedad" onclick="event.stopPropagation();requireAuth(()=>{simRefPropId=${p.id};goScreen('screen-sim')})"><i class="ti ti-calculator" style="font-size:13px;color:var(--text-primary)"></i></div>
+      <div class="prop-fav" onclick="event.stopPropagation();requireAuth(()=>toggleFav(${p.id}))">${favIconHTML(p.id)}</div>
+    </div>
+    <div class="prop-info">
+      <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px">${p.zona} · ${p.tipo}</div>
+      ${simBadgeHTML}
+      <div class="prop-price">${fmt(p.price)}</div>
+      <div class="prop-price-m2">${priceM2} / m²</div>
+      <div class="prop-details">${p.rec} rec · ${p.ban} baño${p.ban>1?'s':''} · ${p.area} m²</div>
+      <div style="font-size:11px;color:var(--text-secondary);margin:0 0 7px;line-height:1.5">Enganche de ${fmt(enganche)} y cuota de ${fmt(cuota)} a ${plazo} años</div>
+      <div style="font-size:10px;color:var(--text-muted);line-height:1.5;margin-bottom:8px">${prof.shortDesc}</div>
+      <div class="prop-tags" style="margin-bottom:10px">${amenHtml}</div>
+      <button onclick="event.stopPropagation();openPropDetail(${p.id})" style="width:100%;font-size:12px;font-weight:600;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:8px;padding:9px;cursor:pointer;font-family:var(--font-sans)">Ver ficha →</button>
     </div></div>`;
 }
 
@@ -6925,8 +6995,16 @@ function makePriceIcon(p, selected){
   });
 }
 
+// Mobile (y cualquier ancho angosto): franja horizontal chica al pie del mapa, tarjeta
+// mínima — sin cambios respecto a como estaba. Desktop (>=900px): columna vertical a la
+// izquierda del mapa con la card completa (mapListCardHTML, mismo contenido e íconos
+// que las del listado) — ver renderMap()/CSS de #map-wrap para el resto del layout.
 function renderMapCarousel(props){
   const track = document.getElementById('map-carousel');
+  if (window.innerWidth >= 900) {
+    track.innerHTML = props.map(p => mapListCardHTML(p)).join('');
+    return;
+  }
   track.innerHTML = '<div style="flex-shrink:0;width:20px"></div>' + props.map(p => `
     <div id="mcard-${p.id}" onclick="selectMapPin(${p.id})" style="flex-shrink:0;width:200px;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2);cursor:pointer;scroll-snap-align:start;transition:box-shadow .2s">
       <div style="height:100px;background:var(--surface-1)">
@@ -6961,7 +7039,10 @@ function selectMapPin(id){
   const card = document.getElementById(`mcard-${id}`);
   if(card){
     card.style.boxShadow = '0 0 0 2px var(--text-primary)';
-    card.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+    // Mobile: franja horizontal → centrar en el eje inline. Desktop: columna vertical →
+    // centrar en el eje block. Mismo elemento, un solo scrollIntoView según el ancho.
+    if (window.innerWidth >= 900) card.scrollIntoView({behavior:'smooth', block:'center', inline:'nearest'});
+    else card.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
   }
 }
 
