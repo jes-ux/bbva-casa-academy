@@ -1720,49 +1720,55 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         </button>
       </div>
     </div>
+    <!-- Antes: 5 "momentos" que mezclaban informarte con acciones de la app (simular,
+         ver propiedades, contactar asesores) — quedaron desconectados de Academia BBVA
+         apenas dejaron de pasar por su tutorial. Ahora las 5 tarjetas son directamente
+         los 5 módulos de Academia BBVA (mismo contenido/orden que MODULES/ACH_DATA),
+         cada una llevando a SU módulo vía goMoment(n) → goToModuleFlow(n). -->
     <div class="home-band home-band-gray" id="home-moments-band">
       <div class="home-band-inner">
         <div class="hero" style="padding-top:0;text-align:center">
-          <h1>¿Qué tan cerca estás de acceder a tu propiedad?</h1>
+          <div class="moment-label">Academia BBVA</div>
+          <h1>Todo lo que necesitás saber para comprar con crédito hipotecario</h1>
         </div>
         <div class="moments">
           <div class="moment-card" onclick="goMoment(1)">
-            <div class="moment-icon">🤔</div>
+            <div class="moment-icon">🎓</div>
             <div class="moment-text">
-              <strong>Estoy empezando a informarme</strong>
-              <span>Quiero entender cómo funciona un crédito hipotecario</span>
+              <strong>Entendé cómo funciona un crédito</strong>
+              <span>CAT, tipos de tasa y enganche</span>
             </div>
             <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
           </div>
           <div class="moment-card" onclick="goMoment(2)">
-            <div class="moment-icon">🧮</div>
+            <div class="moment-icon">📐</div>
             <div class="moment-text">
-              <strong>Ya sé lo que quiero, quiero simular</strong>
-              <span>Tengo idea de mi ingreso y quiero ver números</span>
+              <strong>Enganche, plazos y tipo de hipoteca</strong>
+              <span>Cuánto necesitás y a cuántos años pedirlo</span>
             </div>
             <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
           </div>
           <div class="moment-card" onclick="goMoment(3)">
-            <div class="moment-icon">🏡</div>
+            <div class="moment-icon">📋</div>
             <div class="moment-text">
-              <strong>Ya simulé, quiero ver propiedades</strong>
-              <span>Tengo mi rango y quiero buscar opciones reales</span>
+              <strong>Requisitos y documentación</strong>
+              <span>Qué te van a pedir para aprobarte</span>
             </div>
             <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
           </div>
           <div class="moment-card" onclick="goMoment(4)">
-            <div class="moment-icon">🧑‍💼</div>
+            <div class="moment-icon">🧾</div>
             <div class="moment-text">
-              <strong>Quiero hablar con un asesor inmobiliario</strong>
-              <span>Tengo dudas sobre una propiedad puntual</span>
+              <strong>Gastos adicionales y beneficios fiscales</strong>
+              <span>Lo que no es el enganche ni la cuota</span>
             </div>
             <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
           </div>
           <div class="moment-card" onclick="goMoment(5)">
-            <div class="moment-icon">🏦</div>
+            <div class="moment-icon">🏁</div>
             <div class="moment-text">
-              <strong>Quiero hablar con un asesor hipotecario</strong>
-              <span>Tengo dudas sobre mi crédito</span>
+              <strong>El mercado y cuándo decidir</strong>
+              <span>Programas, tasas y el momento indicado</span>
             </div>
             <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:14px"></i>
           </div>
@@ -4330,28 +4336,15 @@ function closeDrawer() {
   document.getElementById('drawer-overlay').classList.remove('open');
 }
 
-// Las 5 tarjetas de "¿Qué tan cerca estás de acceder a tu propiedad?" en Inicio
-// describen una intención real de la persona ("quiero simular", "quiero ver
-// propiedades", "quiero hablar con un asesor..."), no "quiero aprender sobre esto" —
-// por eso 2 a 5 van directo a la acción real de la app, sin pasar por el tutorial de
-// uso de la plataforma (oculto, ver MODULES/ACADEMY_SECTIONS): antes esas tarjetas
-// mandaban primero a un mini-tutorial de "cómo simular/explorar/contactar", que ya no
-// tiene sentido como paso intermedio. Solo el momento 1 ("estoy empezando a
-// informarme") sigue apuntando a contenido — Módulo 1 de Academia BBVA, que es
-// justamente eso: entender cómo funciona un crédito.
+// Las 5 tarjetas de Inicio son ahora directamente los 5 módulos de Academia BBVA
+// (mismo orden/contenido que MODULES/ACH_DATA) — n 1-5 mapea 1:1 a moduleDone[n], así
+// que goMoment() se reduce a delegar en goToModuleFlow(n), el mismo punto de entrada
+// que ya usa Academia BBVA para "empezar" o "repasar" cada módulo (si ya está
+// completo, muestra su logro; si no, su teoría). goScreen() ya exige sesión iniciada
+// para cualquier pantalla de Academia, así que no hace falta un requireAuth acá.
 function goMoment(n) {
   entryPoint = n;
-  if (n === 1) {
-    if (moduleDone[1]) { showAchievement(1); return; }
-    proximoModuloConsciente = null;
-    goScreen('screen-edu');
-    return;
-  }
-  if (n === 2) { requireAuth(() => navTo('screen-sim', 'nav-sim')); return; }
-  if (n === 3) { navTo('screen-props', 'nav-props'); return; }
-  if (n === 4) { navTo('screen-props', 'nav-props'); return; }
-  renderSims();
-  goScreen('screen-simulaciones');
+  goToModuleFlow(n);
 }
 
 
