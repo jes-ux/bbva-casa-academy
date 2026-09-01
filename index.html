@@ -235,6 +235,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .sim-stat-val.warning-val{color:var(--text-warning)}
 
 .warning-box{border:0.5px solid var(--border-warning);border-radius:var(--radius);background:var(--bg-warning);padding:14px;font-size:13px;color:var(--text-warning);display:flex;gap:9px;align-items:flex-start;line-height:1.6}
+.success-box{border:0.5px solid var(--border-success);border-radius:var(--radius);background:var(--bg-success);padding:14px;font-size:13px;color:var(--text-success);display:flex;gap:9px;align-items:flex-start;line-height:1.6}
 .disclaimer{font-size:11px;color:var(--text-muted);text-align:center;line-height:1.6;padding:0 4px}
 
 .comparison-box{border:none;border-radius:12px;padding:16px;background:var(--surface-2);box-shadow:var(--card-shadow)}
@@ -2166,7 +2167,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
               <input type="number" id="ingreso" placeholder="Ej. 25000" inputmode="numeric" oninput="simular()">
               <div class="sim-helper">Ingreso neto mensual</div>
             </div>
-            <div class="sim-field">
+            <!-- Oculto cuando se simula para una propiedad puntual (simRefPropId): ahí el
+                 precio ya se conoce, así que el enganche deja de ser un dato que hay que
+                 adivinar y pasa a ser un resultado calculado — ver initSimScreen()/simular(). -->
+            <div class="sim-field" id="sim-field-enganche">
               <label>
                 ¿Cuánto tienes ahorrado para el enganche?
                 <span class="tt" onclick="showTooltip(event,'El pago inicial. Generalmente entre el 10% y el 20% del valor de la propiedad.')">
@@ -2207,7 +2211,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <div id="sim-result-area" style="display:none;flex-direction:column;gap:12px">
           <div class="sim-result">
             <div class="sim-result-main">
-              <div class="sim-result-label">Podés considerar propiedades de hasta</div>
+              <div class="sim-result-label" id="res-prop-label">Podés considerar propiedades de hasta</div>
               <div class="sim-result-amount" id="res-prop">$0</div>
               <div class="sim-result-sub" id="res-sub">Tu cuota mensual estimada sería de <strong id="res-cuota-inline">$0</strong></div>
             </div>
@@ -2232,6 +2236,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
           </div>
 
+          <!-- Solo cuando se simula para UNA propiedad puntual (simRefPropId) y el crédito
+               que da el ingreso solo, sin ningún enganche, ya cubre el precio completo —
+               ver simular(). Caso poco común pero vale avisarlo como buena noticia. -->
+          <div id="warning-ya-alcanza" class="success-box" style="display:none">
+            <i class="ti ti-circle-check" style="font-size:17px;flex-shrink:0;margin-top:1px"></i>
+            <div>Tu ingreso ya cubre el precio de esta propiedad. No necesitás enganche adicional.</div>
+          </div>
+
           <div class="comparison-box">
             <div class="comparison-box-label">Comparación de plazos</div>
             <div id="comparison-table"></div>
@@ -2244,13 +2256,13 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
 
           <!-- CTA desktop: dentro de la columna derecha -->
-          <button class="btn-primary dt-sim-cta-btn" onclick="completeModule2()">Confirmar simulación</button>
+          <button class="btn-primary dt-sim-cta-btn" onclick="completeModule2()">Guardar simulación</button>
         </div>
       </div>
     </div>
     <!-- CTA mobile: fixed al fondo -->
     <div class="cta-area mobile-only">
-      <button class="btn-primary" onclick="completeModule2()">Confirmar simulación</button>
+      <button class="btn-primary" onclick="completeModule2()">Guardar simulación</button>
     </div>
   </div>
 
@@ -2884,20 +2896,33 @@ let simRefPropId = null; // prop que originó la simulación desde ficha de prod
 // simulando para UNA propiedad puntual (ficha de detalle o el ícono de calculadora de
 // una card); simular "en general" desde Inicio/el nav/Academia no toca simRefPropId,
 // así que ahí sigue en null y la card ni aparece.
+//
+// Cuando SÍ hay propiedad de referencia, el precio objetivo ya se conoce de antemano,
+// así que el enganche deja de ser un dato que la persona tiene que adivinar y probar:
+// se oculta el campo y se calcula solo en simular() (ingreso+plazo dan el crédito;
+// precio - crédito es el enganche exacto que hace falta). Simular "en general" no tiene
+// ningún precio del que despejarlo, así que ahí el enganche sigue siendo un input manual.
 function initSimScreen() {
   const wrap = document.getElementById('sim-ref-prop');
-  if (!wrap) return;
+  const engancheField = document.getElementById('sim-field-enganche');
   const p = simRefPropId ? PROPS.find(x => x.id === simRefPropId) : null;
-  if (!p) { wrap.style.display = 'none'; return; }
-  document.getElementById('sim-ref-prop-img').src = propImgSrc(p.id);
-  document.getElementById('sim-ref-prop-price').textContent = fmt(p.price);
-  document.getElementById('sim-ref-prop-meta').textContent = `${p.zona} · ${p.tipo} · ${p.rec} rec · ${p.area} m²`;
-  wrap.style.display = 'flex';
+  if (wrap) {
+    if (!p) { wrap.style.display = 'none'; }
+    else {
+      document.getElementById('sim-ref-prop-img').src = propImgSrc(p.id);
+      document.getElementById('sim-ref-prop-price').textContent = fmt(p.price);
+      document.getElementById('sim-ref-prop-meta').textContent = `${p.zona} · ${p.tipo} · ${p.rec} rec · ${p.area} m²`;
+      wrap.style.display = 'flex';
+    }
+  }
+  if (engancheField) engancheField.style.display = p ? 'none' : '';
+  simular();
 }
 
 // Botón "x" de la card de referencia — permite seguir simulando sin atarlo a esa
 // propiedad, sin tener que salir de la pantalla. No borra nada de esa propiedad, solo
 // desvincula ESTA simulación (simRefPropId es el único lugar donde vivía la relación).
+// initSimScreen() ya vuelve a mostrar el campo de enganche y recalcula todo (simular()).
 function quitarSimRefProp() {
   simRefPropId = null;
   initSimScreen();
@@ -6416,7 +6441,12 @@ function simular() {
   const enganche = parseFloat(document.getElementById('enganche-input').value) || 0;
   const ra = document.getElementById('sim-result-area');
   const ph = document.getElementById('sim-result-placeholder');
-  if (!ingreso || !enganche) { ra.style.display = 'none'; if(ph) ph.style.display = ''; return; }
+  // Simulando para una propiedad puntual: el precio ya se conoce, así que alcanza con
+  // el ingreso para calcular todo (el enganche sale de ahí). Simulando "en general":
+  // no hay precio del que despejar nada, el enganche sigue siendo un dato obligatorio.
+  const refProp = simRefPropId ? PROPS.find(x => x.id === simRefPropId) : null;
+  const faltanDatos = refProp ? !ingreso : (!ingreso || !enganche);
+  if (faltanDatos) { ra.style.display = 'none'; if(ph) ph.style.display = ''; return; }
   if(ph) ph.style.display = 'none';
 
   const tasaAplicada = esClienteBBVA ? TASA_ANUAL_CLIENTE_BBVA : TASA_ANUAL_PUBLICA;
@@ -6424,13 +6454,30 @@ function simular() {
   const n = selectedPlazo * 12;
   const maxCuota = ingreso * 0.30;
   const credito = maxCuota * (1 - Math.pow(1 + r, -n)) / r;
-  const propMax = credito + enganche;
   const cuotaReal = credito * r / (1 - Math.pow(1 + r, -n));
   const pct = Math.round(cuotaReal / ingreso * 100);
 
-  simData = { ingreso, enganche, plazo: selectedPlazo, propMax: Math.round(propMax), cuotaReal: Math.round(cuotaReal), pct, clienteBBVA: esClienteBBVA, tasaAnual: tasaAplicada };
+  // Enganche automático (propiedad de referencia): despejado de propMax = crédito +
+  // enganche, fijando propMax = precio de la propiedad. Si el crédito solo ya cubre el
+  // precio, no hace falta enganche (se avisa como buena noticia en vez de mostrar $0
+  // sin explicación) y la capacidad real que se muestra es el crédito completo.
+  let propMax, engancheFinal, engancheYaAlcanza = false;
+  const labelEl = document.getElementById('res-prop-label');
+  if (refProp) {
+    engancheFinal = Math.max(0, Math.round(refProp.price - credito));
+    propMax = Math.max(credito, refProp.price);
+    engancheYaAlcanza = engancheFinal === 0;
+    if (labelEl) labelEl.textContent = 'Enganche que necesitás para esta propiedad';
+    document.getElementById('res-prop').textContent = fmt(engancheFinal);
+  } else {
+    engancheFinal = enganche;
+    propMax = credito + enganche;
+    if (labelEl) labelEl.textContent = 'Podés considerar propiedades de hasta';
+    document.getElementById('res-prop').textContent = fmt(propMax);
+  }
 
-  document.getElementById('res-prop').textContent = fmt(propMax);
+  simData = { ingreso, enganche: engancheFinal, plazo: selectedPlazo, propMax: Math.round(propMax), cuotaReal: Math.round(cuotaReal), pct, clienteBBVA: esClienteBBVA, tasaAnual: tasaAplicada };
+
   document.getElementById('res-sub').innerHTML = 'Tu cuota mensual estimada sería de <strong>' + fmt(cuotaReal) + '</strong>';
   document.getElementById('res-cuota').textContent = fmt(cuotaReal);
   const pctEl = document.getElementById('res-pct');
@@ -6440,6 +6487,9 @@ function simular() {
   const warn = document.getElementById('warning-cuota');
   warn.style.display = pct > 30 ? 'flex' : 'none';
   document.getElementById('warn-pct').textContent = pct + '%';
+
+  const warnAlcanza = document.getElementById('warning-ya-alcanza');
+  if (warnAlcanza) warnAlcanza.style.display = engancheYaAlcanza ? 'flex' : 'none';
 
   const table = document.getElementById('comparison-table');
   table.innerHTML = '';
@@ -6456,11 +6506,11 @@ function simular() {
   const perfilEl = document.getElementById('perfil-resumen');
   const tasaTexto = `tasa ${(tasaAplicada * 100).toFixed(1)}% anual${esClienteBBVA ? ' (preferencial cliente BBVA)' : ' (pública)'}`;
   document.getElementById('perfil-texto').textContent =
-    `${fmt(ingreso)} de ingreso · ${fmt(enganche)} de enganche · ${selectedPlazo} años · hasta ${fmt(propMax)} · ${tasaTexto}`;
+    `${fmt(ingreso)} de ingreso · ${fmt(engancheFinal)} de enganche · ${selectedPlazo} años · hasta ${fmt(propMax)} · ${tasaTexto}`;
   perfilEl.style.display = 'block';
 
   document.getElementById('pill-monto').textContent = 'Hasta ' + fmt(propMax);
-  document.getElementById('pill-enganche').textContent = 'Enganche ' + fmt(enganche);
+  document.getElementById('pill-enganche').textContent = 'Enganche ' + fmt(engancheFinal);
   document.getElementById('pill-plazo').textContent = selectedPlazo + ' años';
 
   ra.style.display = 'flex';
