@@ -2270,14 +2270,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
           <!-- columna mapa — solo desktop -->
           <div class="dt-props-map-col">
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:0.5px solid var(--border);background:var(--surface-0);flex-shrink:0;gap:8px">
-              <span style="font-size:12px;color:var(--text-muted)">Tocá una zona en el mapa para filtrar</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:0.5px solid var(--border);background:var(--surface-0);flex-shrink:0;gap:8px;overflow:hidden">
+              <span id="map-zonas-hint" style="font-size:12px;color:var(--text-muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Tocá una zona en el mapa para filtrar</span>
               <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-                <div class="map-zonas-badge" style="display:none;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-primary)">
+                <div class="map-zonas-badge" style="display:none;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap;flex-shrink:0">
                   <span class="map-zonas-count"></span>
-                  <button onclick="limpiarZonasMapa()" style="background:var(--bg-2,#f2f2f0);border:0;border-radius:14px;padding:4px 9px;font-size:11px;font-weight:600;color:var(--text-primary);cursor:pointer">Limpiar</button>
+                  <button onclick="limpiarZonasMapa()" style="background:var(--bg-2,#f2f2f0);border:0;border-radius:14px;padding:4px 9px;font-size:11px;font-weight:600;color:var(--text-primary);cursor:pointer;flex-shrink:0">Limpiar</button>
                 </div>
-                <button onclick="switchView('map')" style="font-size:12px;font-weight:600;color:var(--text-primary);background:none;border:0.5px solid var(--border-strong);border-radius:7px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;flex-shrink:0"><i class="ti ti-arrows-maximize" style="font-size:12px"></i> Ver mapa completo</button>
+                <button onclick="switchView('map')" style="font-size:12px;font-weight:600;color:var(--text-primary);background:none;border:0.5px solid var(--border-strong);border-radius:7px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap"><i class="ti ti-arrows-maximize" style="font-size:12px"></i> Ver mapa completo</button>
               </div>
             </div>
             <div id="map-container-preview" style="width:100%;flex:1"></div>
@@ -3706,6 +3706,11 @@ function updateZonaMapaBadge() {
     const countEl = el.querySelector('.map-zonas-count');
     if (countEl) countEl.textContent = n === 1 ? '1 zona seleccionada' : `${n} zonas seleccionadas`;
   });
+  // El hint "Tocá una zona..." y el badge viven en la misma fila del header del mini-mapa
+  // de escritorio — si conviven los dos a la vez, se pisan el espacio entre sí y el hint
+  // termina partiéndose palabra por palabra. Con el badge afuera no hace falta el hint.
+  const hint = document.getElementById('map-zonas-hint');
+  if (hint) hint.style.display = n ? 'none' : '';
 }
 
 function toggleZonaEnMapa(zona) {
