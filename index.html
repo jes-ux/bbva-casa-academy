@@ -330,6 +330,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 #map-wrap .leaflet-container{height:100%}
 .price-pin{background:none!important;border:none!important;box-shadow:none!important}
 .leaflet-container{background:var(--surface-1)}
+.zona-label-tooltip{background:var(--surface-2);border:none;box-shadow:0 1px 4px rgba(0,0,0,.18);border-radius:12px;padding:3px 9px;font-family:var(--font-sans);font-size:11px;font-weight:600;color:var(--text-primary);pointer-events:none}
+.zona-label-tooltip::before{display:none}
 
 /* ── Property detail ── */
 .prop-detail-hero{height:240px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border-bottom:0.5px solid var(--border)}
@@ -2239,6 +2241,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openOrdenSheet()"><i class="ti ti-arrows-sort" style="font-size:18px"></i></button>
             <button onclick="switchView('list')" class="filter-icon-btn" style="background:var(--text-primary);color:var(--surface-2);flex-shrink:0"><i class="ti ti-x" style="font-size:18px"></i></button>
           </div>
+          <!-- badge de zonas tocadas en el mapa (tocá un círculo para sumar/sacar) -->
+          <div class="map-zonas-badge" style="display:none;position:absolute;top:60px;left:12px;z-index:1000;align-items:center;gap:8px;background:var(--surface-2);border-radius:20px;padding:7px 8px 7px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);font-size:12px;font-weight:600;color:var(--text-primary)">
+            <span class="map-zonas-count"></span>
+            <button onclick="limpiarZonasMapa()" style="background:var(--bg-2,#f2f2f0);border:0;border-radius:14px;padding:5px 10px;font-size:11px;font-weight:600;color:var(--text-primary);cursor:pointer">Limpiar</button>
+          </div>
           <!-- carrusel sticky bottom -->
           <div style="position:absolute;bottom:0;left:0;right:0;z-index:1000;padding:12px 0 16px;background:linear-gradient(to top,var(--surface-2) 55%,transparent)">
             <div id="map-carousel" style="display:flex;gap:10px;overflow-x:auto;padding:4px 16px 4px 0;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scroll-padding-left:20px">
@@ -2263,9 +2270,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
           <!-- columna mapa — solo desktop -->
           <div class="dt-props-map-col">
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:0.5px solid var(--border);background:var(--surface-0);flex-shrink:0">
-              <span style="font-size:12px;color:var(--text-muted)">Ubicaciones</span>
-              <button onclick="switchView('map')" style="font-size:12px;font-weight:600;color:var(--text-primary);background:none;border:0.5px solid var(--border-strong);border-radius:7px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:5px"><i class="ti ti-arrows-maximize" style="font-size:12px"></i> Ver mapa completo</button>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:0.5px solid var(--border);background:var(--surface-0);flex-shrink:0;gap:8px">
+              <span style="font-size:12px;color:var(--text-muted)">Tocá una zona en el mapa para filtrar</span>
+              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                <div class="map-zonas-badge" style="display:none;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-primary)">
+                  <span class="map-zonas-count"></span>
+                  <button onclick="limpiarZonasMapa()" style="background:var(--bg-2,#f2f2f0);border:0;border-radius:14px;padding:4px 9px;font-size:11px;font-weight:600;color:var(--text-primary);cursor:pointer">Limpiar</button>
+                </div>
+                <button onclick="switchView('map')" style="font-size:12px;font-weight:600;color:var(--text-primary);background:none;border:0.5px solid var(--border-strong);border-radius:7px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;flex-shrink:0"><i class="ti ti-arrows-maximize" style="font-size:12px"></i> Ver mapa completo</button>
+              </div>
             </div>
             <div id="map-container-preview" style="width:100%;flex:1"></div>
           </div>
@@ -3602,6 +3615,107 @@ function verTodasLasZonas() {
   if (inp) inp.value = '';
   chipFilters.tipo = homeZonaTipo;
   navTo('screen-props', 'nav-props');
+}
+
+// ── Selección de zonas en el mapa ──
+// No hay límites administrativos reales de cada colonia disponibles en este prototipo
+// (no hay forma de bajar un GeoJSON real de límites de CDMX acá) — cada zona se
+// aproxima como un círculo centrado en el promedio de lat/lng de sus propiedades, con
+// un radio fijo (900m, tamaño típico de una colonia urbana). Es una aproximación
+// visual para poder tocarla en el mapa, no un límite administrativo real. La selección
+// en sí comparte chipFilters.zonas con la sheet de Filtros — marcar una zona acá o ahí
+// es exactamente lo mismo, cada lado solo refleja el estado del otro.
+const ZONA_RADIO_M = 900;
+function calcularZonaCentroides() {
+  const acc = {};
+  PROPS.filter(propDisponible).forEach(p => {
+    if (!acc[p.zona]) acc[p.zona] = { latSum: 0, lngSum: 0, count: 0 };
+    acc[p.zona].latSum += p.lat;
+    acc[p.zona].lngSum += p.lng;
+    acc[p.zona].count++;
+  });
+  const out = {};
+  Object.keys(acc).forEach(z => { out[z] = { lat: acc[z].latSum / acc[z].count, lng: acc[z].lngSum / acc[z].count }; });
+  return out;
+}
+const ZONA_CENTROIDES = calcularZonaCentroides();
+
+let zonaCirclesFullscreen = {};
+let zonaCirclesPreview = {};
+
+// setStyle() de Leaflet mergea las opciones nuevas sobre las viejas en vez de
+// reemplazarlas — si no se declara dashArray explícitamente en el estado seleccionado,
+// el punteado del estado sin seleccionar queda pegado al pasar a seleccionada.
+function zonaCircleOptions(seleccionada) {
+  return seleccionada
+    ? { color:'#1a1a18', weight:2, fillColor:'#1a1a18', fillOpacity:0.28, dashArray:null }
+    : { color:'#1a1a18', weight:1, fillColor:'#1a1a18', fillOpacity:0.06, dashArray:'4,4' };
+}
+
+// Dibuja (la primera vez) o solo restyla (las siguientes) los círculos de zona sobre un
+// mapa Leaflet dado — mismo helper para el mapa fullscreen y el preview de escritorio,
+// cada uno con su propio "tracker" de capas para no pisarse entre sí.
+function renderZonaCircles(mapInstance, tracker) {
+  if (!mapInstance) return;
+  Object.keys(ZONA_CENTROIDES).forEach(zona => {
+    const seleccionada = chipFilters.zonas.includes(zona);
+    if (tracker[zona]) { tracker[zona].setStyle(zonaCircleOptions(seleccionada)); return; }
+    const { lat, lng } = ZONA_CENTROIDES[zona];
+    const circle = L.circle([lat, lng], { radius: ZONA_RADIO_M, ...zonaCircleOptions(seleccionada) }).addTo(mapInstance);
+    circle.bindTooltip(zona, { permanent: true, direction: 'center', className: 'zona-label-tooltip' });
+    circle.on('click', () => toggleZonaEnMapa(zona));
+    tracker[zona] = circle;
+  });
+  // Con las 15 zonas a la vista y el mapa alejado (p.ej. al entrar sin filtros, viendo
+  // toda la ciudad) los círculos quedan chicos y sus etiquetas se pisan entre sí. Se
+  // ocultan los nombres hasta que el círculo mide lo suficiente en pantalla como para
+  // que el texto entre sin superponerse con el de al lado.
+  actualizarVisibilidadEtiquetasZona(mapInstance, tracker);
+  if (!mapInstance._zonaZoomBound) {
+    mapInstance.on('zoomend', () => actualizarVisibilidadEtiquetasZona(mapInstance, tracker));
+    mapInstance._zonaZoomBound = true;
+  }
+}
+
+function actualizarVisibilidadEtiquetasZona(mapInstance, tracker) {
+  const zoom = mapInstance.getZoom();
+  Object.keys(tracker).forEach(zona => {
+    const circle = tracker[zona];
+    const metrosPorPixel = 156543.03392 * Math.cos(circle.getLatLng().lat * Math.PI / 180) / Math.pow(2, zoom);
+    const radioPx = ZONA_RADIO_M / metrosPorPixel;
+    const visible = radioPx >= 45;
+    if (visible && !circle.isTooltipOpen()) circle.openTooltip();
+    else if (!visible && circle.isTooltipOpen()) circle.closeTooltip();
+  });
+}
+
+function refreshZonaCirclesStyle() {
+  Object.keys(zonaCirclesFullscreen).forEach(z => zonaCirclesFullscreen[z].setStyle(zonaCircleOptions(chipFilters.zonas.includes(z))));
+  Object.keys(zonaCirclesPreview).forEach(z => zonaCirclesPreview[z].setStyle(zonaCircleOptions(chipFilters.zonas.includes(z))));
+}
+
+function updateZonaMapaBadge() {
+  const n = chipFilters.zonas.length;
+  document.querySelectorAll('.map-zonas-badge').forEach(el => {
+    el.style.display = n ? 'flex' : 'none';
+    const countEl = el.querySelector('.map-zonas-count');
+    if (countEl) countEl.textContent = n === 1 ? '1 zona seleccionada' : `${n} zonas seleccionadas`;
+  });
+}
+
+function toggleZonaEnMapa(zona) {
+  const idx = chipFilters.zonas.indexOf(zona);
+  if (idx === -1) chipFilters.zonas.push(zona); else chipFilters.zonas.splice(idx, 1);
+  refreshZonaCirclesStyle();
+  updateZonaMapaBadge();
+  renderProps();
+}
+
+function limpiarZonasMapa() {
+  chipFilters.zonas = [];
+  refreshZonaCirclesStyle();
+  updateZonaMapaBadge();
+  renderProps();
 }
 
 // ── Carruseles de fotos de Home ──
@@ -6557,6 +6671,8 @@ function initPreviewMap(props){
 
   const valid = props.filter(p=>p.lat&&p.lng);
   if(valid.length) previewMap.fitBounds(L.latLngBounds(valid.map(p=>[p.lat,p.lng])),{padding:[40,40]});
+  renderZonaCircles(previewMap, zonaCirclesPreview);
+  updateZonaMapaBadge();
   setTimeout(()=>previewMap.invalidateSize(),150);
 }
 
@@ -6605,6 +6721,8 @@ function renderMap(props){
     leafletMap.fitBounds(L.latLngBounds(props.map(p=>[p.lat,p.lng])), {padding:[60,60]});
   }
 
+  renderZonaCircles(leafletMap, zonaCirclesFullscreen);
+  updateZonaMapaBadge();
   renderMapCarousel(props);
   setTimeout(() => leafletMap.invalidateSize(), 150);
 }
