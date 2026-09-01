@@ -831,6 +831,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     max-width:none!important;width:100%!important;bottom:0!important;
     display:flex!important;flex-direction:row;align-items:stretch;
   }
+  /* El !important de arriba fuerza display:flex sin importar el display:none inline que
+     switchView() pone cuando NO estamos en vista de mapa — sin esta regla el mapa
+     quedaba SIEMPRE visible tapando la lista en desktop. #map-wrap.map-wrap-hidden tiene
+     más especificidad (id + clase) que el simple #map-wrap de arriba, así que gana y sí
+     lo oculta de verdad. */
+  #map-wrap.map-wrap-hidden{display:none!important}
   /* Columna vertical de la izquierda (antes era el carrusel horizontal del pie, ver
      HTML) — mismo alto que el mapa, scroll propio, sin el gradiente/scroll-snap que
      necesitaba como franja flotante encima del mapa en mobile. */
@@ -1752,7 +1758,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="home-band home-band-gray" id="home-moments-band">
       <div class="home-band-inner">
         <div class="hero" style="padding-top:0;text-align:center">
-          <div class="moment-label">Academia BBVA</div>
           <h1>Todo lo que necesitás saber para comprar con crédito hipotecario</h1>
         </div>
         <div class="moments">
@@ -2299,7 +2304,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
              mapa en sí ocupando el resto — así el toolbar flotante y el badge de zonas,
              que viven DENTRO de #map-area, quedan acotados al mapa y no flotan sobre la
              lista. Ver CSS en @media(min-width:900px). -->
-        <div id="map-wrap" style="display:none;position:fixed;top:52px;left:50%;transform:translateX(-50%);width:100%;max-width:430px;bottom:56px;z-index:50">
+        <div id="map-wrap" class="map-wrap-hidden" style="display:none;position:fixed;top:52px;left:50%;transform:translateX(-50%);width:100%;max-width:430px;bottom:56px;z-index:50">
           <!-- columna vertical (solo desktop) / carrusel horizontal (mobile, sin cambios) -->
           <div id="map-list-col" style="position:absolute;bottom:0;left:0;right:0;z-index:1000;padding:12px 0 16px;background:linear-gradient(to top,var(--surface-2) 55%,transparent)">
             <div id="map-carousel" style="display:flex;gap:10px;overflow-x:auto;padding:4px 16px 4px 0;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scroll-padding-left:20px">
@@ -6760,7 +6765,14 @@ function switchView(view){
   const titleEl = document.querySelector('#screen-props .props-section > div:first-child');
   if(titleEl) titleEl.style.display = isMap ? 'none' : '';
 
-  document.getElementById('map-wrap').style.display = isMap ? 'block' : 'none';
+  // El estilo inline de acá alcanza en mobile, pero en desktop #map-wrap necesita
+  // display:flex!important (ver @media(min-width:900px)) para el layout de columna+mapa
+  // — un !important de esa regla le gana SIEMPRE al display:none inline, así que hacía
+  // falta además una clase (más específica que el simple #map-wrap) para poder ocultarlo
+  // de verdad ahí. Sin esto el mapa quedaba visible tapando la lista todo el tiempo.
+  const mapWrapEl = document.getElementById('map-wrap');
+  mapWrapEl.style.display = isMap ? 'block' : 'none';
+  mapWrapEl.classList.toggle('map-wrap-hidden', !isMap);
 
   if(isMap){
     document.getElementById('map-search').value = document.getElementById('props-search').value;
