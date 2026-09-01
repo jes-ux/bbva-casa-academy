@@ -721,13 +721,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   /* ── HOME ──
      Más al estilo Google: el buscador es el foco del primer scroll, centrado
-     verticalmente con aire de sobra alrededor, y el siguiente módulo (momentos)
-     solo se asoma un poco abajo — no compite por atención en la misma pantalla. */
+     verticalmente con aire de sobra alrededor, y el siguiente módulo (accesos
+     rápidos) solo se asoma un poco abajo — no compite por atención en la misma
+     pantalla. 165px (no 130) porque hace falta asomar más que un simple filo: antes
+     del texto de cada card hay padding del band-inner (56) + padding de la card (20)
+     + el ícono (38px) + el gap (14) = 128px ya "gastados", así que con menos de eso
+     el pantallazo cortaba justo en el ícono y no se alcanzaba a leer ni una palabra. */
   .home-hero{
     padding:40px 40px;border-radius:0;
     display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center;
     gap:36px;
-    min-height:calc(100dvh - 64px - 130px);
+    min-height:calc(100dvh - 64px - 165px);
   }
   .home-hero-title{font-size:48px;line-height:1.15;max-width:680px}
   .home-tabs{justify-content:center;gap:8px}
