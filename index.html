@@ -738,7 +738,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .home-select{border-radius:var(--radius)}
   .home-input input{border-radius:var(--radius)}
   .home-search-btn{border-radius:var(--radius);padding:0 28px;white-space:nowrap}
-  .home-quicklinks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:700px;width:100%}
+  .home-quicklinks{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .quicklink-card{flex-direction:column;align-items:flex-start;padding:20px 18px;gap:14px}
 
   /* moment cards → row de 5 en desktop (informarme, simular, ver propiedades,
      contactar inmobiliario, contactar hipotecario: cierra el recorrido completo) */
@@ -1762,20 +1763,26 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           Buscar propiedad <i class="ti ti-search"></i>
         </button>
       </div>
-      <!-- Accesos rápidos — todavía no llevan a ninguna pantalla, ver nota en el CSS
-           de .home-quicklinks. -->
-      <div class="home-quicklinks">
-        <div class="quicklink-card">
-          <div class="quicklink-icon"><i class="ti ti-building-skyscraper"></i></div>
-          <div class="quicklink-text">Conocer emprendimientos e inversiones</div>
-        </div>
-        <div class="quicklink-card">
-          <div class="quicklink-icon"><i class="ti ti-building-bank"></i></div>
-          <div class="quicklink-text">Ser cliente BBVA para obtener una mejor tasa</div>
-        </div>
-        <div class="quicklink-card">
-          <div class="quicklink-icon"><i class="ti ti-hammer"></i></div>
-          <div class="quicklink-text">Simular crédito para reformas</div>
+    </div>
+    <!-- Accesos rápidos — módulo propio, separado del buscador, para que el hero no
+         pierda el aire que tenía. Todavía no llevan a ninguna pantalla, ver nota en el
+         CSS de .home-quicklinks. Comparte el ancho/grilla de desktop con el resto de
+         los módulos de Inicio (ver selector de max-width:1240px más abajo). -->
+    <div class="home-band home-band-gray" id="home-quicklinks-band">
+      <div class="home-band-inner">
+        <div class="home-quicklinks">
+          <div class="quicklink-card">
+            <div class="quicklink-icon"><i class="ti ti-building-skyscraper"></i></div>
+            <div class="quicklink-text">Conocer emprendimientos e inversiones</div>
+          </div>
+          <div class="quicklink-card">
+            <div class="quicklink-icon"><i class="ti ti-building-bank"></i></div>
+            <div class="quicklink-text">Ser cliente BBVA para obtener una mejor tasa</div>
+          </div>
+          <div class="quicklink-card">
+            <div class="quicklink-icon"><i class="ti ti-hammer"></i></div>
+            <div class="quicklink-text">Simular crédito para reformas</div>
+          </div>
         </div>
       </div>
     </div>
