@@ -2136,6 +2136,20 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="content dt-sim-wrap">
       <!-- IZQUIERDA: formulario -->
       <div class="dt-sim-left">
+        <!-- Card de referencia: solo cuando se llega acá desde una propiedad puntual
+             (ficha de detalle o el ícono de calculadora en una card) — ver
+             simRefPropId/initSimScreen(). Para simular "en general" (desde Inicio, el
+             nav, o Academia) no hay ninguna propiedad que referenciar y esto no se
+             muestra. -->
+        <div id="sim-ref-prop" style="display:none;align-items:center;gap:12px;background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;padding:12px;margin-bottom:4px">
+          <img id="sim-ref-prop-img" src="" alt="" style="width:56px;height:56px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--surface-1)">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:11px;color:var(--text-muted)">Estás simulando para esta propiedad</div>
+            <div id="sim-ref-prop-price" style="font-size:14px;font-weight:700;color:var(--text-primary)"></div>
+            <div id="sim-ref-prop-meta" style="font-size:12px;color:var(--text-muted)"></div>
+          </div>
+          <button onclick="quitarSimRefProp()" title="Simular sin esta propiedad" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:6px;flex-shrink:0;display:flex"><i class="ti ti-x" style="font-size:16px"></i></button>
+        </div>
         <div class="sim-section">
           <div>
             <h2>¿Cuánto puedes pagar sin que duela?</h2>
@@ -2865,6 +2879,30 @@ let entryPoint = 1;
 let simData = {ingreso:0, enganche:0, plazo:10, propMax:0, cuotaReal:0, pct:0};
 let simRefPropId = null; // prop que originó la simulación desde ficha de producto
 
+// Pinta (o esconde) la card de referencia de screen-sim según simRefPropId — se llama
+// cada vez que se entra a la pantalla. Solo hay algo que referenciar cuando se llegó
+// simulando para UNA propiedad puntual (ficha de detalle o el ícono de calculadora de
+// una card); simular "en general" desde Inicio/el nav/Academia no toca simRefPropId,
+// así que ahí sigue en null y la card ni aparece.
+function initSimScreen() {
+  const wrap = document.getElementById('sim-ref-prop');
+  if (!wrap) return;
+  const p = simRefPropId ? PROPS.find(x => x.id === simRefPropId) : null;
+  if (!p) { wrap.style.display = 'none'; return; }
+  document.getElementById('sim-ref-prop-img').src = propImgSrc(p.id);
+  document.getElementById('sim-ref-prop-price').textContent = fmt(p.price);
+  document.getElementById('sim-ref-prop-meta').textContent = `${p.zona} · ${p.tipo} · ${p.rec} rec · ${p.area} m²`;
+  wrap.style.display = 'flex';
+}
+
+// Botón "x" de la card de referencia — permite seguir simulando sin atarlo a esa
+// propiedad, sin tener que salir de la pantalla. No borra nada de esa propiedad, solo
+// desvincula ESTA simulación (simRefPropId es el único lugar donde vivía la relación).
+function quitarSimRefProp() {
+  simRefPropId = null;
+  initSimScreen();
+}
+
 // Qué módulo (2 o 3) se espera completar a continuación del recorrido guiado y
 // consciente de Academia BBVA — null si no hay ninguno pendiente. Se arma en el momento
 // exacto en que el usuario elige seguir ese camino (un "momento" en el inicio, retomar
@@ -2944,6 +2982,13 @@ let esClienteBBVA = false;
 
 function navTo(screenId, tabId) {
   navHistory = []; // bottom nav = nueva raíz, limpia el historial
+  // navTo() es siempre la entrada "genérica" al simulador (nav, drawer, CTAs de Home/
+  // Academia/Oportunidades) — las entradas que sí referencian una propiedad puntual
+  // (ficha de detalle, ícono de calculadora de una card) fijan simRefPropId y navegan
+  // con goScreen('screen-sim') directo, nunca con navTo(). Si no se limpiara acá, una
+  // simulación vieja sin confirmar dejaría la card de referencia pegada la próxima vez
+  // que alguien entra a simular "en general" sin venir de ninguna propiedad.
+  if (screenId === 'screen-sim') simRefPropId = null;
   goScreen(screenId);
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(tabId) && document.getElementById(tabId).classList.add('active');
@@ -6209,6 +6254,7 @@ function goScreen(id, isBack = false) {
     if (id === 'screen-props') renderProps();
     if (id === 'screen-academia') renderAcademia();
     if (id === 'screen-edu') initEduScreen();
+    if (id === 'screen-sim') initSimScreen();
     if (id === 'screen-notificaciones') renderNotificaciones();
     if (id === 'screen-faq') initFaqScreen();
     if (id === 'screen-precios') renderPreciosDirectorio();
