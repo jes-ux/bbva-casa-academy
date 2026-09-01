@@ -52,6 +52,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .moment-text{flex:1}
 .moment-text strong{font-size:15px;font-weight:600;color:var(--text-primary);display:block;margin-bottom:4px}
 .moment-text span{font-size:14px;color:var(--text-secondary)}
+
+/* Accesos rápidos debajo del buscador de Inicio — todavía no llevan a ninguna
+   pantalla (por eso no tienen onclick ni cursor:pointer). */
+.home-quicklinks{display:flex;flex-direction:column;gap:10px}
+.quicklink-card{border:0.5px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;background:var(--surface-1)}
+.quicklink-icon{width:38px;height:38px;border-radius:10px;background:var(--surface-2);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px;color:var(--text-primary)}
+.quicklink-text{flex:1;font-size:14px;font-weight:600;color:var(--text-primary);text-align:left}
+
 .route-preview{border:none;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px;background:var(--surface-2);box-shadow:var(--card-shadow)}
 .route-preview-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em}
 .route-steps{display:flex;align-items:flex-start}
@@ -730,6 +738,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .home-select{border-radius:var(--radius)}
   .home-input input{border-radius:var(--radius)}
   .home-search-btn{border-radius:var(--radius);padding:0 28px;white-space:nowrap}
+  .home-quicklinks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:700px;width:100%}
 
   /* moment cards → row de 5 en desktop (informarme, simular, ver propiedades,
      contactar inmobiliario, contactar hipotecario: cierra el recorrido completo) */
@@ -1752,6 +1761,22 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <button class="home-search-btn" onclick="navTo('screen-props','nav-props')">
           Buscar propiedad <i class="ti ti-search"></i>
         </button>
+      </div>
+      <!-- Accesos rápidos — todavía no llevan a ninguna pantalla, ver nota en el CSS
+           de .home-quicklinks. -->
+      <div class="home-quicklinks">
+        <div class="quicklink-card">
+          <div class="quicklink-icon"><i class="ti ti-building-skyscraper"></i></div>
+          <div class="quicklink-text">Conocer emprendimientos e inversiones</div>
+        </div>
+        <div class="quicklink-card">
+          <div class="quicklink-icon"><i class="ti ti-building-bank"></i></div>
+          <div class="quicklink-text">Ser cliente BBVA para obtener una mejor tasa</div>
+        </div>
+        <div class="quicklink-card">
+          <div class="quicklink-icon"><i class="ti ti-hammer"></i></div>
+          <div class="quicklink-text">Simular crédito para reformas</div>
+        </div>
       </div>
     </div>
     <!-- Antes: 5 "momentos" que mezclaban informarte con acciones de la app (simular,
