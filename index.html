@@ -6530,15 +6530,23 @@ function switchView(view){
   }
 }
 
+// "En tu rango" es una banda cerca del techo de presupuesto, no "de $0 hasta el techo".
+// Con una simulación de $3,000,000 esto muestra propiedades entre $2,500,000 y
+// $3,000,000 — no una de $500,000 que técnicamente entra pero no tiene nada que ver con
+// lo que la persona simuló. 5/6 (~83%) del máximo como piso de la banda.
+const RANGO_SIM_MIN_FACTOR = 5 / 6;
+
 function getFilteredProps(){
   // Sin simulación activa no hay presupuesto declarado todavía: se explora el catálogo
-  // completo. Con simulación, "en tu rango" es literal — sin margen de estiramiento —
-  // para que el CTA "Ver propiedades en rango" cumpla lo que promete.
+  // completo. Con simulación, "en tu rango" es literal — sin margen de estiramiento hacia
+  // arriba, y con un piso realista hacia abajo — para que el CTA "Ver propiedades en
+  // rango" cumpla lo que promete.
   const max = simData.propMax > 0 ? simData.propMax : Infinity;
+  const min = simData.propMax > 0 ? Math.round(simData.propMax * RANGO_SIM_MIN_FACTOR) : 0;
   // Una propiedad marcada disponible:false salió del catálogo — no vuelve a listarse
   // acá (grilla, mapa, búsqueda), aunque siga referenciada en favoritos/simulaciones/
   // mensajes (ver propDisponible).
-  let show = PROPS.filter(propDisponible).filter(p => p.price <= max);
+  let show = PROPS.filter(propDisponible).filter(p => p.price <= max && p.price >= min);
   if(searchQuery) show = show.filter(p=>p.zona.toLowerCase().includes(searchQuery)||p.tipo.toLowerCase().includes(searchQuery)||p.desc.toLowerCase().includes(searchQuery));
   // Búsqueda multizona: alcanza con que la propiedad esté en ALGUNA de las zonas
   // marcadas (OR entre sí), como el resto de los filtros de esta sheet, se combina con
@@ -6620,7 +6628,7 @@ function propsEmptyStateHTML(hasSim, hasFilters) {
     return `<div class="empty-state" style="column-span:all;break-inside:avoid">
       <i class="ti ti-home-search" style="font-size:32px;color:var(--text-muted)"></i>
       <div style="font-size:15px;font-weight:500;color:var(--text-primary)">No hay propiedades en tu rango</div>
-      <div style="font-size:13px;color:var(--text-muted);max-width:280px">Por ahora no tenemos propiedades hasta ${fmt(simData.propMax)}. Podés ajustar tu simulación o dejar que te avisemos</div>
+      <div style="font-size:13px;color:var(--text-muted);max-width:280px">Por ahora no tenemos propiedades entre ${fmt(Math.round(simData.propMax * RANGO_SIM_MIN_FACTOR))} y ${fmt(simData.propMax)}. Podés ajustar tu simulación o dejar que te avisemos</div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;width:100%;max-width:280px">
         <button class="btn-primary" style="width:100%" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))">Hacer otra simulación</button>
         <button class="btn-secondary" style="width:100%" id="btn-avisar-rango" onclick="avisarmeRangoDisponible()">Avisarme cuando haya propiedades</button>
@@ -6651,7 +6659,7 @@ function avisarmeRangoDisponible() {
   pushNotification({
     icon: 'ti-bell-ringing', iconBg: 'var(--bg-warning)', iconColor: 'var(--text-warning)',
     title: 'Te avisaremos',
-    body: `En cuanto haya una propiedad hasta ${fmt(simData.propMax)}, te lo hacemos saber.`,
+    body: `En cuanto haya una propiedad entre ${fmt(Math.round(simData.propMax * RANGO_SIM_MIN_FACTOR))} y ${fmt(simData.propMax)}, te lo hacemos saber.`,
     route: 'props',
   });
 }
