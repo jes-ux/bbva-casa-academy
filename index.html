@@ -3106,11 +3106,14 @@ const DEMO_SEED_SIMS = [
 // cuenta nueva arranca solo con el saludo de bienvenida.
 const DEMO_SEED_NOTIFICATIONS = [
   { id:'ndemo1', icon:'ti-circle-check', iconBg:'var(--bg-success)', iconColor:'var(--text-success)', title:'Simulación guardada', body:'Tu simulación de $3,200,000 quedó registrada', fecha:'Hoy', leido:false, route:'simulaciones' },
-  { id:'ndemo2', icon:'ti-sparkles', iconBg:'var(--bg-warning)', iconColor:'var(--text-warning)', title:'Nueva oportunidad', body:'Una propiedad en Narvarte hace match con tu simulación', fecha:'Hoy', leido:false, route:'academia' },
+  // La propiedad de Narvarte que "hace match" es la id:1 (Departamento, $2,800,000, entra
+  // en la simulación de ndemo1) — se linkea directo a esa ficha en vez de a Oportunidades,
+  // porque acá ya se sabe cuál es la propiedad puntual que generó el aviso.
+  { id:'ndemo2', icon:'ti-sparkles', iconBg:'var(--bg-warning)', iconColor:'var(--text-warning)', title:'Nueva oportunidad', body:'Una propiedad en Narvarte hace match con tu simulación', fecha:'Hoy', leido:false, route:null, propId:1 },
   { id:'ndemo3', icon:'ti-building', iconBg:null, iconColor:null, title:'Propiedad actualizada', body:'Ámsterdam 145 en Del Valle bajó de precio', fecha:'Ayer', leido:true, route:null, propId:2 },
-  { id:'ndemo5', icon:'ti-bell', iconBg:null, iconColor:null, title:'Bienvenido a Academia BBVA', body:'Empieza tu camino hacia tu casa', fecha:'28 may 2026', leido:true, route:'academia' },
+  { id:'ndemo5', icon:'ti-bell', iconBg:null, iconColor:null, title:'Bienvenido a Academia BBVA', body:'Empieza tu camino hacia tu casa', fecha:'28 may 2026', leido:true, route:'inicio' },
 ];
-const WELCOME_NOTIFICATION = { icon:'ti-bell', iconBg:null, iconColor:null, title:'Bienvenido a Academia BBVA', body:'Empieza tu camino hacia tu casa', fecha:'Hoy', leido:false, route:'academia' };
+const WELCOME_NOTIFICATION = { icon:'ti-bell', iconBg:null, iconColor:null, title:'Bienvenido a Academia BBVA', body:'Empieza tu camino hacia tu casa', fecha:'Hoy', leido:false, route:'inicio' };
 
 function favsKey()    { return currentUser ? 'bbva_favs_'    + currentUser.email.toLowerCase() : null; }
 function simsKey()    { return currentUser ? 'bbva_sims_'    + currentUser.email.toLowerCase() : null; }
@@ -5607,14 +5610,17 @@ function goToModuleAchievement(key) {
 }
 
 // ── ACADEMY_SECTIONS definition ──
-// 'simula'/'explora'/'conecta' quedan con hidden:true a pedido del usuario: mezclaban
-// el tutorial de uso de la plataforma con pasos de acción real (compartir simulación,
-// guardar favorito, contactar asesor). Se ocultan del render de Academia BBVA (ver
-// renderAcademia()) pero NO se borran — los datos y el checklist siguen intactos acá
-// por si hace falta reactivarlos más adelante. 'aprende' pasa a tener los 5 módulos de
-// contenido (antes solo tenía el Módulo 1) — es ahora el corazón de Academia BBVA.
+// 'onboarding'/'simula'/'explora'/'conecta' quedan con hidden:true a pedido del
+// usuario: Academia BBVA se deja solo con lo relacionado a crédito e hipotecas.
+// 'onboarding' es cuenta/perfil (crear cuenta, completar perfil) y 'simula'/'explora'/
+// 'conecta' mezclaban el tutorial de uso de la plataforma con pasos de acción real
+// (compartir simulación, guardar favorito, contactar asesor) — ninguno es contenido de
+// crédito/hipotecas. Se ocultan del render de Academia BBVA (ver renderAcademia())
+// pero NO se borran — los datos y el checklist siguen intactos acá por si hace falta
+// reactivarlos más adelante. 'aprende' pasa a tener los 5 módulos de contenido (antes
+// solo tenía el Módulo 1) — es ahora el corazón de Academia BBVA.
 const ACADEMY_SECTIONS = [
-  { id:'onboarding', label:'Empieza', icon:'ti-user-plus', steps:[
+  { id:'onboarding', label:'Empieza', icon:'ti-user-plus', hidden:true, steps:[
     { key:'registered',   title:'Creá tu cuenta',              sub:'Registrate en BBVA Inmobiliaria',           cta:'Registrarme',       ctaAction:"goScreen('screen-registro')",               ctaDone:'Ver perfil',        ctaDoneAction:"goScreen('screen-perfil')" },
     { key:'profile_done', title:'Completá tu perfil',          sub:'Agregá tu información de contacto',         cta:'Ir al perfil',      ctaAction:"goScreen('screen-perfil')",                 ctaDone:'Ver perfil',        ctaDoneAction:"goScreen('screen-perfil')" },
   ]},
@@ -6718,6 +6724,11 @@ const NOTIF_ROUTES = {
   mensajes: () => { renderMensajes(); goScreen('screen-mensajes'); },
   props: () => navTo('screen-props','nav-props'),
   perfil: () => { renderPerfil(); goScreen('screen-perfil'); },
+  inicio: () => navTo('screen-0','nav-inicio'),
+  // Fallback para un aviso de "nueva oportunidad" sin una propiedad puntual asociada —
+  // cuando sí se sabe cuál es (como ndemo2 más arriba), se linkea directo con propId en
+  // vez de route, que abrirNotificacion() prioriza.
+  oportunidades: () => { renderOpps(); goScreen('screen-oportunidades'); },
 };
 
 function pushNotification({ icon, iconBg, iconColor, title, body, route, propId }) {
