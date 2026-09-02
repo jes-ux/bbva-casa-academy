@@ -56,7 +56,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 /* Accesos rápidos debajo del buscador de Inicio — todavía no llevan a ninguna
    pantalla (por eso no tienen onclick ni cursor:pointer). */
 .home-quicklinks{display:flex;flex-direction:column;gap:10px}
-.quicklink-card{border:0.5px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;background:var(--surface-1)}
+.quicklink-card{border:0.5px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;background:var(--surface-1);cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
+.quicklink-card:active{border-color:var(--border-stronger)}
 .quicklink-icon{width:38px;height:38px;border-radius:10px;background:var(--surface-2);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px;color:var(--text-primary)}
 .quicklink-text{flex:1;font-size:14px;font-weight:600;color:var(--text-primary);text-align:left}
 
@@ -1771,9 +1772,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
     <!-- Accesos rápidos — módulo propio, separado del buscador, para que el hero no
-         pierda el aire que tenía. Todavía no llevan a ninguna pantalla, ver nota en el
-         CSS de .home-quicklinks. Comparte el ancho/grilla de desktop con el resto de
-         los módulos de Inicio (ver selector de max-width:1240px más arriba).
+         pierda el aire que tenía. Cada card lleva a screen-placeholder (goPlaceholder) —
+         el contenido real de estas 3 secciones todavía no está definido. Comparte el
+         ancho/grilla de desktop con el resto de los módulos de Inicio (ver selector de
+         max-width:1240px más arriba).
          Fondo blanco (no gris) a propósito: sigue siendo parte del "primer pantallazo"
          junto con el buscador — la idea es que estas cards asomen cortadas al pie de
          la pantalla antes de scrollear (mismo criterio que .home-hero, que calcula su
@@ -1783,15 +1785,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="home-band home-band-white" id="home-quicklinks-band">
       <div class="home-band-inner">
         <div class="home-quicklinks">
-          <div class="quicklink-card">
+          <div class="quicklink-card" onclick="goPlaceholder('Conocer emprendimientos e inversiones')">
             <div class="quicklink-icon"><i class="ti ti-building-skyscraper"></i></div>
             <div class="quicklink-text">Conocer emprendimientos e inversiones</div>
           </div>
-          <div class="quicklink-card">
+          <div class="quicklink-card" onclick="goPlaceholder('Ser cliente BBVA para obtener una mejor tasa')">
             <div class="quicklink-icon"><i class="ti ti-building-bank"></i></div>
             <div class="quicklink-text">Ser cliente BBVA para obtener una mejor tasa</div>
           </div>
-          <div class="quicklink-card">
+          <div class="quicklink-card" onclick="goPlaceholder('Simular crédito para reformas')">
             <div class="quicklink-icon"><i class="ti ti-hammer"></i></div>
             <div class="quicklink-text">Simular crédito para reformas</div>
           </div>
@@ -2173,6 +2175,20 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="cta-area">
       <button class="btn-primary" id="ach-cta"></button>
       <button class="btn-outline" id="ach-cta-secondary" style="display:none"></button>
+    </div>
+  </div>
+
+  <!-- PLACEHOLDER (reutilizable) — a donde llevan hoy los 3 accesos rápidos de Inicio
+       (#home-quicklinks-band: emprendimientos, cliente BBVA, reformas). Título dinámico
+       vía goPlaceholder(titulo), para no repetir 3 pantallas casi idénticas mientras el
+       contenido real de cada una todavía no está definido. -->
+  <div id="screen-placeholder" class="screen">
+    <div class="content" style="justify-content:center">
+      <div class="empty-state">
+        <i class="ti ti-hourglass-empty" style="font-size:32px;color:var(--text-muted)"></i>
+        <div id="placeholder-titulo" style="font-size:18px;font-weight:700;color:var(--text-primary)"></div>
+        <p style="font-size:14px;color:var(--text-muted)">Contenido pendiente de definición</p>
+      </div>
     </div>
   </div>
 
@@ -3065,6 +3081,14 @@ function navTo(screenId, tabId) {
   document.querySelectorAll('.dt-nav-btn').forEach(b => b.classList.remove('active'));
   const dtMap = {'screen-0':'dtnav-inicio','screen-props':'dtnav-props','screen-sim':'dtnav-sim'};
   if(dtMap[screenId]) document.getElementById(dtMap[screenId])?.classList.add('active');
+}
+
+// Adonde llevan hoy los accesos rápidos de Inicio (#home-quicklinks-band) — una sola
+// pantalla genérica con el título de la card que se tocó, en vez de 3 pantallas casi
+// idénticas mientras el contenido real de cada una todavía no está definido.
+function goPlaceholder(titulo) {
+  document.getElementById('placeholder-titulo').textContent = titulo;
+  goScreen('screen-placeholder');
 }
 
 // Favoritos y simulaciones viven por cuenta (no en un balde global) para que una
@@ -4637,6 +4661,10 @@ function screenLabel(id) {
     return f ? f.q : 'Pregunta';
   }
   if (id === 'screen-precio-zona') return currentPrecioZona || 'Zona';
+  // screen-placeholder es una sola pantalla reutilizada por los 3 accesos rápidos de
+  // Inicio (ver goPlaceholder) — el título ya quedó pintado en el DOM antes de navegar,
+  // así que alcanza con leerlo de ahí en vez de duplicarlo en una variable aparte.
+  if (id === 'screen-placeholder') return document.getElementById('placeholder-titulo')?.textContent || 'Sección';
   // Los 5 "momentos" de Academia usan su nombre corto (Entiende/Simula/Explora/
   // Contacta/Decide, el mismo de los pills de logro) en vez del título largo de
   // SCREEN_LABELS — son varios eslabones seguidos en la misma cadena y necesitan leerse
@@ -4669,6 +4697,7 @@ const SCREEN_PARENT = {
   'screen-precio-zona': 'screen-precios',
   'screen-faq': 'screen-0',
   'screen-faq-detail': 'screen-faq',
+  'screen-placeholder': 'screen-0',
 };
 function breadcrumbChain(id) {
   // Caso especial: los 5 "momentos" de Academia son un flujo secuencial (Entiende →
