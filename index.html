@@ -1718,6 +1718,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <button class="dt-nav-btn" id="dtnav-props" onclick="toggleMega()">Propiedades <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
       </div>
       <button class="dt-nav-btn" id="dtnav-sim" onclick="requireAuth(()=>navTo('screen-sim','nav-sim'))">Simula tu Crédito</button>
+      <!-- Solo visual por ahora — sin onclick en las opciones, a pedido: "que no tengan
+           links ni nada". Reutiliza el mismo mecanismo de desplegable que .home-select
+           (toggleChipMenu/.dt-chip-menu), incluido el cierre al hacer click afuera. -->
+      <div class="dt-chip-wrap" style="position:relative">
+        <button class="dt-nav-btn" id="dtnav-asesor" onclick="toggleChipMenu('menu-contactar-asesor')">Contactar asesor <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
+        <div class="dt-chip-menu" id="menu-contactar-asesor">
+          <button>Contactar asesor hipotecario</button>
+          <button>Contactar asesor inmobiliario</button>
+        </div>
+      </div>
       <button class="dt-nav-btn" id="dtnav-ayuda" onclick="goScreen('screen-faq')">Ayuda</button>
     </nav>
     <!-- desktop user actions: hidden on mobile -->
