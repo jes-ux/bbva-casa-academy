@@ -76,8 +76,16 @@ La derivación a un asesor comercial (ficha de propiedad) y a un asesor hipoteca
 - Existe infraestructura/hosting institucional de BBVA (o aprobado por BBVA) para publicar la plataforma y el backoffice.
 - El contenido de Academia financiera y FAQ es provisto/aprobado por el equipo de negocio/legal de BBVA.
 
-## 6. Glosario
+## 6. Restricciones técnicas
 
+*(Sección distinta de los Requisitos no funcionales (4): ahí se describe QUÉ calidad debe tener la plataforma, sin atarse a una tecnología puntual; acá se dejan asentadas decisiones de arquitectura ya tomadas o propuestas por la organización, que si no se documentan corren el riesgo de perderse antes de llegar a diseño técnico.)*
+
+- **RT-01 — Librería de UI propia (pendiente de definición):** se propuso que el frontend consuma los componentes de una librería de UI propia de Aper, en vez de construir componentes desde cero, para mantener consistencia visual y de código entre productos. Nombre de la librería y alcance exacto (qué componentes cubre, versionado, proceso de contribución) todavía sin definir.
+- **RT-02 — Soluciones de terceros para capacidades ya resueltas por la industria:** para funcionalidades donde ya existe una solución de terceros madura y ampliamente adoptada (por ejemplo, mapas interactivos — ver A.3, A.4), usar esa solución en vez de construir una propia. No aplica a la librería de UI (RT-01), que es una decisión de negocio, no una ausencia de alternativas de mercado.
+
+## 7. Glosario
+
+- **Aper:** equipo de producto y tecnología autor de este documento (ver portada).
 - **Pulppo:** proveedor externo de inventario de propiedades y de atención comercial/inmobiliaria vía WhatsApp.
 - **Backoffice:** panel de administración interno, no expuesto al público, para gestionar contenido, configuración y usuarios de la plataforma.
 - **2FA:** autenticación de dos factores.
