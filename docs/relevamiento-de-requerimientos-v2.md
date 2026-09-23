@@ -1,9 +1,8 @@
 # Requerimientos: Marketplace inmobiliario BBVA México
 
-**Versión:** Draft 2.0 — 23 de septiembre de 2026
-**Versión anterior:** Draft 1.1 — 16 de septiembre de 2026
+**Versión:** 1.0 — 23 de septiembre de 2026
 **Autor:** Producto y tecnología de Aper
-**Nota de esta versión:** amplía y corrige el Draft 1.1 a partir de la validación funcional hecha sobre un prototipo navegable del producto (BBVA Mi Casa). Donde el Draft 1.1 quedaba ambiguo o incompleto, esta versión resuelve la ambigüedad con la decisión que el prototipo validó; donde algo del Draft 1.1 no se sostuvo al construirlo, se corrige explícitamente y se aclara por qué.
+**Base:** relevamiento funcional construido a partir de la validación de un prototipo navegable del producto (BBVA Mi Casa).
 
 ---
 
@@ -35,9 +34,9 @@ La plataforma no origina el crédito ni tramita la venta: su función es **descu
 - Contenido generado por otros usuarios (reseñas, preguntas públicas sobre una propiedad, foros).
 - Chat en tiempo real propio de la plataforma — el contacto con asesores ocurre en los canales de Pulppo/BBVA (WhatsApp, Salesforce), no en un chat interno.
 
-### 2.3 Corrección importante respecto del Draft 1.1: dos canales de asesoría distintos
+### 2.3 Dos canales de asesoría distintos
 
-El Draft 1.1 mencionaba un solo tipo de derivación ("asesor comercial de Pulppo vía WhatsApp" en la ficha de propiedad, y "asesor hipotecario de BBVA vía Salesforce" en el simulador) pero no lo remarcaba como una distinción de diseño. Al construir el prototipo confirmamos que **son dos integraciones separadas, con dueños, canales y datos distintos**, y hay que tratarlas así en el diseño técnico:
+La derivación a un asesor comercial (ficha de propiedad) y a un asesor hipotecario (simulador) **son dos integraciones separadas, con dueños, canales y datos distintos**, y hay que tratarlas así en el diseño técnico:
 
 | | Asesor inmobiliario (Pulppo) | Asesor hipotecario (BBVA) |
 |---|---|---|
@@ -57,7 +56,7 @@ El Draft 1.1 mencionaba un solo tipo de derivación ("asesor comercial de Pulppo
 
 ## 4. Requisitos no funcionales
 
-*(Sección nueva respecto del Draft 1.1 — no existía ningún requisito no funcional; sin esto, cualquier equipo de desarrollo tiene que adivinar el nivel de calidad esperado.)*
+*(Sin requisitos no funcionales explícitos, cualquier equipo de desarrollo tiene que adivinar el nivel de calidad esperado.)*
 
 - **RNF-01 — Seguridad:** contraseñas con hashing (bcrypt/argon2), verificación de email, rate limiting en login, TLS en tránsito y cifrado en reposo para datos personales y financieros. Cumplimiento de la LFPDPPP (aviso de privacidad, consentimiento, derechos ARCO) para todo dato personal recolectado.
 - **RNF-02 — Disponibilidad:** la plataforma pública (Parte A) es de cara al cliente BBVA; se espera un SLA de disponibilidad acorde a un canal digital de adquisición (a definir con Infraestructura, sugerido ≥ 99.5%).
@@ -104,7 +103,7 @@ Usuario anónimo, usuario autenticado (ver sección 3).
 - Criterios de aceptación:
   - La página principal muestra, de forma prominente y por encima del scroll (*above the fold*), un buscador con selector de tipo de propiedad y campo de texto libre (zona/colonia), acompañado de tabs de contexto (por ejemplo, Compra / Desarrollos / Oportunidades) para orientar el tipo de búsqueda antes de ejecutarla.
   - Al confirmar la búsqueda (botón "Buscar propiedad"), navega a Búsqueda y exploración de propiedades (A.3).
-  - Regla de negocio a confirmar: definir si el tipo y el texto ingresados acá deben pre-cargarse como filtro inicial en A.3, o si A.3 se abre sin ningún filtro aplicado — es un punto que quedó sin resolver al construir el prototipo (ver Anexo de trazabilidad).
+  - Regla de negocio a confirmar: definir si el tipo y el texto ingresados acá deben pre-cargarse como filtro inicial en A.3, o si A.3 se abre sin ningún filtro aplicado — es un punto que quedó sin resolver al construir el prototipo.
 
 **HU-C-02.** Como usuario, quiero ver en la página principal propiedades recién publicadas y de zonas destacadas, para descubrir opciones sin tener que buscar activamente.
 - Criterios de aceptación:
@@ -129,7 +128,7 @@ Usuario anónimo, usuario autenticado (ver sección 3).
 
 ### A.2.1 Precios de referencia por zona
 
-*(Funcionalidad adicional, no mencionada en el Draft 1.1, identificada como necesaria durante la construcción del prototipo: da contexto de mercado antes de buscar.)*
+*(Identificada como necesaria al construir el prototipo: da contexto de mercado antes de buscar.)*
 
 **HU-C-06.** Como usuario, quiero consultar el precio de referencia por m² y la evolución de precios de una zona, para decidir dónde buscar antes de filtrar propiedades puntuales.
 - Criterios de aceptación:
@@ -247,7 +246,7 @@ Usuario anónimo, usuario autenticado (ver sección 3).
 
 ## A.7 Menú y navegación de cuenta (side sheet)
 
-*(El Draft 1.1 solo mencionaba, dentro de Página principal, "un menú desplegable con accesos relevantes". Al revisar el prototipo en detalle confirmamos que es un mecanismo más grande que un dropdown: un panel lateral compartido por toda el área de cuenta, con una variante adicional en desktop. Se documenta acá porque de esto depende cómo se navega a Perfil, Favoritos, Configuración y todo lo demás.)*
+*(Es un mecanismo más grande que un simple dropdown: un panel lateral compartido por toda el área de cuenta, con una variante adicional en desktop. Se documenta acá porque de esto depende cómo se navega a Perfil, Favoritos, Configuración y todo lo demás.)*
 
 **HU-C-25.** Como usuario, quiero abrir un panel lateral (side sheet) desde el ícono de mi cuenta en el encabezado, para navegar a cualquier sección de mi cuenta sin perder el contexto de la pantalla en la que estoy.
 - Criterios de aceptación:
@@ -270,7 +269,6 @@ Usuario anónimo, usuario autenticado (ver sección 3).
   - Foto de perfil (avatar): el usuario puede reemplazarla.
   - El email de la cuenta se muestra pero no es editable directamente desde Perfil — cambiarlo requiere el flujo de verificación descrito abajo, no una edición libre.
   - Si el email de la cuenta todavía no fue verificado, se muestra un aviso persistente con dos acciones: reenviar el enlace de confirmación, o abrir el correo y confirmar. El usuario puede seguir usando la plataforma mientras tanto, salvo las acciones que requieren email verificado (ver HU-C-21).
-  - *(Resuelve el punto "(verificar)" del Draft 1.1: los campos editables de Perfil son nombre, teléfono y avatar — el email queda fuera de la edición libre por su propio flujo de verificación.)*
 
 **HU-C-28.** Como usuario autenticado, quiero marcar y desmarcar propiedades como favoritas desde cualquier card o ficha, y verlas todas juntas en una sección, para encontrarlas rápido después.
 - Criterios de aceptación:
@@ -294,7 +292,7 @@ Usuario anónimo, usuario autenticado (ver sección 3).
 
 ## A.9 Oportunidades
 
-*(El Draft 1.1 la mencionaba como un bullet suelto dentro del Simulador — "acceder a un conjunto de propiedades compatibles con la simulación realizada". Al construirla confirmamos que amerita ser tratada como sección propia, con su propia regla de negocio y su propio estado vacío.)*
+*(Amerita ser tratada como sección propia, con su propia regla de negocio y su propio estado vacío, más allá del resultado de la simulación en sí.)*
 
 **HU-C-32.** Como usuario autenticado con al menos una simulación guardada, quiero ver propiedades del catálogo que están dentro de mi capacidad, para no tener que cruzar precio y capacidad manualmente.
 - Criterios de aceptación:
@@ -304,7 +302,7 @@ Usuario anónimo, usuario autenticado (ver sección 3).
 
 ## A.10 Notificaciones
 
-*(El Draft 1.1 solo mencionaba "un panel de notificaciones" sin detalle. Construir el prototipo obligó a definir tipos y reglas de enrutamiento — se documentan acá.)*
+*(Construir el prototipo obligó a definir tipos y reglas de enrutamiento concretas — se documentan acá.)*
 
 **HU-C-33.** Como usuario autenticado, quiero recibir notificaciones de eventos relevantes y que cada una me lleve directo a donde corresponde, para no tener que buscar manualmente qué las generó.
 - Criterios de aceptación:
@@ -351,12 +349,12 @@ Usuario anónimo, usuario autenticado (ver sección 3).
 
 ## B.1 Actores y modelo de permisos
 
-Dos roles base, según el Draft 1.1:
+Dos roles base:
 
 - **Administrador de contenido y configuración:** gestiona contenido editorial y parametrización de producto (B.3, B.4, B.5).
 - **Administrador de seguridad:** gestiona usuarios, roles y permisos del propio backoffice (B.6).
 
-**RN-BO-01.** El backoffice debe implementarse con control de acceso basado en roles (RBAC): cada acción descrita en esta Parte B debe estar asociada a un rol, y un usuario de backoffice solo puede ejecutar las acciones de los roles que tiene asignados. *(El Draft 1.1 ya distinguía dos roles; esta versión lo explicita como un modelo de permisos, no una convención informal, para que Seguridad pueda auditarlo.)*
+**RN-BO-01.** El backoffice debe implementarse con control de acceso basado en roles (RBAC): cada acción descrita en esta Parte B debe estar asociada a un rol, y un usuario de backoffice solo puede ejecutar las acciones de los roles que tiene asignados. *(Se explicita como un modelo de permisos formal, no una convención informal, para que Seguridad pueda auditarlo.)*
 
 ## B.2 Autenticación y seguridad del backoffice
 
@@ -408,18 +406,3 @@ Dos roles base, según el Draft 1.1:
 
 **HU-BO-11.** Como administrador de seguridad, quiero dar de alta, editar y dar de baja roles de backoffice, y asignárselos a los usuarios, para mantener el modelo de permisos (B.1) actualizado.
 - Criterios de aceptación: CRUD de roles, asignación de rol(es) por usuario, con auditoría (RNF-06).
-
----
-
-## Anexo — Trazabilidad con el Draft 1.1
-
-Toda funcionalidad del Draft 1.1 quedó representada en esta versión. Cambios de fondo respecto del original:
-
-- Se separó la derivación a asesor inmobiliario (Pulppo/WhatsApp) de la derivación a asesor hipotecario (BBVA/Salesforce) como dos integraciones distintas — el Draft 1.1 las mencionaba en secciones separadas sin remarcar que son canales y dueños distintos (ver 2.3).
-- "Los usuarios pueden acceder a un conjunto de propiedades compatibles con la simulación realizada" (bullet suelto en Simulador) pasó a ser su propia sección con regla de negocio explícita (A.9, Oportunidades).
-- "Un panel de notificaciones" (bullet suelto en Perfil) se detalló en tipos y reglas de enrutamiento (A.10).
-- Se agregaron: el buscador de la página principal como historia propia (HU-C-01 — el Draft 1.1 lo mencionaba dentro de "Búsqueda" sin dejar explícito que también es, ante todo, el elemento principal de la home), Precios de referencia por zona (A.2.1), Contacto con asesores como historial trazable (A.11), y el registro explícito de los 2 elementos de interfaz sin función definida (A.13).
-- Se agregaron Requisitos no funcionales (sección 4), Supuestos y dependencias (sección 5) y Fuera de alcance (2.2), inexistentes en el Draft 1.1.
-- El punto "(verificar)" del Draft 1.1 sobre qué datos personales puede editar el usuario (Perfil) se resolvió en HU-C-27 revisando el prototipo: nombre, teléfono y avatar son editables; el email tiene su propio flujo de verificación y no se edita libremente.
-- El "menú desplegable" que el Draft 1.1 mencionaba de paso en Página principal resultó, al revisar el prototipo, un mecanismo más grande que un dropdown: un panel lateral (side sheet) compartido por toda el área de cuenta, con una barra de navegación fija adicional en desktop. Se documenta como su propia sección (A.7, HU-C-25 y HU-C-26), incluyendo una inconsistencia real detectada entre la versión mobile y desktop (falta "Oportunidades" en mobile) que queda como punto a resolver, no a corregir por cuenta propia.
-- Se agregó la pantalla de Configuración de cuenta completa (A.8, HU-C-31): preferencias de notificaciones, acceso a términos/política de privacidad, y eliminar cuenta — no existía ninguna mención de esto en el Draft 1.1, y "eliminar cuenta" en particular es un requisito con implicancia regulatoria (LFPDPPP) que no puede quedar implícito.
