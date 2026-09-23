@@ -107,248 +107,92 @@ Usuario anónimo, usuario autenticado (ver sección 3).
 
 **Objetivo:** ser la puerta de entrada de la plataforma, orientando hacia búsqueda, simulación y contenido educativo.
 
-**HU-C-01.** Como usuario, quiero buscar una propiedad directamente desde la página principal, sin tener que navegar antes a otra pantalla, para llegar más rápido a resultados relevantes.
-- Criterios de aceptación:
-  - La página principal muestra, de forma prominente y por encima del scroll (*above the fold*), un buscador con selector de tipo de propiedad y campo de texto libre (zona/colonia), acompañado de tabs de contexto (por ejemplo, Compra / Desarrollos / Oportunidades) para orientar el tipo de búsqueda antes de ejecutarla.
-  - Al confirmar la búsqueda (botón "Buscar propiedad"), navega a Búsqueda y exploración de propiedades (A.3).
-  - Regla de negocio a confirmar: definir si el tipo y el texto ingresados acá deben pre-cargarse como filtro inicial en A.3, o si A.3 se abre sin ningún filtro aplicado — es un punto que quedó sin resolver al construir el prototipo.
-
-**HU-C-02.** Como usuario, quiero ver en la página principal propiedades recién publicadas y de zonas destacadas, para descubrir opciones sin tener que buscar activamente.
-- Criterios de aceptación:
-  - Se muestra un carrusel de propiedades recién publicadas, ordenado por fecha de publicación descendente.
-  - Se muestra un carrusel de zonas destacadas, configurable desde backoffice (ver B.4).
-  - Se muestra un carrusel de propiedades destacadas, curado manualmente desde backoffice (ver B.4).
-
-**HU-C-03.** Como usuario, quiero acceder desde la página principal a un menú desplegable con los accesos relevantes de la plataforma, para navegar sin perder contexto.
-- Criterios de aceptación:
-  - El menú incluye, como mínimo: Propiedades (con acceso a búsqueda), Simulador de crédito, Academia financiera, Ayuda.
-  - En desktop, el menú se muestra como barra de navegación fija en el encabezado; en mobile, como menú desplegable (drawer).
-
-**HU-C-04.** Como usuario, quiero ver banners promocionales en la página principal, para enterarme de campañas o contenido priorizado por negocio.
-- Criterios de aceptación:
-  - Los banners son configurables desde backoffice (contenido, imagen y destino), ver B.4.
-
-**HU-C-05.** Como usuario, quiero explorar la plataforma por tipo de propiedad y por zona/mercado, para orientar mi búsqueda por criterios distintos al texto libre.
-- Criterios de aceptación:
-  - Existe un bloque de "Explorar por tipo de propiedad" (departamento, casa, oficina, local comercial, etc.) que lleva a la búsqueda (A.3) pre-filtrada por ese tipo.
-  - Existe una sección de precios de referencia por zona (precio por m², comparación por segmento), independiente del listado de propiedades — ver A.2.1.
-  - Existe contenido de FAQ destacado, con acceso al listado completo (A.12).
+- Los usuarios pueden buscar una propiedad directamente desde la página principal, mediante un buscador prominente (por encima del scroll) con selector de tipo de propiedad y campo de texto libre (zona/colonia), acompañado de tabs de contexto (por ejemplo, Compra / Desarrollos / Oportunidades). Al confirmar la búsqueda, navega a Búsqueda y exploración de propiedades (A.3). *Regla de negocio a confirmar: si el tipo/texto ingresado acá debe pre-cargarse como filtro inicial en A.3, o si A.3 se abre sin filtro — quedó sin resolver al construir el prototipo.*
+- Los usuarios pueden ver en la página principal un carrusel de propiedades recién publicadas (ordenado por fecha de publicación descendente), un carrusel de zonas destacadas y un carrusel de propiedades destacadas — los tres configurables/curados desde backoffice (B.4).
+- Los usuarios pueden acceder desde la página principal a un menú con los accesos relevantes de la plataforma (como mínimo: Propiedades con acceso a búsqueda, Simulador de crédito, Academia financiera, Ayuda) — en desktop como barra de navegación fija en el encabezado, en mobile como menú desplegable (drawer).
+- Los usuarios pueden ver banners promocionales en la página principal, configurables desde backoffice (contenido, imagen y destino — B.4).
+- Los usuarios pueden explorar por tipo de propiedad (bloque que lleva a la búsqueda, A.3, pre-filtrada por ese tipo), acceder a precios de referencia por zona (A.2.1) y a contenido de FAQ destacado, con acceso al listado completo (A.12).
 
 ### A.2.1 Precios de referencia por zona
 
 *(Identificada como necesaria al construir el prototipo: da contexto de mercado antes de buscar.)*
 
-**HU-C-06.** Como usuario, quiero consultar el precio de referencia por m² y la evolución de precios de una zona, para decidir dónde buscar antes de filtrar propiedades puntuales.
-- Criterios de aceptación:
-  - Por zona: precio por m² (mediana), evolución histórica, comparación por segmento (tipo de propiedad / cantidad de ambientes).
-  - Desde la ficha de una zona, acceso directo a la búsqueda de propiedades de esa zona (A.3).
-  - Regla de negocio: los datos de mercado provienen de una fuente mantenida por el equipo de Data (agregación propia o proveedor externo de datos inmobiliarios) — no son un valor fijo.
+- Los usuarios pueden consultar, por zona, el precio de referencia por m² (mediana), su evolución histórica y una comparación por segmento (tipo de propiedad / cantidad de ambientes), con acceso directo desde ahí a la búsqueda de propiedades de esa zona (A.3). *Regla de negocio: los datos de mercado provienen de una fuente mantenida por el equipo de Data (agregación propia o proveedor externo de datos inmobiliarios) — no son un valor fijo.*
 
 ## A.3 Búsqueda y exploración de propiedades
 
 **Objetivo:** permitir encontrar propiedades del inventario de Pulppo mediante listado, filtros, orden y mapa.
 
-**HU-C-07.** Como usuario, quiero buscar propiedades por texto, tipo, precio y ubicación, para encontrar rápido las que me interesan.
-- Criterios de aceptación:
-  - Buscador de texto libre (zona/colonia como mínimo).
-  - Filtros preestablecidos: operación (compra/renta), tipo de propiedad, rango de precio.
-  - Los filtros se combinan entre sí (AND).
-  - Filtrado y paginado del lado del servidor (no traer todo el inventario al cliente) — Pulppo debe soportar consulta paginada/filtrada, o el filtrado ocurre sobre una réplica/índice propio (a definir con Infraestructura).
-
-**HU-C-08.** Como usuario, quiero ordenar los resultados de búsqueda, para priorizar según lo que más me importa.
-- Criterios de aceptación:
-  - Modos de ordenamiento preestablecidos: precio (ascendente/descendente), más recientes, relevancia.
-
-**HU-C-09.** Como usuario, quiero ver los resultados de búsqueda en un mapa, para entender su ubicación relativa.
-- Criterios de aceptación:
-  - Vista de mapa con un pin por propiedad, sincronizada con los filtros aplicados.
-  - Alternar entre vista de listado y vista de mapa sin perder los filtros.
-  - En la vista de mapa, un carrusel de las cards de resultados (vertical en desktop, horizontal en mobile).
-
-**HU-C-10.** Como usuario, quiero ver en cada card de resultado la información clave de la propiedad y accesos directos, para decidir si entrar al detalle.
-- Criterios de aceptación:
-  - La card muestra: foto principal, precio, zona, tipo, ambientes, m².
-  - La card incluye un acceso directo para marcarla favorita (usuario autenticado, ver A.8) y para simular crédito para esa propiedad puntual (ver A.5), sin tener que entrar a la ficha.
-  - Regla de negocio — badge "En tu rango": si el usuario autenticado tiene al menos una simulación guardada, la card muestra un indicador cuando el precio de la propiedad está dentro de su capacidad simulada; si no tiene ninguna simulación guardada, el indicador no se muestra.
+- Los usuarios pueden buscar propiedades por texto libre (zona/colonia como mínimo) y filtrar por operación (compra/renta), tipo de propiedad y rango de precio — los filtros se combinan entre sí (AND). El filtrado y paginado debe ocurrir del lado del servidor, no trayendo todo el inventario al cliente (Pulppo debe soportar consulta paginada/filtrada, o el filtrado ocurre sobre una réplica/índice propio, a definir con Infraestructura).
+- Los usuarios pueden ordenar los resultados de búsqueda por precio (ascendente/descendente), más recientes o relevancia.
+- Los usuarios pueden ver los resultados en un mapa, con un pin por propiedad sincronizado con los filtros aplicados, alternando entre vista de listado y de mapa sin perderlos; en la vista de mapa, un carrusel de las cards de resultados (vertical en desktop, horizontal en mobile).
+- Cada card de resultado muestra foto principal, precio, zona, tipo, ambientes y m², con accesos directos para marcarla favorita (usuario autenticado, ver A.8) y para simular crédito para esa propiedad puntual (ver A.5), sin tener que entrar a la ficha. *Regla de negocio — badge "En tu rango": si el usuario autenticado tiene al menos una simulación guardada, la card muestra un indicador cuando el precio de la propiedad está dentro de su capacidad simulada; si no tiene ninguna simulación guardada, el indicador no se muestra.*
 
 ## A.4 Ficha de detalle de propiedad
 
 **Objetivo:** dar toda la información de una propiedad puntual y las acciones para avanzar sobre ella.
 
-**HU-C-11.** Como usuario, quiero ver el detalle completo de una propiedad, para evaluarla en profundidad.
-- Criterios de aceptación:
-  - Se muestra precio, precio por m², datos del desarrollador (si aplica), descripción, amenities.
-  - Galería de fotos y planos.
-  - Recorrido 360°, cuando la propiedad lo tenga cargado en el inventario de Pulppo.
-  - Video de la propiedad, cuando esté disponible.
-  - Ubicación en un mini-mapa.
-  - Badge "En tu rango", con la misma regla de A.3.
-- **Gap detectado al revisar el prototipo — nada de la galería/recorrido 360°/video está construido ni validado:**
-  - El prototipo solo muestra **una foto** por propiedad (imagen de stock fija); no existe galería, ni carrusel, ni miniaturas, ni planos como imagen.
-  - Existe una tarjeta de "Visualización 3D" en la ficha, pero su botón "Ampliar" está *hardcodeado* a mostrar "Próximamente" — no depende de si la propiedad tiene o no recorrido 360° cargado.
-  - No hay ningún reproductor de video en la ficha.
-  - **Inconsistencia a resolver:** el listado de Propiedades (A.3) sí permite filtrar por "tiene recorrido 360° / tiene video / tiene planos" (son campos reales del catálogo), pero hoy ese filtro lleva a fichas que no muestran ninguna de esas tres cosas — filtrar por "tiene video", por ejemplo, no tiene ningún video que ver del otro lado. Esto no es un requisito nuevo: ya estaba pedido desde el primer relevamiento; lo que hay que resolver es la experiencia real de la galería/multimedia (formato, cantidad de fotos, si el 360° y el video van en la misma galería o aparte) antes de construirla.
-
-**HU-C-12.** Como usuario autenticado, quiero guardar una propiedad como favorita desde su ficha, para encontrarla después sin volver a buscarla.
-- Criterios de aceptación: ver A.8 (Favoritos) — la mecánica de guardar/quitar es la misma desde la card de resultados (A.3) y desde la ficha.
-
-**HU-C-13.** Como usuario, quiero simular un crédito hipotecario para esta propiedad puntual, para saber si me alcanza y cuánto enganche necesito.
-- Criterios de aceptación: ver A.5 — la ficha ofrece el acceso directo al simulador ya vinculado a esta propiedad.
-
-**HU-C-14.** Como usuario autenticado, quiero contactar a un asesor inmobiliario sobre esta propiedad, para resolver dudas o avanzar en el proceso de compra.
-- Criterios de aceptación:
-  - El botón deriva al asesor comercial de **Pulppo vía WhatsApp** (ver 2.3), con la propiedad de referencia identificada en el mensaje.
-  - Requiere sesión iniciada; si no hay sesión, se solicita login y, al completarlo, se ejecuta la derivación.
-  - Queda un registro del contacto en el historial de la cuenta (ver A.11).
+- Los usuarios pueden ver el detalle completo de una propiedad: precio, precio por m², datos del desarrollador (si aplica), descripción, amenities, galería de fotos con múltiples imágenes navegable, planos (cuando la propiedad los tenga cargados en el inventario de Pulppo), recorrido 360° (cuando la propiedad lo tenga cargado), video (cuando esté disponible), ubicación en un mini-mapa, y el badge "En tu rango" (misma regla de A.3). *Regla de negocio: los filtros de búsqueda "tiene recorrido 360° / tiene video / tiene planos" (A.3) deben corresponderse con el contenido real de la ficha — si el catálogo marca una propiedad con alguno de estos atributos, la ficha debe mostrar ese contenido.*
+- Los usuarios autenticados pueden guardar una propiedad como favorita desde su ficha (misma mecánica de guardar/quitar que desde la card de resultados, A.3 — ver A.8).
+- Los usuarios pueden simular un crédito hipotecario para esta propiedad puntual desde su ficha, con acceso directo al simulador ya vinculado a ella (A.5).
+- Los usuarios autenticados pueden contactar a un asesor inmobiliario sobre esta propiedad: el botón deriva al asesor comercial de Pulppo vía WhatsApp (ver 2.3), con la propiedad de referencia identificada en el mensaje; si no hay sesión, se solicita login y, al completarlo, se ejecuta la derivación; queda un registro del contacto en el historial de la cuenta (A.11).
 
 ## A.5 Simulador de crédito hipotecario
 
 **Objetivo:** estimar capacidad de compra y cuota mensual de un crédito hipotecario a tasa fija, sin requerir cuenta, y derivar a un asesor hipotecario cuando el usuario quiere avanzar.
 
-**HU-C-15.** Como usuario (sin necesidad de sesión), quiero simular cuánto puedo pagar dado mi ingreso, enganche y plazo, para saber qué propiedades están a mi alcance.
-- Criterios de aceptación:
-  - Entradas: ingreso mensual, enganche disponible, plazo (10/15/20/25 años — parametrizable desde backoffice, ver B.5), condición de cliente BBVA (tasa preferencial).
-  - Salida: capacidad de compra estimada, cuota mensual, % de la cuota sobre el ingreso, comparación de cuota por plazo.
-  - El simulador es de acceso público: no requiere sesión ni pide ningún dato personal identificable para calcular.
-  - Regla de negocio (parametrizable desde backoffice, ver B.5): cuota máxima = ingreso × porcentaje máximo definido (ej. 30%); crédito máximo = amortización estándar a tasa fija sobre esa cuota y el plazo elegido; capacidad de compra = crédito máximo + enganche.
-
-**HU-C-16.** Como usuario que llega desde una propiedad puntual (A.4), quiero que el simulador calcule el enganche que necesito para esa propiedad específica, en vez de tener que adivinarlo, para saber de entrada cuánto me falta ahorrar.
-- Criterios de aceptación:
-  - Al simular con una propiedad de referencia, el campo de enganche no se pide: se calcula como `precio de la propiedad − crédito máximo` según el ingreso y plazo ingresados.
-  - Si el crédito máximo ya cubre el precio de la propiedad sin necesitar enganche, se informa positivamente en vez de mostrar un valor en cero sin contexto.
-
-**HU-C-17.** Como usuario, quiero ver un aviso si la cuota resultante es una porción alta de mi ingreso, para tomar una decisión informada.
-- Criterios de aceptación:
-  - Se muestra un aviso cuando la cuota supera el porcentaje máximo definido en B.5.
-
-**HU-C-18.** Como usuario autenticado, quiero guardar mi simulación, para retomarla después sin tener que rehacerla.
-- Criterios de aceptación:
-  - Guardar requiere sesión; si el usuario no está autenticado, se le solicita login y, al completarlo, la simulación se guarda automáticamente con los datos ya ingresados (sin pedirlos de nuevo).
-  - Lo guardado: ingreso, enganche, plazo, capacidad de compra, cuota, tasa aplicada, fecha, y la propiedad de referencia si la hubiera.
-
-**HU-C-19.** Como usuario, quiero acceder a un asesor hipotecario de BBVA desde mi simulación, para avanzar en el proceso de crédito.
-- Criterios de aceptación:
-  - El botón deriva al asesor hipotecario de BBVA **vía Salesforce** (no WhatsApp — ver 2.3), enviando el contexto de la simulación (ingreso, enganche, plazo, capacidad, propiedad de referencia si existe).
-
-**HU-C-20.** Como usuario, quiero ver propiedades del catálogo compatibles con mi simulación, para pasar de "cuánto puedo pagar" a "qué puedo comprar".
-- Criterios de aceptación: ver A.9 (Oportunidades) — esta es la misma funcionalidad, accesible tanto desde el resultado de la simulación como desde su propia sección.
+- Los usuarios, sin necesidad de sesión, pueden simular cuánto pueden pagar a partir de ingreso mensual, enganche disponible y plazo (10/15/20/25 años, parametrizable desde backoffice — B.5), y de si son cliente BBVA (tasa preferencial). El resultado incluye capacidad de compra estimada, cuota mensual, % de la cuota sobre el ingreso y comparación de cuota por plazo. El simulador no pide ningún dato personal identificable para calcular. *Regla de negocio (parametrizable desde B.5): cuota máxima = ingreso × porcentaje máximo definido (ej. 30%); crédito máximo = amortización estándar a tasa fija sobre esa cuota y el plazo elegido; capacidad de compra = crédito máximo + enganche.*
+- Cuando el usuario llega desde una propiedad puntual (A.4), el simulador calcula el enganche que necesita para esa propiedad específica en vez de pedirlo: enganche = precio de la propiedad − crédito máximo, según el ingreso y plazo ingresados. Si el crédito máximo ya cubre el precio de la propiedad sin necesitar enganche, se informa positivamente en vez de mostrar un valor en cero sin contexto.
+- Los usuarios ven un aviso cuando la cuota resultante supera el porcentaje máximo de ingreso definido en B.5.
+- Los usuarios autenticados pueden guardar su simulación; si no hay sesión, se solicita login y, al completarlo, la simulación se guarda automáticamente con los datos ya ingresados, sin pedirlos de nuevo. Se guarda: ingreso, enganche, plazo, capacidad de compra, cuota, tasa aplicada, fecha, y la propiedad de referencia si la hubiera.
+- Los usuarios pueden acceder a un asesor hipotecario de BBVA desde su simulación: el botón deriva vía Salesforce (no WhatsApp — ver 2.3), enviando el contexto de la simulación (ingreso, enganche, plazo, capacidad, propiedad de referencia si existe).
+- Los usuarios pueden ver propiedades del catálogo compatibles con su simulación, tanto desde el resultado de la simulación como desde su propia sección (A.9, Oportunidades).
 
 ## A.6 Registro y autenticación
 
 **Objetivo:** identificar al usuario para las funciones que dependen de cuenta (guardar simulación, favoritos, mensajes, notificaciones, Academia).
 
-**HU-C-21.** Como usuario, quiero registrarme con correo y contraseña, para crear una cuenta.
-- Criterios de aceptación:
-  - Alta con email, nombre, contraseña y confirmación de contraseña.
-  - Verificación de email antes de habilitar acciones sensibles (guardar simulación, contactar asesores).
-  - Un email ya registrado no puede volver a registrarse.
-
-**HU-C-22.** Como usuario, quiero iniciar sesión con correo/contraseña o con Google, para acceder a mi cuenta.
-- Criterios de aceptación:
-  - Login con email/contraseña, validado contra el hash almacenado.
-  - Login social con Google (OAuth 2.0 / OpenID Connect).
-
-**HU-C-23.** Como usuario, quiero poder restablecer mi contraseña si la olvido, para recuperar el acceso a mi cuenta.
-- Criterios de aceptación:
-  - Solicitud de restablecimiento por email, con enlace de un solo uso y expiración corta.
-
-**HU-C-24.** Como usuario, quiero que cualquier acción que requiera cuenta me pida iniciar sesión en el momento (no antes), y que al loguearme se complete lo que quería hacer, para no perder lo que ya había cargado.
-- Criterios de aceptación:
-  - El simulador, la búsqueda, el mapa y la ficha de propiedad son de acceso público.
-  - Guardar simulación, marcar favorito, contactar asesores, ver Perfil/Favoritos/Mis simulaciones/Notificaciones/Academia requieren sesión.
-  - Al pedirse login desde cualquiera de esas acciones, tras autenticarse exitosamente la plataforma vuelve a la pantalla de origen y ejecuta la acción pendiente automáticamente.
+- Los usuarios pueden registrarse con correo y contraseña: alta con email, nombre, contraseña y confirmación de contraseña; verificación de email antes de habilitar acciones sensibles (guardar simulación, contactar asesores); un email ya registrado no puede volver a registrarse.
+- Los usuarios pueden iniciar sesión con correo/contraseña (validado contra el hash almacenado) o con Google (OAuth 2.0 / OpenID Connect).
+- Los usuarios pueden restablecer su contraseña por email, con un enlace de un solo uso y expiración corta.
+- El simulador, la búsqueda, el mapa y la ficha de propiedad son de acceso público; guardar simulación, marcar favorito, contactar asesores, y ver Perfil/Favoritos/Mis simulaciones/Notificaciones/Academia requieren sesión. Al pedirse login desde cualquiera de esas acciones, tras autenticarse exitosamente la plataforma vuelve a la pantalla de origen y ejecuta la acción pendiente automáticamente.
 
 ## A.7 Menú y navegación de cuenta (side sheet)
 
 *(Es un mecanismo más grande que un simple dropdown: un panel lateral compartido por toda el área de cuenta, con una variante adicional en desktop. Se documenta acá porque de esto depende cómo se navega a Perfil, Favoritos, Configuración y todo lo demás.)*
 
-**HU-C-25.** Como usuario, quiero abrir un panel lateral (side sheet) desde el ícono de mi cuenta en el encabezado, para navegar a cualquier sección de mi cuenta sin perder el contexto de la pantalla en la que estoy.
-- Criterios de aceptación:
-  - El panel se abre tocando el avatar del encabezado (igual en mobile y desktop), como una superposición sobre la pantalla actual, con fondo oscurecido y cierre al tocar afuera o el botón de cerrar.
-  - El encabezado del panel muestra avatar, nombre de la cuenta (o un texto genérico si el nombre aún no cargó) y email, con acceso directo a Perfil.
-  - El avatar del encabezado muestra un indicador visual cuando hay notificaciones sin leer (ver A.10).
-  - El panel agrupa los accesos en 3 bloques: **(1)** Perfil, Favoritos, Simulaciones, Mensajes, Notificaciones, Academia BBVA, Oportunidades, Ayuda y preguntas frecuentes, Precios por zona; **(2)** Simula tu crédito, Configuración; **(3)** Cerrar sesión.
-  - Regla de negocio a confirmar: en el prototipo, el panel en mobile no incluye el acceso a "Oportunidades" (sí está en la variante de desktop, ver HU-C-26) — es una inconsistencia detectada al revisarlo, no una decisión de diseño; hay que resolver si se agrega a mobile o se saca de desktop.
-
-**HU-C-26.** Como usuario en desktop, quiero ver un panel de navegación de cuenta fijo al costado mientras estoy dentro de cualquier sección de mi cuenta, para cambiar de sección sin tener que reabrir un menú cada vez.
-- Criterios de aceptación:
-  - En desktop, las pantallas de Perfil, Favoritos, Simulaciones, Mensajes, Notificaciones, Academia, Oportunidades, Ayuda, Precios por zona y Configuración muestran, además del side sheet de la HU-C-25, una barra de navegación fija a la izquierda con los mismos accesos (salvo la diferencia de "Oportunidades" ya señalada), sin necesidad de abrir ni cerrar nada.
-  - En mobile, esas mismas pantallas muestran solo un título de pantalla y dependen del side sheet (HU-C-25) para cambiar de sección.
+- Los usuarios pueden abrir un panel lateral (side sheet) desde el avatar del encabezado (igual en mobile y desktop), como una superposición sobre la pantalla actual, con fondo oscurecido y cierre al tocar afuera o el botón de cerrar. El encabezado del panel muestra avatar, nombre de la cuenta y email, con acceso directo a Perfil; el avatar muestra un indicador visual cuando hay notificaciones sin leer (A.10). El panel agrupa los accesos en 3 bloques: **(1)** Perfil, Favoritos, Simulaciones, Mensajes, Notificaciones, Academia BBVA, Oportunidades, Ayuda y preguntas frecuentes, Precios por zona; **(2)** Simula tu crédito, Configuración; **(3)** Cerrar sesión. *Regla de negocio a confirmar: en el prototipo, el panel en mobile no incluye el acceso a "Oportunidades" (sí está en la variante de desktop) — es una inconsistencia detectada al revisarlo, no una decisión de diseño; hay que resolver si se agrega a mobile o se saca de desktop.*
+- En desktop, las pantallas de Perfil, Favoritos, Simulaciones, Mensajes, Notificaciones, Academia, Oportunidades, Ayuda, Precios por zona y Configuración muestran, además del side sheet, una barra de navegación fija a la izquierda con los mismos accesos (salvo la diferencia de "Oportunidades" ya señalada), sin necesidad de abrir ni cerrar nada. En mobile, esas mismas pantallas muestran solo un título de pantalla y dependen del side sheet para cambiar de sección.
 
 ## A.8 Perfil, favoritos, simulaciones guardadas y configuración de cuenta
 
-**HU-C-27.** Como usuario autenticado, quiero ver y editar mis datos personales, para mantenerlos actualizados.
-- Criterios de aceptación:
-  - Editables de forma independiente, campo por campo: nombre completo y teléfono (opcional) — edición inline, se confirma al presionar Enter o al salir del campo.
-  - Foto de perfil (avatar): el usuario puede reemplazarla.
-  - El email de la cuenta se muestra pero no es editable directamente desde Perfil — cambiarlo requiere el flujo de verificación descrito abajo, no una edición libre.
-  - Si el email de la cuenta todavía no fue verificado, se muestra un aviso persistente con dos acciones: reenviar el enlace de confirmación, o abrir el correo y confirmar. El usuario puede seguir usando la plataforma mientras tanto, salvo las acciones que requieren email verificado (ver HU-C-21).
-
-**HU-C-28.** Como usuario autenticado, quiero marcar y desmarcar propiedades como favoritas desde cualquier card o ficha, y verlas todas juntas en una sección, para encontrarlas rápido después.
-- Criterios de aceptación:
-  - El ícono de favorito está disponible tanto en la card de resultados (A.3) como en la ficha de detalle (A.4), y refleja el mismo estado en ambos lugares.
-  - Sección "Favoritos" con el listado completo y estado vacío orientativo si no hay ninguno.
-  - Si una propiedad favorita deja de existir en el inventario de Pulppo, se refleja como no disponible (no se elimina silenciosamente del listado sin avisar).
-
-**HU-C-29.** Como usuario autenticado, quiero ver el historial de mis simulaciones guardadas, para retomarlas o compararlas.
-- Criterios de aceptación: ver A.5 (HU-C-18) para el detalle de qué se guarda; esta sección lista todo lo guardado, con estado vacío orientativo si no hay ninguna.
-
-**HU-C-30.** Como usuario autenticado, quiero vincular una propiedad ya vista a una simulación guardada, para dejar registrada la relación entre ambas.
-- Criterios de aceptación:
-  - Vincular no recalcula la simulación: solo la asocia como referencia.
-
-**HU-C-31.** Como usuario autenticado, quiero configurar mis preferencias de notificaciones y gestionar la privacidad de mi cuenta, para tener control sobre lo que recibo y sobre mis datos.
-- Criterios de aceptación:
-  - Preferencias de notificación, cada una activable/desactivable de forma independiente: notificaciones push (oportunidades y alertas de propiedades), emails de novedades (resumen periódico de propiedades), alertas de precio (cuando una propiedad favorita, ver A.8, cambia de precio).
-  - Regla de negocio a confirmar: hoy la preferencia de "alertas de precio" existe como control, pero el evento que la dispararía (cambio real de precio de un favorito) no está automatizado — ver A.10 (Notificaciones) y A.13 (pendientes).
-  - Acceso a los términos y condiciones y a la política de privacidad de la plataforma (contenido gestionado desde backoffice, ver B.3).
-  - Acción de eliminar cuenta, señalada explícitamente como irreversible. Al tratarse de datos personales, este flujo debe cumplir con el derecho de cancelación/oposición de la LFPDPPP (RNF-01): confirmación explícita antes de ejecutar, y borrado o anonimización de los datos asociados a la cuenta (favoritos, simulaciones, mensajes, notificaciones) dentro de los plazos que defina la política de privacidad.
+- Los usuarios autenticados pueden ver y editar sus datos personales: nombre completo y teléfono (opcional), editables de forma independiente con edición inline (se confirma al presionar Enter o al salir del campo), y foto de perfil reemplazable. El email de la cuenta se muestra pero no es editable directamente — si todavía no fue verificado, se muestra un aviso persistente con dos acciones (reenviar el enlace de confirmación, o abrir el correo y confirmar), y el usuario puede seguir usando la plataforma mientras tanto salvo las acciones que requieren email verificado (A.6).
+- Los usuarios autenticados pueden marcar y desmarcar propiedades como favoritas desde cualquier card (A.3) o ficha (A.4), con el mismo estado reflejado en ambos lugares, y verlas listadas en una sección "Favoritos" con estado vacío orientativo si no hay ninguna. Si una propiedad favorita deja de existir en el inventario de Pulppo, se refleja como no disponible en vez de eliminarse silenciosamente del listado.
+- Los usuarios autenticados pueden ver el historial de sus simulaciones guardadas (ver A.5 para el detalle de qué se guarda), con estado vacío orientativo si no hay ninguna, y vincular una propiedad ya vista a una simulación guardada — la vinculación solo la asocia como referencia, no recalcula la simulación.
+- Los usuarios autenticados pueden configurar sus preferencias de notificaciones (push, emails de novedades, alertas de precio — cada una activable/desactivable de forma independiente) y gestionar la privacidad de su cuenta: acceso a términos y condiciones y a la política de privacidad (contenido gestionado desde backoffice, B.3), y una acción de eliminar cuenta, señalada explícitamente como irreversible. *Regla de negocio a confirmar: hoy la preferencia "alertas de precio" existe como control, pero el evento que la dispararía (cambio real de precio de un favorito) no está automatizado (ver A.10 y A.13). El flujo de eliminar cuenta debe cumplir con el derecho de cancelación/oposición de la LFPDPPP (RNF-01): confirmación explícita antes de ejecutar, y borrado o anonimización de los datos asociados a la cuenta (favoritos, simulaciones, mensajes, notificaciones) dentro de los plazos que defina la política de privacidad.*
 
 ## A.9 Oportunidades
 
 *(Amerita ser tratada como sección propia, con su propia regla de negocio y su propio estado vacío, más allá del resultado de la simulación en sí.)*
 
-**HU-C-32.** Como usuario autenticado con al menos una simulación guardada, quiero ver propiedades del catálogo que están dentro de mi capacidad, para no tener que cruzar precio y capacidad manualmente.
-- Criterios de aceptación:
-  - Regla de negocio v1: propiedad "oportunidad" = precio de la propiedad ≤ capacidad de compra de la última simulación guardada por esa cuenta.
-  - Si el usuario no tiene ninguna simulación guardada, se muestra un estado vacío con acceso directo al simulador.
-  - *(Pendiente: evaluar con Data si el criterio debe incorporar más variables — zona, tipo de propiedad — en una iteración futura.)*
+- Los usuarios autenticados con al menos una simulación guardada pueden ver propiedades del catálogo que están dentro de su capacidad, sin tener que cruzar precio y capacidad manualmente. *Regla de negocio v1: propiedad "oportunidad" = precio de la propiedad ≤ capacidad de compra de la última simulación guardada por esa cuenta.* Si el usuario no tiene ninguna simulación guardada, se muestra un estado vacío con acceso directo al simulador. *(Pendiente: evaluar con Data si el criterio debe incorporar más variables — zona, tipo de propiedad — en una iteración futura.)*
 
 ## A.10 Notificaciones
 
 *(Construir el prototipo obligó a definir tipos y reglas de enrutamiento concretas — se documentan acá.)*
 
-**HU-C-33.** Como usuario autenticado, quiero recibir notificaciones de eventos relevantes y que cada una me lleve directo a donde corresponde, para no tener que buscar manualmente qué las generó.
-- Criterios de aceptación:
-  - Tipos mínimos: bienvenida a la plataforma, simulación guardada, nueva oportunidad que matchea (A.9), actualización de una propiedad favorita.
-  - Cada notificación tiene un estado leída/no leída, con contador de no leídas.
-  - Regla de enrutamiento: si la notificación tiene una propiedad asociada, navega directo a esa ficha (A.4); si no, navega a la sección relacionada según su tipo (ej. una notificación de bienvenida navega a Inicio, una de "nueva oportunidad" navega a la propiedad puntual que hizo match).
-  - Al tocarla, se marca como leída.
-  - Cada tipo de notificación debe respetar la preferencia que el usuario configuró en Configuración de cuenta (A.8, HU-C-31) — por ejemplo, "actualización de una propiedad favorita" depende de la preferencia "Alertas de precio".
+- Los usuarios autenticados reciben notificaciones de eventos relevantes (tipos mínimos: bienvenida a la plataforma, simulación guardada, nueva oportunidad que matchea — A.9, actualización de una propiedad favorita), cada una con estado leída/no leída y contador de no leídas. Al tocar una notificación, se marca como leída y navega directo a la propiedad asociada (A.4) si la tiene, o a la sección relacionada según su tipo (por ejemplo, una notificación de bienvenida navega a Inicio, una de "nueva oportunidad" navega a la propiedad puntual que hizo match). Cada tipo de notificación debe respetar la preferencia que el usuario configuró en Configuración de cuenta (A.8) — por ejemplo, "actualización de una propiedad favorita" depende de la preferencia "Alertas de precio".
 
 ## A.11 Contacto con asesores
 
 *(Consolida en un solo lugar, para trazabilidad, los dos flujos de derivación descritos en 2.3, A.4 y A.5.)*
 
-**HU-C-34.** Como usuario autenticado, quiero ver el historial de mis contactos con asesores, para saber sobre qué propiedad o simulación hablé y cuándo.
-- Criterios de aceptación:
-  - Un registro por cada contacto iniciado (inmobiliario vía Pulppo/WhatsApp, hipotecario vía BBVA/Salesforce), con fecha y la propiedad o simulación de origen.
-  - Un mismo contacto (misma propiedad/simulación + mismo tipo de asesor) no se duplica si ya existía.
+- Los usuarios autenticados pueden ver el historial de sus contactos con asesores: un registro por cada contacto iniciado (inmobiliario vía Pulppo/WhatsApp, hipotecario vía BBVA/Salesforce), con fecha y la propiedad o simulación de origen. Un mismo contacto (misma propiedad/simulación + mismo tipo de asesor) no se duplica si ya existía.
 
 ## A.12 Academia financiera y preguntas frecuentes
 
-**HU-C-35.** Como usuario autenticado, quiero acceder a contenido educativo sobre crédito hipotecario, para entender mejor el proceso antes de decidir.
-- Criterios de aceptación:
-  - Contenido organizado en módulos cortos (teoría + mini-evaluación) sobre: qué es un crédito hipotecario y el CAT, enganche y plazos, tipos de hipoteca, requisitos y documentación, gastos adicionales y beneficios fiscales, mercado y momento de decisión.
-  - El contenido incluye multimedia (imágenes/video), administrado desde backoffice (ver B.3).
-  - Progreso guardado por cuenta.
-  - Regla de negocio — alcance del contenido: Academia financiera se acota a contenido de crédito e hipotecas; no incluye pasos de cuenta/perfil (crear cuenta, completar perfil) ni checklists de acciones de producto (simular, explorar, contactar) — esos ya se resuelven en sus propias secciones (A.5–A.11) y mezclarlos con el contenido educativo diluye el propósito de Academia.
-  - *(Pendiente: evaluar si al menos la teoría debería ser accesible sin sesión, igual que el simulador — HU-C-24 —, para bajar la fricción de entrada.)*
-
-**HU-C-36.** Como usuario, quiero acceder a preguntas frecuentes, para resolver dudas sin contactar a un asesor.
-- Criterios de aceptación:
-  - Listado por categoría, con detalle por pregunta.
-  - Contenido administrado desde backoffice (ver B.3). No requiere sesión.
+- Los usuarios autenticados pueden acceder a contenido educativo sobre crédito hipotecario, organizado en módulos cortos (teoría + mini-evaluación) sobre: qué es un crédito hipotecario y el CAT, enganche y plazos, tipos de hipoteca, requisitos y documentación, gastos adicionales y beneficios fiscales, y mercado y momento de decisión. El contenido incluye multimedia (imágenes/video), administrado desde backoffice (B.3), con progreso guardado por cuenta. *Regla de negocio — alcance del contenido: Academia financiera se acota a contenido de crédito e hipotecas; no incluye pasos de cuenta/perfil (crear cuenta, completar perfil) ni checklists de acciones de producto (simular, explorar, contactar) — esos ya se resuelven en sus propias secciones (A.5–A.11), y mezclarlos con el contenido educativo diluye el propósito de Academia.* *(Pendiente: evaluar si al menos la teoría debería ser accesible sin sesión, igual que el simulador (A.6), para bajar la fricción de entrada.)*
+- Los usuarios pueden acceder a preguntas frecuentes, organizadas por categoría con detalle por pregunta, con contenido administrado desde backoffice (B.3). No requiere sesión.
 
 ## A.13 Elementos pendientes de definición de negocio
 
@@ -372,51 +216,26 @@ Dos roles base:
 
 ## B.2 Autenticación y seguridad del backoffice
 
-**HU-BO-01.** Como administrador de backoffice, quiero iniciar sesión con correo, contraseña y 2FA, para que el acceso al backoffice tenga una barrera adicional a la del sitio público.
-- Criterios de aceptación:
-  - El 2FA es obligatorio para todo usuario de backoffice (no opcional, a diferencia del acceso de clientes en A.6).
-  - El administrador puede solicitar alta y baja de su propio mecanismo de 2FA.
-  - El administrador puede solicitar recuperación de su contraseña, con las mismas garantías de RNF-01 (token de un solo uso, expiración corta).
-  - El administrador puede modificar sus propios datos personales.
+- Los administradores de backoffice pueden iniciar sesión con correo, contraseña y 2FA — obligatorio para todo usuario de backoffice, a diferencia del acceso de clientes (A.6). Pueden solicitar alta y baja de su propio mecanismo de 2FA, solicitar recuperación de su contraseña (con las mismas garantías de RNF-01: token de un solo uso, expiración corta) y modificar sus propios datos personales.
 
 ## B.3 Gestión de contenido
 
-**HU-BO-02.** Como administrador de contenido, quiero crear, editar y eliminar artículos de Academia financiera, para mantener el contenido educativo actualizado sin depender de un despliegue técnico.
-- Criterios de aceptación:
-  - CRUD completo de artículos, incluyendo contenido multimedia (A.12).
-  - Cambios auditados (RNF-06).
-
-**HU-BO-03.** Como administrador de contenido, quiero crear, editar y eliminar preguntas frecuentes, para mantener actualizada la sección de Ayuda (A.12).
-- Criterios de aceptación: CRUD completo, con categorización.
-
-**HU-BO-04.** Como administrador de contenido, quiero gestionar el contenido estático legal de la plataforma (términos y condiciones, política de privacidad, y el aviso legal del simulador de crédito), para mantenerlo alineado a requisitos regulatorios sin depender de un despliegue técnico.
-- Criterios de aceptación: edición de los tres textos de forma independiente, con versionado/fecha de última modificación visible. Los tres son accesibles por el usuario desde Configuración de cuenta (A.8, HU-C-31).
+- Los administradores de contenido pueden crear, editar y eliminar artículos de Academia financiera (CRUD completo, incluyendo contenido multimedia — A.12), con cambios auditados (RNF-06).
+- Los administradores de contenido pueden crear, editar y eliminar preguntas frecuentes (CRUD completo, con categorización) para mantener actualizada la sección de Ayuda (A.12).
+- Los administradores de contenido pueden gestionar el contenido estático legal de la plataforma (términos y condiciones, política de privacidad, y el aviso legal del simulador de crédito), con edición independiente de los tres textos y versionado/fecha de última modificación visible. Los tres son accesibles por el usuario desde Configuración de cuenta (A.8).
 
 ## B.4 Configuración de la página principal
 
-**HU-BO-05.** Como administrador de contenido, quiero configurar el menú de navegación de la plataforma, para poder ajustar los accesos disponibles sin depender de un despliegue técnico.
-- Criterios de aceptación: alta/edición/orden/baja de ítems del menú (A.2, HU-C-03).
-
-**HU-BO-06.** Como administrador de contenido, quiero configurar la disposición de los distintos carruseles de la página principal (recién publicadas, zonas destacadas, propiedades destacadas, etc.), para priorizar qué se muestra y en qué orden.
-- Criterios de aceptación: orden y visibilidad de cada bloque configurable (A.2).
-
-**HU-BO-07.** Como administrador de contenido, quiero configurar los banners promocionales de la página principal, para reflejar campañas vigentes.
-- Criterios de aceptación: alta/edición/baja de banners (imagen, texto, destino, vigencia) — ver HU-C-04.
-
-**HU-BO-08.** Como administrador de contenido, quiero destacar propiedades específicas del inventario de Pulppo en el carrusel correspondiente, para darles prioridad editorial.
-- Criterios de aceptación: selección de propiedades existentes en el inventario de Pulppo (no creación de propiedades — ver 2.2, fuera de alcance).
+- Los administradores de contenido pueden configurar el menú de navegación de la plataforma (alta/edición/orden/baja de ítems — A.2).
+- Los administradores de contenido pueden configurar la disposición de los distintos carruseles de la página principal (recién publicadas, zonas destacadas, propiedades destacadas, etc.): orden y visibilidad de cada bloque (A.2).
+- Los administradores de contenido pueden configurar los banners promocionales de la página principal: alta, edición y baja, con imagen, texto, destino y vigencia (A.2).
+- Los administradores de contenido pueden destacar propiedades específicas del inventario de Pulppo en el carrusel correspondiente, seleccionando entre las propiedades existentes en ese inventario (no creación de propiedades — ver 2.2, fuera de alcance).
 
 ## B.5 Configuración del simulador de crédito
 
-**HU-BO-09.** Como administrador de contenido, quiero configurar los parámetros del simulador de crédito hipotecario, para que reflejen las condiciones vigentes de BBVA sin depender de un despliegue técnico.
-- Criterios de aceptación:
-  - Parametrizable como mínimo: tasa anual pública, tasa anual preferencial (cliente BBVA), plazos disponibles, porcentaje máximo de ingreso destinado a cuota (regla de HU-C-17).
-  - Cambios auditados (RNF-06) y con fecha de vigencia.
+- Los administradores de contenido pueden configurar los parámetros del simulador de crédito hipotecario para que reflejen las condiciones vigentes de BBVA: tasa anual pública, tasa anual preferencial (cliente BBVA), plazos disponibles, y porcentaje máximo de ingreso destinado a cuota (regla de A.5) — con cambios auditados (RNF-06) y fecha de vigencia.
 
 ## B.6 Gestión de usuarios y roles de backoffice
 
-**HU-BO-10.** Como administrador de seguridad, quiero dar de alta, editar y dar de baja usuarios de backoffice, para controlar quién tiene acceso al panel de administración.
-- Criterios de aceptación: CRUD de usuarios de backoffice, con auditoría (RNF-06).
-
-**HU-BO-11.** Como administrador de seguridad, quiero dar de alta, editar y dar de baja roles de backoffice, y asignárselos a los usuarios, para mantener el modelo de permisos (B.1) actualizado.
-- Criterios de aceptación: CRUD de roles, asignación de rol(es) por usuario, con auditoría (RNF-06).
+- Los administradores de seguridad pueden dar de alta, editar y dar de baja usuarios de backoffice, con auditoría (RNF-06).
+- Los administradores de seguridad pueden dar de alta, editar y dar de baja roles de backoffice, y asignárselos a los usuarios, para mantener el modelo de permisos (B.1) actualizado, con auditoría (RNF-06).
