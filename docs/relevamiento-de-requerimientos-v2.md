@@ -180,8 +180,14 @@ Usuario anónimo, usuario autenticado (ver sección 3).
   - Se muestra precio, precio por m², datos del desarrollador (si aplica), descripción, amenities.
   - Galería de fotos y planos.
   - Recorrido 360°, cuando la propiedad lo tenga cargado en el inventario de Pulppo.
+  - Video de la propiedad, cuando esté disponible.
   - Ubicación en un mini-mapa.
   - Badge "En tu rango", con la misma regla de A.3.
+- **Gap detectado al revisar el prototipo — nada de la galería/recorrido 360°/video está construido ni validado:**
+  - El prototipo solo muestra **una foto** por propiedad (imagen de stock fija); no existe galería, ni carrusel, ni miniaturas, ni planos como imagen.
+  - Existe una tarjeta de "Visualización 3D" en la ficha, pero su botón "Ampliar" está *hardcodeado* a mostrar "Próximamente" — no depende de si la propiedad tiene o no recorrido 360° cargado.
+  - No hay ningún reproductor de video en la ficha.
+  - **Inconsistencia a resolver:** el listado de Propiedades (A.3) sí permite filtrar por "tiene recorrido 360° / tiene video / tiene planos" (son campos reales del catálogo), pero hoy ese filtro lleva a fichas que no muestran ninguna de esas tres cosas — filtrar por "tiene video", por ejemplo, no tiene ningún video que ver del otro lado. Esto no es un requisito nuevo: ya estaba pedido desde el primer relevamiento; lo que hay que resolver es la experiencia real de la galería/multimedia (formato, cantidad de fotos, si el 360° y el video van en la misma galería o aparte) antes de construirla.
 
 **HU-C-12.** Como usuario autenticado, quiero guardar una propiedad como favorita desde su ficha, para encontrarla después sin volver a buscarla.
 - Criterios de aceptación: ver A.8 (Favoritos) — la mecánica de guardar/quitar es la misma desde la card de resultados (A.3) y desde la ficha.
