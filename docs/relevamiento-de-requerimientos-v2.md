@@ -153,7 +153,7 @@ Usuario anónimo, usuario autenticado (ver sección 3).
 **Objetivo:** identificar al usuario para las funciones que dependen de cuenta (guardar simulación, favoritos, mensajes, notificaciones, Academia).
 
 - Los usuarios pueden registrarse con correo y contraseña: alta con email, nombre, contraseña y confirmación de contraseña; verificación de email antes de habilitar acciones sensibles (guardar simulación, contactar asesores); un email ya registrado no puede volver a registrarse.
-- Los usuarios pueden iniciar sesión con correo/contraseña (validado contra el hash almacenado) o con Google (OAuth 2.0 / OpenID Connect).
+- Los usuarios pueden iniciar sesión con correo/contraseña (validado contra el hash almacenado) o con Google (OAuth 2.0 / OpenID Connect). Si es la primera vez que inician sesión con Google, la cuenta se registra automáticamente guardando solo el nombre y el correo electrónico que provee Google; el resto de los datos personales (teléfono, foto) el usuario los completa después, accediendo a su perfil (A.8).
 - Los usuarios pueden restablecer su contraseña por email, con un enlace de un solo uso y expiración corta.
 - El simulador, la búsqueda, el mapa y la ficha de propiedad son de acceso público; guardar simulación, marcar favorito, contactar asesores, y ver Perfil/Favoritos/Mis simulaciones/Notificaciones/Academia requieren sesión. Al pedirse login desde cualquiera de esas acciones, tras autenticarse exitosamente la plataforma vuelve a la pantalla de origen y ejecuta la acción pendiente automáticamente.
 
@@ -220,7 +220,7 @@ Dos roles base:
 
 ## B.3 Gestión de contenido
 
-- Los administradores de contenido pueden crear, editar y eliminar artículos de Academia financiera (CRUD completo, incluyendo contenido multimedia (A.12), con cambios auditados (RNF-06).
+- Los administradores de contenido pueden crear, editar y eliminar artículos de Academia financiera (CRUD completo, incluyendo contenido multimedia, ver A.12), con cambios auditados (RNF-06).
 - Los administradores de contenido pueden crear, editar y eliminar preguntas frecuentes (CRUD completo, con categorización) para mantener actualizada la sección de Ayuda (A.12).
 - Los administradores de contenido pueden gestionar el contenido estático legal de la plataforma (términos y condiciones, política de privacidad, y el aviso legal del simulador de crédito), con edición independiente de los tres textos y versionado/fecha de última modificación visible. Los tres son accesibles por el usuario desde Configuración de cuenta (A.8).
 
