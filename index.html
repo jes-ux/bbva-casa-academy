@@ -1162,6 +1162,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <button class="dt-mega-chip" data-group="precio" onclick="toggleMegaChip(this);setChipPrecio(3000000,5000000)">$3M – $5M</button>
         <button class="dt-mega-chip" data-group="precio" onclick="toggleMegaChip(this);setChipPrecio(5000000,0)">Más de $5M</button>
       </div>
+      <div class="dt-mega-section-title" style="margin-top:18px">Desarrollos y Especiales</div>
+      <div class="dt-mega-chips" id="mega-chips-origen">
+        <button class="dt-mega-chip" data-origen="desarrollo" onclick="toggleOrigenChip(this)">Desarrollos</button>
+        <button class="dt-mega-chip" data-origen="banco" onclick="toggleOrigenChip(this)">Especiales BBVA</button>
+      </div>
     </div>
     <div class="dt-mega-col dt-mega-locations">
       <div class="dt-mega-section-title" id="mega-locations-title">Opciones más buscadas</div>
@@ -3019,6 +3024,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <button class="sheet-chip" onclick="togglePropSheetChip(this,'precio','3m-5m');setChipPrecio(3000000,5000000)">$3M – $5M</button>
         <button class="sheet-chip" onclick="togglePropSheetChip(this,'precio','5m+');setChipPrecio(5000000,0)">Más de $5M</button>
       </div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 10px">Desarrollos y Especiales</div>
+      <div id="sheet-chips-origen" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px">
+        <button class="sheet-chip" data-origen="desarrollo" onclick="toggleOrigenChip(this)">Desarrollos</button>
+        <button class="sheet-chip" data-origen="banco" onclick="toggleOrigenChip(this)">Especiales BBVA</button>
+      </div>
     </div>
     <!-- Zonas como lista -->
     <div id="prop-sheet-locs" style="margin-top:16px"></div>
@@ -3718,6 +3728,7 @@ let chipFilters = {
 let sortOrder = 'relevantes';
 
 function openMega(){
+  syncOrigenChips();
   document.getElementById('dt-mega-menu').classList.add('open');
   document.getElementById('mega-backdrop').classList.add('open');
   refreshMegaLocations();
@@ -3821,6 +3832,7 @@ let propSheetFilters = {tipo:'', precio:''};
 let propSheetLocTimer = null;
 
 function openPropSheet(){
+  syncOrigenChips();
   // En desktop navega directo a propiedades
   if(window.innerWidth >= 900){ navTo('screen-props','nav-props'); return; }
   renderPropSheetLocs();
@@ -3872,6 +3884,22 @@ function togglePropSheetChip(btn, group, val){
   if(group==='tipo') renderPropSheetLocs();
 }
 
+// Desarrollos / Especiales BBVA como refinamiento del megamenú y de la sheet mobile.
+// Es de a uno (chipFilters.origen guarda un solo valor); tocar el activo lo desmarca.
+function toggleOrigenChip(btn) {
+  const wrap = btn.parentElement;
+  const activar = !btn.classList.contains('active');
+  wrap.querySelectorAll('[data-origen]').forEach(b => b.classList.remove('active'));
+  if (activar) btn.classList.add('active');
+  chipFilters.origen = activar ? btn.dataset.origen : '';
+  renderProps();
+}
+function syncOrigenChips() {
+  document.querySelectorAll('#mega-chips-origen [data-origen], #sheet-chips-origen [data-origen]').forEach(b => {
+    b.classList.toggle('active', b.dataset.origen === chipFilters.origen);
+  });
+}
+
 function applyPropSheet(){
   const tipoChips = [...document.querySelectorAll('#sheet-props-nav .sheet-chip[data-group="tipo"].active')];
   if(tipoChips.length===1) setChipTipo(tipoChips[0].dataset.val);
@@ -3881,6 +3909,8 @@ function applyPropSheet(){
 }
 
 function resetPropSheet(){
+  chipFilters.origen = '';
+  syncOrigenChips();
   document.querySelectorAll('#sheet-props-nav .sheet-chip').forEach(b=>b.classList.remove('active'));
   setChipTipo('');
   setChipPrecio(0,0);
