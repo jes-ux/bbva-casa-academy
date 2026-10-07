@@ -298,6 +298,13 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .filter-chip.active{border-color:var(--border-stronger);background:var(--surface-1);color:var(--text-primary);font-weight:500}
 .filter-chip:active{opacity:.7}
 
+.search-sugg{position:fixed;z-index:2500;background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.14);max-height:320px;overflow-y:auto;display:none;padding:6px 0}
+.search-sugg.open{display:block}
+.sugg-group{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;padding:10px 14px 4px}
+.sugg-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 14px;border:none;background:none;font-family:var(--font-sans);font-size:14px;color:var(--text-primary);cursor:pointer;text-align:left}
+.sugg-item:hover{background:var(--surface-1)}
+.sugg-item i{font-size:16px;color:var(--text-muted);flex-shrink:0}
+.sugg-item .sugg-sub{margin-left:auto;font-size:12px;color:var(--text-muted);flex-shrink:0}
 .search-bar{display:flex;align-items:center;gap:8px;border:0.5px solid var(--border-strong);border-radius:var(--radius);padding:10px 12px;background:var(--surface-2)}
 .search-bar i{font-size:16px;color:var(--text-muted);flex-shrink:0}
 .search-bar input{flex:1;border:none;background:none;font-size:16px;color:var(--text-primary);font-family:var(--font-sans);outline:none}
@@ -1764,9 +1771,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
         </div>
         <div class="home-input">
-          <input type="text" placeholder="¿Dónde quieres buscar?">
+          <input type="text" placeholder="Ciudad, colonia o código postal" id="home-search-input" autocomplete="off">
         </div>
-        <button class="home-search-btn" onclick="navTo('screen-props','nav-props')">
+        <button class="home-search-btn" onclick="homeBuscar()">
           Buscar propiedad <i class="ti ti-search"></i>
         </button>
       </div>
@@ -2342,7 +2349,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div id="list-controls-row1" style="display:flex;gap:8px;align-items:center">
             <div class="search-bar" style="flex:1;margin:0">
               <i class="ti ti-search" style="flex-shrink:0"></i>
-              <input type="text" placeholder="Buscar zona, colonia..." oninput="document.getElementById('search-clear').style.display=this.value?'block':'none'" onkeydown="if(event.key==='Enter'){onSearch(this.value);this.blur();}" id="props-search">
+              <input type="text" placeholder="Ciudad, colonia o código postal" oninput="document.getElementById('search-clear').style.display=this.value?'block':'none'" onkeydown="if(event.key==='Enter'){onSearch(this.value);this.blur();}" id="props-search">
               <button id="search-clear" onclick="clearSearch()" style="display:none;background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;line-height:1"><i class="ti ti-x" style="font-size:14px"></i></button>
             </div>
             <button class="filter-icon-btn" id="filter-btn-mobile" onclick="openFiltrosSheet()" style="position:relative"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i><span id="filter-badge-mobile" style="display:none;position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:#e53935;border:1.5px solid var(--surface-2)"></span></button>
@@ -2402,7 +2409,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <div style="position:absolute;top:12px;left:12px;right:12px;z-index:1000;display:flex;gap:6px;align-items:center;overflow:hidden">
               <div class="search-bar" style="flex:1;min-width:0;margin:0;background:var(--surface-2)">
                 <i class="ti ti-search" style="flex-shrink:0"></i>
-                <input type="text" placeholder="Buscar zona, colonia..." onkeydown="if(event.key==='Enter'){onSearch(this.value);this.blur();}" id="map-search">
+                <input type="text" placeholder="Ciudad, colonia o código postal" onkeydown="if(event.key==='Enter'){onSearch(this.value);this.blur();}" id="map-search">
               </div>
               <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openFiltrosSheet()"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
               <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openOrdenSheet()"><i class="ti ti-arrows-sort" style="font-size:18px"></i></button>
@@ -3594,33 +3601,33 @@ const MEGA_LOCATIONS = {
   default: {
     title: 'Opciones más buscadas',
     cols: [
+      { label:'Ciudades', items:['Ciudad de México','Guadalajara','Monterrey','Puebla','Querétaro'] },
       { label:'Colonias', items:['Narvarte','Del Valle','Coyoacán','Roma','Condesa'] },
       { label:'Alcaldías', items:['Benito Juárez','Cuauhtémoc','Miguel Hidalgo','Álvaro Obregón','Tlalpan'] },
-      { label:'Ciudades', items:['Ciudad de México','Guadalajara','Monterrey','Puebla','Querétaro'] },
     ]
   },
   Casa: {
     title: 'Zonas populares · Casas',
     cols: [
+      { label:'Ciudades', items:['Ciudad de México','Guadalajara','Monterrey','Mérida','Querétaro'] },
       { label:'Colonias', items:['Pedregal','Lomas Verdes','Jardines del Pedregal','San Ángel','Coyoacán'] },
       { label:'Alcaldías', items:['Álvaro Obregón','Tlalpan','Coyoacán','Magdalena Contreras','Xochimilco'] },
-      { label:'Ciudades', items:['Ciudad de México','Guadalajara','Monterrey','Mérida','Querétaro'] },
     ]
   },
   Departamento: {
     title: 'Zonas populares · Departamentos',
     cols: [
+      { label:'Ciudades', items:['Ciudad de México','Monterrey','Guadalajara','Puebla','Tijuana'] },
       { label:'Colonias', items:['Roma Norte','Condesa','Polanco','Narvarte','Del Valle'] },
       { label:'Alcaldías', items:['Benito Juárez','Cuauhtémoc','Miguel Hidalgo','Azcapotzalco','Iztacalco'] },
-      { label:'Ciudades', items:['Ciudad de México','Monterrey','Guadalajara','Puebla','Tijuana'] },
     ]
   },
   Residencial: {
     title: 'Zonas residenciales destacadas',
     cols: [
+      { label:'Ciudades', items:['Ciudad de México','Guadalajara','Monterrey','Mérida','San Miguel de Allende'] },
       { label:'Colonias', items:['Polanco','Lomas de Chapultepec','San Ángel','Pedregal','Las Águilas'] },
       { label:'Alcaldías', items:['Miguel Hidalgo','Álvaro Obregón','Coyoacán','Cuajimalpa','Tlalpan'] },
-      { label:'Ciudades', items:['Ciudad de México','Guadalajara','Monterrey','Mérida','San Miguel de Allende'] },
     ]
   },
 };
@@ -6921,6 +6928,108 @@ function updateFilterBadge() {
   if (dt) { dt.style.display = dtCount ? 'inline-flex' : 'none'; dt.textContent = dtCount; }
 }
 
+
+// ── Geografía de las propiedades de demo ──
+// Cada colonia con su alcaldía y sus códigos postales. Los CP salen de un catálogo
+// tipo Cepomex (acá ilustrativo, sin conexión real): se puede buscar por CP, y el
+// resultado trae las propiedades de la colonia a la que pertenece.
+const ZONA_GEO = {
+  'Narvarte':          { alc:'Benito Juárez',  cps:['03020','03023'] },
+  'Del Valle':         { alc:'Benito Juárez',  cps:['03100','03103','03104'] },
+  'Coyoacán':          { alc:'Coyoacán',       cps:['04000','04100'] },
+  'Portales':          { alc:'Benito Juárez',  cps:['03300','03303'] },
+  'Roma Norte':        { alc:'Cuauhtémoc',     cps:['06700','06760'] },
+  'Polanco':           { alc:'Miguel Hidalgo', cps:['11560','11550'] },
+  'Condesa':           { alc:'Cuauhtémoc',     cps:['06140','06100'] },
+  'Tlalpan':           { alc:'Tlalpan',        cps:['14000','14060'] },
+  'Doctores':          { alc:'Cuauhtémoc',     cps:['06720'] },
+  'Iztapalapa Centro': { alc:'Iztapalapa',     cps:['09000'] },
+  'Escandón':          { alc:'Miguel Hidalgo', cps:['11800'] },
+  'Santa Fe':          { alc:'Cuajimalpa',     cps:['01210'] },
+  'Nápoles':           { alc:'Benito Juárez',  cps:['03810'] },
+  'Xochimilco':        { alc:'Xochimilco',     cps:['16000','16030'] },
+};
+const CIUDADES_BUSQUEDA = ['Ciudad de México','Guadalajara','Monterrey','Puebla','Querétaro','Mérida'];
+const CIUDAD_PROPS = 'Ciudad de México'; // todas las propiedades de demo están acá
+
+function geoTextoProp(p) {
+  const g = ZONA_GEO[p.zona];
+  return g ? `${g.alc} ${CIUDAD_PROPS} ${g.cps.join(' ')}`.toLowerCase() : '';
+}
+function normTxt(t) { return (t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+
+// Sugerencias de búsqueda: Ciudades primero (priorizadas), después alcaldías,
+// colonias y códigos postales. Con solo dígitos se priorizan los CP.
+function buscarSugerencias(q) {
+  const n = normTxt(q.trim());
+  const todas = [];
+  CIUDADES_BUSQUEDA.forEach(c => todas.push({ grupo:'Ciudades', icon:'ti-building-community', label:c, value:c, sub: c === CIUDAD_PROPS ? PROPS.filter(propDisponible).length + ' propiedades' : '' }));
+  [...new Set(Object.values(ZONA_GEO).map(g => g.alc))].forEach(a => todas.push({ grupo:'Alcaldías', icon:'ti-map-2', label:a, value:a, sub:'Alcaldía' }));
+  Object.keys(ZONA_GEO).forEach(z => todas.push({ grupo:'Colonias', icon:'ti-map-pin', label:z, value:z, sub:ZONA_GEO[z].alc }));
+  Object.keys(ZONA_GEO).forEach(z => ZONA_GEO[z].cps.forEach(cp => todas.push({ grupo:'Códigos postales', icon:'ti-mailbox', label:cp, value:cp, sub:z })));
+  if (!n) return todas.filter(x => x.grupo === 'Ciudades').slice(0, 6);
+  const esCP = /^\d+$/.test(n);
+  const hits = todas.filter(x => normTxt(x.label).includes(n) || (x.grupo === 'Códigos postales' && normTxt(x.sub).includes(n)));
+  const orden = esCP ? ['Códigos postales','Ciudades','Alcaldías','Colonias'] : ['Ciudades','Alcaldías','Colonias','Códigos postales'];
+  hits.sort((a, b) => orden.indexOf(a.grupo) - orden.indexOf(b.grupo));
+  return hits.slice(0, 8);
+}
+
+let _suggInput = null;
+function renderSugerencias(input) {
+  const box = document.getElementById('search-sugg');
+  const items = buscarSugerencias(input.value);
+  if (!items.length) { box.classList.remove('open'); return; }
+  _suggInput = input;
+  let last = '';
+  box.innerHTML = items.map(x => {
+    const head = x.grupo !== last ? `<div class="sugg-group">${x.grupo}</div>` : '';
+    last = x.grupo;
+    return head + `<button class="sugg-item" onmousedown="event.preventDefault();elegirSugerencia('${x.value.replace(/'/g, "\\'")}')"><i class="ti ${x.icon}"></i>${x.label}<span class="sugg-sub">${x.sub}</span></button>`;
+  }).join('');
+  const r = input.closest('.search-bar, .home-input').getBoundingClientRect();
+  box.style.left = r.left + 'px';
+  box.style.top = (r.bottom + 6) + 'px';
+  box.style.width = Math.max(r.width, 260) + 'px';
+  box.classList.add('open');
+}
+function cerrarSugerencias() { document.getElementById('search-sugg')?.classList.remove('open'); }
+function elegirSugerencia(valor) {
+  const input = _suggInput;
+  cerrarSugerencias();
+  if (!input) return;
+  input.value = valor;
+  input.blur();
+  if (input.id === 'home-search-input') { homeBuscar(); return; }
+  document.getElementById('props-search').value = valor;
+  document.getElementById('map-search').value = valor;
+  onSearch(valor);
+  if (currentView === 'map') renderMap(getFilteredProps());
+}
+function homeBuscar() {
+  const v = document.getElementById('home-search-input')?.value.trim() || '';
+  searchQuery = v.toLowerCase();
+  const inp = document.getElementById('props-search');
+  if (inp) inp.value = v;
+  navTo('screen-props', 'nav-props');
+}
+function initBuscadorSugerencias() {
+  const box = document.createElement('div');
+  box.className = 'search-sugg';
+  box.id = 'search-sugg';
+  document.body.appendChild(box);
+  ['home-search-input','props-search','map-search'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.setAttribute('autocomplete', 'off');
+    el.addEventListener('focus', () => renderSugerencias(el));
+    el.addEventListener('input', () => renderSugerencias(el));
+    el.addEventListener('blur', () => setTimeout(cerrarSugerencias, 120));
+  });
+  window.addEventListener('resize', cerrarSugerencias);
+}
+initBuscadorSugerencias();
+
 function onSearch(q){
   searchQuery = q.toLowerCase();
   document.getElementById('search-clear').style.display = q ? 'block' : 'none';
@@ -6978,7 +7087,7 @@ function getFilteredProps(){
   // acá (grilla, mapa, búsqueda), aunque siga referenciada en favoritos/simulaciones/
   // mensajes (ver propDisponible).
   let show = PROPS.filter(propDisponible).filter(p => p.price <= max && p.price >= min);
-  if(searchQuery) show = show.filter(p=>p.zona.toLowerCase().includes(searchQuery)||p.tipo.toLowerCase().includes(searchQuery)||p.desc.toLowerCase().includes(searchQuery));
+  if(searchQuery) show = show.filter(p=>p.zona.toLowerCase().includes(searchQuery)||p.tipo.toLowerCase().includes(searchQuery)||p.desc.toLowerCase().includes(searchQuery)||geoTextoProp(p).includes(searchQuery));
   // Búsqueda multizona: alcanza con que la propiedad esté en ALGUNA de las zonas
   // marcadas (OR entre sí), como el resto de los filtros de esta sheet, se combina con
   // AND — se puede elegir "Roma Norte + Condesa + Polanco" y ver las tres juntas.
