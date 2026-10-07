@@ -367,9 +367,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .zona-label-tooltip::before{display:none}
 
 /* ── Property detail ── */
+/* Buscador de la ficha: franja a todo el ancho; en mobile los refinamientos van debajo del input */
+.dsb{padding:12px 16px 0}
+.dsb-inner{display:flex;flex-direction:column;gap:8px}
+.dsb-search{margin:0;background:var(--surface-2)}
+.dsb-chips{display:flex;gap:8px;flex-wrap:wrap}
+.dsb-chip{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;font-family:var(--font-sans);color:var(--text-primary);background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:8px;padding:8px 12px;cursor:pointer;white-space:nowrap}
 .detail-top{padding:12px 16px 0}
-.detail-search{margin:0 0 12px;background:var(--surface-2)}
-.detail-search input{flex:1;border:none;outline:none;background:transparent;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);min-width:0}
+.dsb-search input{flex:1;border:none;outline:none;background:transparent;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);min-width:0}
 .dg{position:relative;margin:0 -16px}
 .dg-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:var(--surface-1)}
 .dg-track::-webkit-scrollbar{display:none}
@@ -944,8 +949,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     max-width:1160px;margin:0 auto;padding:20px 40px 60px;
     display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:start;
   }
-  .detail-top{max-width:1160px;margin:0 auto;padding:20px 40px 0}
-  .detail-search{max-width:520px}
+  .dsb{padding:14px 40px}
+  .dsb-inner{flex-direction:row;align-items:center;gap:12px}
+  .dsb-search{flex:1;padding:12px 14px}
+  .detail-top{max-width:1160px;margin:0 auto;padding:6px 40px 0}
   .dg{margin:0;border-radius:12px;overflow:hidden}
   .dg-track{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;height:380px;overflow:hidden;scroll-snap-type:none}
   .dg-track img{flex:none;height:100%;width:100%;min-height:0}
@@ -2527,12 +2534,43 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   <!-- DETALLE DE PROPIEDAD -->
   <div id="screen-prop-detail" class="screen">
-    <!-- Buscador + galería de fotos -->
-    <div class="detail-top">
-      <div class="search-bar detail-search">
-        <i class="ti ti-search" style="flex-shrink:0"></i>
-        <input type="text" placeholder="Ciudad, colonia o código postal" id="detail-search" autocomplete="off" onkeydown="if(event.key==='Enter'){detalleBuscar(this.value);}">
+    <!-- Buscador (a todo el ancho, con refinamientos) + galería de fotos -->
+    <div class="dsb">
+      <div class="dsb-inner">
+        <div class="search-bar dsb-search">
+          <i class="ti ti-search" style="flex-shrink:0"></i>
+          <input type="text" placeholder="Ciudad, colonia o código postal" id="detail-search" autocomplete="off" onkeydown="if(event.key==='Enter'){detalleBuscar(this.value);}">
+        </div>
+        <div class="dsb-chips">
+          <div class="dt-chip-wrap">
+            <button class="dsb-chip" onclick="toggleChipMenu('menu-d-op')"><span id="chip-d-op-label">Comprar</span> <i class="ti ti-chevron-down"></i></button>
+            <div class="dt-chip-menu" id="menu-d-op">
+              <button onclick="detalleSetOp('Comprar')">Comprar</button>
+              <button onclick="detalleSetOp('Preventa')">Preventa</button>
+            </div>
+          </div>
+          <div class="dt-chip-wrap">
+            <button class="dsb-chip" onclick="toggleChipMenu('menu-d-tipo')"><span id="chip-d-tipo-label">Tipo</span> <i class="ti ti-chevron-down"></i></button>
+            <div class="dt-chip-menu" id="menu-d-tipo">
+              <button onclick="detalleSetTipo('')">Cualquier tipo</button>
+              <button onclick="detalleSetTipo('Departamento')">Departamento</button>
+              <button onclick="detalleSetTipo('Casa')">Casa</button>
+            </div>
+          </div>
+          <div class="dt-chip-wrap">
+            <button class="dsb-chip" onclick="toggleChipMenu('menu-d-precio')"><span id="chip-d-precio-label">Precio</span> <i class="ti ti-chevron-down"></i></button>
+            <div class="dt-chip-menu" id="menu-d-precio" style="right:0;left:auto">
+              <button onclick="detalleSetPrecio(0,0)">Cualquier precio</button>
+              <button onclick="detalleSetPrecio(0,1000000)">Hasta $1M</button>
+              <button onclick="detalleSetPrecio(1000000,3000000)">$1M a $3M</button>
+              <button onclick="detalleSetPrecio(3000000,5000000)">$3M a $5M</button>
+              <button onclick="detalleSetPrecio(5000000,0)">Más de $5M</button>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+    <div class="detail-top">
       <div class="dg" id="detail-gallery">
         <div class="dg-track" id="dg-track"></div>
         <div class="dg-count" id="dg-count"></div>
@@ -7588,6 +7626,7 @@ function fotosDePropiedad(p) {
   return [0, 1, 2, 3, 4].map(k => propImgSrc(p.id + k));
 }
 function renderGaleriaDetalle(p) {
+  detalleSyncChips();
   galeriaFotos = fotosDePropiedad(p);
   const track = document.getElementById('dg-track');
   track.innerHTML = galeriaFotos.map((src, i) => `<img src="${src}" alt="Foto ${i + 1} de ${galeriaFotos.length}" onclick="abrirLightbox(${i})">`).join('');
@@ -7618,6 +7657,27 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'ArrowLeft') lightboxIr(-1);
   else if (e.key === 'ArrowRight') lightboxIr(1);
 });
+// Refinamientos del buscador de la ficha: eligen y llevan al listado con ese filtro.
+function detalleSyncChips() {
+  const t = document.getElementById('chip-d-tipo-label');
+  if (t) t.textContent = chipFilters.tipo || 'Tipo';
+  const labels = { '0_0':'Precio', '0_1000000':'Hasta $1M', '1000000_3000000':'$1M a $3M', '3000000_5000000':'$3M a $5M', '5000000_0':'Más de $5M' };
+  const pr = document.getElementById('chip-d-precio-label');
+  if (pr) pr.textContent = labels[`${chipFilters.minPrice}_${chipFilters.maxPrice}`] || 'Precio';
+}
+function detalleSetOp(val) {
+  document.getElementById('chip-d-op-label').textContent = val;
+  document.getElementById('menu-d-op').classList.remove('open');
+  setChipOp(val);
+}
+function detalleSetTipo(val) {
+  setChipTipo(val);
+  detalleBuscar(document.getElementById('detail-search').value);
+}
+function detalleSetPrecio(min, max) {
+  setChipPrecio(min, max);
+  detalleBuscar(document.getElementById('detail-search').value);
+}
 // Buscador de la ficha: lleva al listado con lo escrito.
 function detalleBuscar(v) {
   chipFilters.origen = '';
