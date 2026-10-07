@@ -2490,13 +2490,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <div class="dt-props-body">
           <div>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-              <div id="props-count" style="font-size:12px;color:var(--text-muted)"></div>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <div id="props-count" style="font-size:12px;color:var(--text-muted)"></div>
+                <button id="area-chip" onclick="borrarAreaDibujada()" style="display:none;align-items:center;gap:5px;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:14px;padding:4px 9px;font-size:11px;font-weight:600;font-family:var(--font-sans);cursor:pointer">Zona dibujada <i class="ti ti-x" style="font-size:11px"></i></button>
+              </div>
               <div class="dt-chip-wrap" id="dt-orden-inline">
                 <button class="dt-filter-chip" onclick="toggleChipMenu('menu-orden')" style="padding:5px 10px;font-size:12px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> <span id="chip-orden-label">Ordenar</span> <i class="ti ti-chevron-down" style="font-size:10px"></i></button>
                 <div class="dt-chip-menu" id="menu-orden" style="right:0;left:auto">
                   <button data-val="relevantes" onclick="setChipOrder('relevantes')">Relevantes</button>
                   <button data-val="precio_asc" onclick="setChipOrder('precio_asc')">Menor precio</button>
                   <button data-val="precio_desc" onclick="setChipOrder('precio_desc')">Mayor precio</button>
+                  <button data-val="recientes" onclick="setChipOrder('recientes')">Más recientes</button>
                 </div>
               </div>
             </div>
@@ -2947,7 +2951,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <div class="sheet-body" style="padding:0 20px">
     <div onclick="selectOrder(this)" data-val="relevantes" class="sheet-radio-row"><span class="sheet-radio-label">Relevantes</span><div class="sheet-radio selected"></div></div>
     <div onclick="selectOrder(this)" data-val="precio_asc" class="sheet-radio-row"><span class="sheet-radio-label">Menor precio</span><div class="sheet-radio"></div></div>
-    <div onclick="selectOrder(this)" data-val="precio_desc" class="sheet-radio-row" style="border-bottom:none"><span class="sheet-radio-label">Mayor precio</span><div class="sheet-radio"></div></div>
+    <div onclick="selectOrder(this)" data-val="precio_desc" class="sheet-radio-row"><span class="sheet-radio-label">Mayor precio</span><div class="sheet-radio"></div></div>
+    <div onclick="selectOrder(this)" data-val="recientes" class="sheet-radio-row" style="border-bottom:none"><span class="sheet-radio-label">Más recientes</span><div class="sheet-radio"></div></div>
   </div>
   <div class="sheet-footer">
     <button class="btn-secondary" onclick="closeSheet()">Cancelar</button>
@@ -4480,7 +4485,7 @@ function setChipPrecio(min, max){
   renderProps();
 }
 function setChipOrder(val){
-  const labels = {relevantes:'Ordenar', precio_asc:'Menor precio', precio_desc:'Mayor precio'};
+  const labels = {relevantes:'Ordenar', precio_asc:'Menor precio', precio_desc:'Mayor precio', recientes:'Más recientes'};
   document.getElementById('chip-orden-label').textContent = labels[val] || 'Ordenar';
   sortOrder = val;
   document.querySelectorAll('#menu-orden button').forEach(b => b.classList.toggle('selected', b.dataset.val===val));
@@ -7224,6 +7229,8 @@ function puntoEnPoligono(lat, lng, poly) {
   return dentro;
 }
 function actualizarBotonDibujo() {
+  const chip = document.getElementById('area-chip');
+  if (chip) chip.style.display = drawnArea ? 'inline-flex' : 'none';
   const lbl = document.getElementById('draw-area-label');
   const btn = document.getElementById('draw-area-btn');
   if (!lbl || !btn) return;
@@ -7339,6 +7346,10 @@ function getFilteredProps(){
   }
   if(sortOrder==='precio_asc') show = [...show].sort((a,b)=>a.price-b.price);
   else if(sortOrder==='precio_desc') show = [...show].sort((a,b)=>b.price-a.price);
+  else if(sortOrder==='recientes') show = [...show].sort((a,b)=>a.diasPublicado-b.diasPublicado);
+  // Relevantes: desarrollos y Especiales BBVA primero, el resto en el orden del catálogo
+  // (el sort es estable, así que dentro de cada grupo no cambia nada).
+  else if(sortOrder==='relevantes') show = [...show].sort((a,b)=>(b.origen?1:0)-(a.origen?1:0));
   // Sin resultados es un estado real, no un error a esconder: renderProps() lo muestra
   // como tal (con salida clara) en vez de rellenar con propiedades que no aplican.
   return show;
@@ -7357,6 +7368,7 @@ function renderProps() {
   if (bajadaEl) bajadaEl.textContent = searchQuery ? '' : hasSim ? 'Resultados filtrados según tu simulación. Los precios son referenciales' : 'Encontrá la propiedad que estás buscando';
   if (pillsEl) pillsEl.style.display = hasSim ? '' : 'none';
   const show = getFilteredProps();
+  actualizarBotonDibujo();
   document.getElementById('props-count').textContent = `${show.length} propiedad${show.length!==1?'es':''} encontrada${show.length!==1?'s':''}`;
   if(currentView==='list'){
     const grid = document.getElementById('props-grid');
