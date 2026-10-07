@@ -2482,7 +2482,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div id="detail-sim-banner-m" style="margin-top:12px"></div>
           <div id="detail-contact-badge-m" style="margin-top:10px"></div>
           <button class="detail-cta-btn" style="margin-top:10px" onclick="simRefPropId=currentPropId;goScreen('screen-sim')"><i class="ti ti-calculator"></i> Simular crédito</button>
-          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>contactarInmobiliario(currentPropId))">
+          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="contactarConAsesor(()=>contactarInmobiliario(currentPropId))">
             <i class="ti ti-headset"></i> Contactar asesor inmobiliario
           </button>
         </div>
@@ -2549,7 +2549,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div id="detail-sim-banner-dt" style="margin-top:12px"></div>
           <div id="detail-contact-badge-dt" style="margin-top:10px"></div>
           <button class="detail-cta-btn" style="margin-top:10px" onclick="simRefPropId=currentPropId;goScreen('screen-sim')"><i class="ti ti-calculator"></i> Simular crédito</button>
-          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="requireAuth(()=>contactarInmobiliario(currentPropId))">
+          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="contactarConAsesor(()=>contactarInmobiliario(currentPropId))">
             <i class="ti ti-headset"></i> Contactar asesor inmobiliario
           </button>
         </div>
@@ -2593,6 +2593,23 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div id="wa-tel" style="font-size:13px;color:var(--text-secondary);margin-top:4px"></div>
     </div>
     <div id="wa-status" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted);margin-top:6px"></div>
+  </div>
+</div>
+
+<!-- Contacto con asesor sin sesión: iniciar sesión o contactar como invitado -->
+<div class="bottom-sheet" id="sheet-contacto-invitado">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Contactar al asesor</span>
+    <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
+  </div>
+  <div class="sheet-body" style="padding:20px">
+    <button class="btn-primary" style="width:100%;padding:13px;border:none;border-radius:10px;background:var(--text-primary);color:var(--surface-2);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-sans)" onclick="contactoInvitadoIniciarSesion()">Iniciar sesión</button>
+    <div style="display:flex;align-items:center;gap:10px;margin:16px 0;font-size:12px;color:var(--text-muted)"><span style="flex:1;height:0.5px;background:var(--border)"></span>o contactá como invitado<span style="flex:1;height:0.5px;background:var(--border)"></span></div>
+    <div class="onb-field"><label>Nombre</label><input type="text" id="guest-nombre" placeholder="Natalia Gómez" autocomplete="name" oninput="this.classList.remove('input-error')"></div>
+    <div class="onb-field"><label>Teléfono</label><input type="tel" id="guest-tel" placeholder="55 1234 5678" autocomplete="tel" oninput="this.classList.remove('input-error')"></div>
+    <div class="onb-field"><label>Correo</label><input type="email" id="guest-email" placeholder="natalia@email.com" autocomplete="email" oninput="this.classList.remove('input-error')"></div>
+    <button class="btn-outline" style="width:100%" onclick="contactoInvitadoEnviar()">Contactar como invitado</button>
   </div>
 </div>
 
@@ -3449,7 +3466,7 @@ function renderSims() {
       <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px">
         ${hipoBadgeHTML}
         <button class="btn-primary" style="width:100%;font-size:14px;padding:12px" onclick="viewPropsForSim(${s.propMax})">${ctaLabel} →</button>
-        <button class="btn-secondary" style="width:100%;font-size:14px;padding:11px;display:flex;align-items:center;justify-content:center;gap:7px" onclick="requireAuth(()=>contactarHipotecario(${JSON.stringify(s).replace(/"/g,'&quot;')}))"><i class="ti ti-headset" style="font-size:15px"></i> Contactar asesor hipotecario</button>
+        <button class="btn-secondary" style="width:100%;font-size:14px;padding:11px;display:flex;align-items:center;justify-content:center;gap:7px" onclick="contactarConAsesor(()=>contactarHipotecario(${JSON.stringify(s).replace(/"/g,'&quot;')}))"><i class="ti ti-headset" style="font-size:15px"></i> Contactar asesor hipotecario</button>
       </div>
     </div>`;
   }).join('');
@@ -6002,6 +6019,9 @@ if (esVentanaWhatsapp) {
 }
 
 function contactarPorWhatsapp({ tipo, asesor, propId, simId, mensaje, stepKey }) {
+  const invitado = _guestContact;
+  _guestContact = null;
+  if (invitado) mensaje += `\n\nMis datos de contacto: ${invitado.nombre}, ${invitado.telefono}, ${invitado.correo}.`;
   const avatarEl = document.getElementById('wa-avatar');
   const nombreEl = document.getElementById('wa-nombre');
   const rolEl    = document.getElementById('wa-rol');
@@ -6021,6 +6041,7 @@ function contactarPorWhatsapp({ tipo, asesor, propId, simId, mensaje, stepKey })
       asesorNombre: asesor.nombre, asesorRol: asesor.rol || '', asesorEmoji: asesor.emoji, telefono: asesor.tel,
       propId: propId || null, simId: simId || null,
       mensaje,
+      invitado: invitado || null,
       fecha: now.toLocaleDateString('es-MX', {day:'numeric', month:'short', year:'numeric'}),
       hora: now.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}),
     });
@@ -6044,6 +6065,43 @@ function contactarPorWhatsapp({ tipo, asesor, propId, simId, mensaje, stepKey })
       });
     }, 700);
   }, 1300);
+}
+
+// Contacto con asesor: con sesión iniciada avanza normal; sin sesión se ofrece
+// iniciar sesión o contactar como invitado (nombre, teléfono y correo).
+let _guestContactFn = null;
+let _guestContact = null;
+function contactarConAsesor(fn) {
+  if (isLoggedIn) { fn(); return; }
+  _guestContactFn = fn;
+  ['guest-nombre','guest-tel','guest-email'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.classList.remove('input-error'); }
+  });
+  openSheet('sheet-contacto-invitado');
+}
+function contactoInvitadoIniciarSesion() {
+  const fn = _guestContactFn;
+  _guestContactFn = null;
+  closeSheet();
+  if (fn) requireAuth(fn);
+}
+function contactoInvitadoEnviar() {
+  const nombre = document.getElementById('guest-nombre');
+  const tel = document.getElementById('guest-tel');
+  const email = document.getElementById('guest-email');
+  const okNombre = nombre.value.trim().length >= 2;
+  const okTel = tel.value.replace(/\D/g,'').length >= 10;
+  const okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+  nombre.classList.toggle('input-error', !okNombre);
+  tel.classList.toggle('input-error', !okTel);
+  email.classList.toggle('input-error', !okEmail);
+  if (!okNombre || !okTel || !okEmail) { showToast('ti-alert-circle', 'Completá nombre, teléfono y correo válidos', 'default'); return; }
+  const fn = _guestContactFn;
+  _guestContactFn = null;
+  _guestContact = { nombre: nombre.value.trim(), telefono: tel.value.trim(), correo: email.value.trim() };
+  closeSheet();
+  if (fn) fn();
 }
 
 function contactarInmobiliario(propId) {
