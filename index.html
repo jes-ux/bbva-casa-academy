@@ -367,6 +367,23 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .zona-label-tooltip::before{display:none}
 
 /* ── Property detail ── */
+.detail-top{padding:12px 16px 0}
+.detail-search{margin:0 0 12px;background:var(--surface-2)}
+.detail-search input{flex:1;border:none;outline:none;background:transparent;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);min-width:0}
+.dg{position:relative;margin:0 -16px}
+.dg-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:var(--surface-1)}
+.dg-track::-webkit-scrollbar{display:none}
+.dg-track img{flex:0 0 100%;height:240px;object-fit:cover;scroll-snap-align:center;cursor:pointer;display:block}
+.dg-count{position:absolute;right:12px;bottom:12px;background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;border-radius:12px;padding:4px 10px;pointer-events:none}
+.dg-all{display:none}
+#gallery-lightbox{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.94);display:none;align-items:center;justify-content:center}
+#gallery-lightbox.open{display:flex}
+#gallery-lightbox img{max-width:100%;max-height:82dvh;object-fit:contain}
+.lb-btn{position:absolute;background:rgba(255,255,255,.14);border:none;color:#fff;width:42px;height:42px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px}
+.lb-close{top:16px;right:16px}
+.lb-prev{left:16px;top:50%;transform:translateY(-50%)}
+.lb-next{right:16px;top:50%;transform:translateY(-50%)}
+.lb-count{position:absolute;top:24px;left:50%;transform:translateX(-50%);color:#fff;font-size:13px;font-weight:600}
 .prop-detail-hero{height:240px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border-bottom:0.5px solid var(--border)}
 .detail-breadcrumb{display:flex;align-items:center;gap:4px;padding:10px 20px;font-size:11px;color:var(--text-muted);flex-shrink:0;flex-wrap:wrap}
 /* Vive como primer hijo de .content (flex column con gap propio): sin padding propio
@@ -790,7 +807,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   #home-simula-band .home-band-inner,
   #home-carousel-zonas-band .home-band-inner,
   #home-zona-band .home-band-inner,
-  #home-carousel-recientes-band .home-band-inner,
+  #home-recent-lite-band .home-band-inner,
+  #home-carousel-desarrollos-band .home-band-inner,
+  #home-carousel-banco-band .home-band-inner,
   #home-precios-band .home-band-inner,
   #home-carousel-ultimo-band .home-band-inner,
   #home-faq-band .home-band-inner,
@@ -925,7 +944,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     max-width:1160px;margin:0 auto;padding:20px 40px 60px;
     display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:start;
   }
-  .prop-detail-hero{height:300px;border-radius:12px 12px 0 0}
+  .detail-top{max-width:1160px;margin:0 auto;padding:20px 40px 0}
+  .detail-search{max-width:520px}
+  .dg{margin:0;border-radius:12px;overflow:hidden}
+  .dg-track{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;height:380px;overflow:hidden;scroll-snap-type:none}
+  .dg-track img{flex:none;height:100%;width:100%;min-height:0}
+  .dg-track img:first-child{grid-row:1 / 3}
+  .dg-count{display:none}
+  .dg-all{display:flex;align-items:center;gap:6px;position:absolute;right:14px;bottom:14px;background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;font-family:var(--font-sans);color:var(--text-primary);cursor:pointer}
   .detail-breadcrumb,.detail-top-block,.detail-section,.detail-related-scroll{
     padding-left:0;padding-right:0;
   }
@@ -1930,21 +1956,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
 
-    <!-- Recién publicadas (carrusel de fotos, toda la ciudad) -->
-    <div class="home-band home-band-white" id="home-carousel-recientes-band">
-      <div class="home-band-inner">
-        <div class="carousel-head">
-          <div class="detail-section-title home-section-title">Recién publicadas</div>
-          <button class="carousel-viewmore" onclick="verMasRecientes()">Ver más <i class="ti ti-arrow-right"></i></button>
-        </div>
-        <div class="carousel-wrap">
-          <div class="carousel-scroll" id="carousel-recientes"><!-- renderCarouselRecientes() --></div>
-          <button class="carousel-arrow prev" onclick="scrollCarousel('carousel-recientes',-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
-          <button class="carousel-arrow next" onclick="scrollCarousel('carousel-recientes',1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
-        </div>
-      </div>
-    </div>
-
     <!-- Desarrollos -->
     <div class="home-band home-band-gray" id="home-carousel-desarrollos-band">
       <div class="home-band-inner">
@@ -1960,11 +1971,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
 
-    <!-- Inmuebles BBVA -->
+    <!-- Especiales BBVA -->
     <div class="home-band home-band-white" id="home-carousel-banco-band">
       <div class="home-band-inner">
         <div class="carousel-head">
-          <div class="detail-section-title home-section-title">Inmuebles BBVA</div>
+          <div class="detail-section-title home-section-title">Especiales BBVA</div>
           <button class="carousel-viewmore" onclick="verOrigen('banco')">Ver más <i class="ti ti-arrow-right"></i></button>
         </div>
         <div class="carousel-wrap">
@@ -2512,10 +2523,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   <!-- DETALLE DE PROPIEDAD -->
   <div id="screen-prop-detail" class="screen">
-    <!-- Hero imagen -->
-    <div class="prop-detail-hero" id="detail-hero" style="background:var(--surface-1)">
-      <img id="detail-hero-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none">
-      <i id="detail-hero-icon" class="ti ti-building" style="font-size:64px;color:var(--text-muted)"></i>
+    <!-- Buscador + galería de fotos -->
+    <div class="detail-top">
+      <div class="search-bar detail-search">
+        <i class="ti ti-search" style="flex-shrink:0"></i>
+        <input type="text" placeholder="Ciudad, colonia o código postal" id="detail-search" autocomplete="off" onkeydown="if(event.key==='Enter'){detalleBuscar(this.value);}">
+      </div>
+      <div class="dg" id="detail-gallery">
+        <div class="dg-track" id="dg-track"></div>
+        <div class="dg-count" id="dg-count"></div>
+        <button class="dg-all" onclick="abrirLightbox(0)"><i class="ti ti-photo"></i> Ver todas las fotos</button>
+      </div>
     </div>
     <div class="screen-scroll-inner">
       <div class="dt-detail-main">
@@ -2655,6 +2673,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
     <div id="wa-status" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted);margin-top:6px"></div>
   </div>
+</div>
+
+<div id="gallery-lightbox" onclick="if(event.target===this)cerrarLightbox()">
+  <div class="lb-count" id="lb-count"></div>
+  <button class="lb-btn lb-close" onclick="cerrarLightbox()" aria-label="Cerrar"><i class="ti ti-x"></i></button>
+  <button class="lb-btn lb-prev" onclick="lightboxIr(-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
+  <img id="lb-img" src="" alt="">
+  <button class="lb-btn lb-next" onclick="lightboxIr(1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
 </div>
 
 <!-- Contacto con asesor sin sesión: iniciar sesión o contactar como invitado -->
@@ -3326,7 +3352,7 @@ function estimarFinanciamientoCard(price) {
 // Origen de una propiedad: las que no traen `origen` son publicaciones comunes. Los
 // desarrollos (obra nueva) y los inmuebles del banco llevan un badge propio para
 // distinguirlas de las cards regulares en listado, mapa, home y ficha.
-const ORIGEN_LABEL = { desarrollo:'Desarrollo', banco:'Inmueble BBVA' };
+const ORIGEN_LABEL = { desarrollo:'Desarrollo', banco:'Especial BBVA' };
 function origenBadgeHTML(p) {
   return p.origen ? `<span class="prop-badge prop-badge-origen">${ORIGEN_LABEL[p.origen]}</span>` : '';
 }
@@ -4083,21 +4109,6 @@ function renderCarouselUltimo() {
     </button>`).join('');
 }
 
-// "Recién publicadas": las propiedades más nuevas de TODA la ciudad (no de una sola
-// zona, a diferencia de "Lo último en X") — complementa al resto de los carruseles
-// mostrando variedad de zonas en vez de profundizar en una sola.
-function renderCarouselRecientes() {
-  const el = document.getElementById('carousel-recientes');
-  if (!el) return;
-  const props = PROPS.filter(propDisponible).sort((a, b) => a.diasPublicado - b.diasPublicado).slice(0, 10);
-  el.innerHTML = props.map(p => `
-    <button class="carousel-card" style="background-image:url('${propImgSrc(p.id)}')" onclick="openPropDetail(${p.id})">
-      <div class="carousel-card-overlay">
-        <div class="carousel-card-price">${fmt(p.price)}</div>
-        <div class="carousel-card-sub">${p.tipo} · ${p.rec} rec · ${p.zona}</div>
-      </div>
-    </button>`).join('');
-}
 // Home: "Recién publicadas" en cards lite horizontales (foto chica a la izquierda, datos
 // a la derecha), las más nuevas de toda la ciudad.
 function diasTxt(d) { return d <= 1 ? 'Publicada hoy' : d < 7 ? `Hace ${d} días` : d < 30 ? `Hace ${Math.round(d / 7)} sem` : `Hace ${Math.round(d / 30)} ${Math.round(d / 30) === 1 ? 'mes' : 'meses'}`; }
@@ -4117,7 +4128,7 @@ function renderRecentLite() {
     </button>`).join('');
 }
 
-// Home: carruseles de "Desarrollos" e "Inmuebles BBVA" (propiedades del banco). Misma
+// Home: carruseles de "Desarrollos" e "Especiales BBVA" (propiedades del banco). Misma
 // card de foto que el resto de los carruseles, con el badge de origen arriba.
 function renderCarouselOrigen() {
   [['desarrollo','carousel-desarrollos','home-carousel-desarrollos-band'], ['banco','carousel-banco','home-carousel-banco-band']].forEach(([origen, id, bandId]) => {
@@ -7117,6 +7128,7 @@ function elegirSugerencia(valor) {
   input.value = valor;
   input.blur();
   if (input.id === 'home-search-input') { homeBuscar(); return; }
+  if (input.id === 'detail-search') { detalleBuscar(valor); return; }
   document.getElementById('props-search').value = valor;
   document.getElementById('map-search').value = valor;
   onSearch(valor);
@@ -7135,7 +7147,7 @@ function initBuscadorSugerencias() {
   box.className = 'search-sugg';
   box.id = 'search-sugg';
   document.body.appendChild(box);
-  ['home-search-input','props-search','map-search'].forEach(id => {
+  ['home-search-input','detail-search','props-search','map-search'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.setAttribute('autocomplete', 'off');
@@ -7341,7 +7353,7 @@ function renderProps() {
   const titleEl = document.querySelector('#screen-props .props-section > div:first-child h2');
   const bajadaEl = document.querySelector('#screen-props .props-section > div:first-child .bajada');
   const pillsEl = document.getElementById('profile-pills');
-  if (titleEl) titleEl.textContent = chipFilters.origen ? (chipFilters.origen === 'banco' ? 'Inmuebles BBVA' : 'Desarrollos') : searchQuery ? `Resultados para "${searchQuery}"` : hasSim ? 'Propiedades en tu rango' : 'Explorar propiedades';
+  if (titleEl) titleEl.textContent = chipFilters.origen ? (chipFilters.origen === 'banco' ? 'Especiales BBVA' : 'Desarrollos') : searchQuery ? `Resultados para "${searchQuery}"` : hasSim ? 'Propiedades en tu rango' : 'Explorar propiedades';
   if (bajadaEl) bajadaEl.textContent = searchQuery ? '' : hasSim ? 'Resultados filtrados según tu simulación. Los precios son referenciales' : 'Encontrá la propiedad que estás buscando';
   if (pillsEl) pillsEl.style.display = hasSim ? '' : 'none';
   const show = getFilteredProps();
@@ -7553,6 +7565,57 @@ function selectMapPin(id){
 
 let detailMap = null;
 
+// ── Galería de fotos de la ficha (tipo Zillow) ──
+// Desktop: una foto grande a la izquierda y cuatro chicas a la derecha. Mobile: carrusel
+// con swipe y contador. En ambos, tocar una foto abre el visor a pantalla completa. El
+// catálogo de demo tiene 10 fotos, así que cada propiedad toma 5 consecutivas empezando
+// por la suya (ilustrativo, hasta que cada ficha tenga sus propias fotos).
+let galeriaFotos = [];
+let galeriaIdx = 0;
+function fotosDePropiedad(p) {
+  return [0, 1, 2, 3, 4].map(k => propImgSrc(p.id + k));
+}
+function renderGaleriaDetalle(p) {
+  galeriaFotos = fotosDePropiedad(p);
+  const track = document.getElementById('dg-track');
+  track.innerHTML = galeriaFotos.map((src, i) => `<img src="${src}" alt="Foto ${i + 1} de ${galeriaFotos.length}" onclick="abrirLightbox(${i})">`).join('');
+  track.scrollLeft = 0;
+  document.getElementById('dg-count').textContent = `1 / ${galeriaFotos.length}`;
+  track.onscroll = () => {
+    const i = Math.round(track.scrollLeft / track.clientWidth);
+    document.getElementById('dg-count').textContent = `${i + 1} / ${galeriaFotos.length}`;
+  };
+}
+function abrirLightbox(i) {
+  galeriaIdx = i;
+  document.getElementById('gallery-lightbox').classList.add('open');
+  pintarLightbox();
+}
+function cerrarLightbox() { document.getElementById('gallery-lightbox').classList.remove('open'); }
+function lightboxIr(d) {
+  galeriaIdx = (galeriaIdx + d + galeriaFotos.length) % galeriaFotos.length;
+  pintarLightbox();
+}
+function pintarLightbox() {
+  document.getElementById('lb-img').src = galeriaFotos[galeriaIdx];
+  document.getElementById('lb-count').textContent = `${galeriaIdx + 1} / ${galeriaFotos.length}`;
+}
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('gallery-lightbox').classList.contains('open')) return;
+  if (e.key === 'Escape') cerrarLightbox();
+  else if (e.key === 'ArrowLeft') lightboxIr(-1);
+  else if (e.key === 'ArrowRight') lightboxIr(1);
+});
+// Buscador de la ficha: lleva al listado con lo escrito.
+function detalleBuscar(v) {
+  chipFilters.origen = '';
+  searchQuery = (v || '').trim().toLowerCase();
+  const inp = document.getElementById('props-search');
+  if (inp) inp.value = (v || '').trim();
+  cerrarSugerencias();
+  navTo('screen-props', 'nav-props');
+}
+
 function openPropDetail(id){
   currentPropId = id;
   const p = PROPS.find(x=>x.id===id);
@@ -7571,11 +7634,7 @@ function openPropDetail(id){
   proximoModuloConsciente = null;
 
   // hero image
-  const heroImg = document.getElementById('detail-hero-img');
-  const heroIcon = document.getElementById('detail-hero-icon');
-  heroImg.src = propImgSrc(p.id);
-  heroImg.style.display = 'block';
-  if(heroIcon) heroIcon.style.display = 'none';
+  renderGaleriaDetalle(p);
 
   // tipo badge (duplicated in price card too)
   document.getElementById('detail-price-badge').textContent = p.tipo;
@@ -7733,7 +7792,6 @@ initHeaderScroll(document.getElementById('screen-0'));
 renderHomeTipos();
 renderHomeZonas();
 renderCarouselZonas();
-renderCarouselRecientes();
 renderHomePrecios();
 renderCarouselUltimo();
 renderRecentLite();
