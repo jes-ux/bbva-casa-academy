@@ -1756,14 +1756,13 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <button class="dt-nav-btn" id="dtnav-props" onclick="toggleMega()">Propiedades <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
       </div>
       <button class="dt-nav-btn" id="dtnav-sim" onclick="navTo('screen-sim','nav-sim')">Simula tu Crédito</button>
-      <!-- Solo visual por ahora — sin onclick en las opciones, a pedido: "que no tengan
-           links ni nada". Reutiliza el mismo mecanismo de desplegable que .home-select
-           (toggleChipMenu/.dt-chip-menu), incluido el cierre al hacer click afuera. -->
+      <!-- Contactar asesor: con sesión abre WhatsApp, sin sesión ofrece iniciar sesión o
+           contactar como invitado (ver contactarConAsesor). -->
       <div class="dt-chip-wrap" style="position:relative">
         <button class="dt-nav-btn" id="dtnav-asesor" onclick="toggleChipMenu('menu-contactar-asesor')">Contactar asesor <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
         <div class="dt-chip-menu" id="menu-contactar-asesor">
-          <button>Contactar asesor hipotecario</button>
-          <button>Contactar asesor inmobiliario</button>
+          <button onclick="document.getElementById('menu-contactar-asesor').classList.remove('open');contactarConAsesor(contactarHipotecarioGeneral)">Contactar asesor hipotecario</button>
+          <button onclick="document.getElementById('menu-contactar-asesor').classList.remove('open');contactarConAsesor(contactarInmobiliarioGeneral)">Contactar asesor inmobiliario</button>
         </div>
       </div>
       <button class="dt-nav-btn" id="dtnav-ayuda" onclick="goScreen('screen-faq')">Ayuda</button>
@@ -6279,6 +6278,18 @@ function contactoInvitadoEnviar() {
   _guestContact = { nombre: nombre.value.trim(), telefono: tel.value.trim(), correo: email.value.trim() };
   closeSheet();
   if (fn) fn();
+}
+
+// Contacto general desde el menú del header (sin propiedad ni simulación de por medio).
+function contactarInmobiliarioGeneral() {
+  const existing = WA_CONTACTS.find(c => c.tipo === 'inmobiliario' && !c.propId);
+  if (existing) { verContactoWA(existing.id); return; }
+  contactarPorWhatsapp({ tipo:'inmobiliario', asesor: ASESORES_INMOBILIARIOS[0], mensaje:'Hola, me gustaría hablar con un asesor inmobiliario para que me ayude a encontrar una propiedad.', stepKey:'contacted_prop' });
+}
+function contactarHipotecarioGeneral() {
+  const existing = WA_CONTACTS.find(c => c.tipo === 'hipotecario' && !c.simId);
+  if (existing) { verContactoWA(existing.id); return; }
+  contactarPorWhatsapp({ tipo:'hipotecario', asesor: ASESOR_HIPOTECARIO, mensaje:'Hola, me gustaría hablar con un asesor hipotecario para resolver dudas sobre mi crédito.', stepKey:'contacted_hipo' });
 }
 
 function contactarInmobiliario(propId) {
