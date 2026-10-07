@@ -2415,6 +2415,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
               <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openOrdenSheet()"><i class="ti ti-arrows-sort" style="font-size:18px"></i></button>
               <button onclick="switchView('list')" class="filter-icon-btn" style="background:var(--text-primary);color:var(--surface-2);flex-shrink:0"><i class="ti ti-x" style="font-size:18px"></i></button>
             </div>
+            <!-- dibujar un área en el mapa para buscar dentro de ella -->
+            <div id="draw-overlay" style="display:none;position:absolute;inset:0;z-index:999;cursor:crosshair;touch-action:none"></div>
+            <button id="draw-area-btn" onclick="toggleDibujarArea()" style="position:absolute;top:60px;right:12px;z-index:1000;display:flex;align-items:center;gap:6px;background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:20px;padding:8px 14px;font-size:12px;font-weight:600;font-family:var(--font-sans);color:var(--text-primary);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12)"><i class="ti ti-pencil" style="font-size:14px"></i><span id="draw-area-label">Dibujar zona</span></button>
             <!-- badge de zonas tocadas en el mapa (tocá un círculo para sumar/sacar) -->
             <div class="map-zonas-badge" style="display:none;position:absolute;top:60px;left:12px;z-index:1000;align-items:center;gap:8px;background:var(--surface-2);border-radius:20px;padding:7px 8px 7px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);font-size:12px;font-weight:600;color:var(--text-primary)">
               <span class="map-zonas-count"></span>
@@ -7076,6 +7079,92 @@ function switchView(view){
 // lo que la persona simuló. 5/6 (~83%) del máximo como piso de la banda.
 const RANGO_SIM_MIN_FACTOR = 5 / 6;
 
+
+// ── Búsqueda dibujando un área en el mapa ──
+// "Dibujar zona" activa un modo de trazo libre (dedo o mouse): al soltar se cierra el
+// polígono y el mapa y el listado quedan acotados a las propiedades de adentro.
+let drawnArea = null;      // [[lat,lng], ...] o null
+let drawnLayer = null;
+let drawingPts = [];
+let drawingLine = null;
+let drawMode = false;
+
+function puntoEnPoligono(lat, lng, poly) {
+  let dentro = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [yi, xi] = poly[i], [yj, xj] = poly[j];
+    if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)) dentro = !dentro;
+  }
+  return dentro;
+}
+function actualizarBotonDibujo() {
+  const lbl = document.getElementById('draw-area-label');
+  const btn = document.getElementById('draw-area-btn');
+  if (!lbl || !btn) return;
+  lbl.textContent = drawMode ? 'Cancelar' : (drawnArea ? 'Borrar zona' : 'Dibujar zona');
+  btn.querySelector('i').className = 'ti ' + (drawMode || drawnArea ? 'ti-x' : 'ti-pencil');
+  btn.style.background = drawMode ? 'var(--text-primary)' : 'var(--surface-2)';
+  btn.style.color = drawMode ? 'var(--surface-2)' : 'var(--text-primary)';
+}
+function toggleDibujarArea() {
+  if (drawMode) { terminarDibujo(false); return; }
+  if (drawnArea) { borrarAreaDibujada(); return; }
+  if (!leafletMap) return;
+  drawMode = true;
+  drawingPts = [];
+  const ov = document.getElementById('draw-overlay');
+  ov.style.display = 'block';
+  leafletMap.dragging.disable();
+  actualizarBotonDibujo();
+  showToast('ti-pencil', 'Trazá con el dedo o el mouse el área donde querés buscar', 'default');
+}
+function _drawLatLng(e) {
+  const r = document.getElementById('map-container').getBoundingClientRect();
+  return leafletMap.containerPointToLatLng([e.clientX - r.left, e.clientY - r.top]);
+}
+function terminarDibujo(cerrar) {
+  drawMode = false;
+  document.getElementById('draw-overlay').style.display = 'none';
+  leafletMap.dragging.enable();
+  if (drawingLine) { leafletMap.removeLayer(drawingLine); drawingLine = null; }
+  if (cerrar && drawingPts.length >= 3) {
+    drawnArea = drawingPts.slice();
+    if (drawnLayer) leafletMap.removeLayer(drawnLayer);
+    drawnLayer = L.polygon(drawnArea, { color:'#1a1a1a', weight:2, fillColor:'#1a1a1a', fillOpacity:.08, interactive:false }).addTo(leafletMap);
+    renderMap(getFilteredProps());
+    leafletMap.fitBounds(drawnLayer.getBounds(), { padding:[40,40] });
+    const n = getFilteredProps().length;
+    showToast('ti-check', n ? `${n} ${n === 1 ? 'propiedad' : 'propiedades'} en la zona dibujada` : 'No hay propiedades en la zona dibujada', n ? 'success' : 'default');
+  }
+  drawingPts = [];
+  actualizarBotonDibujo();
+}
+function borrarAreaDibujada() {
+  drawnArea = null;
+  if (drawnLayer && leafletMap) { leafletMap.removeLayer(drawnLayer); }
+  drawnLayer = null;
+  actualizarBotonDibujo();
+  if (leafletMap) renderMap(getFilteredProps());
+  renderProps();
+}
+(function initDibujoArea() {
+  const ov = document.getElementById('draw-overlay');
+  if (!ov) return;
+  ov.addEventListener('pointerdown', e => {
+    ov.setPointerCapture(e.pointerId);
+    drawingPts = [_drawLatLng(e)].map(ll => [ll.lat, ll.lng]);
+    if (drawingLine) leafletMap.removeLayer(drawingLine);
+    drawingLine = L.polyline(drawingPts, { color:'#1a1a1a', weight:3, interactive:false }).addTo(leafletMap);
+  });
+  ov.addEventListener('pointermove', e => {
+    if (!drawingLine) return;
+    const ll = _drawLatLng(e);
+    drawingPts.push([ll.lat, ll.lng]);
+    drawingLine.setLatLngs(drawingPts);
+  });
+  ov.addEventListener('pointerup', () => { if (drawingLine) terminarDibujo(true); });
+})();
+
 function getFilteredProps(){
   // Sin simulación activa no hay presupuesto declarado todavía: se explora el catálogo
   // completo. Con simulación, "en tu rango" es literal — sin margen de estiramiento hacia
@@ -7092,6 +7181,7 @@ function getFilteredProps(){
   // marcadas (OR entre sí), como el resto de los filtros de esta sheet, se combina con
   // AND — se puede elegir "Roma Norte + Condesa + Polanco" y ver las tres juntas.
   if(chipFilters.zonas.length) show = show.filter(p=>chipFilters.zonas.includes(p.zona));
+  if(drawnArea) show = show.filter(p => puntoEnPoligono(p.lat, p.lng, drawnArea));
   if(chipFilters.tipo) show = show.filter(p=>p.tipo===chipFilters.tipo);
   if(chipFilters.minRec) show = show.filter(p=>p.rec>=chipFilters.minRec);
   if(chipFilters.minBan) show = show.filter(p=>p.ban>=chipFilters.minBan);
