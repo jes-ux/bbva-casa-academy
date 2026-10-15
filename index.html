@@ -4899,14 +4899,14 @@ function headerBack() {
   }
   // Sin historial (por ejemplo, se abrió una ficha directo): vuelve al paso anterior de la ruta
   const actual = document.querySelector('.screen.active')?.id;
-  const padre = SCREEN_PARENT[actual];
+  const padre = breadcrumbChain(actual).slice(-1)[0];
   if (padre) goToBreadcrumb(padre);
 }
 
 function updateBackBtn() {
   const btn = document.getElementById('header-back');
   const currentId = document.querySelector('.screen.active')?.id;
-  const show = (navHistory.length > 0 || !!SCREEN_PARENT[currentId]) && !ROOT_SCREENS.has(currentId);
+  const show = !['screen-0','screen-login','screen-registro'].includes(currentId) && (navHistory.length > 0 || breadcrumbChain(currentId).length > 0);
   btn.style.display = show ? 'inline-flex' : 'none';
 }
 
@@ -4986,6 +4986,7 @@ function screenLabel(id) {
 // derecho de screen-academia, breadcrumbChain() los arma aparte más abajo como una
 // secuencia (cada paso anterior es su propio eslabón, no solo "Academia BBVA" en bloque).
 const SCREEN_PARENT = {
+  'screen-academia': 'screen-0',
   'screen-props': 'screen-0',
   'screen-prop-detail': 'screen-props',
   'screen-sim': 'screen-0',
@@ -5009,7 +5010,7 @@ function breadcrumbChain(id) {
   // mandar siempre de vuelta al listado general de Academia.
   const n = id === 'screen-achievement' ? achCurrentN : ACADEMIA_SCREEN_STEP[id];
   if (n) {
-    const chain = ['screen-academia'];
+    const chain = ['screen-0', 'screen-academia'];
     for (let i = 1; i < n; i++) chain.push(ACH_TUTORIAL_SCREEN[i]);
     return chain;
   }
