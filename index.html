@@ -442,6 +442,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .lb-next{right:16px;top:50%;transform:translateY(-50%)}
 .lb-count{position:absolute;top:24px;left:50%;transform:translateX(-50%);color:#fff;font-size:13px;font-weight:600}
 .prop-detail-hero{height:240px;background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border-bottom:0.5px solid var(--border)}
+.detail-bc-top{padding:12px 16px 0!important;width:100%;box-sizing:border-box}
 .detail-breadcrumb{display:flex;align-items:center;gap:4px;padding:10px 20px;font-size:11px;color:var(--text-muted);flex-shrink:0;flex-wrap:wrap}
 /* Vive como primer hijo de .content (flex column con gap propio): sin padding propio
    para no duplicar el inset que .content ya aplica, así queda perfectamente alineado
@@ -450,6 +451,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .detail-breadcrumb i,.app-breadcrumb-inline i{font-size:10px}
 .bc-item{background:none;border:none;padding:0;margin:0;font:inherit;font-family:inherit;font-size:11px;font-weight:500;color:var(--text-secondary);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .bc-item:hover{color:var(--text-primary);text-decoration:underline}
+.bc-current{font-size:11px;font-weight:600;color:var(--text-primary)}
+.bc-back{display:none;align-items:center;justify-content:center;width:28px;height:28px;margin-right:6px;border:0.5px solid var(--border-strong);border-radius:50%;background:var(--surface-2);color:var(--text-primary);cursor:pointer;padding:0;flex-shrink:0}
+.bc-back i{font-size:15px!important}
+.bc-back:hover{background:var(--surface-1)}
+@media(min-width:900px){.bc-back{display:inline-flex}.detail-breadcrumb,.app-breadcrumb-inline{font-size:12px}.bc-item,.bc-current{font-size:12px}}
 /* Ficha: encabezado, cifras, datos y "lo especial" */
 #detail-price,#detail-price-m2,#detail-location,#detail-price-m,#detail-price-m2-m,#detail-location-m{display:none}
 .fx-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:16px 20px 0}
@@ -1038,7 +1044,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     max-width:1160px;margin:0 auto;padding:20px 40px 60px;
     display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:start;
   }
-  .dsb{padding:14px 40px}
+  .detail-bc-top{padding:16px 40px 0!important}
+  .dsb{padding:10px 40px 14px}
   .dsb-inner{flex-direction:row;align-items:center;gap:12px}
   .dsb-inner > .hs-wrap{flex:1;min-width:0}
   .dsb-desk{display:flex!important}
@@ -2616,6 +2623,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   <!-- DETALLE DE PROPIEDAD -->
   <div id="screen-prop-detail" class="screen">
+    <!-- Breadcrumb y flecha de volver: se completan en paintBreadcrumb() con los pasos previos -->
+    <div class="detail-breadcrumb detail-bc-top" id="detail-breadcrumb" style="display:none"></div>
     <!-- Buscador (mismo componente que el resto de la app) + galería de fotos -->
     <div class="dsb">
       <div class="dsb-inner">
@@ -2631,8 +2640,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
     <div class="screen-scroll-inner">
       <div class="dt-detail-main">
-        <!-- Breadcrumb: se completa dinámicamente en paintBreadcrumb() con los pasos previos -->
-        <div class="detail-breadcrumb" id="detail-breadcrumb" style="display:none"></div>
         <!-- Encabezado de la ficha: precio y dirección a la izquierda, cifras clave a la derecha -->
         <div class="fx-head">
           <div class="fx-head-main">
@@ -4882,13 +4889,18 @@ function headerBack() {
   if (navHistory.length > 0) {
     const prev = navHistory.pop();
     goScreen(prev, true); // true = es un back, no empuja al historial
+    return;
   }
+  // Sin historial (por ejemplo, se abrió una ficha directo): vuelve al paso anterior de la ruta
+  const actual = document.querySelector('.screen.active')?.id;
+  const padre = SCREEN_PARENT[actual];
+  if (padre) goToBreadcrumb(padre);
 }
 
 function updateBackBtn() {
   const btn = document.getElementById('header-back');
   const currentId = document.querySelector('.screen.active')?.id;
-  const show = navHistory.length > 0 && !ROOT_SCREENS.has(currentId);
+  const show = (navHistory.length > 0 || !!SCREEN_PARENT[currentId]) && !ROOT_SCREENS.has(currentId);
   btn.style.display = show ? 'inline-flex' : 'none';
 }
 
@@ -5000,10 +5012,13 @@ function breadcrumbChain(id) {
   while (p) { chain.unshift(p); p = SCREEN_PARENT[p]; }
   return chain;
 }
-function buildBreadcrumbTrailHTML(chain) {
-  return chain.map((sid, idx) =>
+function buildBreadcrumbTrailHTML(chain, currentId) {
+  const back = `<button class="bc-back" onclick="headerBack()" aria-label="Volver al paso anterior"><i class="ti ti-arrow-left"></i></button>`;
+  const links = chain.map((sid, idx) =>
     `${idx > 0 ? '<i class="ti ti-chevron-right"></i>' : ''}<button class="bc-item" onclick="goToBreadcrumb('${sid}')">${screenLabel(sid)}</button>`
   ).join('');
+  const actual = currentId ? `<i class="ti ti-chevron-right"></i><span class="bc-current">${screenLabel(currentId)}</span>` : '';
+  return back + links + actual;
 }
 function goToBreadcrumb(id) {
   if (id === 'screen-0') { navTo('screen-0','nav-inicio'); return; }
@@ -5018,7 +5033,7 @@ function paintBreadcrumb(screenEl) {
   const detailSlot = document.getElementById('detail-breadcrumb');
   if (detailSlot) {
     detailSlot.style.display = (id === 'screen-prop-detail' && show) ? 'flex' : 'none';
-    if (id === 'screen-prop-detail') detailSlot.innerHTML = show ? buildBreadcrumbTrailHTML(chain) : '';
+    if (id === 'screen-prop-detail') detailSlot.innerHTML = show ? buildBreadcrumbTrailHTML(chain, id) : '';
   }
   if (!show || id === 'screen-prop-detail') return;
   // Se inyecta dentro de .content (nunca como hijo directo de .screen) para que el
@@ -5028,7 +5043,7 @@ function paintBreadcrumb(screenEl) {
   const bc = document.createElement('div');
   bc.id = 'app-breadcrumb-dynamic';
   bc.className = 'app-breadcrumb-inline';
-  bc.innerHTML = buildBreadcrumbTrailHTML(chain);
+  bc.innerHTML = buildBreadcrumbTrailHTML(chain, id);
   target.prepend(bc);
 }
 
