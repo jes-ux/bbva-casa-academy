@@ -445,6 +445,34 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .detail-breadcrumb i,.app-breadcrumb-inline i{font-size:10px}
 .bc-item{background:none;border:none;padding:0;margin:0;font:inherit;font-family:inherit;font-size:11px;font-weight:500;color:var(--text-secondary);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .bc-item:hover{color:var(--text-primary);text-decoration:underline}
+/* Ficha: encabezado, cifras, datos y "lo especial" */
+#detail-price,#detail-price-m2,#detail-location,#detail-price-m,#detail-price-m2-m,#detail-location-m{display:none}
+.fx-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:16px 20px 0}
+.fx-price{font-size:32px;font-weight:800;color:var(--text-primary);line-height:1.1;letter-spacing:-.01em}
+.fx-addr{font-size:15px;color:var(--text-secondary);margin-top:6px;line-height:1.4}
+.fx-stats{display:flex;gap:20px;flex-shrink:0}
+.fx-stat{text-align:left}
+.fx-stat b{display:block;font-size:24px;font-weight:800;color:var(--text-primary);line-height:1.1}
+.fx-stat span{font-size:13px;color:var(--text-secondary)}
+.fx-est{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin:16px 20px 0;padding:12px 16px;border-radius:12px;background:rgba(25,115,184,.12);width:fit-content;max-width:calc(100% - 40px);font-size:14px;color:var(--text-primary)}
+.fx-est b{font-weight:700}
+.fx-est button{border:none;background:none;padding:0;font-family:var(--font-sans);font-size:14px;font-weight:700;color:#1973b8;cursor:pointer}
+.fx-facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 20px 0}
+.fx-fact{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;background:var(--surface-2);font-size:14px;color:var(--text-primary);min-width:0}
+.fx-fact i{font-size:22px;color:var(--text-secondary);flex-shrink:0}
+.fx-divider{height:1px;background:var(--border);margin:24px 20px 4px}
+.fx-special{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.fx-chip{font-size:12px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:9px 14px;border-radius:6px;background:var(--surface-1);color:var(--text-primary)}
+.fx-desc{font-size:15px;line-height:1.6;color:var(--text-secondary);margin:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
+.fx-desc.abierta{-webkit-line-clamp:unset;display:block}
+.fx-more{border:none;background:none;padding:6px 0 0;font-family:var(--font-sans);font-size:14px;font-weight:600;color:#1973b8;cursor:pointer}
+.fx-activity{display:flex;align-items:baseline;flex-wrap:wrap;gap:0;font-size:15px;color:var(--text-secondary)}
+.fx-activity > span{display:inline-flex;align-items:baseline;gap:6px;padding:0 14px;border-left:1px solid var(--border-strong)}
+.fx-activity > span:first-child{padding-left:0;border-left:none}
+.fx-activity b{font-size:17px;font-weight:700;color:var(--text-primary)}
+.fx-activity u{text-decoration:none;border-bottom:1px dashed #1973b8}
+@media(max-width:899px){.fx-activity{column-gap:18px;row-gap:6px}.fx-activity > span{padding:0;border-left:none}.fx-head{flex-direction:column;gap:14px}.fx-stats{gap:24px}.fx-price{font-size:28px}}
+@media(min-width:900px){.fx-head,.fx-divider,.fx-facts{margin-left:0;margin-right:0;padding-left:0;padding-right:0}.fx-est{margin-left:0}.fx-facts{grid-template-columns:repeat(3,1fr)}}
 .detail-top-block{padding:16px 20px 0;display:flex;flex-direction:column;gap:8px;flex-shrink:0}
 .detail-tipo-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:4px;background:var(--text-primary);color:var(--surface-2);width:fit-content}
 .detail-title{font-size:22px;font-weight:700;color:var(--text-primary);line-height:1.25;margin:0}
@@ -2668,11 +2696,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="dt-detail-main">
         <!-- Breadcrumb: se completa dinámicamente en paintBreadcrumb() con los pasos previos -->
         <div class="detail-breadcrumb" id="detail-breadcrumb" style="display:none"></div>
-        <!-- Tipo badge + título + dirección -->
-        <div class="detail-top-block">
-          <h1 class="detail-title" id="detail-title"></h1>
-          <div class="detail-address" id="detail-address"></div>
+        <!-- Encabezado de la ficha: precio y dirección a la izquierda, cifras clave a la derecha -->
+        <div class="fx-head">
+          <div class="fx-head-main">
+            <div class="fx-price" id="fx-price"></div>
+            <div class="fx-addr" id="fx-addr"></div>
+          </div>
+          <div class="fx-stats" id="fx-stats"></div>
         </div>
+        <div class="fx-est" id="fx-est"></div>
+        <div class="fx-facts" id="fx-facts"></div>
         <!-- Tarjeta de precio (mobile only — sidebar has it on desktop) -->
         <div class="detail-price-card dt-mobile-price">
           <div style="display:flex;align-items:flex-start;justify-content:space-between">
@@ -2697,20 +2730,22 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <i class="ti ti-calendar-event"></i> Agendar una visita
           </button>
         </div>
-        <!-- Descubre la propiedad -->
+        <!-- Lo especial + descripción -->
+        <div class="fx-divider"></div>
         <div class="detail-section">
-          <div class="detail-section-title">Descubre la propiedad</div>
-          <div class="detail-attrs" id="detail-attrs"></div>
+          <div class="detail-section-title">Lo especial</div>
+          <div class="fx-special" id="fx-special"></div>
+          <p class="fx-desc" id="fx-desc"></p>
+          <button class="fx-more" id="fx-more" onclick="fxToggleDesc()">Ver más</button>
         </div>
-        <!-- Reseña -->
+        <!-- Actividad de la publicación -->
         <div class="detail-section">
-          <div class="detail-section-title">Reseña</div>
-          <p class="detail-desc-text" id="detail-desc"></p>
+          <div class="fx-activity" id="fx-activity"></div>
         </div>
         <!-- Ver en el mapa -->
         <div class="detail-section">
           <div class="detail-section-title">Ver en el mapa</div>
-          <div id="detail-map" style="height:160px;border-radius:10px;overflow:hidden;border:0.5px solid var(--border)"></div>
+          <div id="detail-map" style="height:240px;border-radius:12px;overflow:hidden;border:0.5px solid var(--border)"></div>
         </div>
         <!-- Extras -->
         <div class="detail-section">
@@ -8005,6 +8040,11 @@ function detalleBuscar(v) {
   navTo('screen-props', 'nav-props');
 }
 
+function fxToggleDesc() {
+  const d = document.getElementById('fx-desc');
+  const abierta = d.classList.toggle('abierta');
+  document.getElementById('fx-more').textContent = abierta ? 'Ver menos' : 'Ver más';
+}
 function openPropDetail(id){
   currentPropId = id;
   const p = PROPS.find(x=>x.id===id);
@@ -8036,32 +8076,50 @@ function openPropDetail(id){
     });
   }
 
-  // title & address
-  document.getElementById('detail-title').textContent = p.desc.split('.')[0];
-  document.getElementById('detail-address').textContent = `${p.zona}, Ciudad de México, CDMX`;
-
-  // price block (desktop sidebar + mobile card)
+  // price block (sidebar y tarjeta mobile: ocultos, el precio vive en el encabezado)
   document.getElementById('detail-price').textContent = fmt(p.price);
-  document.getElementById('detail-price-m2').textContent = `${fmt(Math.round(p.price/p.area))} / m²`;
-  document.getElementById('detail-location').textContent = `${p.zona}, Ciudad de México`;
   document.getElementById('detail-price-m').textContent = fmt(p.price);
-  document.getElementById('detail-price-m2-m').textContent = `${fmt(Math.round(p.price/p.area))} / m²`;
-  document.getElementById('detail-location-m').textContent = `${p.zona}, Ciudad de México`;
 
-  // attributes
-  const attrDefs = [
-    {icon:'ti-ruler-2', label:`${p.area} m²`},
-    {icon:'ti-car', label:`Estacionamientos (${p.estac})`},
-    {icon:'ti-bed', label:`Recámaras (${p.rec})`},
-    {icon:'ti-bath', label:`Baños (${p.ban})`},
-    {icon:'ti-shield-check', label:'Seguridad'},
+  // Encabezado: precio, dirección y cifras clave
+  document.getElementById('fx-price').textContent = `MXN ${p.price.toLocaleString('es-MX')}`;
+  const alcBase = (ZONA_GEO[p.zona] || {}).alc;
+  document.getElementById('fx-addr').textContent = `${propDireccion(p)}, ${p.zona}, ${alcBase && alcBase !== p.zona ? alcBase + ', ' : ''}Ciudad de México`;
+  document.getElementById('fx-stats').innerHTML = [[p.rec, p.rec === 1 ? 'recámara' : 'recámaras'], [p.ban, p.ban === 1 ? 'baño' : 'baños'], [p.area.toLocaleString('es-MX'), 'm²']]
+    .map(([n, l]) => `<div class="fx-stat"><b>${n}</b><span>${l}</span></div>`).join('');
+
+  // Cuota estimada con salida directa a precalificar (simulador)
+  const fin = estimarFinanciamientoCard(p.price);
+  document.getElementById('fx-est').innerHTML = `<span>Cuota estimada: <b>${fmt(fin.cuota)}/mes</b></span><button onclick="simRefPropId=${p.id};goScreen('screen-sim')">Precalifícate</button>`;
+
+  // Datos de la propiedad (avalúo y mantenimiento son estimaciones de demo)
+  const avaluo = Math.round(p.price * (0.95 + ((p.id * 7) % 9) / 100) / 1000) * 1000;
+  const mant = p.tipo === 'Departamento' ? Math.round(p.area * 32 / 100) * 100 : 0;
+  const antig = p.enConstruccion ? 'En construcción' : p.antiguedadAnios === 0 ? 'A estrenar' : `Construido en ${new Date().getFullYear() - p.antiguedadAnios}`;
+  const facts = [
+    [p.tipo === 'Casa' ? 'ti-home' : 'ti-building', p.tipo === 'Casa' ? 'Casa' : 'Departamento'],
+    ['ti-hammer', antig],
+    ['ti-car', p.estac === 0 ? 'Sin estacionamiento' : `${p.estac} ${p.estac === 1 ? 'lugar' : 'lugares'} de estacionamiento`],
+    ['ti-report-money', `${fmt(avaluo)} de avalúo estimado`],
+    ['ti-coin', `${fmt(Math.round(p.price / p.area))}/m²`],
+    ['ti-building-community', mant ? `${fmt(mant)}/mes de mantenimiento` : 'Sin cuota de mantenimiento'],
   ];
-  document.getElementById('detail-attrs').innerHTML = attrDefs.map(a =>
-    `<div class="detail-attr"><i class="ti ${a.icon}"></i><span>${a.label}</span></div>`
-  ).join('');
+  document.getElementById('fx-facts').innerHTML = facts.map(([ic, t]) => `<div class="fx-fact"><i class="ti ${ic}"></i><span>${t}</span></div>`).join('');
 
-  // description
-  document.getElementById('detail-desc').textContent = p.desc;
+  // Lo especial: etiquetas destacadas + descripción
+  const especiales = [...(p.tags || []), ...(p.amenities || []).slice(0, 3)];
+  document.getElementById('fx-special').innerHTML = especiales.map(t => `<span class="fx-chip">${t}</span>`).join('');
+  const desc = document.getElementById('fx-desc');
+  desc.textContent = p.desc;
+  desc.classList.remove('abierta');
+  document.getElementById('fx-more').textContent = 'Ver más';
+  document.getElementById('fx-more').style.display = p.desc.length > 150 ? '' : 'none';
+
+  // Actividad de la publicación (vistas y guardados son cifras de demo)
+  const dias = p.diasPublicado;
+  const vistas = 240 + ((p.id * 97) % 760);
+  const guardados = Math.round(vistas * 0.12);
+  document.getElementById('fx-activity').innerHTML =
+    `<span><b>${dias <= 1 ? (dias === 0 ? 'Hoy' : '1 día') : dias + ' días'}</b><u>en BBVA Inmobiliaria</u></span><span><b>${vistas.toLocaleString('es-MX')}</b><u>vistas</u></span><span><b>${guardados}</b><u>guardados</u></span>`;
 
   // mini map
   setTimeout(() => {
@@ -8158,7 +8216,7 @@ function openPropDetail(id){
       <div class="detail-related-body">
         <span class="detail-related-badge">${r.tipo}</span>
         <div class="detail-related-price">${fmt(r.price)}</div>
-        <div class="detail-related-meta">${fmt(Math.round(r.price/r.area))} / m²<br>${r.rec} rec · ${r.ban} baños<br>${r.zona}</div>
+        <div class="detail-related-meta">${fmt(Math.round(r.price/r.area))} / m²<br>${r.rec} rec · ${r.ban} ${r.ban === 1 ? 'baño' : 'baños'}<br>${r.zona}</div>
       </div>
     </div>`;
   document.getElementById('detail-related').outerHTML =
