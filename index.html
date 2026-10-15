@@ -2617,18 +2617,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     <div class="dsb">
       <div class="dsb-inner">
         <div class="hs-slot" data-hs="det" data-input="detail-search" data-compact="mobile"></div>
-        <div class="dsb-chips dsb-desk">
-          <div class="dt-chip-wrap">
-            <button class="dsb-chip" onclick="toggleChipMenu('menu-d-precio')"><span id="chip-d-precio-label">Precio</span> <i class="ti ti-chevron-down"></i></button>
-            <div class="dt-chip-menu" id="menu-d-precio" style="right:0;left:auto">
-              <button onclick="detalleSetPrecio(0,0)">Cualquier precio</button>
-              <button onclick="detalleSetPrecio(0,1000000)">Hasta $1M</button>
-              <button onclick="detalleSetPrecio(1000000,3000000)">$1M a $3M</button>
-              <button onclick="detalleSetPrecio(3000000,5000000)">$3M a $5M</button>
-              <button onclick="detalleSetPrecio(5000000,0)">Más de $5M</button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
     <div class="detail-top">
@@ -7975,13 +7963,6 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'ArrowLeft') lightboxIr(-1);
   else if (e.key === 'ArrowRight') lightboxIr(1);
 });
-// Precio de la ficha (desktop): elige y lleva al listado con ese filtro.
-function detalleSetPrecio(min, max) {
-  document.getElementById('menu-d-precio').classList.remove('open');
-  setChipPrecio(min, max);
-  hsBuscar('det');
-}
-
 function fxToggleDesc() {
   const d = document.getElementById('fx-desc');
   const abierta = d.classList.toggle('abierta');
