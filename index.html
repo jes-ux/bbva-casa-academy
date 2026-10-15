@@ -102,10 +102,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .home-duo-card{display:flex;flex-direction:column;gap:14px;padding:24px 20px;border:0.5px solid var(--border);border-radius:16px;background:var(--surface-2);min-width:0}
 .home-duo-card .home-section-title{text-align:left}
 .home-duo-card .bajada{margin:0;text-align:left;max-width:none}
-.home-duo-card .btn-primary{align-self:flex-start}
+.home-duo-card .btn-primary{align-self:flex-start;margin-top:auto!important}
 .home-duo-card .home-zonas-grid{grid-template-columns:1fr;margin-top:0}
 .home-duo-card .home-faq-viewall{margin-top:auto}
-@media(min-width:900px){.home-duo{grid-template-columns:1fr 1fr;gap:20px}.home-duo-card{padding:28px}.home-duo-card .home-zonas-grid{grid-template-columns:1fr 1fr;gap:0 24px}#home-simula-band{justify-content:center}}
+@media(min-width:900px){.home-duo{grid-template-columns:1fr 1fr;gap:20px}.home-duo-card{padding:28px}.home-duo-card .home-zonas-grid{grid-template-columns:1fr 1fr;gap:0 24px}}
 .hs-wrap{position:relative;width:100%}
 .hs-pill{display:none;align-items:center;gap:8px;width:100%;padding:11px 12px;border:0.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface-2);font-family:var(--font-sans);font-size:14px;color:var(--text-primary);cursor:text;text-align:left;box-sizing:border-box}
 .hs-pill i{font-size:17px;color:var(--text-muted);flex-shrink:0}
@@ -2088,7 +2088,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <div class="home-band-inner">
         <div class="home-duo">
           <section class="home-duo-card" id="home-simula-band">
-            <div class="moment-label">Antes de salir a buscar</div>
             <div class="detail-section-title home-section-title">¿Cuánto podés pagar?</div>
             <p class="bajada">Con tu ingreso, tu enganche y el plazo que elijas, calculá en un minuto hasta cuánto podés considerar — así explorás con un rango real.</p>
             <button class="btn-primary" style="width:auto;padding:14px 32px;margin-top:8px;display:inline-flex;align-items:center;justify-content:center;gap:8px" onclick="navTo('screen-sim','nav-sim')"><i class="ti ti-calculator"></i> Simular tu crédito</button>
