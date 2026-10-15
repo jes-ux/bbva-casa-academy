@@ -2538,6 +2538,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
           <div id="list-controls-row2" style="display:flex;align-items:center;justify-content:space-between">
             <button class="sheet-link" onclick="openOrdenSheet()"><i class="ti ti-arrows-sort" style="font-size:13px"></i> Ordenar</button>
+            <button class="sheet-link" onclick="dibujarDesdeLista()"><i class="ti ti-pencil" style="font-size:13px"></i> Dibujar zona</button>
             <button class="sheet-link" onclick="switchView('map')" id="map-toggle-btn"><i class="ti ti-map-pin" style="font-size:13px"></i> Ver en mapa</button>
           </div>
         </div>
@@ -2566,7 +2567,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
             <!-- dibujar un área en el mapa para buscar dentro de ella -->
             <div id="draw-overlay" style="display:none;position:absolute;inset:0;z-index:999;cursor:crosshair;touch-action:none"></div>
-            <button id="draw-area-btn" onclick="toggleDibujarArea()" style="position:absolute;top:60px;right:12px;z-index:1000;display:flex;align-items:center;gap:6px;background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:20px;padding:8px 14px;font-size:12px;font-weight:600;font-family:var(--font-sans);color:var(--text-primary);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12)"><i class="ti ti-pencil" style="font-size:14px"></i><span id="draw-area-label">Dibujar zona</span></button>
+            <button id="draw-area-btn" onclick="toggleDibujarArea()" aria-label="Dibujar una zona en el mapa para buscar dentro de ella" style="position:absolute;top:64px;right:12px;z-index:1000;display:flex;align-items:center;gap:8px;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:24px;padding:12px 20px;font-size:14px;font-weight:600;font-family:var(--font-sans);cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.28)"><i class="ti ti-pencil" style="font-size:17px"></i><span id="draw-area-label">Dibujar zona</span></button>
             <!-- badge de zonas tocadas en el mapa (tocá un círculo para sumar/sacar) -->
             <div class="map-zonas-badge" style="display:none;position:absolute;top:60px;left:12px;z-index:1000;align-items:center;gap:8px;background:var(--surface-2);border-radius:20px;padding:7px 8px 7px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);font-size:12px;font-weight:600;color:var(--text-primary)">
               <span class="map-zonas-count"></span>
@@ -2609,12 +2610,13 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <!-- columna mapa — solo desktop -->
           <div class="dt-props-map-col">
             <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:0.5px solid var(--border);background:var(--surface-0);flex-shrink:0;gap:8px;overflow:hidden">
-              <span id="map-zonas-hint" style="font-size:12px;color:var(--text-muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Tocá una zona en el mapa para filtrar</span>
+              <span id="map-zonas-hint" style="font-size:12px;color:var(--text-muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="Tocá una zona del mapa para filtrar">Zonas</span>
               <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
                 <div class="map-zonas-badge" style="display:none;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap;flex-shrink:0">
                   <span class="map-zonas-count"></span>
                   <button onclick="limpiarZonasMapa()" style="background:var(--bg-2,#f2f2f0);border:0;border-radius:14px;padding:4px 9px;font-size:11px;font-weight:600;color:var(--text-primary);cursor:pointer;flex-shrink:0">Limpiar</button>
                 </div>
+                <button onclick="dibujarDesdeLista()" style="font-size:12px;font-weight:600;color:var(--surface-2);background:var(--text-primary);border:none;border-radius:7px;padding:6px 11px;cursor:pointer;display:flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap"><i class="ti ti-pencil" style="font-size:13px"></i> Dibujar zona</button>
                 <button onclick="switchView('map')" style="font-size:12px;font-weight:600;color:var(--text-primary);background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:7px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap"><i class="ti ti-arrows-maximize" style="font-size:12px"></i> Ver mapa completo</button>
               </div>
             </div>
@@ -7603,8 +7605,11 @@ function actualizarBotonDibujo() {
   if (!lbl || !btn) return;
   lbl.textContent = drawMode ? 'Cancelar' : (drawnArea ? 'Borrar zona' : 'Dibujar zona');
   btn.querySelector('i').className = 'ti ' + (drawMode || drawnArea ? 'ti-x' : 'ti-pencil');
-  btn.style.background = drawMode ? 'var(--text-primary)' : 'var(--surface-2)';
-  btn.style.color = drawMode ? 'var(--surface-2)' : 'var(--text-primary)';
+  // Inactivo: oscuro y bien visible. Dibujando o con zona: blanco con borde (acción de salida).
+  const salida = drawMode || drawnArea;
+  btn.style.background = salida ? 'var(--surface-2)' : 'var(--text-primary)';
+  btn.style.color = salida ? 'var(--text-primary)' : 'var(--surface-2)';
+  btn.style.border = salida ? '0.5px solid var(--border-strong)' : 'none';
 }
 function toggleDibujarArea() {
   if (drawMode) { terminarDibujo(false); return; }
@@ -7638,6 +7643,11 @@ function terminarDibujo(cerrar) {
   }
   drawingPts = [];
   actualizarBotonDibujo();
+}
+// Desde el listado: abre el mapa y deja activado el modo de dibujo.
+function dibujarDesdeLista() {
+  switchView('map');
+  setTimeout(() => { if (!drawMode && !drawnArea) toggleDibujarArea(); }, 700);
 }
 function borrarAreaDibujada() {
   drawnArea = null;
