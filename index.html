@@ -94,6 +94,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
    de propiedad, Explora por zona y Lo último en [zona]. Para volver a mostrarlos, sacar la
    clase home-oculto de su franja. */
 .home-oculto{display:none!important}
+.home-atajos{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;width:100%;max-width:980px}
+.home-atajo{padding:9px 18px;border-radius:20px;border:0.5px solid var(--border-strong);background:var(--surface-2);font-family:var(--font-sans);font-size:14px;font-weight:500;color:var(--text-primary);cursor:pointer;white-space:nowrap}
+.home-atajo:hover{background:var(--text-primary);color:var(--surface-2);border-color:var(--text-primary)}
 .hs-wrap{position:relative;width:100%}
 .hs-pill{display:none;align-items:center;gap:8px;width:100%;padding:11px 12px;border:0.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface-2);font-family:var(--font-sans);font-size:14px;color:var(--text-primary);cursor:text;text-align:left;box-sizing:border-box}
 .hs-pill i{font-size:17px;color:var(--text-muted);flex-shrink:0}
@@ -879,8 +882,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .home-quicklinks{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   /* Primer pantallazo: buscador, "Recién publicadas" y accesos rápidos juntos a la vista,
      con aire entre módulos pero sin la separación de las franjas de más abajo. */
-  .home-hero{min-height:0;padding:36px 40px 28px;gap:28px}
-  #home-recent-lite-band .home-band-inner{padding:24px 40px 20px;gap:16px}
+  .home-hero{min-height:0;padding:28px 40px 24px;gap:20px}
+  #home-recent-lite-band .home-band-inner{padding:20px 40px 16px;gap:14px}
   #home-quicklinks-band .home-band-inner{padding:12px 40px 40px}
   .quicklink-card{flex-direction:column;align-items:flex-start;padding:20px 18px;gap:14px}
 
@@ -1925,6 +1928,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <!-- Buscador compuesto: tipo de venta, tipo de propiedad, ubicación y botón en un solo
            componente. En mobile, al enfocar la ubicación se fija arriba de la pantalla
            (ver hsActivar) para que el teclado no lo tape. -->
+      <!-- Accesos directos al listado, arriba del buscador -->
+      <div class="home-atajos" role="group" aria-label="Accesos directos">
+        <button class="home-atajo" onclick="homeAtajo('tipo','Casa')">Casas</button>
+        <button class="home-atajo" onclick="homeAtajo('tipo','Departamento')">Departamentos</button>
+        <button class="home-atajo" onclick="homeAtajo('origen','listo')">Listos para habitar</button>
+        <button class="home-atajo" onclick="homeAtajo('origen','desarrollo')">Desarrollos</button>
+        <button class="home-atajo" onclick="homeAtajo('origen','banco')">Especiales BBVA</button>
+      </div>
       <div class="hs-slot" data-hs="home" data-input="home-search-input" style="width:100%;max-width:980px"></div>
     </div>
     <!-- Recién publicadas (cards lite horizontales) — arriba de los accesos rápidos -->
@@ -7449,6 +7460,16 @@ function hsSync() {
   }
 }
 function hsCerrarMenus() { document.querySelectorAll('.hs .dt-chip-menu').forEach(m => m.classList.remove('open')); }
+// Atajos del Inicio: llevan directo al listado con ese tipo de propiedad o de venta.
+function homeAtajo(clave, val) {
+  chipFilters.tipo = clave === 'tipo' ? val : '';
+  chipFilters.origen = clave === 'origen' ? val : '';
+  hsTexto = ''; searchQuery = '';
+  document.querySelectorAll('.hs-wrap input').forEach(i => { i.value = ''; });
+  syncOrigenChips();
+  hsSync();
+  navTo('screen-props', 'nav-props');
+}
 function hsSetVenta(val) {
   chipFilters.origen = val;
   hsCerrarMenus();
