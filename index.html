@@ -90,6 +90,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .home-tabs{display:flex;gap:8px}
 .home-tab{padding:8px 18px;border-radius:20px;border:0.5px solid var(--border);background:var(--surface-2);font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;font-family:var(--font-sans)}
 .home-tab.active{background:var(--text-primary);color:var(--surface-2);border-color:var(--text-primary)}
+/* Módulos del Inicio ocultos a pedido (siguen en el código, solo no se ven): Explora por tipo
+   de propiedad, Explora por zona y Lo último en [zona]. Para volver a mostrarlos, sacar la
+   clase home-oculto de su franja. */
+.home-oculto{display:none!important}
 .hs-wrap{position:relative}
 .hs{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border-strong);border-radius:16px;background:var(--surface-2);box-shadow:0 2px 12px rgba(0,0,0,.06);text-align:left}
 .hs-seg{position:relative;min-width:0;border-bottom:1px solid var(--border)}
@@ -1973,7 +1977,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Explora por tipo de propiedad -->
-    <div class="home-band home-band-white" id="home-tipo-band">
+    <div class="home-band home-band-white home-oculto" id="home-tipo-band">
       <div class="home-band-inner">
         <div class="detail-section-title home-section-title">Explora por tipo de propiedad</div>
         <div class="home-type-grid" id="home-type-grid"><!-- renderHomeTipos() --></div>
@@ -2006,7 +2010,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Explora por zona -->
-    <div class="home-band home-band-gray" id="home-zona-band">
+    <div class="home-band home-band-gray home-oculto" id="home-zona-band">
       <div class="home-band-inner">
         <div class="detail-section-title home-section-title">Explora por zona</div>
         <div class="home-tabs" id="home-zona-tabs" style="flex-wrap:wrap;margin-bottom:16px">
@@ -2060,7 +2064,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Lo último en [zona] (carrusel de fotos) -->
-    <div class="home-band home-band-gray" id="home-carousel-ultimo-band">
+    <div class="home-band home-band-gray home-oculto" id="home-carousel-ultimo-band">
       <div class="home-band-inner">
         <div class="carousel-head">
           <div class="detail-section-title home-section-title" id="carousel-ultimo-title">Lo último</div>
