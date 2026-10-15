@@ -2527,11 +2527,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
 
           <!-- Solo cuando se simula para UNA propiedad puntual (simRefPropId) y el crédito
-               que da el ingreso solo, sin ningún enganche, ya cubre el precio completo —
-               ver simular(). Caso poco común pero vale avisarlo como buena noticia. -->
+               que da el ingreso alcanza para financiar todo menos el enganche mínimo —
+               ver simular(). Se avisa como buena noticia. -->
           <div id="warning-ya-alcanza" class="success-box" style="display:none">
             <i class="ti ti-circle-check" style="font-size:17px;flex-shrink:0;margin-top:1px"></i>
-            <div>Tu ingreso ya cubre el precio de esta propiedad. No necesitás enganche adicional.</div>
+            <div>Tu ingreso alcanza para el crédito de esta propiedad. Solo necesitas el enganche mínimo de 20%.</div>
           </div>
 
           <div class="comparison-box">
@@ -7000,20 +7000,26 @@ function simular() {
   const r = tasaAplicada / 12;
   const n = selectedPlazo * 12;
   const maxCuota = ingreso * 0.30;
+  // Capacidad de crédito: el préstamo más grande cuya cuota no pasa del 30% del ingreso.
   const credito = maxCuota * (1 - Math.pow(1 + r, -n)) / r;
-  const cuotaReal = credito * r / (1 - Math.pow(1 + r, -n));
-  const pct = Math.round(cuotaReal / ingreso * 100);
+  let cuotaReal = credito * r / (1 - Math.pow(1 + r, -n));
+  let pct = Math.round(cuotaReal / ingreso * 100);
 
-  // Enganche automático (propiedad de referencia): despejado de propMax = crédito +
-  // enganche, fijando propMax = precio de la propiedad. Si el crédito solo ya cubre el
-  // precio, no hace falta enganche (se avisa como buena noticia en vez de mostrar $0
-  // sin explicación) y la capacidad real que se muestra es el crédito completo.
-  let propMax, engancheFinal, engancheYaAlcanza = false;
+  // Enganche automático (propiedad de referencia). Se financia lo que el ingreso permite, pero
+  // el enganche nunca baja del mínimo (CARD_ENGANCHE_PCT, el mismo 20% que muestra la ficha):
+  //   enganche = máx( mínimo , precio − capacidad de crédito )
+  // La cuota y la comparación de plazos son las del préstamo real de esa propiedad
+  // (precio − enganche), no las del tope de crédito del ingreso.
+  let propMax, engancheFinal, engancheYaAlcanza = false, creditoCalc = credito;
   const labelEl = document.getElementById('res-prop-label');
   if (refProp) {
-    engancheFinal = Math.max(0, Math.round(refProp.price - credito));
-    propMax = Math.max(credito, refProp.price);
-    engancheYaAlcanza = engancheFinal === 0;
+    const engMin = Math.round(refProp.price * CARD_ENGANCHE_PCT);
+    engancheFinal = Math.max(engMin, Math.round(refProp.price - credito));
+    creditoCalc = refProp.price - engancheFinal;
+    cuotaReal = creditoCalc * r / (1 - Math.pow(1 + r, -n));
+    pct = Math.round(cuotaReal / ingreso * 100);
+    propMax = Math.max(credito / (1 - CARD_ENGANCHE_PCT), refProp.price); // precio máximo con el enganche mínimo
+    engancheYaAlcanza = refProp.price - credito <= engMin; // el ingreso alcanza: solo se pide el mínimo
     if (labelEl) labelEl.textContent = 'Enganche que necesitás para esta propiedad';
     document.getElementById('res-prop').textContent = fmt(engancheFinal);
   } else {
@@ -7036,13 +7042,17 @@ function simular() {
   document.getElementById('warn-pct').textContent = pct + '%';
 
   const warnAlcanza = document.getElementById('warning-ya-alcanza');
-  if (warnAlcanza) warnAlcanza.style.display = engancheYaAlcanza ? 'flex' : 'none';
+  if (warnAlcanza) {
+    warnAlcanza.style.display = engancheYaAlcanza ? 'flex' : 'none';
+    const txt = warnAlcanza.querySelector('div');
+    if (txt) txt.textContent = `Tu ingreso alcanza para el crédito de esta propiedad. Solo necesitas el enganche mínimo de ${Math.round(CARD_ENGANCHE_PCT * 100)}%.`;
+  }
 
   const table = document.getElementById('comparison-table');
   table.innerHTML = '';
   [10, 15, 20, 25].forEach(p => {
     const nn = p * 12;
-    const c = credito * r / (1 - Math.pow(1 + r, -nn));
+    const c = creditoCalc * r / (1 - Math.pow(1 + r, -nn));
     const isCur = p === selectedPlazo;
     const row = document.createElement('div');
     row.className = 'compare-row';
