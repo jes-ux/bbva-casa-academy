@@ -812,6 +812,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   .hs-backdrop{display:none!important}
   .hs-wrap.hs-activo .hs{position:static;box-shadow:0 2px 12px rgba(0,0,0,.06)}
   .home-quicklinks{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  /* Primer pantallazo: buscador, "Recién publicadas" y accesos rápidos juntos a la vista,
+     con aire entre módulos pero sin la separación de las franjas de más abajo. */
+  .home-hero{min-height:0;padding:36px 40px 28px;gap:28px}
+  #home-recent-lite-band .home-band-inner{padding:24px 40px 20px;gap:16px}
+  #home-quicklinks-band .home-band-inner{padding:12px 40px 40px}
   .quicklink-card{flex-direction:column;align-items:flex-start;padding:20px 18px;gap:14px}
 
   /* moment cards → row de 5 en desktop (informarme, simular, ver propiedades,
