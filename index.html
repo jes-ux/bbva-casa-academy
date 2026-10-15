@@ -1268,8 +1268,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <button class="dt-mega-chip" data-group="precio" onclick="toggleMegaChip(this);setChipPrecio(3000000,5000000)">MXN 3M – 5M</button>
         <button class="dt-mega-chip" data-group="precio" onclick="toggleMegaChip(this);setChipPrecio(5000000,0)">Más de MXN 5M</button>
       </div>
-      <div class="dt-mega-section-title" style="margin-top:18px">Desarrollos y Especiales</div>
+      <div class="dt-mega-section-title" style="margin-top:18px">Tipo de venta</div>
       <div class="dt-mega-chips" id="mega-chips-origen">
+        <button class="dt-mega-chip" data-origen="listo" onclick="toggleOrigenChip(this)">Listos para habitar</button>
         <button class="dt-mega-chip" data-origen="desarrollo" onclick="toggleOrigenChip(this)">Desarrollos</button>
         <button class="dt-mega-chip" data-origen="banco" onclick="toggleOrigenChip(this)">Especiales BBVA</button>
       </div>
@@ -3145,8 +3146,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <button class="sheet-chip" onclick="togglePropSheetChip(this,'precio','3m-5m');setChipPrecio(3000000,5000000)">MXN 3M – 5M</button>
         <button class="sheet-chip" onclick="togglePropSheetChip(this,'precio','5m+');setChipPrecio(5000000,0)">Más de MXN 5M</button>
       </div>
-      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 10px">Desarrollos y Especiales</div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 10px">Tipo de venta</div>
       <div id="sheet-chips-origen" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px">
+        <button class="sheet-chip" data-origen="listo" onclick="toggleOrigenChip(this)">Listos para habitar</button>
         <button class="sheet-chip" data-origen="desarrollo" onclick="toggleOrigenChip(this)">Desarrollos</button>
         <button class="sheet-chip" data-origen="banco" onclick="toggleOrigenChip(this)">Especiales BBVA</button>
       </div>
@@ -4035,6 +4037,7 @@ function toggleOrigenChip(btn) {
   if (activar) btn.classList.add('active');
   chipFilters.origen = activar ? btn.dataset.origen : '';
   renderProps();
+  hsSync();
 }
 function syncOrigenChips() {
   document.querySelectorAll('#mega-chips-origen [data-origen], #sheet-chips-origen [data-origen]').forEach(b => {
@@ -7394,19 +7397,22 @@ function normTxt(t) { return (t || '').toLowerCase().normalize('NFD').replace(/[
 // mapa y ficha. En desktop va completo en línea (Inicio, listado, ficha). En mobile el
 // listado y la ficha usan una versión compacta (una píldora) y el mapa la usa siempre; al
 // tocarla se abre el buscador completo, fijo arriba de la pantalla, igual al del Inicio.
-let hsVenta = 'Compra';
+// El tipo de venta es el mismo filtro `origen` de las pestañas del megamenú y de los "Ver más" del
+// Inicio: '' = Todo, 'listo' = Listos para habitar, 'desarrollo' = Desarrollos, 'banco' = Especiales BBVA.
+const HS_VENTAS = [['', 'Todo'], ['listo', 'Listos para habitar'], ['desarrollo', 'Desarrollos'], ['banco', 'Especiales BBVA']];
+function hsVentaLabel() { return (HS_VENTAS.find(([k]) => k === (chipFilters.origen || '')) || HS_VENTAS[0])[1]; }
 let hsTexto = '';
 function hsMarkup(id, inputId, compact, clear, style) {
   const cls = compact === 'always' ? ' hs-ca' : compact === 'mobile' ? ' hs-cm' : '';
   const menu = (k, items) => `<div class="dt-chip-menu" id="menu-${id}-${k}" style="top:calc(100% + 6px);left:0;min-width:100%">${items}</div>`;
-  const ventas = ['Compra','Desarrollos','Oportunidades'].map(v => `<button onclick="hsSetVenta('${v}')">${v}</button>`).join('');
+  const ventas = HS_VENTAS.map(([k, l]) => `<button onclick="hsSetVenta('${k}')">${l}</button>`).join('');
   const tipos = [['','Todos los tipos'],['Departamento','Departamentos'],['Casa','Casas']].map(([v, l]) => `<button onclick="hsSetTipo('${v}')">${l}</button>`).join('');
   return `<div class="hs-wrap${cls}" data-hs="${id}"${style ? ` style="${style}"` : ''}>
     <div class="hs-backdrop" onclick="hsDesactivar()"></div>
     <button class="hs-pill" onclick="hsActivar('${id}')"><i class="ti ti-search"></i><span class="hs-pill-text vacio">Ciudad, colonia o código postal</span></button>
     <div class="hs">
       <div class="hs-seg dt-chip-wrap">
-        <button class="hs-field" onclick="toggleChipMenu('menu-${id}-venta')"><span class="hs-label">Tipo de venta</span><span class="hs-value"><span class="hs-venta-label">Compra</span><i class="ti ti-chevron-down"></i></span></button>
+        <button class="hs-field" onclick="toggleChipMenu('menu-${id}-venta')"><span class="hs-label">Tipo de venta</span><span class="hs-value"><span class="hs-venta-label">Todo</span><i class="ti ti-chevron-down"></i></span></button>
         ${menu('venta', ventas)}
       </div>
       <div class="hs-seg dt-chip-wrap">
@@ -7426,7 +7432,7 @@ function hsWrap(id) { return document.querySelector(`.hs-wrap[data-hs="${id}"]`)
 // Sincroniza todas las instancias con el estado compartido (tipo, venta y texto buscado).
 function hsSync() {
   document.querySelectorAll('.hs-wrap').forEach(w => {
-    w.querySelector('.hs-venta-label').textContent = hsVenta;
+    w.querySelector('.hs-venta-label').textContent = hsVentaLabel();
     w.querySelector('.hs-tipo-label').textContent = chipFilters.tipo ? (chipFilters.tipo === 'Casa' ? 'Casas' : 'Departamentos') : 'Todos los tipos';
     const input = w.querySelector('input');
     if (document.activeElement !== input) input.value = hsTexto;
@@ -7443,7 +7449,16 @@ function hsSync() {
   }
 }
 function hsCerrarMenus() { document.querySelectorAll('.hs .dt-chip-menu').forEach(m => m.classList.remove('open')); }
-function hsSetVenta(val) { hsVenta = val; hsCerrarMenus(); hsSync(); }
+function hsSetVenta(val) {
+  chipFilters.origen = val;
+  hsCerrarMenus();
+  syncOrigenChips();
+  hsSync();
+  if (document.querySelector('.screen.active')?.id === 'screen-props') {
+    renderProps();
+    if (currentView === 'map') renderMap(getFilteredProps());
+  }
+}
 function hsSetTipo(val) { hsCerrarMenus(); setChipTipo(val); hsSync(); }
 function setHomeTipo(val) { hsSetTipo(val); }
 // Activar: en mobile (y siempre en los compactos) el buscador completo se fija arriba con un
@@ -7473,8 +7488,6 @@ function hsBuscar(id) {
   const v = (w ? w.querySelector('input').value : hsTexto).trim();
   hsTexto = v;
   searchQuery = v.toLowerCase();
-  if (hsVenta === 'Desarrollos') chipFilters.origen = 'desarrollo';
-  else if (chipFilters.origen === 'desarrollo') chipFilters.origen = '';
   hsDesactivar();
   hsSync();
   updateFilterBadge();
@@ -7714,7 +7727,8 @@ function getFilteredProps(){
   if(chipFilters.zonas.length) show = show.filter(p=>chipFilters.zonas.includes(p.zona));
   if(drawnArea) show = show.filter(p => puntoEnPoligono(p.lat, p.lng, drawnArea));
   if(chipFilters.tipo) show = show.filter(p=>p.tipo===chipFilters.tipo);
-  if(chipFilters.origen) show = show.filter(p=>p.origen===chipFilters.origen);
+  if(chipFilters.origen === 'listo') show = show.filter(p=>!p.origen && !p.enConstruccion);
+  else if(chipFilters.origen) show = show.filter(p=>p.origen===chipFilters.origen);
   if(chipFilters.minRec) show = show.filter(p=>p.rec>=chipFilters.minRec);
   if(chipFilters.minBan) show = show.filter(p=>p.ban>=chipFilters.minBan);
   if(chipFilters.estac !== '') {
@@ -7755,6 +7769,7 @@ function getFilteredProps(){
 
 function renderProps() {
   updateFilterBadge();
+  hsSync();
   const hasSim = isLoggedIn && simData.propMax > 0 && !searchQuery;
   const hasExtraFilters = !!(chipFilters.tipo || chipFilters.minRec || chipFilters.minBan || chipFilters.estac !== '' || chipFilters.minPrice || chipFilters.maxPrice
     || chipFilters.minArea || chipFilters.maxArea || chipFilters.amenities.length || chipFilters.zonas.length || chipFilters.vista
@@ -7762,7 +7777,7 @@ function renderProps() {
   const titleEl = document.querySelector('#screen-props .props-section > div:first-child h2');
   const bajadaEl = document.querySelector('#screen-props .props-section > div:first-child .bajada');
   const pillsEl = document.getElementById('profile-pills');
-  if (titleEl) titleEl.textContent = chipFilters.origen ? (chipFilters.origen === 'banco' ? 'Especiales BBVA' : 'Desarrollos') : searchQuery ? `Resultados para "${searchQuery}"` : hasSim ? 'Propiedades en tu rango' : 'Explorar propiedades';
+  if (titleEl) titleEl.textContent = chipFilters.origen ? hsVentaLabel() : searchQuery ? `Resultados para "${searchQuery}"` : hasSim ? 'Propiedades en tu rango' : 'Explorar propiedades';
   if (bajadaEl) bajadaEl.textContent = searchQuery ? '' : hasSim ? 'Resultados filtrados según tu simulación. Los precios son referenciales' : 'Encontrá la propiedad que estás buscando';
   if (pillsEl) pillsEl.style.display = hasSim ? '' : 'none';
   const show = getFilteredProps();
