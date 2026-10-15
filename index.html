@@ -2095,8 +2095,18 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
 
+    <!-- Precios por zona -->
+    <div class="home-band home-band-white" id="home-precios-band">
+      <div class="home-band-inner">
+        <div class="detail-section-title home-section-title">Precios por zona</div>
+        <p class="bajada" style="margin-top:-8px;text-align:center">Precio de venta por m² en cada zona, según las propiedades publicadas.</p>
+        <div class="home-zonas-grid" id="home-precios-grid" style="margin-top:8px"><!-- renderHomePrecios() --></div>
+        <button class="home-faq-viewall" onclick="renderPreciosDirectorio();goScreen('screen-precios')">Ver todas las zonas <i class="ti ti-chevron-right"></i></button>
+      </div>
+    </div>
+
     <!-- Especiales BBVA -->
-    <div class="home-band home-band-white" id="home-carousel-banco-band">
+    <div class="home-band home-band-gray" id="home-carousel-banco-band">
       <div class="home-band-inner">
         <div class="carousel-head">
           <div class="detail-section-title home-section-title">Especiales BBVA</div>
@@ -2107,16 +2117,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <button class="carousel-arrow prev" onclick="scrollCarousel('carousel-banco',-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
           <button class="carousel-arrow next" onclick="scrollCarousel('carousel-banco',1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
         </div>
-      </div>
-    </div>
-
-    <!-- Precios por zona -->
-    <div class="home-band home-band-gray" id="home-precios-band">
-      <div class="home-band-inner">
-        <div class="detail-section-title home-section-title">Precios por zona</div>
-        <p class="bajada" style="margin-top:-8px;text-align:center">Precio de venta por m² en cada zona, según las propiedades publicadas.</p>
-        <div class="home-zonas-grid" id="home-precios-grid" style="margin-top:8px"><!-- renderHomePrecios() --></div>
-        <button class="home-faq-viewall" onclick="renderPreciosDirectorio();goScreen('screen-precios')">Ver todas las zonas <i class="ti ti-chevron-right"></i></button>
       </div>
     </div>
 
