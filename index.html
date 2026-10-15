@@ -109,6 +109,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .home-duo-card .home-zonas-grid{grid-template-columns:1fr;margin-top:0}
 .home-duo-card .home-faq-viewall{margin-top:auto}
 @media(min-width:900px){.home-duo{grid-template-columns:1fr 1fr;gap:20px}.home-duo-card{padding:28px}.home-duo-card .home-zonas-grid{grid-template-columns:1fr 1fr;gap:0 24px}}
+.btn-hazte-cliente{font-size:13px;font-weight:700;padding:8px 18px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font-sans);background:#1973b8;color:#fff;box-shadow:0 2px 8px rgba(25,115,184,.35);white-space:nowrap}
+.btn-hazte-cliente:hover{background:#155f96}
+.dt-user .btn-hazte-cliente{background:#1973b8;color:#fff;border:none}
+.dt-user .btn-hazte-cliente:hover{background:#155f96}
 .hs-wrap{position:relative;width:100%}
 .hs-pill{display:none;align-items:center;gap:8px;width:100%;padding:11px 12px;border:0.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface-2);font-family:var(--font-sans);font-size:14px;color:var(--text-primary);cursor:text;text-align:left;box-sizing:border-box}
 .hs-pill i{font-size:17px;color:var(--text-muted);flex-shrink:0}
@@ -1310,6 +1314,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
       <button class="drawer-close" onclick="closeDrawer()"><i class="ti ti-x" style="font-size:18px"></i></button>
     </div>
+    <div class="drawer-section" id="drawer-hazte" style="padding:14px 20px 6px">
+      <button class="btn-hazte-cliente" style="width:100%;padding:13px;font-size:14px" onclick="closeDrawer();goPlaceholder('Hazte cliente BBVA')">Hazte cliente</button>
+    </div>
     <div class="drawer-section">
       <button class="drawer-item" onclick="requireAuth(()=>goScreen('screen-perfil'))"><i class="ti ti-user"></i> Perfil</button>
       <button class="drawer-item" onclick="requireAuth(()=>{renderFavs();goScreen('screen-favoritos')})"><i class="ti ti-heart"></i> Favoritos</button>
@@ -1919,15 +1926,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </nav>
     <!-- desktop user actions: hidden on mobile -->
     <div class="dt-user" id="dt-user-anon">
-      <button class="dt-user-link" onclick="goScreen('screen-login')">Ingresar</button>
-      <button class="dt-user-btn" style="font-size:13px;font-weight:600;padding:7px 16px;border-radius:8px;background:var(--text-primary);color:var(--surface-2)" onclick="goScreen('screen-registro')">Crear cuenta</button>
+      <button class="dt-user-link" onclick="goScreen('screen-login')">Ingresa</button>
+      <button class="dt-user-btn btn-hazte-cliente" onclick="goPlaceholder('Hazte cliente BBVA')">Hazte cliente</button>
     </div>
     <div class="dt-user desktop-only" id="dt-user-auth" style="display:none;align-items:center;gap:10px">
       <span id="dt-user-nombre" style="font-size:13px;font-weight:500;color:var(--text-primary)"></span>
       <div class="app-header-avatar" id="dt-header-avatar" onclick="openDrawer()" style="cursor:pointer"></div>
     </div>
     <!-- mobile: auth button -->
-    <button class="mobile-only" id="mob-ingresar-btn" style="align-items:center;gap:6px;font-size:13px;font-weight:600;border:1.5px solid var(--text-primary);border-radius:8px;padding:7px 14px;background:none;color:var(--text-primary);cursor:pointer;-webkit-tap-highlight-color:transparent" onclick="goScreen('screen-login')">Ingresar</button>
+    <button class="mobile-only" id="mob-ingresar-btn" style="align-items:center;gap:6px;font-size:13px;font-weight:600;border:1.5px solid var(--text-primary);border-radius:8px;padding:7px 14px;background:none;color:var(--text-primary);cursor:pointer;-webkit-tap-highlight-color:transparent" onclick="goScreen('screen-login')">Ingresa</button>
     <div class="app-header-avatar mobile-only" id="mob-header-avatar" style="display:none;cursor:pointer" onclick="openDrawer()"></div>
   </div>
 
@@ -5163,6 +5170,8 @@ function updateHeaderAvatar() {
   const authDt = document.getElementById('dt-user-auth');
   const mobBtn = document.getElementById('mob-ingresar-btn');
   const mobAv  = document.getElementById('mob-header-avatar');
+  const hazte = document.getElementById('drawer-hazte');
+  if (hazte) hazte.style.display = (isLoggedIn && currentUser) ? 'none' : '';
   if (isLoggedIn && currentUser) {
     if (anonDt) anonDt.style.display = 'none';
     if (authDt) authDt.style.display = window.innerWidth >= 900 ? 'flex' : 'none';
