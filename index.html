@@ -2003,8 +2003,23 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
          apenas dejaron de pasar por su tutorial. Ahora las 5 tarjetas son directamente
          los 5 módulos de Academia BBVA (mismo contenido/orden que MODULES/ACH_DATA),
          cada una llevando a SU módulo vía goMoment(n) → goToModuleFlow(n). -->
+    <!-- Zonas destacadas (carrusel de fotos) -->
+    <div class="home-band home-band-gray" id="home-carousel-zonas-band">
+      <div class="home-band-inner">
+        <div class="carousel-head">
+          <div class="detail-section-title home-section-title">Zonas destacadas</div>
+          <button class="carousel-viewmore" onclick="verTodasLasZonas()">Ver más <i class="ti ti-arrow-right"></i></button>
+        </div>
+        <div class="carousel-wrap">
+          <div class="carousel-scroll" id="carousel-zonas"><!-- renderCarouselZonas() --></div>
+          <button class="carousel-arrow prev" onclick="scrollCarousel('carousel-zonas',-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
+          <button class="carousel-arrow next" onclick="scrollCarousel('carousel-zonas',1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+
     <!-- Lo más buscado -->
-    <div class="home-band home-band-gray" id="home-carousel-buscado-band">
+    <div class="home-band home-band-gray home-oculto" id="home-carousel-buscado-band">
       <div class="home-band-inner">
         <div class="carousel-head">
           <div class="detail-section-title home-section-title">Lo más buscado</div>
@@ -2068,21 +2083,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
 
-    <!-- Zonas destacadas (carrusel de fotos) -->
-    <div class="home-band home-band-gray" id="home-carousel-zonas-band">
-      <div class="home-band-inner">
-        <div class="carousel-head">
-          <div class="detail-section-title home-section-title">Zonas destacadas</div>
-          <button class="carousel-viewmore" onclick="verTodasLasZonas()">Ver más <i class="ti ti-arrow-right"></i></button>
-        </div>
-        <div class="carousel-wrap">
-          <div class="carousel-scroll" id="carousel-zonas"><!-- renderCarouselZonas() --></div>
-          <button class="carousel-arrow prev" onclick="scrollCarousel('carousel-zonas',-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
-          <button class="carousel-arrow next" onclick="scrollCarousel('carousel-zonas',1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
-        </div>
-      </div>
-    </div>
-
     <!-- Explora por tipo de propiedad -->
     <div class="home-band home-band-white home-oculto" id="home-tipo-band">
       <div class="home-band-inner">
@@ -2092,7 +2092,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Simulá tu crédito + Precios por zona, en paralelo (uno al lado del otro en desktop, apilados en mobile) -->
-    <div class="home-band home-band-white" id="home-duo-band">
+    <div class="home-band home-band-gray" id="home-duo-band">
       <div class="home-band-inner">
         <div class="home-duo">
           <section class="home-duo-card" id="home-simula-band">
@@ -2175,7 +2175,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Ayuda y preguntas frecuentes -->
-    <div class="home-band home-band-gray" id="home-faq-band">
+    <div class="home-band home-band-white" id="home-faq-band">
       <div class="home-band-inner">
         <!-- Mobile: título centrado simple, igual al resto de las secciones de Inicio.
              Desktop: lo reemplaza la intro editorial de .faq-home-intro (ver abajo). -->
@@ -2193,7 +2193,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Footer -->
-    <div class="home-band home-band-white" id="home-footer-band">
+    <div class="home-band home-band-gray" id="home-footer-band">
       <div class="home-band-inner is-last" style="border-top:0.5px solid var(--border);padding-top:32px">
         <div class="home-footer-links">
           <button onclick="void(0)">Términos y Condiciones</button>
