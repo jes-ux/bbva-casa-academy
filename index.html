@@ -314,6 +314,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
    @media(min-width:900px) más abajo): siempre imagen arriba, ancho completo, para que
    la columna angosta del sidebar no quede con contenido amontonado a la izquierda. */
 .map-list-card{border:none;border-radius:12px;overflow:hidden;-webkit-tap-highlight-color:transparent;width:100%;position:relative;box-shadow:var(--card-shadow);background:var(--surface-2);cursor:pointer}
+.pc-price-row{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pc-price{font-size:17px;font-weight:700;color:var(--text-primary);line-height:1.2}
+.pc-type{font-size:13px;color:var(--text-secondary)}
+.pc-feats{display:flex;align-items:center;flex-wrap:wrap;row-gap:6px;margin:10px 0 8px;font-size:14px;color:var(--text-primary)}
+.pc-feats span{display:inline-flex;align-items:center;gap:4px;padding:0 10px;border-left:1px solid var(--border-strong);line-height:1.1}
+.pc-feats span:first-child{padding-left:0;border-left:none}
+.pc-feats i{font-size:17px;color:var(--text-secondary)}
+.pc-addr{font-size:13px;color:var(--text-primary);line-height:1.5;margin-bottom:8px}
+.pc-tags{display:flex;gap:6px;flex-wrap:wrap}
+@media(max-width:899px){.pc-feats{font-size:12.5px}.pc-feats{column-gap:12px}.pc-feats span{padding:0;border-left:none;gap:3px}.pc-feats i{font-size:15px}.pc-price{font-size:15px}}
+.pc-tag{font-size:11px;padding:4px 9px;border-radius:3px;background:var(--surface-1);color:var(--text-secondary)}
 .prop-info{padding:10px}
 .prop-price{font-size:16px;font-weight:700;color:var(--text-primary);line-height:1.2}
 .prop-price-m2{font-size:10px;color:var(--text-muted);margin-top:1px}
@@ -3524,6 +3535,38 @@ function newBadgeHTML(p) {
   return isNew ? `<span class="prop-badge"${p.origen ? ' style="top:30px"' : ''}>Nuevo</span>` : '';
 }
 
+// Contenido estándar de las cards de propiedad: precio y tipo de operación, ficha en
+// íconos (recámaras, baños, estacionamientos, m²), dirección en tres líneas y las
+// amenidades como etiquetas. La calle es de demo (el catálogo no trae dirección).
+const ZONA_CALLES = {
+  'Narvarte':['Calle Eugenia','Av. Universidad'], 'Del Valle':['Calle Adolfo Prieto','Av. Coyoacán'],
+  'Coyoacán':['Calle Francisco Sosa','Av. Hidalgo'], 'Portales':['Calle Ermita','Calzada de Tlalpan'],
+  'Roma Norte':['Calle Orizaba','Calle Colima'], 'Polanco':['Calle Arquímedes','Calle Moliere'],
+  'Condesa':['Av. Tamaulipas','Calle Amsterdam'], 'Tlalpan':['Calle Moneda','Av. San Fernando'],
+  'Doctores':['Calle Dr. Vértiz','Av. Cuauhtémoc'], 'Iztapalapa Centro':['Calle Ayuntamiento','Av. Ermita Iztapalapa'],
+  'Escandón':['Calle Mariano Escobedo','Av. Revolución'], 'Santa Fe':['Av. Vasco de Quiroga','Calle Javier Barros Sierra'],
+  'Nápoles':['Calle Nueva York','Av. de los Insurgentes'], 'Xochimilco':['Calle Nuevo León','Av. Guadalupe I. Ramírez'],
+};
+function propDireccion(p) {
+  const calles = ZONA_CALLES[p.zona] || ['Calle Principal'];
+  const num = ((p.id * 37) % 180) + 1;
+  return `${calles[p.id % calles.length]} ${num}`;
+}
+function propCardInfoHTML(p, simBadgeHTML, extra) {
+  const alcBase = (ZONA_GEO[p.zona] || {}).alc;
+  const alc = alcBase && alcBase !== p.zona ? alcBase : 'Ciudad de México';
+  const tags = (p.amenities || []).slice(0, 4).map(a => `<span class="pc-tag">${a}</span>`).join('');
+  return `<div class="prop-info">
+      <div class="pc-price-row"><span class="pc-price">MXN ${p.price.toLocaleString('es-MX')}</span><span class="pc-type">${p.tipo} en venta</span></div>
+      ${simBadgeHTML}
+      <div class="pc-feats">
+        <span>${p.rec}<i class="ti ti-bed"></i></span><span>${p.ban}<i class="ti ti-bath"></i></span><span>${p.estac}<i class="ti ti-car"></i></span><span>${p.area}<i class="ti ti-ruler-2"></i></span>
+      </div>
+      <div class="pc-addr"><div>${propDireccion(p)}</div><div>${p.zona}</div><div>${alc}</div></div>
+      <div class="pc-tags">${tags}</div>${extra || ''}
+    </div>`;
+}
+
 function propCardHTML(p) {
   const prof = CARD_PROFILES[(p.id - 1) % CARD_PROFILES.length];
   const isNew = p.tags.includes('Nuevo') || p.tags.includes('Nueva');
@@ -3542,16 +3585,8 @@ function propCardHTML(p) {
       <div class="prop-fav prop-sim-cta" title="Simular crédito para esta propiedad" onclick="event.stopPropagation();simRefPropId=${p.id};goScreen('screen-sim')"><i class="ti ti-calculator" style="font-size:13px;color:var(--text-primary)"></i></div>
       <div class="prop-fav" onclick="event.stopPropagation();requireAuth(()=>toggleFav(${p.id}))">${favIconHTML(p.id)}</div>
     </div>
-    <div class="prop-info">
-      <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px">${p.zona} · ${p.tipo}</div>
-      ${simBadgeHTML}
-      <div class="prop-price">${fmt(p.price)}</div>
-      <div class="prop-price-m2">${priceM2} / m²</div>
-      <div class="prop-details">${p.rec} rec · ${p.ban} baño${p.ban>1?'s':''} · ${p.area} m²</div>
-      <div style="font-size:11px;color:var(--text-secondary);margin:0 0 7px;line-height:1.5">Enganche de ${fmt(enganche)} y cuota de ${fmt(cuota)} a ${plazo} años</div>
-      <div style="font-size:10px;color:var(--text-muted);line-height:1.5;margin-bottom:8px">${prof.shortDesc}</div>
-      <div class="prop-tags">${amenHtml}</div>
-    </div></div>`;
+    ${propCardInfoHTML(p, simBadgeHTML)}
+    </div>`;
 }
 
 // Card de la columna vertical del mapa fullscreen en desktop (ver renderMapCarousel) —
@@ -3582,17 +3617,8 @@ function mapListCardHTML(p) {
       <div class="prop-fav prop-sim-cta" title="Simular crédito para esta propiedad" onclick="event.stopPropagation();simRefPropId=${p.id};goScreen('screen-sim')"><i class="ti ti-calculator" style="font-size:13px;color:var(--text-primary)"></i></div>
       <div class="prop-fav" onclick="event.stopPropagation();requireAuth(()=>toggleFav(${p.id}))">${favIconHTML(p.id)}</div>
     </div>
-    <div class="prop-info">
-      <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px">${p.zona} · ${p.tipo}</div>
-      ${simBadgeHTML}
-      <div class="prop-price">${fmt(p.price)}</div>
-      <div class="prop-price-m2">${priceM2} / m²</div>
-      <div class="prop-details">${p.rec} rec · ${p.ban} baño${p.ban>1?'s':''} · ${p.area} m²</div>
-      <div style="font-size:11px;color:var(--text-secondary);margin:0 0 7px;line-height:1.5">Enganche de ${fmt(enganche)} y cuota de ${fmt(cuota)} a ${plazo} años</div>
-      <div style="font-size:10px;color:var(--text-muted);line-height:1.5;margin-bottom:8px">${prof.shortDesc}</div>
-      <div class="prop-tags" style="margin-bottom:10px">${amenHtml}</div>
-      <button onclick="event.stopPropagation();openPropDetail(${p.id})" style="width:100%;font-size:12px;font-weight:600;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:8px;padding:9px;cursor:pointer;font-family:var(--font-sans)">Ver ficha →</button>
-    </div></div>`;
+    ${propCardInfoHTML(p, simBadgeHTML, `<div style="margin-top:10px"><button onclick="event.stopPropagation();openPropDetail(${p.id})" style="width:100%;font-size:12px;font-weight:600;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:8px;padding:9px;cursor:pointer;font-family:var(--font-sans)">Ver ficha →</button></div>`)}
+    </div>`;
 }
 
 function propListItemHTML(p, showRemoveFav = false) {
