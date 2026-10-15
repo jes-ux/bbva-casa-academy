@@ -451,6 +451,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .detail-breadcrumb i,.app-breadcrumb-inline i{font-size:10px}
 .bc-item{background:none;border:none;padding:0;margin:0;font:inherit;font-family:inherit;font-size:11px;font-weight:500;color:var(--text-secondary);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .bc-item:hover{color:var(--text-primary);text-decoration:underline}
+.dt-list-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:899px){.dt-list-actions{display:none}}
 .bc-current{font-size:11px;font-weight:600;color:var(--text-primary)}
 .bc-back{display:none;align-items:center;justify-content:center;width:28px;height:28px;margin-right:6px;border:0.5px solid var(--border-strong);border-radius:50%;background:var(--surface-2);color:var(--text-primary);cursor:pointer;padding:0;flex-shrink:0}
 .bc-back i{font-size:15px!important}
@@ -2517,7 +2519,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </div>
           <!-- chips de filtro: solo desktop — estructura tipo propiedades.com: ubicación,
                operación, tipo, precio y un botón de Filtros avanzados con contador -->
-          <div class="dt-filter-chips">
+          <div class="dt-filter-chips" style="display:none!important">
             <div class="dt-chip-wrap" style="display:none">
               <button class="dt-filter-chip" onclick="toggleChipMenu('menu-op')"><span id="chip-op-label">Comprar</span> <i class="ti ti-chevron-down"></i></button>
               <div class="dt-chip-menu" id="menu-op">
@@ -2533,17 +2535,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
                 <button onclick="setChipTipo('Casa')">Casa</button>
               </div>
             </div>
-            <div class="dt-chip-wrap">
-              <button class="dt-filter-chip" onclick="toggleChipMenu('menu-precio')"><span id="chip-precio-label">Precio</span> <i class="ti ti-chevron-down"></i></button>
-              <div class="dt-chip-menu" id="menu-precio">
-                <button onclick="setChipPrecio(0,0)">Cualquier precio</button>
-                <button onclick="setChipPrecio(0,1000000)">Hasta $1M</button>
-                <button onclick="setChipPrecio(1000000,3000000)">$1M a $3M</button>
-                <button onclick="setChipPrecio(3000000,5000000)">$3M a $5M</button>
-                <button onclick="setChipPrecio(5000000,0)">Más de $5M</button>
-              </div>
-            </div>
-            <button class="dt-filter-chip" id="filter-btn-desktop" onclick="openFiltrosSheet()" style="margin-left:auto"><i class="ti ti-adjustments-horizontal"></i> Filtros<span id="filter-badge-desktop" class="filtros-count-badge" style="display:none"></span></button>
           </div>
           <div id="list-controls-row2" style="display:flex;align-items:center;justify-content:space-between">
             <button class="sheet-link" onclick="openOrdenSheet()"><i class="ti ti-arrows-sort" style="font-size:13px"></i> Ordenar</button>
@@ -2590,14 +2581,27 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
                 <div id="props-count" style="font-size:12px;color:var(--text-muted)"></div>
                 <button id="area-chip" onclick="borrarAreaDibujada()" style="display:none;align-items:center;gap:5px;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:14px;padding:4px 9px;font-size:11px;font-weight:600;font-family:var(--font-sans);cursor:pointer">Zona dibujada <i class="ti ti-x" style="font-size:11px"></i></button>
               </div>
+              <div class="dt-list-actions">
               <div class="dt-chip-wrap" id="dt-orden-inline">
-                <button class="dt-filter-chip" onclick="toggleChipMenu('menu-orden')" style="padding:5px 10px;font-size:12px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> <span id="chip-orden-label">Ordenar</span> <i class="ti ti-chevron-down" style="font-size:10px"></i></button>
+                <button class="dt-filter-chip" onclick="toggleChipMenu('menu-orden')"><i class="ti ti-arrows-sort"></i> <span id="chip-orden-label">Ordenar</span> <i class="ti ti-chevron-down"></i></button>
                 <div class="dt-chip-menu" id="menu-orden" style="right:0;left:auto">
                   <button data-val="relevantes" onclick="setChipOrder('relevantes')">Relevantes</button>
                   <button data-val="precio_asc" onclick="setChipOrder('precio_asc')">Menor precio</button>
                   <button data-val="precio_desc" onclick="setChipOrder('precio_desc')">Mayor precio</button>
                   <button data-val="recientes" onclick="setChipOrder('recientes')">Más recientes</button>
                 </div>
+              </div>
+              <div class="dt-chip-wrap">
+                <button class="dt-filter-chip" onclick="toggleChipMenu('menu-precio')"><span id="chip-precio-label">Precio</span> <i class="ti ti-chevron-down"></i></button>
+                <div class="dt-chip-menu" id="menu-precio">
+                  <button onclick="setChipPrecio(0,0)">Cualquier precio</button>
+                  <button onclick="setChipPrecio(0,1000000)">Hasta $1M</button>
+                  <button onclick="setChipPrecio(1000000,3000000)">$1M a $3M</button>
+                  <button onclick="setChipPrecio(3000000,5000000)">$3M a $5M</button>
+                  <button onclick="setChipPrecio(5000000,0)">Más de $5M</button>
+                </div>
+              </div>
+              <button class="dt-filter-chip" id="filter-btn-desktop" onclick="openFiltrosSheet()"><i class="ti ti-adjustments-horizontal"></i> Filtros<span id="filter-badge-desktop" class="filtros-count-badge" style="display:none"></span></button>
               </div>
             </div>
             <div class="props-grid" id="props-grid"></div>
@@ -2611,7 +2615,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
                   <span class="map-zonas-count"></span>
                   <button onclick="limpiarZonasMapa()" style="background:var(--bg-2,#f2f2f0);border:0;border-radius:14px;padding:4px 9px;font-size:11px;font-weight:600;color:var(--text-primary);cursor:pointer;flex-shrink:0">Limpiar</button>
                 </div>
-                <button onclick="switchView('map')" style="font-size:12px;font-weight:600;color:var(--text-primary);background:none;border:0.5px solid var(--border-strong);border-radius:7px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap"><i class="ti ti-arrows-maximize" style="font-size:12px"></i> Ver mapa completo</button>
+                <button onclick="switchView('map')" style="font-size:12px;font-weight:600;color:var(--text-primary);background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:7px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap"><i class="ti ti-arrows-maximize" style="font-size:12px"></i> Ver mapa completo</button>
               </div>
             </div>
             <div id="map-container-preview" style="width:100%;flex:1"></div>
