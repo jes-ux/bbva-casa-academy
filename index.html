@@ -468,10 +468,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .fx-prop-rows dt{color:var(--text-secondary);margin:0}
 .fx-prop-rows dd{margin:0;font-weight:700;color:var(--text-primary);text-align:right}
 .fx-prop-note{font-size:11px;color:var(--text-muted);line-height:1.5;margin-top:6px}
-.fx-prec{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding:12px 14px;border-radius:10px;background:rgba(25,115,184,.12)}
-.fx-prec span{display:block;font-size:12px;color:var(--text-secondary);margin-top:2px}
-.fx-prec b{font-size:13px;color:var(--text-primary)}
-.fx-prec button{flex-shrink:0;border:none;background:none;padding:0;font-family:var(--font-sans);font-size:14px;font-weight:700;color:#1973b8;cursor:pointer}
 .fx-price{font-size:32px;font-weight:800;color:var(--text-primary);line-height:1.1;letter-spacing:-.01em}
 .fx-price-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .fx-op{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:6px 12px;border-radius:4px;background:var(--text-primary);color:var(--surface-2)}
@@ -2696,7 +2692,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
           </div>
           <div class="fx-prop" id="fx-prop-m"></div>
-          <div id="fx-prec-m"></div>
           <div id="detail-sim-banner-m" style="margin-top:12px"></div>
           <div id="detail-contact-badge-m" style="margin-top:10px"></div>
           <button class="detail-cta-btn" style="margin-top:10px" onclick="simRefPropId=currentPropId;goScreen('screen-sim')"><i class="ti ti-calculator"></i> Simular crédito</button>
@@ -2768,7 +2763,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             </div>
           </div>
           <div class="fx-prop" id="fx-prop-dt"></div>
-          <div id="fx-prec-dt"></div>
           <div id="detail-sim-banner-dt" style="margin-top:12px"></div>
           <div id="detail-contact-badge-dt" style="margin-top:10px"></div>
           <button class="detail-cta-btn" style="margin-top:10px" onclick="simRefPropId=currentPropId;goScreen('screen-sim')"><i class="ti ti-calculator"></i> Simular crédito</button>
@@ -8067,8 +8061,8 @@ function openPropDetail(id){
   document.getElementById('fx-stats').innerHTML = [[p.rec, p.rec === 1 ? 'recámara' : 'recámaras'], [p.ban, p.ban === 1 ? 'baño' : 'baños'], [p.area.toLocaleString('es-MX'), 'm²']]
     .map(([n, l]) => `<div class="fx-stat"><b>${n}</b><span>${l}</span></div>`).join('');
 
-  // Propuesta comercial (caja de la derecha): precio, enganche, cuota y plazo. La parte de
-  // precalificación aparece solo si el usuario no tiene una simulación que ya cubra esta propiedad.
+  // Propuesta comercial (caja de la derecha): precio, enganche, cuota y plazo. La salida a
+  // precalificar es el botón 'Simular crédito' de la misma caja.
   const fin = estimarFinanciamientoCard(p.price);
   const propHTML = `
     <div class="fx-prop-price"><span class="fx-prop-amount">MXN ${p.price.toLocaleString('es-MX')}</span></div>
@@ -8078,11 +8072,8 @@ function openPropDetail(id){
       <div><dt>Plazo</dt><dd>${fin.plazo * 12} meses</dd></div>
     </dl>
     <div class="fx-prop-note">Estimado con tasa de ${(TASA_ANUAL_PUBLICA * 100).toFixed(1)}% anual. Sujeto a aprobación de crédito.</div>`;
-  const yaCubierta = isLoggedIn && SIM_HISTORY.some(sm => sm.propMax >= p.price);
-  const precHTML = yaCubierta ? '' : `<div class="fx-prec"><div><b>¿Cuánto te prestan?</b><span>Precalifícate y conoce tu monto máximo.</span></div><button onclick="simRefPropId=${p.id};goScreen('screen-sim')">Precalifícate</button></div>`;
   ['m', 'dt'].forEach(k => {
     document.getElementById('fx-prop-' + k).innerHTML = propHTML;
-    document.getElementById('fx-prec-' + k).innerHTML = precHTML;
   });
 
   // Datos de la propiedad (avalúo y mantenimiento son estimaciones de demo)
