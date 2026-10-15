@@ -1968,7 +1968,22 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
          apenas dejaron de pasar por su tutorial. Ahora las 5 tarjetas son directamente
          los 5 módulos de Academia BBVA (mismo contenido/orden que MODULES/ACH_DATA),
          cada una llevando a SU módulo vía goMoment(n) → goToModuleFlow(n). -->
-    <div class="home-band home-band-gray" id="home-moments-band">
+    <!-- Lo más buscado -->
+    <div class="home-band home-band-gray" id="home-carousel-buscado-band">
+      <div class="home-band-inner">
+        <div class="carousel-head">
+          <div class="detail-section-title home-section-title">Lo más buscado</div>
+          <button class="carousel-viewmore" onclick="verMasRecientes()">Ver más <i class="ti ti-arrow-right"></i></button>
+        </div>
+        <div class="carousel-wrap">
+          <div class="carousel-scroll" id="carousel-buscado"><!-- renderCarouselBuscado() --></div>
+          <button class="carousel-arrow prev" onclick="scrollCarousel('carousel-buscado',-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
+          <button class="carousel-arrow next" onclick="scrollCarousel('carousel-buscado',1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-band home-band-white" id="home-moments-band">
       <div class="home-band-inner">
         <div class="hero" style="padding-top:0;text-align:center">
           <h1>Todo lo que necesitás saber para comprar con crédito hipotecario</h1>
@@ -2018,6 +2033,21 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
 
+    <!-- Zonas destacadas (carrusel de fotos) -->
+    <div class="home-band home-band-gray" id="home-carousel-zonas-band">
+      <div class="home-band-inner">
+        <div class="carousel-head">
+          <div class="detail-section-title home-section-title">Zonas destacadas</div>
+          <button class="carousel-viewmore" onclick="verTodasLasZonas()">Ver más <i class="ti ti-arrow-right"></i></button>
+        </div>
+        <div class="carousel-wrap">
+          <div class="carousel-scroll" id="carousel-zonas"><!-- renderCarouselZonas() --></div>
+          <button class="carousel-arrow prev" onclick="scrollCarousel('carousel-zonas',-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
+          <button class="carousel-arrow next" onclick="scrollCarousel('carousel-zonas',1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+
     <!-- Explora por tipo de propiedad -->
     <div class="home-band home-band-white home-oculto" id="home-tipo-band">
       <div class="home-band-inner">
@@ -2033,36 +2063,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <div class="detail-section-title home-section-title">¿Cuánto podés pagar?</div>
         <p class="bajada" style="max-width:480px;margin:0 auto">Con tu ingreso, tu enganche y el plazo que elijas, calculá en un minuto hasta cuánto podés considerar — así explorás con un rango real.</p>
         <button class="btn-primary" style="width:auto;padding:14px 32px;margin-top:8px;display:inline-flex;align-items:center;justify-content:center;gap:8px" onclick="navTo('screen-sim','nav-sim')"><i class="ti ti-calculator"></i> Simular tu crédito</button>
-      </div>
-    </div>
-
-    <!-- Lo más buscado -->
-    <div class="home-band home-band-gray" id="home-carousel-buscado-band">
-      <div class="home-band-inner">
-        <div class="carousel-head">
-          <div class="detail-section-title home-section-title">Lo más buscado</div>
-          <button class="carousel-viewmore" onclick="verMasRecientes()">Ver más <i class="ti ti-arrow-right"></i></button>
-        </div>
-        <div class="carousel-wrap">
-          <div class="carousel-scroll" id="carousel-buscado"><!-- renderCarouselBuscado() --></div>
-          <button class="carousel-arrow prev" onclick="scrollCarousel('carousel-buscado',-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
-          <button class="carousel-arrow next" onclick="scrollCarousel('carousel-buscado',1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Zonas destacadas (carrusel de fotos) -->
-    <div class="home-band home-band-white" id="home-carousel-zonas-band">
-      <div class="home-band-inner">
-        <div class="carousel-head">
-          <div class="detail-section-title home-section-title">Zonas destacadas</div>
-          <button class="carousel-viewmore" onclick="verTodasLasZonas()">Ver más <i class="ti ti-arrow-right"></i></button>
-        </div>
-        <div class="carousel-wrap">
-          <div class="carousel-scroll" id="carousel-zonas"><!-- renderCarouselZonas() --></div>
-          <button class="carousel-arrow prev" onclick="scrollCarousel('carousel-zonas',-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
-          <button class="carousel-arrow next" onclick="scrollCarousel('carousel-zonas',1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
-        </div>
       </div>
     </div>
 
