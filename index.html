@@ -855,6 +855,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   #home-carousel-zonas-band .home-band-inner,
   #home-zona-band .home-band-inner,
   #home-recent-lite-band .home-band-inner,
+  #home-carousel-buscado-band .home-band-inner,
   #home-carousel-desarrollos-band .home-band-inner,
   #home-carousel-banco-band .home-band-inner,
   #home-precios-band .home-band-inner,
@@ -1994,8 +1995,23 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
 
+    <!-- Lo más buscado -->
+    <div class="home-band home-band-gray" id="home-carousel-buscado-band">
+      <div class="home-band-inner">
+        <div class="carousel-head">
+          <div class="detail-section-title home-section-title">Lo más buscado</div>
+          <button class="carousel-viewmore" onclick="verMasRecientes()">Ver más <i class="ti ti-arrow-right"></i></button>
+        </div>
+        <div class="carousel-wrap">
+          <div class="carousel-scroll" id="carousel-buscado"><!-- renderCarouselBuscado() --></div>
+          <button class="carousel-arrow prev" onclick="scrollCarousel('carousel-buscado',-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
+          <button class="carousel-arrow next" onclick="scrollCarousel('carousel-buscado',1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+
     <!-- Zonas destacadas (carrusel de fotos) -->
-    <div class="home-band home-band-gray" id="home-carousel-zonas-band">
+    <div class="home-band home-band-white" id="home-carousel-zonas-band">
       <div class="home-band-inner">
         <div class="carousel-head">
           <div class="detail-section-title home-section-title">Zonas destacadas</div>
@@ -2024,7 +2040,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Desarrollos -->
-    <div class="home-band home-band-white" id="home-carousel-desarrollos-band">
+    <div class="home-band home-band-gray" id="home-carousel-desarrollos-band">
       <div class="home-band-inner">
         <div class="carousel-head">
           <div class="detail-section-title home-section-title">Desarrollos</div>
@@ -2039,7 +2055,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Especiales BBVA -->
-    <div class="home-band home-band-gray" id="home-carousel-banco-band">
+    <div class="home-band home-band-white" id="home-carousel-banco-band">
       <div class="home-band-inner">
         <div class="carousel-head">
           <div class="detail-section-title home-section-title">Especiales BBVA</div>
@@ -2054,7 +2070,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Precios por zona -->
-    <div class="home-band home-band-white" id="home-precios-band">
+    <div class="home-band home-band-gray" id="home-precios-band">
       <div class="home-band-inner">
         <div class="detail-section-title home-section-title">Precios por zona</div>
         <p class="bajada" style="margin-top:-8px;text-align:center">Precio de venta por m² en cada zona, según las propiedades publicadas.</p>
@@ -2079,7 +2095,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Ayuda y preguntas frecuentes -->
-    <div class="home-band home-band-gray" id="home-faq-band">
+    <div class="home-band home-band-white" id="home-faq-band">
       <div class="home-band-inner">
         <!-- Mobile: título centrado simple, igual al resto de las secciones de Inicio.
              Desktop: lo reemplaza la intro editorial de .faq-home-intro (ver abajo). -->
@@ -2097,7 +2113,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Footer -->
-    <div class="home-band home-band-white" id="home-footer-band">
+    <div class="home-band home-band-gray" id="home-footer-band">
       <div class="home-band-inner is-last" style="border-top:0.5px solid var(--border);padding-top:32px">
         <div class="home-footer-links">
           <button onclick="void(0)">Términos y Condiciones</button>
@@ -4315,6 +4331,25 @@ function renderCarouselOrigen() {
       </button>`).join('');
   });
 }
+// "Lo más buscado": las propiedades con más búsquedas. En el prototipo es una selección
+// fija de demo (no hay métricas reales de búsqueda) que mezcla zonas y tipos.
+const MAS_BUSCADAS_IDS = [2, 12, 14, 6, 16, 11, 3, 29];
+function renderCarouselBuscado() {
+  const el = document.getElementById('carousel-buscado');
+  if (!el) return;
+  const props = MAS_BUSCADAS_IDS.map(id => PROPS.find(p => p.id === id)).filter(propDisponible);
+  const band = document.getElementById('home-carousel-buscado-band');
+  if (band) band.style.display = props.length ? '' : 'none';
+  el.innerHTML = props.map(p => `
+    <button class="carousel-card" style="background-image:url('${propImgSrc(p.id)}')" onclick="openPropDetail(${p.id})">
+      ${origenBadgeHTML(p)}
+      <div class="carousel-card-overlay">
+        <div class="carousel-card-price">${fmt(p.price)}</div>
+        <div class="carousel-card-sub">${p.tipo} · ${p.rec} rec · ${p.zona}</div>
+      </div>
+    </button>`).join('');
+}
+
 function verOrigen(origen) {
   searchQuery = '';
   const inp = document.getElementById('props-search');
@@ -8123,6 +8158,7 @@ renderCarouselZonas();
 renderHomePrecios();
 renderCarouselUltimo();
 renderRecentLite();
+renderCarouselBuscado();
 renderCarouselOrigen();
 renderHomeFaq();
 </script>
