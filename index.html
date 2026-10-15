@@ -306,6 +306,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .filter-chip.active{border-color:var(--border-stronger);background:var(--surface-1);color:var(--text-primary);font-weight:500}
 .filter-chip:active{opacity:.7}
 
+.agenda-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.agenda-nav{width:34px;height:34px;border-radius:50%;border:0.5px solid var(--border-strong);background:var(--surface-2);color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.agenda-nav:disabled{opacity:.3;cursor:default}
+.agenda-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.agenda-dow{margin-bottom:4px}
+.agenda-dow span{text-align:center;font-size:11px;font-weight:600;color:var(--text-muted)}
+.agenda-dia{aspect-ratio:1;border:none;border-radius:50%;background:none;font-family:var(--font-sans);font-size:14px;color:var(--text-primary);cursor:pointer}
+.agenda-dia:hover:not(:disabled):not(.sel){background:var(--surface-1)}
+.agenda-dia:disabled{color:var(--text-muted);opacity:.4;cursor:default}
+.agenda-dia.hoy{font-weight:700;box-shadow:inset 0 0 0 1px var(--border-strong)}
+.agenda-dia.sel{background:var(--text-primary);color:var(--surface-2);font-weight:600}
 .search-sugg{position:fixed;z-index:2500;background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.14);max-height:320px;overflow-y:auto;display:none;padding:6px 0}
 .search-sugg.open{display:block}
 .sugg-group{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;padding:10px 14px 4px}
@@ -2610,6 +2621,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="contactarConAsesor(()=>contactarInmobiliario(currentPropId))">
             <i class="ti ti-headset"></i> Contactar asesor inmobiliario
           </button>
+          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="contactarConAsesor(()=>abrirAgendaVisita(currentPropId))">
+            <i class="ti ti-calendar-event"></i> Agendar una visita
+          </button>
         </div>
         <!-- Descubre la propiedad -->
         <div class="detail-section">
@@ -2677,6 +2691,9 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="contactarConAsesor(()=>contactarInmobiliario(currentPropId))">
             <i class="ti ti-headset"></i> Contactar asesor inmobiliario
           </button>
+          <button class="btn-outline" style="margin-top:10px;width:100%" onclick="contactarConAsesor(()=>abrirAgendaVisita(currentPropId))">
+            <i class="ti ti-calendar-event"></i> Agendar una visita
+          </button>
         </div>
       </div><!-- /.dt-detail-sidebar -->
     </div><!-- /.screen-scroll-inner -->
@@ -2727,6 +2744,32 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <button class="lb-btn lb-prev" onclick="lightboxIr(-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
   <img id="lb-img" src="" alt="">
   <button class="lb-btn lb-next" onclick="lightboxIr(1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+</div>
+
+<!-- Agendar una visita a la propiedad: calendario + horarios -->
+<div class="bottom-sheet" id="sheet-agenda">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Agendar una visita</span>
+    <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
+  </div>
+  <div class="sheet-body" style="padding:16px 20px">
+    <div id="agenda-prop" style="font-size:13px;color:var(--text-secondary);margin-bottom:14px"></div>
+    <div class="agenda-head">
+      <button class="agenda-nav" id="agenda-prev" onclick="agendaMes(-1)" aria-label="Mes anterior"><i class="ti ti-chevron-left"></i></button>
+      <div id="agenda-mes" style="font-size:15px;font-weight:600;color:var(--text-primary)"></div>
+      <button class="agenda-nav" id="agenda-next" onclick="agendaMes(1)" aria-label="Mes siguiente"><i class="ti ti-chevron-right"></i></button>
+    </div>
+    <div class="agenda-grid agenda-dow"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+    <div class="agenda-grid" id="agenda-dias"></div>
+    <div id="agenda-horas-wrap" style="display:none;margin-top:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Horario</div>
+      <div id="agenda-horas" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    </div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn-primary" id="agenda-confirmar" style="flex:1;padding:13px" disabled onclick="confirmarVisita()">Agendar visita</button>
+  </div>
 </div>
 
 <!-- Contacto con asesor sin sesión: iniciar sesión o contactar como invitado -->
@@ -6320,6 +6363,62 @@ function contactarHipotecarioGeneral() {
   const existing = WA_CONTACTS.find(c => c.tipo === 'hipotecario' && !c.simId);
   if (existing) { verContactoWA(existing.id); return; }
   contactarPorWhatsapp({ tipo:'hipotecario', asesor: ASESOR_HIPOTECARIO, mensaje:'Hola, me gustaría hablar con un asesor hipotecario para resolver dudas sobre mi crédito.', stepKey:'contacted_hipo' });
+}
+
+// ── Agendar una visita a la propiedad ──
+// Calendario mensual (hoy en adelante, hasta 60 días, de lunes a sábado) y horarios de
+// 10:00 a 18:00. Al confirmar se abre el contacto por WhatsApp con el asesor de la
+// propiedad y un mensaje que ya trae el día y la hora elegidos.
+const AGENDA_HORAS = ['10:00','11:00','12:00','13:00','16:00','17:00','18:00'];
+let agendaProp = null, agendaMesRef = null, agendaFecha = null, agendaHora = null, agendaInvitado = null;
+function agendaDiaOk(d, hoy, tope) { return d >= hoy && d <= tope && d.getDay() !== 0; }
+function abrirAgendaVisita(propId) {
+  agendaProp = PROPS.find(x => x.id === propId);
+  if (!agendaProp) return;
+  agendaInvitado = _guestContact; _guestContact = null; // datos del invitado, si los hay
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  agendaMesRef = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+  agendaFecha = null; agendaHora = null;
+  document.getElementById('agenda-prop').textContent = `${agendaProp.tipo} en ${agendaProp.zona} · ${fmt(agendaProp.price)}`;
+  pintarAgenda();
+  openSheet('sheet-agenda');
+}
+function agendaMes(d) {
+  agendaMesRef = new Date(agendaMesRef.getFullYear(), agendaMesRef.getMonth() + d, 1);
+  pintarAgenda();
+}
+function pintarAgenda() {
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const tope = new Date(hoy); tope.setDate(tope.getDate() + 60);
+  const y = agendaMesRef.getFullYear(), m = agendaMesRef.getMonth();
+  const mesTxt = agendaMesRef.toLocaleDateString('es-MX', { month:'long', year:'numeric' });
+  document.getElementById('agenda-mes').textContent = mesTxt.charAt(0).toUpperCase() + mesTxt.slice(1);
+  document.getElementById('agenda-prev').disabled = (y === hoy.getFullYear() && m === hoy.getMonth());
+  document.getElementById('agenda-next').disabled = new Date(y, m + 1, 1) > tope;
+  const offset = (new Date(y, m, 1).getDay() + 6) % 7; // semana desde el lunes
+  const dias = new Date(y, m + 1, 0).getDate();
+  let html = '<span></span>'.repeat(offset);
+  for (let n = 1; n <= dias; n++) {
+    const d = new Date(y, m, n);
+    const sel = agendaFecha && d.getTime() === agendaFecha.getTime();
+    const esHoy = d.getTime() === hoy.getTime();
+    html += `<button class="agenda-dia${sel ? ' sel' : ''}${esHoy ? ' hoy' : ''}" ${agendaDiaOk(d, hoy, tope) ? '' : 'disabled'} onclick="agendaElegirDia(${y},${m},${n})">${n}</button>`;
+  }
+  document.getElementById('agenda-dias').innerHTML = html;
+  document.getElementById('agenda-horas-wrap').style.display = agendaFecha ? 'block' : 'none';
+  document.getElementById('agenda-horas').innerHTML = AGENDA_HORAS.map(h => `<button class="sheet-chip${h === agendaHora ? ' active' : ''}" onclick="agendaElegirHora('${h}')">${h}</button>`).join('');
+  document.getElementById('agenda-confirmar').disabled = !(agendaFecha && agendaHora);
+}
+function agendaElegirDia(y, m, n) { agendaFecha = new Date(y, m, n); pintarAgenda(); }
+function agendaElegirHora(h) { agendaHora = h; pintarAgenda(); }
+function confirmarVisita() {
+  if (!agendaProp || !agendaFecha || !agendaHora) return;
+  const p = agendaProp;
+  const dia = agendaFecha.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
+  const mensaje = `Hola, me gustaría agendar una visita a la propiedad en ${p.zona} (${fmt(p.price)}) el ${dia} a las ${agendaHora} h. ¿Me confirman la disponibilidad?`;
+  closeSheet();
+  _guestContact = agendaInvitado; agendaInvitado = null;
+  contactarPorWhatsapp({ tipo:'inmobiliario', asesor: asesorInmobiliarioFor(p.id), propId: p.id, mensaje, stepKey:'contacted_prop' });
 }
 
 function contactarInmobiliario(propId) {
