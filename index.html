@@ -378,6 +378,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .search-sugg.open{display:block}
 .sugg-group{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;padding:10px 14px 4px}
 .sugg-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 14px;border:none;background:none;font-family:var(--font-sans);font-size:14px;color:var(--text-primary);cursor:pointer;text-align:left}
+.sugg-ubic{border-bottom:0.5px solid var(--border);padding-top:12px;padding-bottom:12px}
+.sugg-ubic i{color:#1973b8!important;font-size:19px!important}
+.sugg-ubic-t{display:flex;flex-direction:column;gap:1px}
+.sugg-ubic-t b{font-weight:600;color:var(--text-primary)}
+.sugg-ubic-t em{font-style:normal;font-size:12px;color:var(--text-muted)}
 .sugg-item:hover{background:var(--surface-1)}
 .sugg-item i{font-size:16px;color:var(--text-muted);flex-shrink:0}
 .sugg-item .sugg-sub{margin-left:auto;font-size:12px;color:var(--text-muted);flex-shrink:0}
@@ -2633,6 +2638,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
               <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                 <div id="props-count" style="font-size:12px;color:var(--text-muted)"></div>
+                <button id="ubic-chip" onclick="quitarUbicacion()" style="display:none;align-items:center;gap:5px;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:14px;padding:4px 9px;font-size:11px;font-weight:600;font-family:var(--font-sans);cursor:pointer">Cerca de mí <i class="ti ti-x" style="font-size:11px"></i></button>
                 <button id="area-chip" onclick="borrarAreaDibujada()" style="display:none;align-items:center;gap:5px;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:14px;padding:4px 9px;font-size:11px;font-weight:600;font-family:var(--font-sans);cursor:pointer">Zona dibujada <i class="ti ti-x" style="font-size:11px"></i></button>
               </div>
               <div class="dt-list-actions">
@@ -7428,6 +7434,8 @@ function normTxt(t) { return (t || '').toLowerCase().normalize('NFD').replace(/[
 const HS_VENTAS = [['', 'Todo'], ['listo', 'Listos para habitar'], ['desarrollo', 'Desarrollos'], ['banco', 'Especiales BBVA']];
 function hsVentaLabel() { return (HS_VENTAS.find(([k]) => k === (chipFilters.origen || '')) || HS_VENTAS[0])[1]; }
 let hsTexto = '';
+let ubicacionActiva = null;   // { lat, lng, demo, radioKm } — ver usarMiUbicacion()
+let ubicacionLayer = null;
 function hsMarkup(id, inputId, compact, clear, style) {
   const cls = compact === 'always' ? ' hs-ca' : compact === 'mobile' ? ' hs-cm' : '';
   const menu = (k, items) => `<div class="dt-chip-menu" id="menu-${id}-${k}" style="top:calc(100% + 6px);left:0;min-width:100%">${items}</div>`;
@@ -7463,8 +7471,8 @@ function hsSync() {
     const input = w.querySelector('input');
     if (document.activeElement !== input) input.value = hsTexto;
     const pill = w.querySelector('.hs-pill-text');
-    pill.textContent = hsTexto || 'Ciudad, colonia o código postal';
-    pill.classList.toggle('vacio', !hsTexto);
+    pill.textContent = ubicacionActiva ? 'Cerca de mi ubicación' : (hsTexto || 'Ciudad, colonia o código postal');
+    pill.classList.toggle('vacio', !hsTexto && !ubicacionActiva);
     const clear = w.querySelector('.hs-clear');
     if (clear) clear.style.display = hsTexto ? 'block' : 'none';
   });
@@ -7524,6 +7532,7 @@ function hsBuscar(id) {
   const v = (w ? w.querySelector('input').value : hsTexto).trim();
   hsTexto = v;
   searchQuery = v.toLowerCase();
+  if (v) ubicacionActiva = null;
   hsDesactivar();
   hsSync();
   updateFilterBadge();
@@ -7561,10 +7570,11 @@ let _suggInput = null;
 function renderSugerencias(input) {
   const box = document.getElementById('search-sugg');
   const items = buscarSugerencias(input.value);
-  if (!items.length) { box.classList.remove('open'); return; }
   _suggInput = input;
   let last = '';
-  box.innerHTML = items.map(x => {
+  // Primera opción siempre disponible: buscar según la ubicación actual del usuario
+  const filaUbic = `<button class="sugg-item sugg-ubic" onmousedown="event.preventDefault();usarMiUbicacion()"><i class="ti ti-current-location"></i><span class="sugg-ubic-t"><b>${ubicacionActiva ? 'Actualizar mi ubicación' : 'Buscar en el mapa según mi ubicación'}</b><em>Muestra las propiedades más cercanas a ti</em></span></button>`;
+  box.innerHTML = filaUbic + items.map(x => {
     const head = x.grupo !== last ? `<div class="sugg-group">${x.grupo}</div>` : '';
     last = x.grupo;
     return head + `<button class="sugg-item" onmousedown="event.preventDefault();elegirSugerencia('${x.value.replace(/'/g, "\\'")}')"><i class="ti ${x.icon}"></i>${x.label}<span class="sugg-sub">${x.sub}</span></button>`;
@@ -7650,6 +7660,67 @@ function switchView(view){
 const RANGO_SIM_MIN_FACTOR = 5 / 6;
 
 
+// ── Buscar según mi ubicación ──
+// Pide la ubicación al navegador y deja el mapa y el listado acotados a las propiedades más
+// cercanas (5 km; si no hay, 15 o 40 km, y si tampoco, las más cercanas sin límite). Si el
+// permiso no se da o no hay ubicación disponible, usa un punto de ejemplo en la Ciudad de México.
+const UBICACION_DEMO = { lat: 19.4195, lng: -99.1627 }; // Roma Norte
+function distKm(a, b) {
+  const R = 6371, rad = d => d * Math.PI / 180;
+  const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+function usarMiUbicacion() {
+  hsDesactivar();
+  cerrarSugerencias();
+  showToast('ti-current-location', 'Buscando tu ubicación…', 'default');
+  const aplicar = (lat, lng, demo) => {
+    const pos = { lat, lng };
+    const disp = PROPS.filter(propDisponible);
+    const radioKm = [5, 15, 40].find(r => disp.some(p => distKm(pos, p) <= r)) || Infinity;
+    ubicacionActiva = { lat, lng, demo, radioKm };
+    hsTexto = ''; searchQuery = '';
+    hsSync();
+    const msg = radioKm === Infinity ? 'No hay propiedades cerca de ti; mostramos las más cercanas' : `Mostramos las propiedades a menos de ${radioKm} km de ${demo ? 'una ubicación de ejemplo' : 'tu ubicación'}`;
+    showToast('ti-map-pin', msg, 'success');
+    if (document.querySelector('.screen.active')?.id !== 'screen-props') navTo('screen-props', 'nav-props');
+    setTimeout(() => { if (currentView !== 'map') switchView('map'); else { renderProps(); renderMap(getFilteredProps()); } }, 900);
+  };
+  const respaldo = () => {
+    showToast('ti-alert-circle', 'No pudimos obtener tu ubicación. Usamos una ubicación de ejemplo en la Ciudad de México.', 'default');
+    setTimeout(() => aplicar(UBICACION_DEMO.lat, UBICACION_DEMO.lng, true), 600);
+  };
+  if (!navigator.geolocation) { respaldo(); return; }
+  navigator.geolocation.getCurrentPosition(
+    pos => aplicar(pos.coords.latitude, pos.coords.longitude, false),
+    respaldo,
+    { timeout: 8000, maximumAge: 60000 }
+  );
+}
+function quitarUbicacion() {
+  ubicacionActiva = null;
+  hsSync();
+  renderProps();
+  if (currentView === 'map') renderMap(getFilteredProps());
+}
+function pintarUbicacionUsuario() {
+  if (!leafletMap) return;
+  if (ubicacionLayer) { leafletMap.removeLayer(ubicacionLayer); ubicacionLayer = null; }
+  if (!ubicacionActiva) return;
+  const { lat, lng, radioKm } = ubicacionActiva;
+  const capas = [L.circleMarker([lat, lng], { radius: 8, color: '#fff', weight: 3, fillColor: '#1973b8', fillOpacity: 1, interactive: false })];
+  if (isFinite(radioKm)) capas.push(L.circle([lat, lng], { radius: radioKm * 1000, color: '#1973b8', weight: 1, fillColor: '#1973b8', fillOpacity: .06, interactive: false }));
+  ubicacionLayer = L.layerGroup(capas).addTo(leafletMap);
+  const pts = getFilteredProps().map(p => [p.lat, p.lng]);
+  pts.push([lat, lng]);
+  leafletMap.fitBounds(L.latLngBounds(pts), { padding: [60, 60], maxZoom: 15 });
+}
+function actualizarChipUbicacion() {
+  const c = document.getElementById('ubic-chip');
+  if (c) c.style.display = ubicacionActiva ? 'inline-flex' : 'none';
+}
+
 // ── Búsqueda dibujando un área en el mapa ──
 // "Dibujar zona" activa un modo de trazo libre (dedo o mouse): al soltar se cierra el
 // polígono y el mapa y el listado quedan acotados a las propiedades de adentro.
@@ -7668,6 +7739,7 @@ function puntoEnPoligono(lat, lng, poly) {
   return dentro;
 }
 function actualizarBotonDibujo() {
+  actualizarChipUbicacion();
   const chip = document.getElementById('area-chip');
   if (chip) chip.style.display = drawnArea ? 'inline-flex' : 'none';
   const lbl = document.getElementById('draw-area-label');
@@ -7762,6 +7834,7 @@ function getFilteredProps(){
   // AND — se puede elegir "Roma Norte + Condesa + Polanco" y ver las tres juntas.
   if(chipFilters.zonas.length) show = show.filter(p=>chipFilters.zonas.includes(p.zona));
   if(drawnArea) show = show.filter(p => puntoEnPoligono(p.lat, p.lng, drawnArea));
+  if(ubicacionActiva) show = show.filter(p => distKm(ubicacionActiva, p) <= ubicacionActiva.radioKm);
   if(chipFilters.tipo) show = show.filter(p=>p.tipo===chipFilters.tipo);
   if(chipFilters.origen === 'listo') show = show.filter(p=>!p.origen && !p.enConstruccion);
   else if(chipFilters.origen) show = show.filter(p=>p.origen===chipFilters.origen);
@@ -7798,6 +7871,7 @@ function getFilteredProps(){
   // Relevantes: desarrollos y Especiales BBVA primero, el resto en el orden del catálogo
   // (el sort es estable, así que dentro de cada grupo no cambia nada).
   else if(sortOrder==='relevantes') show = [...show].sort((a,b)=>(b.origen?1:0)-(a.origen?1:0));
+  if(ubicacionActiva && sortOrder==='relevantes') show = [...show].sort((a,b)=>distKm(ubicacionActiva,a)-distKm(ubicacionActiva,b));
   // Sin resultados es un estado real, no un error a esconder: renderProps() lo muestra
   // como tal (con salida clara) en vez de rellenar con propiedades que no aplican.
   return show;
@@ -7958,6 +8032,7 @@ function renderMap(props){
   }
 
   renderZonaPoligonos(leafletMap, zonaLayersFullscreen);
+  pintarUbicacionUsuario();
   updateZonaMapaBadge();
   renderMapCarousel(props);
   setTimeout(() => leafletMap.invalidateSize(), 150);
