@@ -97,6 +97,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .home-atajos{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;width:100%;max-width:980px}
 .home-atajo{padding:9px 18px;border-radius:20px;border:0.5px solid var(--border-strong);background:var(--surface-2);font-family:var(--font-sans);font-size:14px;font-weight:500;color:var(--text-primary);cursor:pointer;white-space:nowrap}
 .home-atajo:hover{background:var(--text-primary);color:var(--surface-2);border-color:var(--text-primary)}
+/* Simulación + Precios por zona en paralelo */
+.home-duo{display:grid;grid-template-columns:1fr;gap:16px;width:100%}
+.home-duo-card{display:flex;flex-direction:column;gap:14px;padding:24px 20px;border:0.5px solid var(--border);border-radius:16px;background:var(--surface-2);min-width:0}
+.home-duo-card .home-section-title{text-align:left}
+.home-duo-card .bajada{margin:0;text-align:left;max-width:none}
+.home-duo-card .btn-primary{align-self:flex-start}
+.home-duo-card .home-zonas-grid{grid-template-columns:1fr;margin-top:0}
+.home-duo-card .home-faq-viewall{margin-top:auto}
+@media(min-width:900px){.home-duo{grid-template-columns:1fr 1fr;gap:20px}.home-duo-card{padding:28px}.home-duo-card .home-zonas-grid{grid-template-columns:1fr 1fr;gap:0 24px}#home-simula-band{justify-content:center}}
 .hs-wrap{position:relative;width:100%}
 .hs-pill{display:none;align-items:center;gap:8px;width:100%;padding:11px 12px;border:0.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface-2);font-family:var(--font-sans);font-size:14px;color:var(--text-primary);cursor:text;text-align:left;box-sizing:border-box}
 .hs-pill i{font-size:17px;color:var(--text-muted);flex-shrink:0}
@@ -915,14 +924,13 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   #home-quicklinks-band .home-band-inner,
   #home-moments-band .home-band-inner,
   #home-tipo-band .home-band-inner,
-  #home-simula-band .home-band-inner,
+  #home-duo-band .home-band-inner,
   #home-carousel-zonas-band .home-band-inner,
   #home-zona-band .home-band-inner,
   #home-recent-lite-band .home-band-inner,
   #home-carousel-buscado-band .home-band-inner,
   #home-carousel-desarrollos-band .home-band-inner,
   #home-carousel-banco-band .home-band-inner,
-  #home-precios-band .home-band-inner,
   #home-carousel-ultimo-band .home-band-inner,
   #home-faq-band .home-band-inner,
   #home-footer-band .home-band-inner{max-width:1240px}
@@ -2075,13 +2083,23 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
 
-    <!-- Simulá tu crédito: texto + CTA al simulador, no el simulador embebido -->
-    <div class="home-band home-band-white" id="home-simula-band">
-      <div class="home-band-inner" style="text-align:center;align-items:center">
-        <div class="moment-label">Antes de salir a buscar</div>
-        <div class="detail-section-title home-section-title">¿Cuánto podés pagar?</div>
-        <p class="bajada" style="max-width:480px;margin:0 auto">Con tu ingreso, tu enganche y el plazo que elijas, calculá en un minuto hasta cuánto podés considerar — así explorás con un rango real.</p>
-        <button class="btn-primary" style="width:auto;padding:14px 32px;margin-top:8px;display:inline-flex;align-items:center;justify-content:center;gap:8px" onclick="navTo('screen-sim','nav-sim')"><i class="ti ti-calculator"></i> Simular tu crédito</button>
+    <!-- Simulá tu crédito + Precios por zona, en paralelo (uno al lado del otro en desktop, apilados en mobile) -->
+    <div class="home-band home-band-white" id="home-duo-band">
+      <div class="home-band-inner">
+        <div class="home-duo">
+          <section class="home-duo-card" id="home-simula-band">
+            <div class="moment-label">Antes de salir a buscar</div>
+            <div class="detail-section-title home-section-title">¿Cuánto podés pagar?</div>
+            <p class="bajada">Con tu ingreso, tu enganche y el plazo que elijas, calculá en un minuto hasta cuánto podés considerar — así explorás con un rango real.</p>
+            <button class="btn-primary" style="width:auto;padding:14px 32px;margin-top:8px;display:inline-flex;align-items:center;justify-content:center;gap:8px" onclick="navTo('screen-sim','nav-sim')"><i class="ti ti-calculator"></i> Simular tu crédito</button>
+          </section>
+          <section class="home-duo-card" id="home-precios-band">
+            <div class="detail-section-title home-section-title">Precios por zona</div>
+            <p class="bajada">Precio de venta por m² en cada zona, según las propiedades publicadas.</p>
+            <div class="home-zonas-grid" id="home-precios-grid"><!-- renderHomePrecios() --></div>
+            <button class="home-faq-viewall" onclick="renderPreciosDirectorio();goScreen('screen-precios')">Ver todas las zonas <i class="ti ti-chevron-right"></i></button>
+          </section>
+        </div>
       </div>
     </div>
 
@@ -2114,18 +2132,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
 
-    <!-- Precios por zona -->
-    <div class="home-band home-band-white" id="home-precios-band">
-      <div class="home-band-inner">
-        <div class="detail-section-title home-section-title">Precios por zona</div>
-        <p class="bajada" style="margin-top:-8px;text-align:center">Precio de venta por m² en cada zona, según las propiedades publicadas.</p>
-        <div class="home-zonas-grid" id="home-precios-grid" style="margin-top:8px"><!-- renderHomePrecios() --></div>
-        <button class="home-faq-viewall" onclick="renderPreciosDirectorio();goScreen('screen-precios')">Ver todas las zonas <i class="ti ti-chevron-right"></i></button>
-      </div>
-    </div>
-
     <!-- Especiales BBVA -->
-    <div class="home-band home-band-gray" id="home-carousel-banco-band">
+    <div class="home-band home-band-white" id="home-carousel-banco-band">
       <div class="home-band-inner">
         <div class="carousel-head">
           <div class="detail-section-title home-section-title">Especiales BBVA</div>
@@ -2155,7 +2163,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Ayuda y preguntas frecuentes -->
-    <div class="home-band home-band-white" id="home-faq-band">
+    <div class="home-band home-band-gray" id="home-faq-band">
       <div class="home-band-inner">
         <!-- Mobile: título centrado simple, igual al resto de las secciones de Inicio.
              Desktop: lo reemplaza la intro editorial de .faq-home-intro (ver abajo). -->
@@ -2173,7 +2181,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </div>
 
     <!-- Footer -->
-    <div class="home-band home-band-gray" id="home-footer-band">
+    <div class="home-band home-band-white" id="home-footer-band">
       <div class="home-band-inner is-last" style="border-top:0.5px solid var(--border);padding-top:32px">
         <div class="home-footer-links">
           <button onclick="void(0)">Términos y Condiciones</button>
@@ -4446,7 +4454,7 @@ function fechaDatosPrecios() {
 function renderHomePrecios() {
   const grid = document.getElementById('home-precios-grid');
   if (!grid) return;
-  const lista = listaZonasConPrecio().slice(0, 9);
+  const lista = listaZonasConPrecio().slice(0, 6);
   grid.innerHTML = lista.map(z => `
     <button class="home-zona-row" onclick="verPreciosZona('${z.zona}')">
       <span class="home-zona-name">${z.zona}</span>
