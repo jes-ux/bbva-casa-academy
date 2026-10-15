@@ -7938,6 +7938,7 @@ function selectMapPin(id){
   }
 }
 
+let detailMapObserver = null;
 let detailMap = null;
 
 // ── Galería de fotos de la ficha (tipo Zillow) ──
@@ -8076,6 +8077,18 @@ function openPropDetail(id){
     }
     L.marker([p.lat,p.lng]).addTo(detailMap);
     detailMap.invalidateSize();
+    // La pantalla de la ficha se activa recién después de la transición con skeleton: el
+    // contenedor del mapa puede medir 0 al crearse y Leaflet carga solo una parte de las
+    // teselas. Se vuelve a medir y centrar cada vez que el contenedor cambia de tamaño.
+    if (!detailMapObserver && window.ResizeObserver) {
+      detailMapObserver = new ResizeObserver(() => {
+        if (!detailMap || !currentPropId) return;
+        const cur = PROPS.find(x => x.id === currentPropId);
+        detailMap.invalidateSize();
+        if (cur) detailMap.setView([cur.lat, cur.lng], 15);
+      });
+      detailMapObserver.observe(mapEl);
+    }
   }, 100);
 
   // simulación pill
