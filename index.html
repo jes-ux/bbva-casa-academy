@@ -94,7 +94,16 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
    de propiedad, Explora por zona y Lo último en [zona]. Para volver a mostrarlos, sacar la
    clase home-oculto de su franja. */
 .home-oculto{display:none!important}
-.hs-wrap{position:relative}
+.hs-wrap{position:relative;width:100%}
+.hs-pill{display:none;align-items:center;gap:8px;width:100%;padding:11px 12px;border:0.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface-2);font-family:var(--font-sans);font-size:14px;color:var(--text-primary);cursor:text;text-align:left;box-sizing:border-box}
+.hs-pill i{font-size:17px;color:var(--text-muted);flex-shrink:0}
+.hs-pill-text{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hs-pill-text.vacio{color:var(--text-muted)}
+.hs-clear{display:none;background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;line-height:1;flex-shrink:0}
+/* Versión compacta: mobile (hs-cm) o siempre (hs-ca). Muestra solo la píldora hasta activarla. */
+.hs-wrap.hs-ca .hs-pill{display:flex}
+.hs-wrap.hs-ca:not(.hs-activo) .hs{display:none}
+@media(max-width:899px){.hs-wrap.hs-cm .hs-pill{display:flex}.hs-wrap.hs-cm:not(.hs-activo) .hs{display:none}}
 .hs{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border-strong);border-radius:16px;background:var(--surface-2);box-shadow:0 2px 12px rgba(0,0,0,.06);text-align:left}
 .hs-seg{position:relative;min-width:0;border-bottom:1px solid var(--border)}
 .hs-seg + .hs-seg:nth-child(2){border-left:1px solid var(--border)}
@@ -110,9 +119,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .hs-btn{grid-column:1 / 3;margin:8px;padding:15px;border:none;border-radius:12px;background:var(--text-primary);color:var(--surface-2);font-size:16px;font-weight:600;font-family:var(--font-sans);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 /* Mobile: al enfocar la ubicación el buscador se fija arriba, con un velo detrás, para
    que el teclado no lo tape ni lo deje a medio scrollear. */
-.sb-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:690}
-.sb-backdrop.open{display:block}
-.sb-activo{position:fixed!important;top:10px;left:12px;right:12px;z-index:700;background:var(--surface-2);padding:10px!important;border-radius:16px;box-shadow:0 8px 28px rgba(0,0,0,.25);width:auto!important}
 .hs-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:690}
 .hs-wrap.hs-activo .hs-backdrop{display:block}
 .hs-wrap.hs-activo .hs{position:fixed;top:10px;left:12px;right:12px;z-index:700;box-shadow:0 8px 28px rgba(0,0,0,.25)}
@@ -417,11 +423,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 /* Buscador de la ficha: franja a todo el ancho; en mobile los refinamientos van debajo del input */
 .dsb{padding:12px 16px 0}
 .dsb-inner{display:flex;flex-direction:column;gap:8px}
-.dsb-search{margin:0;background:var(--surface-2)}
+.dsb-desk{display:none}
 .dsb-chips{display:flex;gap:8px;flex-wrap:wrap}
 .dsb-chip{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;font-family:var(--font-sans);color:var(--text-primary);background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:8px;padding:8px 12px;cursor:pointer;white-space:nowrap}
 .detail-top{padding:12px 16px 0}
-.dsb-search input{flex:1;border:none;outline:none;background:transparent;font-size:14px;font-family:var(--font-sans);color:var(--text-primary);min-width:0}
 .dg{position:relative;margin:0 -16px}
 .dg-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:var(--surface-1)}
 .dg-track::-webkit-scrollbar{display:none}
@@ -845,15 +850,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     min-height:calc(100dvh - 64px - 420px);
   }
   .home-hero-title{font-size:48px;line-height:1.15;max-width:680px}
-  .hs{grid-template-columns:200px 230px 1fr auto;align-items:stretch;max-width:980px;width:100%;border-radius:18px}
+  .hs{grid-template-columns:200px 230px 1fr auto;align-items:stretch;width:100%;border-radius:18px}
   .hs-seg{border-bottom:none;border-right:1px solid var(--border)}
   .hs-seg + .hs-seg:nth-child(2){border-left:none}
   .hs-loc{grid-column:auto;padding:12px 20px}
   .hs-btn{grid-column:auto;margin:8px;padding:0 30px;white-space:nowrap}
   .hs-field{padding:14px 20px}
-  .hs-wrap{width:100%;max-width:980px}
-  .hs-backdrop{display:none!important}
-  .hs-wrap.hs-activo .hs{position:static;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+  /* Activo en pantallas grandes (solo los compactos, como el del mapa): tarjeta centrada arriba */
+  .hs-wrap.hs-activo .hs{position:fixed;top:84px;left:50%;transform:translateX(-50%);right:auto;width:min(980px,calc(100vw - 48px))}
   .home-quicklinks{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   /* Primer pantallazo: buscador, "Recién publicadas" y accesos rápidos juntos a la vista,
      con aire entre módulos pero sin la separación de las franjas de más abajo. */
@@ -1033,7 +1037,8 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   }
   .dsb{padding:14px 40px}
   .dsb-inner{flex-direction:row;align-items:center;gap:12px}
-  .dsb-search{flex:1;padding:12px 14px}
+  .dsb-inner > .hs-wrap{flex:1;min-width:0}
+  .dsb-desk{display:flex!important}
   .detail-top{max-width:1160px;margin:0 auto;padding:6px 40px 0}
   .dg{margin:0;border-radius:12px;overflow:hidden}
   .dg-track{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;height:380px;overflow:hidden;scroll-snap-type:none}
@@ -1881,41 +1886,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <!-- Buscador compuesto: tipo de venta, tipo de propiedad, ubicación y botón en un solo
            componente. En mobile, al enfocar la ubicación se fija arriba de la pantalla
            (ver hsActivar) para que el teclado no lo tape. -->
-      <div class="hs-wrap" id="hs-wrap">
-        <div class="hs-backdrop" id="hs-backdrop" onclick="hsDesactivar()"></div>
-        <div class="hs" id="hs">
-          <div class="hs-seg dt-chip-wrap">
-            <button class="hs-field" onclick="toggleChipMenu('menu-home-venta')">
-              <span class="hs-label">Tipo de venta</span>
-              <span class="hs-value"><span id="home-venta-label">Compra</span><i class="ti ti-chevron-down"></i></span>
-            </button>
-            <div class="dt-chip-menu" id="menu-home-venta" style="top:calc(100% + 6px);left:0;min-width:100%">
-              <button onclick="setHomeVenta('Compra')">Compra</button>
-              <button onclick="setHomeVenta('Desarrollos')">Desarrollos</button>
-              <button onclick="setHomeVenta('Oportunidades')">Oportunidades</button>
-            </div>
-          </div>
-          <div class="hs-seg dt-chip-wrap">
-            <button class="hs-field" onclick="toggleChipMenu('menu-home-tipo')">
-              <span class="hs-label">Tipo de propiedad</span>
-              <span class="hs-value"><span id="home-tipo-label">Todos los tipos</span><i class="ti ti-chevron-down"></i></span>
-            </button>
-            <div class="dt-chip-menu" id="menu-home-tipo" style="top:calc(100% + 6px);left:0;min-width:100%">
-              <button onclick="setHomeTipo('')">Todos los tipos</button>
-              <button onclick="setHomeTipo('Departamento')">Departamentos</button>
-              <button onclick="setHomeTipo('Casa')">Casas</button>
-            </div>
-          </div>
-          <label class="hs-seg hs-loc">
-            <i class="ti ti-map-pin"></i>
-            <span class="hs-loc-text">
-              <span class="hs-label">Ubicación</span>
-              <input type="text" placeholder="Ciudad, colonia o código postal" id="home-search-input" autocomplete="off" enterkeyhint="search" onfocus="hsActivar()" onkeydown="if(event.key==='Enter'){homeBuscar();}">
-            </span>
-          </label>
-          <button class="hs-btn" onclick="homeBuscar()">Buscar <i class="ti ti-search"></i></button>
-        </div>
-      </div>
+      <div class="hs-slot" data-hs="home" data-input="home-search-input" style="width:100%;max-width:980px"></div>
     </div>
     <!-- Recién publicadas (cards lite horizontales) — arriba de los accesos rápidos -->
     <div class="home-band home-band-white" id="home-recent-lite-band">
@@ -2531,24 +2502,20 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
         <!-- controles lista (se ocultan en modo mapa) -->
         <div id="list-controls">
           <div id="list-controls-row1" style="display:flex;gap:8px;align-items:center">
-            <div class="search-bar" style="flex:1;margin:0">
-              <i class="ti ti-search" style="flex-shrink:0"></i>
-              <input type="text" placeholder="Ciudad, colonia o código postal" oninput="document.getElementById('search-clear').style.display=this.value?'block':'none'" onkeydown="if(event.key==='Enter'){onSearch(this.value);this.blur();}" id="props-search">
-              <button id="search-clear" onclick="clearSearch()" style="display:none;background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;line-height:1"><i class="ti ti-x" style="font-size:14px"></i></button>
-            </div>
+            <div class="hs-slot" data-hs="list" data-input="props-search" data-compact="mobile" data-clear="1" style="flex:1;min-width:0"></div>
             <button class="filter-icon-btn" id="filter-btn-mobile" onclick="openFiltrosSheet()" style="position:relative"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i><span id="filter-badge-mobile" style="display:none;position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:#e53935;border:1.5px solid var(--surface-2)"></span></button>
           </div>
           <!-- chips de filtro: solo desktop — estructura tipo propiedades.com: ubicación,
                operación, tipo, precio y un botón de Filtros avanzados con contador -->
           <div class="dt-filter-chips">
-            <div class="dt-chip-wrap">
+            <div class="dt-chip-wrap" style="display:none">
               <button class="dt-filter-chip" onclick="toggleChipMenu('menu-op')"><span id="chip-op-label">Comprar</span> <i class="ti ti-chevron-down"></i></button>
               <div class="dt-chip-menu" id="menu-op">
                 <button onclick="setChipOp('Comprar')">Comprar</button>
                 <button onclick="setChipOp('Preventa')">Preventa</button>
               </div>
             </div>
-            <div class="dt-chip-wrap">
+            <div class="dt-chip-wrap" style="display:none">
               <button class="dt-filter-chip" onclick="toggleChipMenu('menu-tipo')"><span id="chip-tipo-label">Tipo</span> <i class="ti ti-chevron-down"></i></button>
               <div class="dt-chip-menu" id="menu-tipo">
                 <button onclick="setChipTipo('')">Cualquier tipo</button>
@@ -2591,10 +2558,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <div id="map-container" style="position:absolute;inset:0"></div>
             <!-- barra flotante top -->
             <div style="position:absolute;top:12px;left:12px;right:12px;z-index:1000;display:flex;gap:6px;align-items:center;overflow:hidden">
-              <div class="search-bar" style="flex:1;min-width:0;margin:0;background:var(--surface-2)">
-                <i class="ti ti-search" style="flex-shrink:0"></i>
-                <input type="text" placeholder="Ciudad, colonia o código postal" onkeydown="if(event.key==='Enter'){onSearch(this.value);this.blur();}" id="map-search">
-              </div>
+              <div class="hs-slot" data-hs="map" data-input="map-search" data-compact="always" style="flex:1;min-width:0"></div>
               <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openFiltrosSheet()"><i class="ti ti-adjustments-horizontal" style="font-size:18px"></i></button>
               <button class="filter-icon-btn" style="background:var(--surface-2);flex-shrink:0" onclick="openOrdenSheet()"><i class="ti ti-arrows-sort" style="font-size:18px"></i></button>
               <button onclick="switchView('list')" class="filter-icon-btn" style="background:var(--text-primary);color:var(--surface-2);flex-shrink:0"><i class="ti ti-x" style="font-size:18px"></i></button>
@@ -2649,29 +2613,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
   <!-- DETALLE DE PROPIEDAD -->
   <div id="screen-prop-detail" class="screen">
-    <!-- Buscador (a todo el ancho, con refinamientos) + galería de fotos -->
+    <!-- Buscador (mismo componente que el resto de la app) + galería de fotos -->
     <div class="dsb">
       <div class="dsb-inner">
-        <div class="search-bar dsb-search">
-          <i class="ti ti-search" style="flex-shrink:0"></i>
-          <input type="text" placeholder="Ciudad, colonia o código postal" id="detail-search" autocomplete="off" onkeydown="if(event.key==='Enter'){detalleBuscar(this.value);}">
-        </div>
-        <div class="dsb-chips">
-          <div class="dt-chip-wrap">
-            <button class="dsb-chip" onclick="toggleChipMenu('menu-d-op')"><span id="chip-d-op-label">Comprar</span> <i class="ti ti-chevron-down"></i></button>
-            <div class="dt-chip-menu" id="menu-d-op">
-              <button onclick="detalleSetOp('Comprar')">Comprar</button>
-              <button onclick="detalleSetOp('Preventa')">Preventa</button>
-            </div>
-          </div>
-          <div class="dt-chip-wrap">
-            <button class="dsb-chip" onclick="toggleChipMenu('menu-d-tipo')"><span id="chip-d-tipo-label">Tipo</span> <i class="ti ti-chevron-down"></i></button>
-            <div class="dt-chip-menu" id="menu-d-tipo">
-              <button onclick="detalleSetTipo('')">Cualquier tipo</button>
-              <button onclick="detalleSetTipo('Departamento')">Departamento</button>
-              <button onclick="detalleSetTipo('Casa')">Casa</button>
-            </div>
-          </div>
+        <div class="hs-slot" data-hs="det" data-input="detail-search" data-compact="mobile"></div>
+        <div class="dsb-chips dsb-desk">
           <div class="dt-chip-wrap">
             <button class="dsb-chip" onclick="toggleChipMenu('menu-d-precio')"><span id="chip-d-precio-label">Precio</span> <i class="ti ti-chevron-down"></i></button>
             <div class="dt-chip-menu" id="menu-d-precio" style="right:0;left:auto">
@@ -2845,7 +2791,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   </div>
 </div>
 
-<div class="sb-backdrop" id="sb-backdrop" onclick="sbDesactivar()"></div>
 <div id="gallery-lightbox" onclick="if(event.target===this)cerrarLightbox()">
   <div class="lb-count" id="lb-count"></div>
   <button class="lb-btn lb-close" onclick="cerrarLightbox()" aria-label="Cerrar"><i class="ti ti-x"></i></button>
@@ -4104,12 +4049,6 @@ function setSearchZone(zona){
   if(inp) inp.value = zona;
 }
 
-function setHomeTipo(val){
-  document.getElementById('home-tipo-label').textContent = val || 'Todos los tipos';
-  chipFilters.tipo = val;
-  document.getElementById('menu-home-tipo').classList.remove('open');
-}
-
 // ── Módulo home "Explora por tipo de propiedad" ──
 const HOME_TIPO_DEFS = [
   {val:'Departamento', label:'Departamentos', icon:'ti-building'},
@@ -4728,6 +4667,7 @@ function setChipTipo(val){
   document.querySelectorAll('#menu-tipo button').forEach(b => b.classList.toggle('selected', b.dataset.val===val));
   document.getElementById('menu-tipo').classList.remove('open');
   renderProps();
+  hsSync();
 }
 function setChipRec(val){
   document.getElementById('chip-rec-label').textContent = val ? `${val}+ rec` : 'Recámaras';
@@ -4895,8 +4835,6 @@ function openFiltrosSheet() {
   openSheet('sheet-filtros');
 }
 function clearSearch() {
-  document.getElementById('props-search').value = '';
-  document.getElementById('search-clear').style.display = 'none';
   onSearch('');
 }
 
@@ -7417,62 +7355,107 @@ function geoTextoProp(p) {
 }
 function normTxt(t) { return (t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
 
-// ── Buscador compuesto del Inicio ──
-function setHomeVenta(val) {
-  document.getElementById('home-venta-label').textContent = val;
-  document.getElementById('menu-home-venta').classList.remove('open');
+// ── Buscador compuesto (un solo componente en toda la app) ──
+// Tipo de venta, tipo de propiedad, ubicación y botón Buscar. Aparece en Inicio, listado,
+// mapa y ficha. En desktop va completo en línea (Inicio, listado, ficha). En mobile el
+// listado y la ficha usan una versión compacta (una píldora) y el mapa la usa siempre; al
+// tocarla se abre el buscador completo, fijo arriba de la pantalla, igual al del Inicio.
+let hsVenta = 'Compra';
+let hsTexto = '';
+function hsMarkup(id, inputId, compact, clear, style) {
+  const cls = compact === 'always' ? ' hs-ca' : compact === 'mobile' ? ' hs-cm' : '';
+  const menu = (k, items) => `<div class="dt-chip-menu" id="menu-${id}-${k}" style="top:calc(100% + 6px);left:0;min-width:100%">${items}</div>`;
+  const ventas = ['Compra','Desarrollos','Oportunidades'].map(v => `<button onclick="hsSetVenta('${v}')">${v}</button>`).join('');
+  const tipos = [['','Todos los tipos'],['Departamento','Departamentos'],['Casa','Casas']].map(([v, l]) => `<button onclick="hsSetTipo('${v}')">${l}</button>`).join('');
+  return `<div class="hs-wrap${cls}" data-hs="${id}"${style ? ` style="${style}"` : ''}>
+    <div class="hs-backdrop" onclick="hsDesactivar()"></div>
+    <button class="hs-pill" onclick="hsActivar('${id}')"><i class="ti ti-search"></i><span class="hs-pill-text vacio">Ciudad, colonia o código postal</span></button>
+    <div class="hs">
+      <div class="hs-seg dt-chip-wrap">
+        <button class="hs-field" onclick="toggleChipMenu('menu-${id}-venta')"><span class="hs-label">Tipo de venta</span><span class="hs-value"><span class="hs-venta-label">Compra</span><i class="ti ti-chevron-down"></i></span></button>
+        ${menu('venta', ventas)}
+      </div>
+      <div class="hs-seg dt-chip-wrap">
+        <button class="hs-field" onclick="toggleChipMenu('menu-${id}-tipo')"><span class="hs-label">Tipo de propiedad</span><span class="hs-value"><span class="hs-tipo-label">Todos los tipos</span><i class="ti ti-chevron-down"></i></span></button>
+        ${menu('tipo', tipos)}
+      </div>
+      <label class="hs-seg hs-loc">
+        <i class="ti ti-map-pin"></i>
+        <span class="hs-loc-text"><span class="hs-label">Ubicación</span><input type="text" placeholder="Ciudad, colonia o código postal" id="${inputId}" autocomplete="off" enterkeyhint="search"></span>
+        ${clear ? '<button type="button" class="hs-clear" id="search-clear" onclick="clearSearch()" aria-label="Borrar búsqueda"><i class="ti ti-x" style="font-size:14px"></i></button>' : ''}
+      </label>
+      <button class="hs-btn" onclick="hsBuscar('${id}')">Buscar <i class="ti ti-search"></i></button>
+    </div>
+  </div>`;
 }
-// Mobile: al tocar la ubicación el buscador sube y se fija arriba de la pantalla (con velo
-// detrás) para que el teclado no lo tape. En desktop no hace falta y queda en su lugar.
-function hsActivar() {
-  if (window.innerWidth >= 900) return;
-  const wrap = document.getElementById('hs-wrap');
-  if (wrap.classList.contains('hs-activo')) return;
-  wrap.style.minHeight = wrap.offsetHeight + 'px'; // evita que el hero salte al fijarse
-  wrap.classList.add('hs-activo');
-  setTimeout(() => renderSugerencias(document.getElementById('home-search-input')), 50);
+function hsWrap(id) { return document.querySelector(`.hs-wrap[data-hs="${id}"]`); }
+// Sincroniza todas las instancias con el estado compartido (tipo, venta y texto buscado).
+function hsSync() {
+  document.querySelectorAll('.hs-wrap').forEach(w => {
+    w.querySelector('.hs-venta-label').textContent = hsVenta;
+    w.querySelector('.hs-tipo-label').textContent = chipFilters.tipo ? (chipFilters.tipo === 'Casa' ? 'Casas' : 'Departamentos') : 'Todos los tipos';
+    const input = w.querySelector('input');
+    if (document.activeElement !== input) input.value = hsTexto;
+    const pill = w.querySelector('.hs-pill-text');
+    pill.textContent = hsTexto || 'Ciudad, colonia o código postal';
+    pill.classList.toggle('vacio', !hsTexto);
+    const clear = w.querySelector('.hs-clear');
+    if (clear) clear.style.display = hsTexto ? 'block' : 'none';
+  });
+  const pr = document.getElementById('chip-d-precio-label');
+  if (pr) {
+    const labels = { '0_0':'Precio', '0_1000000':'Hasta $1M', '1000000_3000000':'$1M a $3M', '3000000_5000000':'$3M a $5M', '5000000_0':'Más de $5M' };
+    pr.textContent = labels[`${chipFilters.minPrice}_${chipFilters.maxPrice}`] || 'Precio';
+  }
+}
+function hsCerrarMenus() { document.querySelectorAll('.hs .dt-chip-menu').forEach(m => m.classList.remove('open')); }
+function hsSetVenta(val) { hsVenta = val; hsCerrarMenus(); hsSync(); }
+function hsSetTipo(val) { hsCerrarMenus(); setChipTipo(val); hsSync(); }
+function setHomeTipo(val) { hsSetTipo(val); }
+// Activar: en mobile (y siempre en los compactos) el buscador completo se fija arriba con un
+// velo detrás, para que el teclado no lo tape. En desktop los no compactos quedan en su lugar.
+function hsActivar(id) {
+  const w = hsWrap(id);
+  if (!w || w.classList.contains('hs-activo')) return;
+  const compacto = w.classList.contains('hs-ca') || (w.classList.contains('hs-cm') && window.innerWidth < 900);
+  if (!compacto && window.innerWidth >= 900) return;
+  hsDesactivar();
+  if (!compacto) w.style.minHeight = w.offsetHeight + 'px'; // evita que la página salte al fijarse
+  w.classList.add('hs-activo');
+  const input = w.querySelector('input');
+  setTimeout(() => { input.focus({ preventScroll: true }); renderSugerencias(input); }, 50);
 }
 function hsDesactivar() {
-  const wrap = document.getElementById('hs-wrap');
-  if (!wrap) return;
-  wrap.classList.remove('hs-activo');
-  wrap.style.minHeight = '';
-  document.getElementById('home-search-input').blur();
+  document.querySelectorAll('.hs-wrap.hs-activo').forEach(w => { w.classList.remove('hs-activo'); w.style.minHeight = ''; });
+  hsCerrarMenus();
+  if (document.activeElement && document.activeElement.closest && document.activeElement.closest('.hs-wrap')) document.activeElement.blur();
   cerrarSugerencias();
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') hsDesactivar(); });
-
-// Mobile: los buscadores de la ficha y del listado también se fijan arriba de la pantalla
-// al enfocarlos (igual que el del Inicio), así el teclado no los tapa.
-const SB_CONTENEDORES = { 'detail-search':'.dsb-inner', 'props-search':'#list-controls-row1' };
-let sbActivoEl = null, sbPlaceholder = null;
-function sbContenedor(input) {
-  const sel = SB_CONTENEDORES[input.id];
-  return sel ? input.closest(sel) : null;
+// Buscar: aplica el texto y el tipo de venta. En el listado actualiza ahí mismo; en el
+// resto de las pantallas lleva al listado.
+function hsBuscar(id) {
+  const w = hsWrap(id);
+  const v = (w ? w.querySelector('input').value : hsTexto).trim();
+  hsTexto = v;
+  searchQuery = v.toLowerCase();
+  if (hsVenta === 'Desarrollos') chipFilters.origen = 'desarrollo';
+  else if (chipFilters.origen === 'desarrollo') chipFilters.origen = '';
+  hsDesactivar();
+  hsSync();
+  updateFilterBadge();
+  if (document.querySelector('.screen.active')?.id === 'screen-props') {
+    renderProps();
+    if (currentView === 'map') renderMap(getFilteredProps());
+  } else navTo('screen-props', 'nav-props');
 }
-function sbActivar(input) {
-  if (window.innerWidth >= 900) return;
-  const c = sbContenedor(input);
-  if (!c || c === sbActivoEl) return;
-  sbDesactivar();
-  sbPlaceholder = document.createElement('div');
-  sbPlaceholder.style.height = c.offsetHeight + 'px'; // evita que la página salte al fijarse
-  c.parentElement.insertBefore(sbPlaceholder, c);
-  c.classList.add('sb-activo');
-  sbActivoEl = c;
-  document.getElementById('sb-backdrop').classList.add('open');
-  setTimeout(() => renderSugerencias(input), 50);
+function initBuscadores() {
+  document.querySelectorAll('.hs-slot').forEach(slot => {
+    slot.outerHTML = hsMarkup(slot.dataset.hs, slot.dataset.input, slot.dataset.compact, slot.dataset.clear, slot.getAttribute('style'));
+  });
+  hsSync();
 }
-function sbDesactivar() {
-  if (!sbActivoEl) return;
-  sbActivoEl.classList.remove('sb-activo');
-  sbPlaceholder?.remove();
-  sbActivoEl = null; sbPlaceholder = null;
-  document.getElementById('sb-backdrop').classList.remove('open');
-  document.activeElement?.blur?.();
-  cerrarSugerencias();
-}
-document.addEventListener('keydown', e => { if (e.key === 'Escape') sbDesactivar(); });
+initBuscadores();
 
 // Sugerencias de búsqueda: Ciudades primero (priorizadas), después alcaldías,
 // colonias y códigos postales. Con solo dígitos se priorizan los CP.
@@ -7503,7 +7486,8 @@ function renderSugerencias(input) {
     last = x.grupo;
     return head + `<button class="sugg-item" onmousedown="event.preventDefault();elegirSugerencia('${x.value.replace(/'/g, "\\'")}')"><i class="ti ${x.icon}"></i>${x.label}<span class="sugg-sub">${x.sub}</span></button>`;
   }).join('');
-  const anchor = window.innerWidth < 900 && input.id === 'home-search-input' ? document.getElementById('hs') : (window.innerWidth < 900 && sbActivoEl && sbActivoEl.contains(input) ? sbActivoEl : input.closest('.search-bar, .hs-loc'));
+  const w = input.closest('.hs-wrap');
+  const anchor = w.classList.contains('hs-activo') ? w.querySelector('.hs') : input.closest('.hs-loc');
   const r = anchor.getBoundingClientRect();
   box.style.left = r.left + 'px';
   box.style.top = (r.bottom + 6) + 'px';
@@ -7514,38 +7498,21 @@ function renderSugerencias(input) {
 function cerrarSugerencias() { document.getElementById('search-sugg')?.classList.remove('open'); }
 function elegirSugerencia(valor) {
   const input = _suggInput;
-  sbDesactivar();
   cerrarSugerencias();
   if (!input) return;
   input.value = valor;
-  input.blur();
-  if (input.id === 'home-search-input') { homeBuscar(); return; }
-  if (input.id === 'detail-search') { detalleBuscar(valor); return; }
-  document.getElementById('props-search').value = valor;
-  document.getElementById('map-search').value = valor;
-  onSearch(valor);
-  if (currentView === 'map') renderMap(getFilteredProps());
-}
-function homeBuscar() {
-  hsDesactivar();
-  chipFilters.origen = document.getElementById('home-venta-label').textContent === 'Desarrollos' ? 'desarrollo' : '';
-  const v = document.getElementById('home-search-input')?.value.trim() || '';
-  searchQuery = v.toLowerCase();
-  const inp = document.getElementById('props-search');
-  if (inp) inp.value = v;
-  navTo('screen-props', 'nav-props');
+  hsBuscar(input.closest('.hs-wrap').dataset.hs);
 }
 function initBuscadorSugerencias() {
   const box = document.createElement('div');
   box.className = 'search-sugg';
   box.id = 'search-sugg';
   document.body.appendChild(box);
-  ['home-search-input','detail-search','props-search','map-search'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.setAttribute('autocomplete', 'off');
-    el.addEventListener('focus', () => { renderSugerencias(el); sbActivar(el); });
+  document.querySelectorAll('.hs-wrap input').forEach(el => {
+    const id = el.closest('.hs-wrap').dataset.hs;
+    el.addEventListener('focus', () => { renderSugerencias(el); hsActivar(id); });
     el.addEventListener('input', () => renderSugerencias(el));
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') hsBuscar(id); });
     el.addEventListener('blur', () => setTimeout(cerrarSugerencias, 120));
   });
   window.addEventListener('resize', cerrarSugerencias);
@@ -7553,9 +7520,9 @@ function initBuscadorSugerencias() {
 initBuscadorSugerencias();
 
 function onSearch(q){
-  sbDesactivar();
+  hsTexto = (q || '').trim();
   searchQuery = q.toLowerCase();
-  document.getElementById('search-clear').style.display = q ? 'block' : 'none';
+  hsSync();
   updateFilterBadge();
   renderProps();
 }
@@ -7977,7 +7944,7 @@ function fotosDePropiedad(p) {
   return [0, 1, 2, 3, 4].map(k => propImgSrc(p.id + k));
 }
 function renderGaleriaDetalle(p) {
-  detalleSyncChips();
+  hsSync();
   galeriaFotos = fotosDePropiedad(p);
   const track = document.getElementById('dg-track');
   track.innerHTML = galeriaFotos.map((src, i) => `<img src="${src}" alt="Foto ${i + 1} de ${galeriaFotos.length}" onclick="abrirLightbox(${i})">`).join('');
@@ -8008,36 +7975,11 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'ArrowLeft') lightboxIr(-1);
   else if (e.key === 'ArrowRight') lightboxIr(1);
 });
-// Refinamientos del buscador de la ficha: eligen y llevan al listado con ese filtro.
-function detalleSyncChips() {
-  const t = document.getElementById('chip-d-tipo-label');
-  if (t) t.textContent = chipFilters.tipo || 'Tipo';
-  const labels = { '0_0':'Precio', '0_1000000':'Hasta $1M', '1000000_3000000':'$1M a $3M', '3000000_5000000':'$3M a $5M', '5000000_0':'Más de $5M' };
-  const pr = document.getElementById('chip-d-precio-label');
-  if (pr) pr.textContent = labels[`${chipFilters.minPrice}_${chipFilters.maxPrice}`] || 'Precio';
-}
-function detalleSetOp(val) {
-  document.getElementById('chip-d-op-label').textContent = val;
-  document.getElementById('menu-d-op').classList.remove('open');
-  setChipOp(val);
-}
-function detalleSetTipo(val) {
-  setChipTipo(val);
-  detalleBuscar(document.getElementById('detail-search').value);
-}
+// Precio de la ficha (desktop): elige y lleva al listado con ese filtro.
 function detalleSetPrecio(min, max) {
+  document.getElementById('menu-d-precio').classList.remove('open');
   setChipPrecio(min, max);
-  detalleBuscar(document.getElementById('detail-search').value);
-}
-// Buscador de la ficha: lleva al listado con lo escrito.
-function detalleBuscar(v) {
-  sbDesactivar();
-  chipFilters.origen = '';
-  searchQuery = (v || '').trim().toLowerCase();
-  const inp = document.getElementById('props-search');
-  if (inp) inp.value = (v || '').trim();
-  cerrarSugerencias();
-  navTo('screen-props', 'nav-props');
+  hsBuscar('det');
 }
 
 function fxToggleDesc() {
