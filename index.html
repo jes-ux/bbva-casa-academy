@@ -492,6 +492,17 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .fx-prop-rows dt{color:var(--text-secondary);margin:0}
 .fx-prop-rows dd{margin:0;font-weight:700;color:var(--text-primary);text-align:right}
 .fx-prop-note{font-size:11px;color:var(--text-muted);line-height:1.5;margin-top:6px}
+.fx-acceso{display:flex;align-items:center;gap:14px;width:100%;padding:16px;border:0.5px solid var(--border);border-radius:14px;background:var(--surface-2);font-family:var(--font-sans);cursor:pointer;text-align:left}
+.fx-acceso:hover{border-color:var(--border-strong)}
+.fx-acceso-ic{flex-shrink:0;width:40px;height:40px;border-radius:10px;background:var(--surface-1);display:flex;align-items:center;justify-content:center}
+.fx-acceso-ic i{font-size:22px;color:var(--text-secondary)}
+.fx-acceso-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.fx-acceso-t b{font-size:15px;font-weight:600;color:var(--text-primary)}
+.fx-acceso-t small{font-size:12px;color:var(--text-muted)}
+.fx-acceso-v{flex-shrink:0;display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--text-primary)}
+.fx-acceso-v em{font-style:normal}
+.fx-acceso-v i{font-size:18px;color:var(--text-muted)}
+#sheet-gastos .fx-gastos-bajada{margin-top:0}
 .fx-card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:14px;padding:20px}
 .fx-min{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding:12px 14px;border-radius:10px;background:var(--surface-1)}
 .fx-min b{font-size:22px;font-weight:800;color:var(--text-primary)}
@@ -2814,15 +2825,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <button class="btn-outline" style="margin-top:12px;width:100%" id="sf-cta"><i class="ti ti-calculator"></i> Simular con mi ingreso</button>
           </div>
         </div>
-        <!-- Gastos generales a considerar -->
+        <!-- Gastos generales a considerar: acceso a un side sheet (desktop) / bottom sheet (mobile) -->
         <div class="detail-section" id="fx-gastos-wrap">
-          <div class="fx-card">
-            <div class="detail-section-title" style="margin-bottom:6px">Gastos generales a considerar</div>
-            <p class="fx-gastos-bajada">Además del enganche y la mensualidad, al comprar se pagan estos gastos. Son estimaciones de referencia: varían según la notaría y el estado.</p>
-            <div class="fx-gastos" id="fx-gastos"></div>
-          </div>
+          <button type="button" class="fx-acceso" onclick="abrirGastosFicha()">
+            <span class="fx-acceso-ic"><i class="ti ti-receipt-2"></i></span>
+            <span class="fx-acceso-t"><b>Gastos generales a considerar</b><small>Avalúo, notariales, escrituración, impuestos y más</small></span>
+            <span class="fx-acceso-v"><em id="fx-gastos-total"></em><i class="ti ti-chevron-right"></i></span>
+          </button>
         </div>
-        <!-- Lo especial + descripción -->
         <div class="fx-divider"></div>
         <div class="detail-section">
           <div class="detail-section-title">Lo especial</div>
@@ -2941,6 +2951,22 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <button class="lb-btn lb-prev" onclick="lightboxIr(-1)" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
   <img id="lb-img" src="" alt="">
   <button class="lb-btn lb-next" onclick="lightboxIr(1)" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+</div>
+
+<!-- Gastos generales a considerar (ficha): side sheet en desktop, bottom sheet en mobile -->
+<div class="bottom-sheet" id="sheet-gastos">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Gastos generales a considerar</span>
+    <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
+  </div>
+  <div class="sheet-body">
+    <p class="fx-gastos-bajada">Además del enganche y la mensualidad, al comprar se pagan estos gastos. Son estimaciones de referencia: varían según la notaría y el estado.</p>
+    <div id="fx-gastos"></div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn-primary" id="gastos-cta" style="flex:1;padding:13px">Simular con mi ingreso</button>
+  </div>
 </div>
 
 <!-- Agendar una visita a la propiedad: calendario + horarios -->
@@ -8349,9 +8375,15 @@ function gastosHTML(price, financiado) {
     + `<div class="fx-gasto total"><div class="fx-gasto-n">Total estimado<small>Aproximadamente ${g.pct.toFixed(1)}% del precio</small></div><div class="fx-gasto-v">${fmt(g.total)}</div></div>`;
 }
 function renderGastosFicha(p) {
-  document.getElementById('fx-gastos').innerHTML = gastosHTML(p.price);
+  document.getElementById('fx-gastos-total').textContent = `≈ ${fmt(gastosEstimados(p.price).total)}`;
 }
-
+function abrirGastosFicha() {
+  const p = PROPS.find(x => x.id === currentPropId);
+  if (!p) return;
+  document.getElementById('fx-gastos').innerHTML = gastosHTML(p.price);
+  document.getElementById('gastos-cta').onclick = () => { closeSheet(); simRefPropId = p.id; goScreen('screen-sim'); };
+  openSheet('sheet-gastos');
+}
 function fxToggleDesc() {
   const d = document.getElementById('fx-desc');
   const abierta = d.classList.toggle('abierta');
