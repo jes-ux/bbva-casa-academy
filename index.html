@@ -3948,6 +3948,21 @@ function shareSimulation(s) {
   }
 }
 
+// Pago mínimo (cuota a 25 años) y gastos generales a considerar de una simulación aplicada a un
+// precio. Lo usan los avisos de simulación de la ficha, el selector de simulaciones y el mensaje
+// al asesor hipotecario, para que en todos lados se vea lo mismo que en el simulador.
+function simExtra(s, precio) {
+  const prestamo = Math.max(0, precio - (s.enganche || 0));
+  return {
+    pagoMin: cuotaMensual(prestamo, 25, s.tasaAnual || TASA_ANUAL_PUBLICA),
+    gastos: gastosEstimados(precio, prestamo).total,
+  };
+}
+function simExtraTxt(s, precio) {
+  const e = simExtra(s, precio);
+  return `Pago mínimo ${fmt(e.pagoMin)}/mes · Gastos ≈ ${fmt(e.gastos)}`;
+}
+
 function linkPropToSim(propId, simIdx) {
   const s = SIM_HISTORY[simIdx];
   if (!s) return;
@@ -3961,6 +3976,7 @@ function linkPropToSim(propId, simIdx) {
       <div style="flex:1;min-width:0">
         <div style="font-size:12px;font-weight:600;color:var(--text-primary)">Propiedad en tu simulación</div>
         <div style="font-size:11px;color:var(--text-muted)">Cuota est. ${fmt(s.cuota)}/mes · ${s.plazo} años</div>
+        <div style="font-size:11px;color:var(--text-muted)">${simExtraTxt(s, (PROPS.find(x => x.id === propId) || {}).price || s.propMax)}</div>
       </div>
       <i class="ti ti-chevron-right" style="font-size:13px;color:var(--text-muted);flex-shrink:0"></i>
     </div>`;
@@ -3993,6 +4009,7 @@ function openLinkSimPicker(propId) {
         ${idx === 0 ? '<span style="font-size:10px;font-weight:600;color:var(--text-success);background:var(--bg-success);border-radius:6px;padding:2px 6px;flex-shrink:0">Más cercana</span>' : ''}
       </span>
       <span style="font-size:11px;color:var(--text-muted);padding-left:24px">Cuota ~${fmt(s.cuota)}/mes · ${s.plazo} años · ${s.fecha}</span>
+      <span style="font-size:11px;color:var(--text-muted);padding-left:24px">${simExtraTxt(s, p.price)}</span>
     </button>
   `).join('');
   openSheet('sheet-link-sim');
@@ -6726,7 +6743,9 @@ function contactarInmobiliario(propId) {
 function contactarHipotecario(sim) {
   const existing = WA_CONTACTS.find(c => c.simId === sim.id && c.tipo === 'hipotecario');
   if (existing) { verContactoWA(existing.id); return; }
-  const mensaje = `Hola, realicé una simulación y me gustaría hablar con un asesor hipotecario.\n\nMi capacidad estimada es de hasta ${fmt(sim.propMax)}, con una cuota de ~${fmt(sim.cuota)}/mes a ${sim.plazo} años.\n\n¿Podrían ponerse en contacto conmigo?`;
+  const refP = sim.refProp ? PROPS.find(x => x.id === sim.refProp) : null;
+  const ex = simExtra(sim, refP ? refP.price : sim.propMax);
+  const mensaje = `Hola, realicé una simulación y me gustaría hablar con un asesor hipotecario.\n\nMi capacidad estimada es de hasta ${fmt(sim.propMax)}, con una cuota de ~${fmt(sim.cuota)}/mes a ${sim.plazo} años. El pago mínimo sería de ${fmt(ex.pagoMin)}/mes a 25 años y los gastos generales a considerar rondan los ${fmt(ex.gastos)}.\n\n¿Podrían ponerse en contacto conmigo?`;
   contactarPorWhatsapp({ tipo:'hipotecario', asesor: ASESOR_HIPOTECARIO, simId: sim.id, mensaje, stepKey:'contacted_hipo' });
 }
 
@@ -8528,6 +8547,7 @@ function openPropDetail(id){
         <div style="flex:1;min-width:0">
           <div style="font-size:12px;font-weight:600;color:var(--text-primary)">Propiedad en tu simulación</div>
           <div style="font-size:11px;color:var(--text-muted)">Cuota est. ${fmt(relSim.cuota)}/mes · ${relSim.plazo} años</div>
+          <div style="font-size:11px;color:var(--text-muted)">${simExtraTxt(relSim, p.price)}</div>
         </div>
         <i class="ti ti-chevron-right" style="font-size:13px;color:var(--text-muted);flex-shrink:0"></i>
       </div>`;
@@ -8541,6 +8561,7 @@ function openPropDetail(id){
           <div style="flex:1;min-width:0">
             <div style="font-size:12px;font-weight:600;color:var(--text-primary)">Está en tu rango</div>
             <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Tu simulación cubre hasta ${fmt(inRangeSim.propMax)} · Cuota est. ${fmt(inRangeSim.cuota)}/mes</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${simExtraTxt(inRangeSim, p.price)}</div>
           </div>
         </div>
         <button onclick="requireAuth(()=>linkPropToSim(${id}, ${simIdx}))" style="width:100%;font-size:12px;font-weight:600;background:var(--text-primary);color:var(--surface-2);border:none;border-radius:8px;padding:9px;cursor:pointer;font-family:var(--font-sans);display:flex;align-items:center;justify-content:center;gap:6px" id="link-sim-btn-${id}"><i class="ti ti-calculator" style="font-size:13px"></i> Agregar a mi simulación</button>
