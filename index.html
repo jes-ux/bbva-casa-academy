@@ -492,6 +492,33 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .fx-prop-rows dt{color:var(--text-secondary);margin:0}
 .fx-prop-rows dd{margin:0;font-weight:700;color:var(--text-primary);text-align:right}
 .fx-prop-note{font-size:11px;color:var(--text-muted);line-height:1.5;margin-top:6px}
+.fx-card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:14px;padding:20px}
+.fx-min{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding:12px 14px;border-radius:10px;background:var(--surface-1)}
+.fx-min b{font-size:22px;font-weight:800;color:var(--text-primary)}
+.fx-min span{font-size:13px;color:var(--text-secondary)}
+.fx-ctl{margin-top:14px}
+.fx-ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:14px;margin-bottom:8px}
+.fx-ctl-head label{font-weight:600;color:var(--text-primary)}
+.fx-ctl-head span{color:var(--text-secondary)}
+.fx-ctl-head span b{color:var(--text-primary)}
+#sf-pct{width:100%;accent-color:var(--text-primary);cursor:pointer}
+.fx-range-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:2px}
+.fx-plazos{display:flex;gap:8px;flex-wrap:wrap}
+.fx-plazos button{flex:1;min-width:0;white-space:nowrap;padding:9px 6px;border:0.5px solid var(--border-strong);border-radius:8px;background:var(--surface-2);font-family:var(--font-sans);font-size:13px;font-weight:500;color:var(--text-primary);cursor:pointer}
+.fx-plazos button.active{background:var(--text-primary);color:var(--surface-2);border-color:var(--text-primary)}
+.fx-sim-out{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.fx-sim-out > div{padding:12px;border-radius:10px;background:var(--surface-1)}
+.fx-sim-out > div:last-child{background:var(--text-primary);color:var(--surface-2)}
+.fx-sim-out span{display:block;font-size:11px;opacity:.75;margin-bottom:3px}
+.fx-sim-out b{font-size:15px;font-weight:700}
+.fx-gastos-bajada{font-size:13px;color:var(--text-secondary);line-height:1.5;margin:0 0 12px}
+.fx-gasto{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:11px 0;border-top:0.5px solid var(--border)}
+.fx-gasto-n{font-size:14px;font-weight:500;color:var(--text-primary)}
+.fx-gasto-n small{display:block;font-size:12px;font-weight:400;color:var(--text-muted);margin-top:2px}
+.fx-gasto-v{font-size:14px;font-weight:700;color:var(--text-primary);white-space:nowrap}
+.fx-gasto.total{border-top:1.5px solid var(--text-primary);margin-top:2px}
+.fx-gasto.total .fx-gasto-n{font-weight:700}
+@media(max-width:899px){.fx-sim-out{grid-template-columns:1fr}.fx-sim-out > div{display:flex;justify-content:space-between;align-items:baseline}.fx-sim-out span{margin:0}}
 .fx-price{font-size:32px;font-weight:800;color:var(--text-primary);line-height:1.1;letter-spacing:-.01em}
 .fx-price-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .fx-op{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:6px 12px;border-radius:4px;background:var(--text-primary);color:var(--surface-2)}
@@ -2743,6 +2770,38 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           </button>
         </div>
         <div class="fx-facts" id="fx-facts"></div>
+        <!-- Simulador de pago mensual de la propiedad (barra de enganche + plazo, con pago mínimo) -->
+        <div class="detail-section" id="fx-sim-wrap">
+          <div class="fx-card">
+            <div class="detail-section-title" style="margin-bottom:6px">Simula tu pago mensual</div>
+            <div class="fx-min" id="fx-min"></div>
+            <div class="fx-ctl">
+              <div class="fx-ctl-head"><label for="sf-pct">Enganche</label><span id="sf-eng-txt"></span></div>
+              <input type="range" id="sf-pct" min="20" max="80" step="1" value="20" oninput="simFichaCambio()">
+              <div class="fx-range-ends"><span>20% (mínimo)</span><span>80%</span></div>
+            </div>
+            <div class="fx-ctl">
+              <div class="fx-ctl-head"><label>Plazo</label><span id="sf-plazo-txt"></span></div>
+              <div class="fx-plazos" id="sf-plazos">
+                <button type="button" data-a="10" onclick="simFichaPlazo(10)">10 años</button>
+                <button type="button" data-a="15" onclick="simFichaPlazo(15)">15 años</button>
+                <button type="button" data-a="20" onclick="simFichaPlazo(20)">20 años</button>
+                <button type="button" data-a="25" onclick="simFichaPlazo(25)">25 años</button>
+              </div>
+            </div>
+            <div class="fx-sim-out" id="sf-out"></div>
+            <div class="fx-prop-note">Estimado con tasa de <span id="sf-tasa"></span>% anual. Sujeto a aprobación de crédito.</div>
+            <button class="btn-outline" style="margin-top:12px;width:100%" id="sf-cta"><i class="ti ti-calculator"></i> Simular con mi ingreso</button>
+          </div>
+        </div>
+        <!-- Gastos generales a considerar -->
+        <div class="detail-section" id="fx-gastos-wrap">
+          <div class="fx-card">
+            <div class="detail-section-title" style="margin-bottom:6px">Gastos generales a considerar</div>
+            <p class="fx-gastos-bajada">Además del enganche y la mensualidad, al comprar se pagan estos gastos. Son estimaciones de referencia: varían según la notaría y el estado.</p>
+            <div class="fx-gastos" id="fx-gastos"></div>
+          </div>
+        </div>
         <!-- Lo especial + descripción -->
         <div class="fx-divider"></div>
         <div class="detail-section">
@@ -8163,6 +8222,57 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'ArrowLeft') lightboxIr(-1);
   else if (e.key === 'ArrowRight') lightboxIr(1);
 });
+// ── Simulador de la ficha: barra de enganche + plazo, con el pago mínimo ──
+// Pago mínimo = enganche mínimo (CARD_ENGANCHE_PCT) al plazo más largo (25 años): la cuota más
+// baja posible para esta propiedad. La barra mueve el enganche entre el mínimo y 80%.
+let sfProp = null, sfPlazo = CARD_PLAZO_ANIOS;
+function cuotaMensual(monto, anios) {
+  const r = TASA_ANUAL_PUBLICA / 12, n = anios * 12;
+  return Math.round(monto * r / (1 - Math.pow(1 + r, -n)));
+}
+function renderSimFicha(p) {
+  sfProp = p;
+  sfPlazo = CARD_PLAZO_ANIOS;
+  const pctMin = Math.round(CARD_ENGANCHE_PCT * 100);
+  const rng = document.getElementById('sf-pct');
+  rng.min = pctMin; rng.value = pctMin;
+  document.querySelector('#fx-sim-wrap .fx-range-ends').innerHTML = `<span>${pctMin}% (mínimo)</span><span>80%</span>`;
+  document.getElementById('sf-tasa').textContent = (TASA_ANUAL_PUBLICA * 100).toFixed(1);
+  const minCuota = cuotaMensual(p.price * (1 - CARD_ENGANCHE_PCT), 25);
+  document.getElementById('fx-min').innerHTML = `<span>Pago mínimo</span><b>${fmt(minCuota)}/mes</b><span>con ${pctMin}% de enganche a 25 años</span>`;
+  document.getElementById('sf-cta').onclick = () => { simRefPropId = p.id; goScreen('screen-sim'); };
+  simFichaCambio();
+}
+function simFichaPlazo(a) { sfPlazo = a; simFichaCambio(); }
+function simFichaCambio() {
+  const p = sfProp;
+  if (!p) return;
+  const pct = parseInt(document.getElementById('sf-pct').value, 10);
+  const enganche = Math.round(p.price * pct / 100);
+  const monto = p.price - enganche;
+  const cuota = cuotaMensual(monto, sfPlazo);
+  document.getElementById('sf-eng-txt').innerHTML = `<b>${pct}%</b> · ${fmt(enganche)}`;
+  document.getElementById('sf-plazo-txt').innerHTML = `<b>${sfPlazo} años</b> · ${sfPlazo * 12} meses`;
+  document.querySelectorAll('#sf-plazos button').forEach(b => b.classList.toggle('active', +b.dataset.a === sfPlazo));
+  document.getElementById('sf-out').innerHTML = `<div><span>Enganche</span><b>${fmt(enganche)}</b></div><div><span>Monto a financiar</span><b>${fmt(monto)}</b></div><div><span>Cuota mensual</span><b>${fmt(cuota)}/mes</b></div>`;
+}
+// Gastos generales a considerar al comprar (estimaciones de referencia sobre el precio)
+function renderGastosFicha(p) {
+  const r1000 = v => Math.round(v / 1000) * 1000;
+  const credito = p.price * (1 - CARD_ENGANCHE_PCT);
+  const filas = [
+    ['Avalúo', 'Lo realiza un perito valuador autorizado', Math.max(3500, Math.round(p.price * 0.0015 / 100) * 100)],
+    ['Gastos notariales y escrituración', 'Honorarios de la notaría y trámites de la escritura', r1000(p.price * 0.015)],
+    ['Impuesto sobre adquisición de inmuebles (ISAI)', 'Se paga una vez, según el estado', r1000(p.price * 0.03)],
+    ['Registro Público de la Propiedad', 'Inscripción de la escritura a tu nombre', r1000(p.price * 0.003)],
+    ['Comisión por apertura de crédito', 'Cobro del banco sobre el monto financiado', r1000(credito * 0.01)],
+  ];
+  const total = filas.reduce((s, f) => s + f[2], 0);
+  document.getElementById('fx-gastos').innerHTML = filas.map(([n, d, v]) =>
+    `<div class="fx-gasto"><div class="fx-gasto-n">${n}<small>${d}</small></div><div class="fx-gasto-v">${fmt(v)}</div></div>`).join('')
+    + `<div class="fx-gasto total"><div class="fx-gasto-n">Total estimado<small>Aproximadamente ${(total / p.price * 100).toFixed(1)}% del precio</small></div><div class="fx-gasto-v">${fmt(total)}</div></div>`;
+}
+
 function fxToggleDesc() {
   const d = document.getElementById('fx-desc');
   const abierta = d.classList.toggle('abierta');
@@ -8234,6 +8344,9 @@ function openPropDetail(id){
     ['ti-building-community', mant ? `${fmt(mant)}/mes de mantenimiento` : 'Sin cuota de mantenimiento'],
   ];
   document.getElementById('fx-facts').innerHTML = facts.map(([ic, t]) => `<div class="fx-fact"><i class="ti ${ic}"></i><span>${t}</span></div>`).join('');
+
+  renderSimFicha(p);
+  renderGastosFicha(p);
 
   // Lo especial: etiquetas destacadas + descripción
   const especiales = [...(p.tags || []), ...(p.amenities || []).slice(0, 3)];
