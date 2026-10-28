@@ -502,6 +502,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .fx-ctl-head span{color:var(--text-secondary)}
 .fx-ctl-head span b{color:var(--text-primary)}
 #sf-pct{width:100%;accent-color:var(--text-primary);cursor:pointer}
+.sim-field input.sim-range{-webkit-appearance:auto;appearance:auto;width:100%;padding:0;border:none;background:transparent;height:auto;box-shadow:none;accent-color:var(--text-primary);cursor:pointer;margin-top:8px}
 .fx-range-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:2px}
 .fx-plazos{display:flex;gap:8px;flex-wrap:wrap}
 .fx-plazos button{flex:1;min-width:0;white-space:nowrap;padding:9px 6px;border:0.5px solid var(--border-strong);border-radius:8px;background:var(--surface-2);font-family:var(--font-sans);font-size:13px;font-weight:500;color:var(--text-primary);cursor:pointer}
@@ -2134,7 +2135,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <p class="bajada">Conoce el monto que puedes pedir antes de empezar a buscar. Así exploras propiedades dentro de un rango real y avanzas con más seguridad.</p>
             <ol class="duo-steps">
               <li><span class="duo-step-n">1</span><span>Cargas tus ingresos, el enganche y el plazo.</span></li>
-              <li><span class="duo-step-n">2</span><span>Calculas en un minuto hasta cuánto puedes considerar.</span></li>
+              <li><span class="duo-step-n">2</span><span>Calculas en un minuto hasta cuánto puedes considerar, tu pago mínimo y los gastos a tener en cuenta.</span></li>
               <li><span class="duo-step-n">3</span><span>Exploras propiedades dentro de tu rango y hablas con un asesor.</span></li>
             </ol>
             <button class="btn-primary" style="width:auto;padding:14px 32px;margin-top:8px;display:inline-flex;align-items:center;justify-content:center;gap:8px" onclick="navTo('screen-sim','nav-sim')"><i class="ti ti-calculator"></i> Simular tu crédito</button>
@@ -2513,6 +2514,18 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
                 <button class="plazo-btn" onclick="selectPlazo(this,25)">25 años</button>
               </div>
             </div>
+            <!-- Barra de enganche: con una propiedad de referencia mueve el enganche del mínimo
+                 necesario hasta 80% del precio; en la simulación general acompaña al campo de
+                 enganche de arriba. -->
+            <div class="sim-field" id="sim-field-eng-range" style="display:none">
+              <label>¿Cuánto enganche pondrías? <span id="sim-eng-range-txt" style="font-weight:400;color:var(--text-secondary)"></span></label>
+              <input type="range" id="sim-eng-range" class="sim-range" min="20" max="80" step="1" value="20" oninput="simEngRango(this.value)">
+              <div class="fx-range-ends"><span id="sim-eng-range-min"></span><span>80%</span></div>
+            </div>
+            <div class="sim-field" id="sim-field-eng-gen" style="display:none">
+              <input type="range" id="sim-eng-gen" class="sim-range" min="0" max="5000000" step="10000" value="0" oninput="simEngGeneral(this.value)">
+              <div class="fx-range-ends"><span>MXN 0</span><span id="sim-eng-gen-max"></span></div>
+            </div>
             <div class="sim-field">
               <div class="toggle-row" style="padding:2px 0;border-bottom:none">
                 <div>
@@ -2538,6 +2551,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
               <div class="sim-result-label" id="res-prop-label">Podés considerar propiedades de hasta</div>
               <div class="sim-result-amount" id="res-prop">MXN 0</div>
               <div class="sim-result-sub" id="res-sub">Tu cuota mensual estimada sería de <strong id="res-cuota-inline">MXN 0</strong></div>
+              <div class="sim-result-sub" id="res-min" style="margin-top:4px"></div>
             </div>
             <div class="sim-divider"></div>
             <div class="sim-stats">
@@ -2571,6 +2585,12 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div class="comparison-box">
             <div class="comparison-box-label">Comparación de plazos</div>
             <div id="comparison-table"></div>
+          </div>
+
+          <div class="comparison-box">
+            <div class="comparison-box-label">Gastos generales a considerar</div>
+            <div id="sim-gastos-nota" style="font-size:12px;color:var(--text-muted);margin-bottom:6px"></div>
+            <div id="sim-gastos"></div>
           </div>
 
           <div class="disclaimer">Esta simulación se basa en los datos que declarás. No es una pre-aprobación bancaria ni garantiza que BBVA apruebe tu solicitud.</div>
@@ -3339,6 +3359,7 @@ function initSimScreen() {
     }
   }
   if (engancheField) engancheField.style.display = p ? 'none' : '';
+  simEngPct = null;
   simular();
 }
 
@@ -3837,6 +3858,13 @@ function renderSims() {
       ? `<button class="contact-done-badge" onclick="verContactoWA('${contactoHipo.id}')"><i class="ti ti-circle-check" style="font-size:13px"></i> Asesor hipotecario contactado</button>`
       : '';
 
+    // Pago mínimo y gastos a considerar de esta simulación: sobre el precio de la propiedad
+    // vinculada, o sobre el tope de la simulación si no hay ninguna.
+    const refP = s.refProp ? PROPS.find(x => x.id === s.refProp) : null;
+    const precioBase = refP ? refP.price : s.propMax;
+    const prestamo = Math.max(0, precioBase - s.enganche);
+    const pagoMin = cuotaMensual(prestamo, 25, s.tasaAnual || TASA_ANUAL_PUBLICA);
+    const gastos = gastosEstimados(precioBase, prestamo);
     return `<div class="sim-history-card" style="margin-bottom:16px">
       <div style="padding:14px 16px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start">
         <div>
@@ -3852,6 +3880,16 @@ function renderSims() {
         <span style="font-size:11px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--text-secondary)">Ingreso ${fmt(s.ingreso)}</span>
         <span style="font-size:11px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--text-secondary)">Enganche ${fmt(s.enganche)}</span>
         ${s.clienteBBVA ? `<span style="font-size:11px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--text-secondary)"><i class="ti ti-building-bank" style="font-size:11px"></i> Cliente BBVA · tasa preferencial</span>` : ''}
+      </div>
+      <div style="padding:12px 16px;border-bottom:0.5px solid var(--border)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="background:var(--surface-1);border-radius:10px;padding:10px 12px"><div style="font-size:11px;color:var(--text-muted)">Pago mínimo</div><div style="font-size:14px;font-weight:700;color:var(--text-primary)">${fmt(pagoMin)}/mes</div><div style="font-size:11px;color:var(--text-muted)">a 25 años</div></div>
+          <div style="background:var(--surface-1);border-radius:10px;padding:10px 12px"><div style="font-size:11px;color:var(--text-muted)">Gastos a considerar</div><div style="font-size:14px;font-weight:700;color:var(--text-primary)">${fmt(gastos.total)}</div><div style="font-size:11px;color:var(--text-muted)">≈ ${gastos.pct.toFixed(1)}% del precio</div></div>
+        </div>
+        <details class="sim-gastos-det" style="margin-top:8px">
+          <summary style="font-size:12px;font-weight:600;color:var(--text-secondary);cursor:pointer;padding:4px 0">Ver detalle de gastos generales</summary>
+          <div style="margin-top:4px">${gastosHTML(precioBase, prestamo)}</div>
+        </details>
       </div>
       <div style="padding:12px 16px">
         ${refPropHTML}
@@ -7049,6 +7087,9 @@ function toggleClienteBBVA(el) {
   simular();
 }
 
+let simEngPct = null;   // % de enganche elegido con la barra (null = el necesario)
+function simEngRango(v) { simEngPct = parseInt(v, 10); simular(); }
+function simEngGeneral(v) { document.getElementById('enganche-input').value = v; simular(); }
 function fmt(v) { return 'MXN ' + Math.round(v).toLocaleString('es-MX'); }
 
 function simular() {
@@ -7080,9 +7121,12 @@ function simular() {
   // (precio − enganche), no las del tope de crédito del ingreso.
   let propMax, engancheFinal, engancheYaAlcanza = false, creditoCalc = credito;
   const labelEl = document.getElementById('res-prop-label');
+  const rangoRef = document.getElementById('sim-field-eng-range');
+  const rangoGen = document.getElementById('sim-field-eng-gen');
   if (refProp) {
     const engMin = Math.round(refProp.price * CARD_ENGANCHE_PCT);
-    engancheFinal = Math.max(engMin, Math.round(refProp.price - credito));
+    const requerido = Math.max(engMin, Math.round(refProp.price - credito));
+    engancheFinal = simEngPct != null ? Math.max(requerido, Math.round(refProp.price * simEngPct / 100)) : requerido;
     creditoCalc = refProp.price - engancheFinal;
     cuotaReal = creditoCalc * r / (1 - Math.pow(1 + r, -n));
     pct = Math.round(cuotaReal / ingreso * 100);
@@ -7090,11 +7134,27 @@ function simular() {
     engancheYaAlcanza = refProp.price - credito <= engMin; // el ingreso alcanza: solo se pide el mínimo
     if (labelEl) labelEl.textContent = 'Enganche que necesitás para esta propiedad';
     document.getElementById('res-prop').textContent = fmt(engancheFinal);
+    // barra de enganche: del mínimo necesario a 80% del precio
+    const pctMin = Math.min(100, Math.ceil(requerido / refProp.price * 100));
+    const rng = document.getElementById('sim-eng-range');
+    rng.min = pctMin; rng.max = Math.max(80, pctMin);
+    rng.value = Math.round(engancheFinal / refProp.price * 100);
+    document.getElementById('sim-eng-range-txt').textContent = `${rng.value}% · ${fmt(engancheFinal)}`;
+    document.getElementById('sim-eng-range-min').textContent = `${pctMin}% (mínimo necesario)`;
+    if (rangoRef) rangoRef.style.display = '';
+    if (rangoGen) rangoGen.style.display = 'none';
   } else {
     engancheFinal = enganche;
     propMax = credito + enganche;
     if (labelEl) labelEl.textContent = 'Podés considerar propiedades de hasta';
     document.getElementById('res-prop').textContent = fmt(propMax);
+    // la barra acompaña al campo de enganche
+    const g = document.getElementById('sim-eng-gen');
+    const tope = Math.max(5000000, Math.ceil(enganche * 1.5 / 1000000) * 1000000);
+    g.max = tope; g.value = enganche;
+    document.getElementById('sim-eng-gen-max').textContent = fmt(tope);
+    if (rangoGen) rangoGen.style.display = '';
+    if (rangoRef) rangoRef.style.display = 'none';
   }
 
   simData = { ingreso, enganche: engancheFinal, plazo: selectedPlazo, propMax: Math.round(propMax), cuotaReal: Math.round(cuotaReal), pct, clienteBBVA: esClienteBBVA, tasaAnual: tasaAplicada };
@@ -7124,9 +7184,19 @@ function simular() {
     const isCur = p === selectedPlazo;
     const row = document.createElement('div');
     row.className = 'compare-row';
-    row.innerHTML = `<span class="compare-plazo">${p} años${isCur ? ' <span style="font-size:10px;color:var(--text-muted)">(elegido)</span>' : ''}</span><span class="compare-cuota${isCur ? '' : ' alt'}">${fmt(c)}/mes</span>`;
+    row.innerHTML = `<span class="compare-plazo">${p} años${isCur ? ' <span style="font-size:10px;color:var(--text-muted)">(elegido)</span>' : ''}${p === 25 ? ' <span style="font-size:10px;color:var(--text-muted)">(pago mínimo)</span>' : ''}</span><span class="compare-cuota${isCur ? '' : ' alt'}">${fmt(c)}/mes</span>`;
     table.appendChild(row);
   });
+
+  // Pago mínimo: la cuota más baja posible con este enganche, al plazo más largo (25 años)
+  const precioBase = refProp ? refProp.price : propMax;
+  const prestamo = refProp ? creditoCalc : credito;
+  const resMin = document.getElementById('res-min');
+  if (resMin) resMin.innerHTML = `Pago mínimo: <strong>${fmt(cuotaMensual(prestamo, 25, tasaAplicada))}/mes</strong> a 25 años`;
+  const gNota = document.getElementById('sim-gastos-nota');
+  if (gNota) gNota.textContent = refProp ? 'Estimación para esta propiedad.' : `Estimación para una propiedad de hasta ${fmt(propMax)}.`;
+  const gBox = document.getElementById('sim-gastos');
+  if (gBox) gBox.innerHTML = gastosHTML(precioBase, prestamo);
 
   const perfilEl = document.getElementById('perfil-resumen');
   const tasaTexto = `tasa ${(tasaAplicada * 100).toFixed(1)}% anual${esClienteBBVA ? ' (preferencial cliente BBVA)' : ' (pública)'}`;
@@ -8226,8 +8296,8 @@ document.addEventListener('keydown', e => {
 // Pago mínimo = enganche mínimo (CARD_ENGANCHE_PCT) al plazo más largo (25 años): la cuota más
 // baja posible para esta propiedad. La barra mueve el enganche entre el mínimo y 80%.
 let sfProp = null, sfPlazo = CARD_PLAZO_ANIOS;
-function cuotaMensual(monto, anios) {
-  const r = TASA_ANUAL_PUBLICA / 12, n = anios * 12;
+function cuotaMensual(monto, anios, tasa = TASA_ANUAL_PUBLICA) {
+  const r = tasa / 12, n = anios * 12;
   return Math.round(monto * r / (1 - Math.pow(1 + r, -n)));
 }
 function renderSimFicha(p) {
@@ -8256,21 +8326,30 @@ function simFichaCambio() {
   document.querySelectorAll('#sf-plazos button').forEach(b => b.classList.toggle('active', +b.dataset.a === sfPlazo));
   document.getElementById('sf-out').innerHTML = `<div><span>Enganche</span><b>${fmt(enganche)}</b></div><div><span>Monto a financiar</span><b>${fmt(monto)}</b></div><div><span>Cuota mensual</span><b>${fmt(cuota)}/mes</b></div>`;
 }
-// Gastos generales a considerar al comprar (estimaciones de referencia sobre el precio)
-function renderGastosFicha(p) {
+// Gastos generales a considerar al comprar (estimaciones de referencia sobre el precio). Se usan
+// en la ficha, en el resultado del simulador y en las simulaciones guardadas, para que todos
+// muestren lo mismo.
+function gastosEstimados(price, financiado) {
   const r1000 = v => Math.round(v / 1000) * 1000;
-  const credito = p.price * (1 - CARD_ENGANCHE_PCT);
+  const credito = financiado != null ? financiado : price * (1 - CARD_ENGANCHE_PCT);
   const filas = [
-    ['Avalúo', 'Lo realiza un perito valuador autorizado', Math.max(3500, Math.round(p.price * 0.0015 / 100) * 100)],
-    ['Gastos notariales y escrituración', 'Honorarios de la notaría y trámites de la escritura', r1000(p.price * 0.015)],
-    ['Impuesto sobre adquisición de inmuebles (ISAI)', 'Se paga una vez, según el estado', r1000(p.price * 0.03)],
-    ['Registro Público de la Propiedad', 'Inscripción de la escritura a tu nombre', r1000(p.price * 0.003)],
+    ['Avalúo', 'Lo realiza un perito valuador autorizado', Math.max(3500, Math.round(price * 0.0015 / 100) * 100)],
+    ['Gastos notariales y escrituración', 'Honorarios de la notaría y trámites de la escritura', r1000(price * 0.015)],
+    ['Impuesto sobre adquisición de inmuebles (ISAI)', 'Se paga una vez, según el estado', r1000(price * 0.03)],
+    ['Registro Público de la Propiedad', 'Inscripción de la escritura a tu nombre', r1000(price * 0.003)],
     ['Comisión por apertura de crédito', 'Cobro del banco sobre el monto financiado', r1000(credito * 0.01)],
   ];
-  const total = filas.reduce((s, f) => s + f[2], 0);
-  document.getElementById('fx-gastos').innerHTML = filas.map(([n, d, v]) =>
+  const total = filas.reduce((t, f) => t + f[2], 0);
+  return { filas, total, pct: total / price * 100 };
+}
+function gastosHTML(price, financiado) {
+  const g = gastosEstimados(price, financiado);
+  return g.filas.map(([n, d, v]) =>
     `<div class="fx-gasto"><div class="fx-gasto-n">${n}<small>${d}</small></div><div class="fx-gasto-v">${fmt(v)}</div></div>`).join('')
-    + `<div class="fx-gasto total"><div class="fx-gasto-n">Total estimado<small>Aproximadamente ${(total / p.price * 100).toFixed(1)}% del precio</small></div><div class="fx-gasto-v">${fmt(total)}</div></div>`;
+    + `<div class="fx-gasto total"><div class="fx-gasto-n">Total estimado<small>Aproximadamente ${g.pct.toFixed(1)}% del precio</small></div><div class="fx-gasto-v">${fmt(g.total)}</div></div>`;
+}
+function renderGastosFicha(p) {
+  document.getElementById('fx-gastos').innerHTML = gastosHTML(p.price);
 }
 
 function fxToggleDesc() {
