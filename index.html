@@ -1368,9 +1368,6 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
       <button class="drawer-close" onclick="closeDrawer()"><i class="ti ti-x" style="font-size:18px"></i></button>
     </div>
-    <div class="drawer-section" id="drawer-hazte" style="padding:14px 20px 6px">
-      <button class="btn-hazte-cliente" style="width:100%;padding:13px;font-size:14px" onclick="closeDrawer();goPlaceholder('Hazte cliente BBVA')">Hazte cliente</button>
-    </div>
     <div class="drawer-section">
       <button class="drawer-item" onclick="requireAuth(()=>goScreen('screen-perfil'))"><i class="ti ti-user"></i> Perfil</button>
       <button class="drawer-item" onclick="requireAuth(()=>{renderFavs();goScreen('screen-favoritos')})"><i class="ti ti-heart"></i> Favoritos</button>
@@ -5388,8 +5385,6 @@ function updateHeaderAvatar() {
   const authDt = document.getElementById('dt-user-auth');
   const mobBtn = document.getElementById('mob-ingresar-btn');
   const mobAv  = document.getElementById('mob-header-avatar');
-  const hazte = document.getElementById('drawer-hazte');
-  if (hazte) hazte.style.display = (isLoggedIn && currentUser) ? 'none' : '';
   if (isLoggedIn && currentUser) {
     if (anonDt) anonDt.style.display = 'none';
     if (authDt) authDt.style.display = window.innerWidth >= 900 ? 'flex' : 'none';
