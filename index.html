@@ -492,6 +492,21 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 .fx-prop-rows dt{color:var(--text-secondary);margin:0}
 .fx-prop-rows dd{margin:0;font-weight:700;color:var(--text-primary);text-align:right}
 .fx-prop-note{font-size:11px;color:var(--text-muted);line-height:1.5;margin-top:6px}
+.vend-intro{font-size:14px;color:var(--text-secondary);line-height:1.5;margin:0 0 16px}
+.vend-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#sheet-vender .onb-field input,#sheet-vender .onb-field select{border:1px solid var(--border-strong);border-radius:8px;padding:12px 14px;font-size:15px;font-family:var(--font-sans);color:var(--text-primary);background:var(--surface-0);outline:none;width:100%;box-sizing:border-box}
+#sheet-vender .onb-field input:focus,#sheet-vender .onb-field select:focus{border-color:var(--text-primary);background:var(--surface-2)}
+#sheet-vender .onb-field .input-error{border-color:var(--border-danger);background:var(--bg-danger)}
+#sheet-vender .vend-fija{background:var(--surface-1);color:var(--text-secondary);cursor:not-allowed}
+.vend-pred{position:relative}
+.vend-sugg{display:none;position:absolute;left:0;right:0;top:100%;z-index:5;max-height:200px;overflow-y:auto;background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);margin-top:4px}
+.vend-sugg.open{display:block}
+.vend-sugg button{display:block;width:100%;text-align:left;padding:10px 14px;border:none;background:none;font-family:var(--font-sans);font-size:14px;color:var(--text-primary);cursor:pointer}
+.vend-sugg button:hover{background:var(--surface-1)}
+.vend-ok{padding:8px 4px;color:var(--text-primary);line-height:1.6;font-size:15px}
+.vend-ok-t{font-size:17px;font-weight:700;margin-bottom:12px}
+.vend-ok p{margin:0 0 12px}
+@media(max-width:420px){.vend-row{grid-template-columns:1fr}}
 .fx-acceso{display:flex;align-items:center;gap:14px;width:100%;padding:16px;border:0.5px solid var(--border);border-radius:14px;background:var(--surface-2);font-family:var(--font-sans);cursor:pointer;text-align:left}
 .fx-acceso:hover{border-color:var(--border-strong)}
 .fx-acceso-ic{flex-shrink:0;width:40px;height:40px;border-radius:10px;background:var(--surface-1);display:flex;align-items:center;justify-content:center}
@@ -1367,6 +1382,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <button class="drawer-item" onclick="closeDrawer();renderPreciosDirectorio();goScreen('screen-precios')"><i class="ti ti-chart-bar"></i> Precios por zona</button>
     </div>
     <div class="drawer-section" style="border-top:0.5px solid var(--border)">
+      <button class="drawer-item" onclick="closeDrawer();abrirVender()"><i class="ti ti-tag"></i> Vender</button>
       <button class="drawer-item" onclick="closeDrawer();navTo('screen-sim','nav-sim')"><i class="ti ti-calculator"></i> Simula tu crédito</button>
       <button class="drawer-item" onclick="closeDrawer();goScreen('screen-configuracion')"><i class="ti ti-settings"></i> Configuración</button>
     </div>
@@ -1961,6 +1977,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <button onclick="document.getElementById('menu-contactar-asesor').classList.remove('open');contactarConAsesor(contactarInmobiliarioGeneral)">Contactar ejecutivo inmobiliario</button>
         </div>
       </div>
+      <button class="dt-nav-btn" id="dtnav-vender" onclick="abrirVender()">Vender</button>
       <button class="dt-nav-btn" id="dtnav-ayuda" onclick="goScreen('screen-faq')">Ayuda</button>
     </nav>
     <!-- desktop user actions: hidden on mobile -->
@@ -2968,6 +2985,53 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   </div>
   <div class="sheet-footer">
     <button class="btn-primary" id="gastos-cta" style="flex:1;padding:13px">Simular con mi ingreso</button>
+  </div>
+</div>
+
+<!-- Vender: formulario para dejar los datos de una propiedad en venta (side sheet en desktop, bottom sheet en mobile) -->
+<div class="bottom-sheet" id="sheet-vender">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Vender mi propiedad</span>
+    <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
+  </div>
+  <div class="sheet-body" id="vender-form-wrap">
+    <p class="vend-intro">Déjanos los datos de tu propiedad y un ejecutivo de la zona se pondrá en contacto contigo.</p>
+    <form id="vender-form" onsubmit="enviarVender(event)" novalidate>
+      <div class="vend-row">
+        <div class="onb-field"><label for="v-nombre">Nombre</label><input type="text" id="v-nombre" autocomplete="given-name" oninput="vendLimpiar(this)"></div>
+        <div class="onb-field"><label for="v-apellido">Apellido</label><input type="text" id="v-apellido" autocomplete="family-name" oninput="vendLimpiar(this)"></div>
+      </div>
+      <div class="onb-field"><label for="v-tel">Teléfono</label><input type="tel" id="v-tel" placeholder="55 1234 5678" autocomplete="tel" inputmode="tel" oninput="vendLimpiar(this)"></div>
+      <div class="onb-field"><label for="v-email">Correo electrónico</label><input type="email" id="v-email" placeholder="nombre@correo.com" autocomplete="email" oninput="vendLimpiar(this)"></div>
+      <div class="vend-row">
+        <div class="onb-field"><label for="v-op">Operación</label><input type="text" id="v-op" value="Venta" readonly tabindex="-1" class="vend-fija"></div>
+        <div class="onb-field"><label for="v-tipo">Tipo de propiedad</label>
+          <select id="v-tipo" onchange="vendLimpiar(this)">
+            <option value="">Selecciona</option>
+            <option value="Departamento">Departamento</option>
+            <option value="Casa">Casa</option>
+          </select>
+        </div>
+      </div>
+      <div class="onb-field vend-pred"><label for="v-estado">Estado de la República</label>
+        <input type="text" id="v-estado" autocomplete="off" placeholder="Empieza a escribir" oninput="vendEstadoSugerir(this.value);vendLimpiar(this)" onfocus="vendEstadoSugerir(this.value)" onblur="setTimeout(vendEstadoCerrar,150)">
+        <div class="vend-sugg" id="v-estado-sugg"></div>
+      </div>
+      <div class="onb-field"><label for="v-ciudad">Ciudad / Delegación</label><input type="text" id="v-ciudad" autocomplete="address-level2" oninput="vendLimpiar(this)"></div>
+      <div class="onb-field"><label for="v-colonia">Colonia</label><input type="text" id="v-colonia" autocomplete="off" oninput="vendLimpiar(this)"></div>
+    </form>
+  </div>
+  <div class="sheet-body" id="vender-ok" style="display:none">
+    <div class="vend-ok">
+      <div class="vend-ok-t">✨ Gracias por confiar en BBVA ✨</div>
+      <p>Tu propiedad está siendo canalizada con uno de nuestros mejores ejecutivos en la zona de tu propiedad: colaboramos con profesionales de distintas inmobiliarias aliadas. Próximamente te contactarán.</p>
+      <p>Estás en buenas manos: trabajamos juntos para ayudarte a vender de forma segura, rápida y con la mejor estrategia para ti 🏠</p>
+      <p>¡Saludos!</p>
+    </div>
+  </div>
+  <div class="sheet-footer" id="vender-footer">
+    <button class="btn-primary" style="flex:1;padding:13px" onclick="document.getElementById('vender-form').requestSubmit()">Enviar</button>
   </div>
 </div>
 
@@ -8430,6 +8494,77 @@ function abrirGastosFicha() {
   document.getElementById('gastos-cta').onclick = () => { closeSheet(); simRefPropId = p.id; goScreen('screen-sim'); };
   openSheet('sheet-gastos');
 }
+// ── Vender: formulario de contacto para quienes quieren vender su propiedad ──
+const ESTADOS_MX = ['Aguascalientes','Baja California','Baja California Sur','Campeche','Chiapas','Chihuahua','Ciudad de México','Coahuila','Colima','Durango','Estado de México','Guanajuato','Guerrero','Hidalgo','Jalisco','Michoacán','Morelos','Nayarit','Nuevo León','Oaxaca','Puebla','Querétaro','Quintana Roo','San Luis Potosí','Sinaloa','Sonora','Tabasco','Tamaulipas','Tlaxcala','Veracruz','Yucatán','Zacatecas'];
+function abrirVender() {
+  document.getElementById('vender-form').reset();
+  document.getElementById('v-op').value = 'Venta';
+  document.querySelectorAll('#vender-form .input-error').forEach(e => e.classList.remove('input-error'));
+  document.getElementById('vender-form-wrap').style.display = '';
+  document.getElementById('vender-ok').style.display = 'none';
+  document.getElementById('vender-footer').style.display = '';
+  // con sesión iniciada se precargan los datos que ya conocemos
+  if (isLoggedIn && currentUser) {
+    const partes = (currentUser.nombre || '').trim().split(/\s+/);
+    document.getElementById('v-nombre').value = partes[0] || '';
+    document.getElementById('v-apellido').value = partes.slice(1).join(' ');
+    document.getElementById('v-email').value = currentUser.email || '';
+  }
+  openSheet('sheet-vender');
+}
+function vendLimpiar(el) { el.classList.remove('input-error'); }
+function vendEstadoSugerir(q) {
+  const box = document.getElementById('v-estado-sugg');
+  const n = normTxt(q.trim());
+  const lista = ESTADOS_MX.filter(e => !n || normTxt(e).includes(n)).slice(0, 8);
+  if (!lista.length) { box.classList.remove('open'); return; }
+  box.innerHTML = lista.map(e => `<button type="button" onmousedown="event.preventDefault();vendEstadoElegir('${e}')">${e}</button>`).join('');
+  box.classList.add('open');
+}
+function vendEstadoElegir(e) {
+  const inp = document.getElementById('v-estado');
+  inp.value = e; inp.classList.remove('input-error');
+  vendEstadoCerrar();
+}
+function vendEstadoCerrar() { document.getElementById('v-estado-sugg')?.classList.remove('open'); }
+function enviarVender(ev) {
+  ev.preventDefault();
+  const v = id => document.getElementById(id);
+  const estadoOk = ESTADOS_MX.find(e => normTxt(e) === normTxt(v('v-estado').value.trim()));
+  const checks = [
+    ['v-nombre', v('v-nombre').value.trim().length >= 2],
+    ['v-apellido', v('v-apellido').value.trim().length >= 2],
+    ['v-tel', v('v-tel').value.replace(/\D/g, '').length >= 10],
+    ['v-email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('v-email').value.trim())],
+    ['v-tipo', !!v('v-tipo').value],
+    ['v-estado', !!estadoOk],
+    ['v-ciudad', v('v-ciudad').value.trim().length >= 2],
+    ['v-colonia', v('v-colonia').value.trim().length >= 2],
+  ];
+  checks.forEach(([id, ok]) => v(id).classList.toggle('input-error', !ok));
+  const fallan = checks.filter(c => !c[1]);
+  if (fallan.length) {
+    v(fallan[0][0]).focus();
+    showToast('ti-alert-circle', (fallan.length === 1 && fallan[0][0] === 'v-estado' && v('v-estado').value.trim()) ? 'Elige un estado de la lista' : 'Completa todos los campos para continuar', 'default');
+    return;
+  }
+  // demo: el contacto de venta queda guardado en el navegador
+  try {
+    const clave = 'bbva_leads_venta';
+    const lista = JSON.parse(localStorage.getItem(clave) || '[]');
+    lista.unshift({
+      fecha: new Date().toISOString(), operacion: 'Venta',
+      nombre: v('v-nombre').value.trim(), apellido: v('v-apellido').value.trim(), telefono: v('v-tel').value.trim(), correo: v('v-email').value.trim(),
+      tipo: v('v-tipo').value, estado: estadoOk, ciudad: v('v-ciudad').value.trim(), colonia: v('v-colonia').value.trim(),
+    });
+    localStorage.setItem(clave, JSON.stringify(lista));
+  } catch (e) {}
+  document.getElementById('vender-form-wrap').style.display = 'none';
+  document.getElementById('vender-footer').style.display = 'none';
+  document.getElementById('vender-ok').style.display = '';
+  document.getElementById('vender-ok').scrollTop = 0;
+}
+
 function fxToggleDesc() {
   const d = document.getElementById('fx-desc');
   const abierta = d.classList.toggle('abierta');
