@@ -1982,15 +1982,15 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
     </nav>
     <!-- desktop user actions: hidden on mobile -->
     <div class="dt-user" id="dt-user-anon">
-      <button class="dt-user-link" onclick="goScreen('screen-login')">Ingresa</button>
-      <button class="dt-user-btn btn-hazte-cliente" onclick="goPlaceholder('Hazte cliente BBVA')">Hazte cliente</button>
+      <button class="dt-user-link" onclick="goScreen('screen-login')">Ingresar</button>
+      <button class="dt-user-btn btn-hazte-cliente" onclick="goScreen('screen-registro')">Registrarte</button>
     </div>
     <div class="dt-user desktop-only" id="dt-user-auth" style="display:none;align-items:center;gap:10px">
       <span id="dt-user-nombre" style="font-size:13px;font-weight:500;color:var(--text-primary)"></span>
       <div class="app-header-avatar" id="dt-header-avatar" onclick="openDrawer()" style="cursor:pointer"></div>
     </div>
     <!-- mobile: auth button -->
-    <button class="mobile-only" id="mob-ingresar-btn" style="align-items:center;gap:6px;font-size:13px;font-weight:600;border:1.5px solid var(--text-primary);border-radius:8px;padding:7px 14px;background:none;color:var(--text-primary);cursor:pointer;-webkit-tap-highlight-color:transparent" onclick="goScreen('screen-login')">Ingresa</button>
+    <button class="mobile-only" id="mob-ingresar-btn" style="align-items:center;gap:6px;font-size:13px;font-weight:600;border:1.5px solid var(--text-primary);border-radius:8px;padding:7px 14px;background:none;color:var(--text-primary);cursor:pointer;-webkit-tap-highlight-color:transparent" onclick="goScreen('screen-login')">Ingresar</button>
     <div class="app-header-avatar mobile-only" id="mob-header-avatar" style="display:none;cursor:pointer" onclick="openDrawer()"></div>
   </div>
 
