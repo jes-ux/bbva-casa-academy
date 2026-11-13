@@ -1765,7 +1765,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
       <div class="onb-content" style="justify-content:center">
         <div class="onb-title">Tu próxima casa empieza acá</div>
-        <div class="onb-sub">Simula tu crédito, explora propiedades y conecta con un asesor</div>
+        <div class="onb-sub">Simula tu crédito, explora propiedades y conecta con un ejecutivo</div>
         <button class="onb-btn" style="margin-bottom:10px" onclick="goScreen('screen-registro')">Crear cuenta</button>
         <button class="onb-btn onb-btn-outline" onclick="goScreen('screen-login')">Ya tengo cuenta</button>
         <div class="onb-divider" style="margin-top:20px"><span>o continuá con</span></div>
@@ -1955,10 +1955,10 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       <!-- Contactar asesor: con sesión abre WhatsApp, sin sesión ofrece iniciar sesión o
            contactar como invitado (ver contactarConAsesor). -->
       <div class="dt-chip-wrap" style="position:relative">
-        <button class="dt-nav-btn" id="dtnav-asesor" onclick="toggleChipMenu('menu-contactar-asesor')">Contactar asesor <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
+        <button class="dt-nav-btn" id="dtnav-asesor" onclick="toggleChipMenu('menu-contactar-asesor')">Contactar ejecutivo <i class="ti ti-chevron-down" style="font-size:11px"></i></button>
         <div class="dt-chip-menu" id="menu-contactar-asesor">
-          <button onclick="document.getElementById('menu-contactar-asesor').classList.remove('open');contactarConAsesor(contactarHipotecarioGeneral)">Contactar asesor hipotecario</button>
-          <button onclick="document.getElementById('menu-contactar-asesor').classList.remove('open');contactarConAsesor(contactarInmobiliarioGeneral)">Contactar asesor inmobiliario</button>
+          <button onclick="document.getElementById('menu-contactar-asesor').classList.remove('open');contactarConAsesor(contactarHipotecarioGeneral)">Contactar ejecutivo hipotecario</button>
+          <button onclick="document.getElementById('menu-contactar-asesor').classList.remove('open');contactarConAsesor(contactarInmobiliarioGeneral)">Contactar ejecutivo inmobiliario</button>
         </div>
       </div>
       <button class="dt-nav-btn" id="dtnav-ayuda" onclick="goScreen('screen-faq')">Ayuda</button>
@@ -2045,7 +2045,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
       </div>
     </div>
     <!-- Antes: 5 "momentos" que mezclaban informarte con acciones de la app (simular,
-         ver propiedades, contactar asesores) — quedaron desconectados de Academia BBVA
+         ver propiedades, contactar ejecutivos) — quedaron desconectados de Academia BBVA
          apenas dejaron de pasar por su tutorial. Ahora las 5 tarjetas son directamente
          los 5 módulos de Academia BBVA (mismo contenido/orden que MODULES/ACH_DATA),
          cada una llevando a SU módulo vía goMoment(n) → goToModuleFlow(n). -->
@@ -2147,7 +2147,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
             <ol class="duo-steps">
               <li><span class="duo-step-n">1</span><span>Cargas tus ingresos, el enganche y el plazo.</span></li>
               <li><span class="duo-step-n">2</span><span>Calculas en un minuto hasta cuánto puedes considerar, tu pago mínimo y los gastos a tener en cuenta.</span></li>
-              <li><span class="duo-step-n">3</span><span>Exploras propiedades dentro de tu rango y hablas con un asesor.</span></li>
+              <li><span class="duo-step-n">3</span><span>Exploras propiedades dentro de tu rango y hablas con un ejecutivo.</span></li>
             </ol>
             <button class="btn-primary" style="width:auto;padding:14px 32px;margin-top:8px;display:inline-flex;align-items:center;justify-content:center;gap:8px" onclick="navTo('screen-sim','nav-sim')"><i class="ti ti-calculator"></i> Simular tu crédito</button>
           </section>
@@ -2230,7 +2230,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div class="faq-home-intro">
             <div class="moment-label">Preguntas frecuentes</div>
             <h2 class="faq-home-title">¿Qué es BBVA Inmobiliaria?</h2>
-            <p class="faq-home-desc">BBVA Inmobiliaria es la plataforma de BBVA México que te acompaña de punta a punta hacia tu próxima propiedad: aprendé cómo funciona un crédito hipotecario en Academia BBVA, simulá tu capacidad de pago, explorá propiedades verificadas en todo el país y conectá con asesores inmobiliarios e hipotecarios reales — todo en un mismo lugar.</p>
+            <p class="faq-home-desc">BBVA Inmobiliaria es la plataforma de BBVA México que te acompaña de punta a punta hacia tu próxima propiedad: aprendé cómo funciona un crédito hipotecario en Academia BBVA, simulá tu capacidad de pago, explorá propiedades verificadas en todo el país y conectá con ejecutivos inmobiliarios e hipotecarios reales — todo en un mismo lugar.</p>
           </div>
           <div class="home-faq-list" id="home-faq-list"><!-- renderHomeFaq() --></div>
         </div>
@@ -2612,12 +2612,14 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
 
           <!-- CTA desktop: dentro de la columna derecha -->
           <button class="btn-primary dt-sim-cta-btn" onclick="requireAuth(completeModule2)">Guardar simulación</button>
+          <button class="btn-outline" style="width:100%;margin-top:0" onclick="contactarEjecutivoDesdeSim()"><i class="ti ti-headset"></i> Contactar ejecutivo hipotecario</button>
         </div>
       </div>
     </div>
     <!-- CTA mobile: fixed al fondo -->
     <div class="cta-area mobile-only">
       <button class="btn-primary" onclick="requireAuth(completeModule2)">Guardar simulación</button>
+      <button class="btn-outline" onclick="contactarEjecutivoDesdeSim()"><i class="ti ti-headset"></i> Contactar ejecutivo hipotecario</button>
     </div>
   </div>
 
@@ -2794,7 +2796,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div id="detail-contact-badge-m" style="margin-top:10px"></div>
           <button class="detail-cta-btn" style="margin-top:10px" onclick="simRefPropId=currentPropId;goScreen('screen-sim')"><i class="ti ti-calculator"></i> Simular crédito</button>
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="contactarConAsesor(()=>contactarInmobiliario(currentPropId))">
-            <i class="ti ti-headset"></i> Contactar asesor inmobiliario
+            <i class="ti ti-headset"></i> Contactar ejecutivo inmobiliario
           </button>
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="contactarConAsesor(()=>abrirAgendaVisita(currentPropId))">
             <i class="ti ti-calendar-event"></i> Agendar una visita
@@ -2896,7 +2898,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
           <div id="detail-contact-badge-dt" style="margin-top:10px"></div>
           <button class="detail-cta-btn" style="margin-top:10px" onclick="simRefPropId=currentPropId;goScreen('screen-sim')"><i class="ti ti-calculator"></i> Simular crédito</button>
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="contactarConAsesor(()=>contactarInmobiliario(currentPropId))">
-            <i class="ti ti-headset"></i> Contactar asesor inmobiliario
+            <i class="ti ti-headset"></i> Contactar ejecutivo inmobiliario
           </button>
           <button class="btn-outline" style="margin-top:10px;width:100%" onclick="contactarConAsesor(()=>abrirAgendaVisita(currentPropId))">
             <i class="ti ti-calendar-event"></i> Agendar una visita
@@ -2931,7 +2933,7 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   <div class="sheet-body" style="padding:8px 0 16px" id="sheet-link-sim-body"></div>
 </div>
 
-<!-- "Redirigiendo a WhatsApp" — simula la salida de la app hacia el chat del asesor -->
+<!-- "Redirigiendo a WhatsApp" — simula la salida de la app hacia el chat del ejecutivo -->
 <div class="bottom-sheet" id="sheet-whatsapp">
   <div class="sheet-handle"></div>
   <div class="sheet-body" style="padding:36px 24px 32px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
@@ -2995,11 +2997,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   </div>
 </div>
 
-<!-- Contacto con asesor sin sesión: iniciar sesión o contactar como invitado -->
+<!-- Contacto con ejecutivo sin sesión: iniciar sesión o contactar como invitado -->
 <div class="bottom-sheet" id="sheet-contacto-invitado">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
-    <span class="sheet-title">Contactar al asesor</span>
+    <span class="sheet-title">Contactar al ejecutivo</span>
     <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
   </div>
   <div class="sheet-body" style="padding:20px">
@@ -3306,11 +3308,11 @@ html,body{height:100%;background:var(--surface-0);font-family:var(--font-sans)}
   </div>
 </div>
 
-<!-- SHEET: Contactar asesor -->
+<!-- SHEET: Contactar ejecutivo -->
 <div class="bottom-sheet" id="sheet-contacto">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
-    <span class="sheet-title">Contactar asesor</span>
+    <span class="sheet-title">Contactar ejecutivo</span>
     <button class="sheet-close" onclick="closeSheet()"><i class="ti ti-x" style="font-size:14px"></i></button>
   </div>
   <div class="sheet-body">
@@ -3541,6 +3543,18 @@ function saveSteps() {
   const key = stepsKey();
   if (key) localStorage.setItem(key, JSON.stringify(STEPS_DONE));
 }
+// "Asesor" pasó a llamarse "Ejecutivo" en toda la plataforma: los contactos que quedaron
+// guardados con el texto anterior se actualizan al cargarlos.
+function normEjecutivo(t) {
+  return typeof t === 'string'
+    ? t.replace(/\bAsesora(s?)\b/g, 'Ejecutiva$1').replace(/\bAsesor(es)?\b/g, 'Ejecutivo$1')
+       .replace(/\basesora(s?)\b/g, 'ejecutiva$1').replace(/\basesor(es)?\b/g, 'ejecutivo$1')
+    : t;
+}
+function normEjecutivoContacto(c) {
+  ['asesorNombre', 'asesorRol', 'mensaje'].forEach(k => { if (c[k]) c[k] = normEjecutivo(c[k]); });
+  return c;
+}
 function saveWaContacts() {
   const key = waKey();
   if (key) localStorage.setItem(key, JSON.stringify(WA_CONTACTS));
@@ -3593,7 +3607,7 @@ function loadUserScopedData() {
   WA_CONTACTS.length = 0;
   const waK = waKey();
   if (waK) {
-    try { (JSON.parse(localStorage.getItem(waK)) || []).forEach(c => WA_CONTACTS.push(c)); } catch {}
+    try { (JSON.parse(localStorage.getItem(waK)) || []).forEach(c => WA_CONTACTS.push(normEjecutivoContacto(c))); } catch {}
   }
 
   // Autoreparación: sim_done/contacted_prop/contacted_hipo son "la acción real ya
@@ -3881,7 +3895,7 @@ function renderSims() {
 
     const contactoHipo = WA_CONTACTS.find(c => c.simId === s.id && c.tipo === 'hipotecario');
     const hipoBadgeHTML = contactoHipo
-      ? `<button class="contact-done-badge" onclick="verContactoWA('${contactoHipo.id}')"><i class="ti ti-circle-check" style="font-size:13px"></i> Asesor hipotecario contactado</button>`
+      ? `<button class="contact-done-badge" onclick="verContactoWA('${contactoHipo.id}')"><i class="ti ti-circle-check" style="font-size:13px"></i> Ejecutivo hipotecario contactado</button>`
       : '';
 
     // Pago mínimo y gastos a considerar de esta simulación: sobre el precio de la propiedad
@@ -3923,7 +3937,7 @@ function renderSims() {
       <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px">
         ${hipoBadgeHTML}
         <button class="btn-primary" style="width:100%;font-size:14px;padding:12px" onclick="viewPropsForSim(${s.propMax})">${ctaLabel} →</button>
-        <button class="btn-secondary" style="width:100%;font-size:14px;padding:11px;display:flex;align-items:center;justify-content:center;gap:7px" onclick="contactarConAsesor(()=>contactarHipotecario(${JSON.stringify(s).replace(/"/g,'&quot;')}))"><i class="ti ti-headset" style="font-size:15px"></i> Contactar asesor hipotecario</button>
+        <button class="btn-secondary" style="width:100%;font-size:14px;padding:11px;display:flex;align-items:center;justify-content:center;gap:7px" onclick="contactarConAsesor(()=>contactarHipotecario(${JSON.stringify(s).replace(/"/g,'&quot;')}))"><i class="ti ti-headset" style="font-size:15px"></i> Contactar ejecutivo hipotecario</button>
       </div>
     </div>`;
   }).join('');
@@ -3950,7 +3964,7 @@ function shareSimulation(s) {
 
 // Pago mínimo (cuota a 25 años) y gastos generales a considerar de una simulación aplicada a un
 // precio. Lo usan los avisos de simulación de la ficha, el selector de simulaciones y el mensaje
-// al asesor hipotecario, para que en todos lados se vea lo mismo que en el simulador.
+// al ejecutivo hipotecario, para que en todos lados se vea lo mismo que en el simulador.
 function simExtra(s, precio) {
   const prestamo = Math.max(0, precio - (s.enganche || 0));
   return {
@@ -4793,16 +4807,16 @@ function updatePzSegmentResult() {
 // ES la pantalla completa y tocar una pregunta empuja screen-faq-detail (con su
 // flecha de volver de siempre) en vez de expandir nada in-place.
 const FAQ_DATA = [
-  { id:'que_es', q:'¿Qué es BBVA Inmobiliaria?', a:'BBVA Inmobiliaria es la plataforma de BBVA México que te acompaña de punta a punta hacia tu próxima propiedad: aprendé cómo funciona un crédito hipotecario en Academia BBVA, simulá tu capacidad de pago, explorá propiedades verificadas en todo el país y conectá con asesores inmobiliarios e hipotecarios reales — todo en un mismo lugar.' },
+  { id:'que_es', q:'¿Qué es BBVA Inmobiliaria?', a:'BBVA Inmobiliaria es la plataforma de BBVA México que te acompaña de punta a punta hacia tu próxima propiedad: aprendé cómo funciona un crédito hipotecario en Academia BBVA, simulá tu capacidad de pago, explorá propiedades verificadas en todo el país y conectá con ejecutivos inmobiliarios e hipotecarios reales — todo en un mismo lugar.' },
   { id:'cat', q:'¿Qué es el CAT y por qué es importante?', a:'El CAT (Costo Anual Total) resume en un solo número cuánto te cuesta realmente un crédito al año, incluyendo comisiones y seguros. Compará créditos por CAT, no solo por tasa: dos créditos con la misma tasa pueden salir muy distinto una vez que sumás todos los cargos.' },
   { id:'enganche', q:'¿Cuánto enganche necesito para comprar una propiedad?', a:'Generalmente entre el 10% y el 20% del valor de la propiedad. A mayor enganche, menor el monto que financiás y menos intereses pagás en total durante el crédito.' },
   { id:'tasas', q:'¿Qué diferencia hay entre tasa fija, variable y creciente?', a:'La tasa fija mantiene tu cuota igual durante todo el crédito. La variable empieza más baja pero puede subir con la inflación. La creciente arranca baja y sube gradualmente — ideal si esperás que tu ingreso crezca con el tiempo.' },
   { id:'capacidad', q:'¿Cómo se calcula mi capacidad de pago?', a:'Con tu ingreso mensual, tu enganche disponible y el plazo que elijas, el simulador estima cuánto podés pagar de cuota mensual y el valor máximo de propiedad al que podés acceder.' },
   { id:'simular_gratis', q:'¿Simular mi crédito me compromete a algo?', a:'No. Simular es gratis y no te compromete a nada — es solo una herramienta para conocer tu capacidad de pago antes de tomar cualquier decisión.' },
   { id:'compartir_sim', q:'¿Puedo compartir mi simulación con otra persona?', a:'Sí. Desde Simulaciones podés compartir cualquier simulación por WhatsApp o copiando el enlace, para decidir en pareja o en familia.' },
-  { id:'contacto_inmobiliario', q:'¿Cómo contacto a un asesor inmobiliario?', a:'Abrí la ficha de la propiedad que te interesa y tocá "Contactar asesor inmobiliario". Un asesor especializado en esa propiedad te responde por WhatsApp.' },
-  { id:'contacto_hipotecario', q:'¿Cómo contacto a un asesor hipotecario?', a:'Desde cualquier simulación guardada, tocá "Contactar asesor hipotecario" para resolver dudas sobre tu crédito con un especialista.' },
-  { id:'documentos', q:'¿Qué documentos necesito para solicitar un crédito hipotecario?', a:'Identificación oficial, comprobante de domicilio, comprobantes de ingresos recientes y tu historial crediticio. Un asesor hipotecario te confirma la lista completa según tu caso.' },
+  { id:'contacto_inmobiliario', q:'¿Cómo contacto a un ejecutivo inmobiliario?', a:'Abrí la ficha de la propiedad que te interesa y tocá "Contactar ejecutivo inmobiliario". Un ejecutivo especializado en esa propiedad te responde por WhatsApp.' },
+  { id:'contacto_hipotecario', q:'¿Cómo contacto a un ejecutivo hipotecario?', a:'Desde cualquier simulación guardada, tocá "Contactar ejecutivo hipotecario" para resolver dudas sobre tu crédito con un especialista.' },
+  { id:'documentos', q:'¿Qué documentos necesito para solicitar un crédito hipotecario?', a:'Identificación oficial, comprobante de domicilio, comprobantes de ingresos recientes y tu historial crediticio. Un ejecutivo hipotecario te confirma la lista completa según tu caso.' },
 ];
 let currentFaqId = FAQ_DATA[0].id;
 
@@ -5123,8 +5137,8 @@ const SCREEN_LABELS = {
   'screen-edu': 'Módulo 1: Educación financiera',
   'screen-tut-explora': '¿Cómo buscás tu propiedad ideal?',
   'screen-tut-simula': '¿Cómo simulás tu crédito?',
-  'screen-tut-contacto-inmo': '¿Cómo contactás a un asesor inmobiliario?',
-  'screen-tut-contacto-hipo': '¿Cómo contactás a un asesor hipotecario?',
+  'screen-tut-contacto-inmo': '¿Cómo contactás a un ejecutivo inmobiliario?',
+  'screen-tut-contacto-hipo': '¿Cómo contactás a un ejecutivo hipotecario?',
   'screen-faq': 'Ayuda y preguntas frecuentes',
   'screen-favoritos': 'Favoritos',
   'screen-forgot-password': 'Recuperar contraseña',
@@ -5612,7 +5626,7 @@ function regP2Check() {
   const errEl = document.getElementById('reg-pass-error');
   const mismatch = pass && pass2 && pass !== pass2;
   if (errEl) errEl.style.display = mismatch ? 'block' : 'none';
-  // El teléfono ya no se pide en el registro (contactar a un asesor por WhatsApp no lo
+  // El teléfono ya no se pide en el registro (contactar a un ejecutivo por WhatsApp no lo
   // necesita — el mensaje sale desde el propio celular del usuario). Queda como campo
   // opcional, editable desde Mi perfil (ver perfilEditarTel()).
   const ok = nombre && pass && pass2 && pass === pass2 && pass.length >= 8;
@@ -5727,7 +5741,7 @@ const MODULES = {
         { t: 'La cuota mensual baja, pero pagás más intereses en total', correct: true },
       ]},
       { q: '¿Cuándo ves el resultado de tu simulación?', options: [
-        { t: 'Después de que un asesor te llame', correct: false },
+        { t: 'Después de que un ejecutivo te llame', correct: false },
         { t: 'Al instante, apenas completás los datos', correct: true },
         { t: 'A las 24 horas', correct: false },
       ]},
@@ -5750,7 +5764,7 @@ const MODULES = {
       { q: '¿Para qué sirven los filtros?', options: [
         { t: 'Para ordenar por fecha de publicación', correct: false },
         { t: 'Para quedarte solo con las propiedades que aplican a lo que buscás', correct: true },
-        { t: 'Para contactar a un asesor', correct: false },
+        { t: 'Para contactar a un ejecutivo', correct: false },
       ]},
       { q: '¿Qué hace el ícono de corazón en una propiedad?', options: [
         { t: 'La reporta', correct: false },
@@ -5770,25 +5784,25 @@ const MODULES = {
   contactoInmo: {
     achModule: 4,
     screenId: 'screen-tut-contacto-inmo',
-    title: '¿Cómo contactás a un asesor inmobiliario?',
-    bajada: 'Contactar a un asesor es gratis y no te compromete a nada — es la forma de resolver dudas puntuales de una propiedad.',
+    title: '¿Cómo contactás a un ejecutivo inmobiliario?',
+    bajada: 'Contactar a un ejecutivo es gratis y no te compromete a nada — es la forma de resolver dudas puntuales de una propiedad.',
     concepts: [
-      { title: 'Desde la ficha de la propiedad', body: 'Abrí la propiedad que te interesa y tocá el botón "Contactar asesor inmobiliario".' },
-      { title: 'Un asesor especializado', body: 'Te responde por WhatsApp alguien que conoce esa propiedad en particular, no un genérico.' },
+      { title: 'Desde la ficha de la propiedad', body: 'Abrí la propiedad que te interesa y tocá el botón "Contactar ejecutivo inmobiliario".' },
+      { title: 'Un ejecutivo especializado', body: 'Te responde por WhatsApp alguien que conoce esa propiedad en particular, no un genérico.' },
       { title: 'Contale qué necesitás', body: 'Podés preguntar por una visita, por el estado legal, por gastos adicionales — lo que te haga falta para decidir.' },
     ],
     quiz: [
-      { q: '¿Desde dónde contactás a un asesor inmobiliario?', options: [
+      { q: '¿Desde dónde contactás a un ejecutivo inmobiliario?', options: [
         { t: 'Desde una simulación', correct: false },
         { t: 'Desde la ficha de la propiedad que te interesa', correct: true },
         { t: 'Desde Configuración', correct: false },
       ]},
       { q: '¿Quién te responde?', options: [
         { t: 'Un chatbot genérico', correct: false },
-        { t: 'Un asesor especializado en esa propiedad puntual', correct: true },
+        { t: 'Un ejecutivo especializado en esa propiedad puntual', correct: true },
         { t: 'Nadie, es automático', correct: false },
       ]},
-      { q: '¿Contactar a un asesor te compromete a algo?', options: [
+      { q: '¿Contactar a un ejecutivo te compromete a algo?', options: [
         { t: 'Sí, firmás un contrato', correct: false },
         { t: 'No, es gratis y sin compromiso', correct: true },
         { t: 'Sí, tenés que pagar una seña', correct: false },
@@ -5801,20 +5815,20 @@ const MODULES = {
   contactoHipo: {
     achModule: 5,
     screenId: 'screen-tut-contacto-hipo',
-    title: '¿Cómo contactás a un asesor hipotecario?',
+    title: '¿Cómo contactás a un ejecutivo hipotecario?',
     bajada: 'Desde una simulación guardada podés resolver con un especialista cualquier duda sobre tu crédito.',
     concepts: [
-      { title: 'Desde una simulación', body: 'Abrí cualquier simulación guardada y tocá "Contactar asesor hipotecario".' },
-      { title: 'Con tus números a mano', body: 'El asesor recibe automáticamente tu capacidad estimada y tu cuota mensual, así no tenés que explicar todo de cero.' },
+      { title: 'Desde una simulación', body: 'Abrí cualquier simulación guardada y tocá "Contactar ejecutivo hipotecario".' },
+      { title: 'Con tus números a mano', body: 'El ejecutivo recibe automáticamente tu capacidad estimada y tu cuota mensual, así no tenés que explicar todo de cero.' },
       { title: 'Para resolver dudas del crédito', body: 'Tasas, requisitos, documentación — todo lo que necesites confirmar antes de avanzar.' },
     ],
     quiz: [
-      { q: '¿Desde dónde contactás a un asesor hipotecario?', options: [
+      { q: '¿Desde dónde contactás a un ejecutivo hipotecario?', options: [
         { t: 'Desde la ficha de una propiedad', correct: false },
         { t: 'Desde una simulación guardada', correct: true },
         { t: 'Desde Favoritos', correct: false },
       ]},
-      { q: '¿Qué recibe automáticamente el asesor?', options: [
+      { q: '¿Qué recibe automáticamente el ejecutivo?', options: [
         { t: 'Tu identificación oficial', correct: false },
         { t: 'Tu capacidad estimada y tu cuota mensual', correct: true },
         { t: 'Nada, tenés que explicarle todo de cero', correct: false },
@@ -6122,7 +6136,7 @@ function goToModuleAchievement(key) {
 // usuario: Academia BBVA se deja solo con lo relacionado a crédito e hipotecas.
 // 'onboarding' es cuenta/perfil (crear cuenta, completar perfil) y 'simula'/'explora'/
 // 'conecta' mezclaban el tutorial de uso de la plataforma con pasos de acción real
-// (compartir simulación, guardar favorito, contactar asesor) — ninguno es contenido de
+// (compartir simulación, guardar favorito, contactar ejecutivo) — ninguno es contenido de
 // crédito/hipotecas. Se ocultan del render de Academia BBVA (ver renderAcademia())
 // pero NO se borran — los datos y el checklist siguen intactos acá por si hace falta
 // reactivarlos más adelante. 'aprende' pasa a tener los 5 módulos de contenido (antes
@@ -6149,8 +6163,8 @@ const ACADEMY_SECTIONS = [
     { key:'faved',        title:'Guardá un favorito',            sub:'Marcá las propiedades que más te gustan', cta:'Ver propiedades',   ctaAction:"navTo('screen-props','nav-props')",          ctaDone:'Ver favoritos',     ctaDoneAction:"renderFavs();goScreen('screen-favoritos')" },
   ]},
   { id:'conecta', label:'Conéctate', icon:'ti-headset', hidden:true, steps:[
-    { key:'contacted_prop', achModule:4, title:'Contactá a un asesor inmobiliario', sub:'Abrí una ficha de propiedad y tocá "Contactar asesor inmobiliario"', cta:'Ver propiedades', ctaAction:"goToModuleFlow(4)", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
-    { key:'contacted_hipo', achModule:5, title:'Contactá a un asesor hipotecario',  sub:'Desde una simulación, tocá "Contactar asesor hipotecario"', cta:'Ver simulaciones', ctaAction:"goToModuleFlow(5)", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
+    { key:'contacted_prop', achModule:4, title:'Contactá a un ejecutivo inmobiliario', sub:'Abrí una ficha de propiedad y tocá "Contactar ejecutivo inmobiliario"', cta:'Ver propiedades', ctaAction:"goToModuleFlow(4)", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
+    { key:'contacted_hipo', achModule:5, title:'Contactá a un ejecutivo hipotecario',  sub:'Desde una simulación, tocá "Contactar ejecutivo hipotecario"', cta:'Ver simulaciones', ctaAction:"goToModuleFlow(5)", ctaDone:'Ver mensajes', ctaDoneAction:"renderMensajes();goScreen('screen-mensajes')" },
   ]},
 ];
 
@@ -6197,7 +6211,7 @@ function openChatContacto(propId) {
     ? `Hola, me interesa la propiedad en ${p.zona} (MXN ${p.price.toLocaleString('es-MX')}). ¿Podrían darme más información?`
     : 'Hola, me interesa esta propiedad. ¿Podrían darme más información?';
   const id = _newChatId();
-  MENSAJES.unshift({ id, propId, asesorNombre:'Asesor Inmobiliario', asesorEmoji: emoji, mensajes:[], fecha:'Hoy', leido:true });
+  MENSAJES.unshift({ id, propId, asesorNombre:'Ejecutivo Inmobiliario', asesorEmoji: emoji, mensajes:[], fecha:'Hoy', leido:true });
   openChat(id);
   setTimeout(() => {
     const inp = document.getElementById(`chat-input-${id}`);
@@ -6211,9 +6225,9 @@ function openChatHipotecario(sim) {
     openChat(existing.id);
     return;
   }
-  const preMsg = `Hola, realicé una simulación y me gustaría hablar con un asesor hipotecario.\n\nMi capacidad estimada es de hasta ${fmt(sim.propMax)}, con una cuota de ~${fmt(sim.cuota)}/mes a ${sim.plazo} años.\n\n¿Podrían ponerse en contacto conmigo?`;
+  const preMsg = `Hola, realicé una simulación y me gustaría hablar con un ejecutivo hipotecario.\n\nMi capacidad estimada es de hasta ${fmt(sim.propMax)}, con una cuota de ~${fmt(sim.cuota)}/mes a ${sim.plazo} años.\n\n¿Podrían ponerse en contacto conmigo?`;
   const id = _newChatId();
-  MENSAJES.unshift({ id, tipo:'hipotecario', asesorNombre:'Asesor Hipotecario BBVA', asesorEmoji:'🏦', mensajes:[], fecha:'Hoy', leido:true });
+  MENSAJES.unshift({ id, tipo:'hipotecario', asesorNombre:'Ejecutivo Hipotecario BBVA', asesorEmoji:'🏦', mensajes:[], fecha:'Hoy', leido:true });
   openChat(id);
   setTimeout(() => {
     const inp = document.getElementById(`chat-input-${id}`);
@@ -6242,7 +6256,7 @@ function openDtContactSheet() {
   sheet.innerHTML = `
     <div class="msg-chat-header">
       <button class="msg-chat-back" onclick="closeDtContactSheet()"><i class="ti ti-x" style="font-size:18px"></i></button>
-      <div style="flex:1"><div class="msg-chat-name">Contactar asesor</div></div>
+      <div style="flex:1"><div class="msg-chat-name">Contactar ejecutivo</div></div>
     </div>
     <div style="flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px">
       ${propHTML}
@@ -6305,13 +6319,13 @@ function enviarContacto() {
     existente.leido = false;
   } else {
     MENSAJES.unshift({
-      id:'m'+Date.now(), asesorNombre:'Asesor BBVA', asesorEmoji:'👨‍💼',
+      id:'m'+Date.now(), asesorNombre:'Ejecutivo BBVA', asesorEmoji:'👨‍💼',
       propId, fecha:'Hoy', leido:false,
       mensajes:[{de:'yo', texto:`${motivoLabel}: ${texto}`, hora}]
     });
   }
   closeSheet();
-  showToast('ti-circle-check','Mensaje enviado. Tu asesor responderá pronto.','success');
+  showToast('ti-circle-check','Mensaje enviado. Tu ejecutivo responderá pronto.','success');
   markStep('contacted');
   setTimeout(()=>{
     const hilo = MENSAJES.find(m=> propId ? m.propId===propId : !m.propId) || MENSAJES[0];
@@ -6322,7 +6336,7 @@ function enviarContacto() {
   }, 3000);
 }
 
-// Chat interno original — ya no se usa desde la UI (el contacto con asesores ahora
+// Chat interno original — ya no se usa desde la UI (el contacto con ejecutivos ahora
 // redirige a WhatsApp, ver más abajo), pero se deja intacto y accesible por si se
 // necesita retomarlo más adelante.
 function renderChatInternoThreads() {
@@ -6330,7 +6344,7 @@ function renderChatInternoThreads() {
   if (!el) return;
   if (activeChatId && window.innerWidth < 900) { renderChat(activeChatId); return; }
   if (!MENSAJES.length) {
-    el.innerHTML = `<div class="empty-state"><i class="ti ti-message-off"></i><p>Aún no enviaste ningún mensaje<br>Contacta a un asesor desde la ficha de cualquier propiedad</p></div>`;
+    el.innerHTML = `<div class="empty-state"><i class="ti ti-message-off"></i><p>Aún no enviaste ningún mensaje<br>Contacta a un ejecutivo desde la ficha de cualquier propiedad</p></div>`;
     return;
   }
   const rows = MENSAJES.map(m => {
@@ -6397,7 +6411,7 @@ function renderDtChat(id) {
     <div class="msg-chat-header">
       <button class="msg-chat-back" onclick="closeDtChat()"><i class="ti ti-x" style="font-size:18px"></i></button>
       <div class="msg-thread-avatar" style="width:36px;height:36px;font-size:16px">${m.asesorEmoji}</div>
-      <div><div class="msg-chat-name">${m.asesorNombre}</div><div class="msg-chat-sub">Asesor BBVA Inmobiliaria</div></div>
+      <div><div class="msg-chat-name">${m.asesorNombre}</div><div class="msg-chat-sub">Ejecutivo BBVA Inmobiliaria</div></div>
     </div>
     <div class="msg-chat-body" id="chat-body-${id}">
       ${propBubble}
@@ -6441,7 +6455,7 @@ function renderChat(id) {
     <div class="msg-chat-header">
       <button class="msg-chat-back" onclick="activeChatId=null;const tb=document.getElementById('mensajes-title-bar');if(tb)tb.style.display='';renderMensajes()"><i class="ti ti-arrow-left" style="font-size:18px"></i></button>
       <div class="msg-thread-avatar" style="width:36px;height:36px;font-size:16px">${m.asesorEmoji}</div>
-      <div><div class="msg-chat-name">${m.asesorNombre}</div><div class="msg-chat-sub">Asesor BBVA Inmobiliaria</div></div>
+      <div><div class="msg-chat-name">${m.asesorNombre}</div><div class="msg-chat-sub">Ejecutivo BBVA Inmobiliaria</div></div>
     </div>
     <div class="msg-chat-body" id="chat-body-${id}">
       ${propBubble}
@@ -6472,16 +6486,16 @@ function sendChatMsg(id) {
 
 /* ══════════════════════════════════
    CONTACTO POR WHATSAPP (simulado)
-   Dos flujos separados — asesor inmobiliario (por propiedad) y asesor
+   Dos flujos separados — ejecutivo inmobiliario (por propiedad) y ejecutivo
    hipotecario (por simulación) — que "redirigen" a WhatsApp. Como esa
    conversación pasa a ocurrir fuera de la plataforma, cada contacto queda
-   registrado acá como constancia: fecha, asesor y número al que se escribió.
+   registrado acá como constancia: fecha, ejecutivo y número al que se escribió.
    ══════════════════════════════════ */
-const ASESOR_HIPOTECARIO = { nombre:'Ana Torres', rol:'Asesora Hipotecaria BBVA', emoji:'🏦', tel:'+52 55 4000 1001' };
+const ASESOR_HIPOTECARIO = { nombre:'Ana Torres', rol:'Ejecutiva Hipotecaria BBVA', emoji:'🏦', tel:'+52 55 4000 1001' };
 const ASESORES_INMOBILIARIOS = [
-  { nombre:'Carlos Ramírez',  rol:'Asesor Inmobiliario', emoji:'👨‍💼', tel:'+52 55 4000 2001' },
-  { nombre:'Lucía Fernández', rol:'Asesora Inmobiliaria', emoji:'👩‍💼', tel:'+52 55 4000 2002' },
-  { nombre:'Miguel Santos',   rol:'Asesor Inmobiliario', emoji:'👨‍💼', tel:'+52 55 4000 2003' },
+  { nombre:'Carlos Ramírez',  rol:'Ejecutivo Inmobiliario', emoji:'👨‍💼', tel:'+52 55 4000 2001' },
+  { nombre:'Lucía Fernández', rol:'Ejecutiva Inmobiliaria', emoji:'👩‍💼', tel:'+52 55 4000 2002' },
+  { nombre:'Miguel Santos',   rol:'Ejecutivo Inmobiliario', emoji:'👨‍💼', tel:'+52 55 4000 2003' },
 ];
 function asesorInmobiliarioFor(propId) {
   return ASESORES_INMOBILIARIOS[(propId - 1) % ASESORES_INMOBILIARIOS.length];
@@ -6662,17 +6676,17 @@ function contactoInvitadoEnviar() {
 function contactarInmobiliarioGeneral() {
   const existing = WA_CONTACTS.find(c => c.tipo === 'inmobiliario' && !c.propId);
   if (existing) { verContactoWA(existing.id); return; }
-  contactarPorWhatsapp({ tipo:'inmobiliario', asesor: ASESORES_INMOBILIARIOS[0], mensaje:'Hola, me gustaría hablar con un asesor inmobiliario para que me ayude a encontrar una propiedad.', stepKey:'contacted_prop' });
+  contactarPorWhatsapp({ tipo:'inmobiliario', asesor: ASESORES_INMOBILIARIOS[0], mensaje:'Hola, me gustaría hablar con un ejecutivo inmobiliario para que me ayude a encontrar una propiedad.', stepKey:'contacted_prop' });
 }
 function contactarHipotecarioGeneral() {
   const existing = WA_CONTACTS.find(c => c.tipo === 'hipotecario' && !c.simId);
   if (existing) { verContactoWA(existing.id); return; }
-  contactarPorWhatsapp({ tipo:'hipotecario', asesor: ASESOR_HIPOTECARIO, mensaje:'Hola, me gustaría hablar con un asesor hipotecario para resolver dudas sobre mi crédito.', stepKey:'contacted_hipo' });
+  contactarPorWhatsapp({ tipo:'hipotecario', asesor: ASESOR_HIPOTECARIO, mensaje:'Hola, me gustaría hablar con un ejecutivo hipotecario para resolver dudas sobre mi crédito.', stepKey:'contacted_hipo' });
 }
 
 // ── Agendar una visita a la propiedad ──
 // Calendario mensual (hoy en adelante, hasta 60 días, de lunes a sábado) y horarios de
-// 10:00 a 18:00. Al confirmar se abre el contacto por WhatsApp con el asesor de la
+// 10:00 a 18:00. Al confirmar se abre el contacto por WhatsApp con el ejecutivo de la
 // propiedad y un mensaje que ya trae el día y la hora elegidos.
 const AGENDA_HORAS = ['10:00','11:00','12:00','13:00','16:00','17:00','18:00'];
 let agendaProp = null, agendaMesRef = null, agendaFecha = null, agendaHora = null, agendaInvitado = null;
@@ -6729,7 +6743,7 @@ function confirmarVisita() {
 function contactarInmobiliario(propId) {
   // Si ya existe un contacto registrado para esta propiedad, retomamos ese registro
   // en vez de generar uno nuevo — evita duplicar el contacto y deja claro que ya se
-  // habló con un asesor sobre esta ficha.
+  // habló con un ejecutivo sobre esta ficha.
   const existing = WA_CONTACTS.find(c => c.propId === propId && c.tipo === 'inmobiliario');
   if (existing) { verContactoWA(existing.id); return; }
   const p = PROPS.find(x => x.id === propId);
@@ -6740,12 +6754,25 @@ function contactarInmobiliario(propId) {
   contactarPorWhatsapp({ tipo:'inmobiliario', asesor, propId, mensaje, stepKey:'contacted_prop' });
 }
 
+// Desde el simulador: contacta al ejecutivo hipotecario con los números de la simulación actual,
+// sin necesidad de guardarla antes. Sin sesión ofrece iniciar sesión o contactar como invitado.
+function contactarEjecutivoDesdeSim() {
+  contactarConAsesor(() => {
+    const refP = simRefPropId ? PROPS.find(x => x.id === simRefPropId) : null;
+    const precio = refP ? refP.price : simData.propMax;
+    const ex = simExtra({ enganche: simData.enganche, tasaAnual: simData.tasaAnual }, precio);
+    const mensaje = `Hola, estoy simulando un crédito y me gustaría hablar con un ejecutivo hipotecario.\n\n` +
+      (refP ? `Estoy simulando para una propiedad de ${fmt(refP.price)} en ${refP.zona}. ` : `Mi capacidad estimada es de hasta ${fmt(simData.propMax)}. `) +
+      `Con ${fmt(simData.enganche)} de enganche, la cuota sería de ~${fmt(simData.cuotaReal)}/mes a ${simData.plazo} años. El pago mínimo sería de ${fmt(ex.pagoMin)}/mes a 25 años y los gastos generales a considerar rondan los ${fmt(ex.gastos)}.\n\n¿Podrían ponerse en contacto conmigo?`;
+    contactarPorWhatsapp({ tipo:'hipotecario', asesor: ASESOR_HIPOTECARIO, mensaje, stepKey:'contacted_hipo' });
+  });
+}
 function contactarHipotecario(sim) {
   const existing = WA_CONTACTS.find(c => c.simId === sim.id && c.tipo === 'hipotecario');
   if (existing) { verContactoWA(existing.id); return; }
   const refP = sim.refProp ? PROPS.find(x => x.id === sim.refProp) : null;
   const ex = simExtra(sim, refP ? refP.price : sim.propMax);
-  const mensaje = `Hola, realicé una simulación y me gustaría hablar con un asesor hipotecario.\n\nMi capacidad estimada es de hasta ${fmt(sim.propMax)}, con una cuota de ~${fmt(sim.cuota)}/mes a ${sim.plazo} años. El pago mínimo sería de ${fmt(ex.pagoMin)}/mes a 25 años y los gastos generales a considerar rondan los ${fmt(ex.gastos)}.\n\n¿Podrían ponerse en contacto conmigo?`;
+  const mensaje = `Hola, realicé una simulación y me gustaría hablar con un ejecutivo hipotecario.\n\nMi capacidad estimada es de hasta ${fmt(sim.propMax)}, con una cuota de ~${fmt(sim.cuota)}/mes a ${sim.plazo} años. El pago mínimo sería de ${fmt(ex.pagoMin)}/mes a 25 años y los gastos generales a considerar rondan los ${fmt(ex.gastos)}.\n\n¿Podrían ponerse en contacto conmigo?`;
   contactarPorWhatsapp({ tipo:'hipotecario', asesor: ASESOR_HIPOTECARIO, simId: sim.id, mensaje, stepKey:'contacted_hipo' });
 }
 
@@ -6790,7 +6817,7 @@ function verContactoWA(id) {
       <div style="width:44px;height:44px;border-radius:50%;background:var(--surface-1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${c.asesorEmoji}</div>
       <div style="min-width:0">
         <div style="font-size:14px;font-weight:600;color:var(--text-primary)">${c.asesorNombre}</div>
-        <div style="font-size:12px;color:var(--text-muted)">${c.asesorRol || (c.tipo==='hipotecario'?'Asesor hipotecario':'Asesor inmobiliario')}</div>
+        <div style="font-size:12px;color:var(--text-muted)">${c.asesorRol || (c.tipo==='hipotecario'?'Ejecutivo hipotecario':'Ejecutivo inmobiliario')}</div>
       </div>
     </div>
     ${ctxHTML}
@@ -6807,7 +6834,7 @@ function verContactoWA(id) {
 }
 
 // Quita solo la referencia a la propiedad de un contacto (la propiedad ya salió del
-// catálogo); el registro de contacto con el asesor se conserva íntegro.
+// catálogo); el registro de contacto con el ejecutivo se conserva íntegro.
 function quitarPropDeContactoWA(id) {
   const c = WA_CONTACTS.find(x => x.id === id);
   if (!c) return;
@@ -6822,7 +6849,7 @@ function renderMensajes() {
   const el = document.getElementById('mensajes-content');
   if (!el) return;
   if (!WA_CONTACTS.length) {
-    el.innerHTML = `<div class="empty-state"><i class="ti ti-brand-whatsapp"></i><p>Aún no contactaste a ningún asesor<br>Contactá desde la ficha de una propiedad o desde tu simulación</p></div>`;
+    el.innerHTML = `<div class="empty-state"><i class="ti ti-brand-whatsapp"></i><p>Aún no contactaste a ningún ejecutivo<br>Contactá desde la ficha de una propiedad o desde tu simulación</p></div>`;
     // el ES .content (id="mensajes-content"): repintar el breadcrumb que este innerHTML
     // se llevó puesto.
     paintBreadcrumb(document.getElementById('screen-mensajes'));
@@ -6831,7 +6858,7 @@ function renderMensajes() {
   const rows = WA_CONTACTS.map(c => {
     const propRef = c.propId ? PROPS.find(p => p.id === c.propId) : null;
     const propBlocked = propRef && !propDisponible(propRef);
-    const tipoLabel = c.asesorRol || (c.tipo === 'hipotecario' ? 'Asesor hipotecario' : 'Asesor inmobiliario');
+    const tipoLabel = c.asesorRol || (c.tipo === 'hipotecario' ? 'Ejecutivo hipotecario' : 'Ejecutivo inmobiliario');
     const ctx = propRef
       ? `${propRef.tipo} en ${propRef.zona} · ${fmt(propRef.price)}`
       : (c.simId ? 'Sobre tu simulación' : '');
@@ -7257,7 +7284,7 @@ function simular() {
 }
 
 // 5 módulos en total (antes eran 3: educación, simula, explora — ahora se suman
-// contactar asesor inmobiliario e hipotecario, cada uno con su propia teoría y
+// contactar ejecutivo inmobiliario e hipotecario, cada uno con su propia teoría y
 // mini-check en MODULES). Esta pantalla es la confirmación de haber TERMINADO la
 // teoría + mini-check de ese módulo (se dispara desde answerModuleQuiz/
 // goToModuleAchievement apenas se resuelve el quiz, no hace falta además haber hecho
@@ -7346,7 +7373,7 @@ const MODULO_TOAST_LABEL = { 1:'entender cómo funciona un crédito', 2:'enganch
 // Un solo lugar con la etiqueta de cada paso del checklist que NO es uno de los 5
 // módulos de contenido de "Aprende" (esos usan notificarModuloCompletado / la
 // pantalla de logro). Los pasos de acción real de abajo (compartir simulación, sumar
-// una propiedad, guardar favorito, contactar asesor) quedan ocultos junto con el resto
+// una propiedad, guardar favorito, contactar ejecutivo) quedan ocultos junto con el resto
 // del tutorial de uso de la plataforma — este diccionario se mantiene por si se
 // reactivan más adelante. Todo paso completado por su cuenta, la primera vez, deja un
 // aviso — sin excepción, para que la bandeja sea un registro consistente del recorrido.
@@ -7356,8 +7383,8 @@ const PASO_ACADEMIA_LABEL = {
   shared_sim: 'compartir tu simulación',
   added_to_sim: 'sumar una propiedad a tu simulación',
   faved: 'guardar un favorito',
-  contacted_prop: 'contactar a un asesor inmobiliario',
-  contacted_hipo: 'contactar a un asesor hipotecario',
+  contacted_prop: 'contactar a un ejecutivo inmobiliario',
+  contacted_hipo: 'contactar a un ejecutivo hipotecario',
 };
 
 // Marca un paso del checklist y avisa por notificación si recién se completó ahora
@@ -8584,10 +8611,10 @@ function openPropDetail(id){
     if(el) el.innerHTML = simBannerHTML;
   });
 
-  // badge de contacto previo con el asesor inmobiliario de esta propiedad
+  // badge de contacto previo con el ejecutivo inmobiliario de esta propiedad
   const contactoInmob = isLoggedIn ? WA_CONTACTS.find(c => c.propId === id && c.tipo === 'inmobiliario') : null;
   const contactBadgeHTML = contactoInmob
-    ? `<button class="contact-done-badge" onclick="verContactoWA('${contactoInmob.id}')"><i class="ti ti-circle-check" style="font-size:13px"></i> Asesor inmobiliario contactado</button>`
+    ? `<button class="contact-done-badge" onclick="verContactoWA('${contactoInmob.id}')"><i class="ti ti-circle-check" style="font-size:13px"></i> Ejecutivo inmobiliario contactado</button>`
     : '';
   ['detail-contact-badge-m','detail-contact-badge-dt'].forEach(elId => {
     const el = document.getElementById(elId);

@@ -673,7 +673,7 @@ async function startProps(){
   }, 400);
   setProgress(100,'Módulo 3 completado');
   await queue(()=>{}, 400);
-  await botSay(['Por ahora, un asesor puede ayudarte a continuar.'], 0);
+  await botSay(['Por ahora, un ejecutivo puede ayudarte a continuar.'], 0);
   setReplies(`
     <div style="display:flex;flex-direction:column;gap:8px">
       <div style="font-size:11px;color:var(--text-muted);padding:0 4px">Ajustar filtros</div>
@@ -683,7 +683,7 @@ async function startProps(){
         <button class="chip" onclick="refilterRec()">🛏 Recámaras</button>
       </div>
       <div class="reply-chips">
-        <button class="chip" onclick="alert('Un asesor BBVA se pondrá en contacto con vos.')">Hablar con un asesor</button>
+        <button class="chip" onclick="alert('Un ejecutivo BBVA se pondrá en contacto con vos.')">Hablar con un ejecutivo</button>
         <button class="chip" onclick="restartFlow()">Empezar de nuevo</button>
       </div>
     </div>
@@ -760,7 +760,7 @@ async function reApplyFilter(key, val){
         <button class="chip" onclick="refilterRec()">🛏 Recámaras</button>
       </div>
       <div class="reply-chips">
-        <button class="chip" onclick="alert('Un asesor BBVA se pondrá en contacto con vos.')">Hablar con un asesor</button>
+        <button class="chip" onclick="alert('Un ejecutivo BBVA se pondrá en contacto con vos.')">Hablar con un ejecutivo</button>
         <button class="chip" onclick="restartFlow()">Empezar de nuevo</button>
       </div>
     </div>
